@@ -19,4 +19,16 @@ class GameLevels {
           (key, value) => value.id = key,
         );
   }
+
+  GameLevels clone() {
+    return GameLevels(
+      name: name,
+      type: type,
+      sections: [
+        ...sections.map(
+          (e) => e.clone(),
+        ),
+      ],
+    );
+  }
 }

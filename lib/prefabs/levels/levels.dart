@@ -11,16 +11,16 @@ export 'south_america_continent.dart';
 export 'whole_world_continent.dart';
 
 class FactoryGameContinent {
+  static final Map<ContinentType, GameLevels> continents = {
+    ContinentType.europe: EuropeContinent(),
+    ContinentType.asia: AsiaContinent(),
+    ContinentType.africa: AfricaContinent(),
+    ContinentType.northAmerica: NorthAmericaContinent(),
+    ContinentType.southAmerica: SouthAmericaContinent(),
+    ContinentType.oceania: OceaniaContinent(),
+  };
+
   GameLevels create(ContinentType continent) {
-    return _continents[continent]!();
+    return continents[continent]!.clone();
   }
 }
-
-final Map<ContinentType, GameLevels Function()> _continents = {
-  ContinentType.europe: () => EuropeContinent(),
-  ContinentType.asia: () => AsiaContinent(),
-  ContinentType.africa: () => AfricaContinent(),
-  ContinentType.northAmerica: () => NorthAmericaContinent(),
-  ContinentType.southAmerica: () => SouthAmericaContinent(),
-  ContinentType.oceania: () => OceaniaContinent(),
-};

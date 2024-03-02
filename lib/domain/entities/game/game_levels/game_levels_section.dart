@@ -12,4 +12,16 @@ class GameLevelsSection {
     required this.levels,
     required this.difficulty,
   });
+
+  GameLevelsSection clone() {
+    return GameLevelsSection(
+      name: name,
+      levels: [
+        ...levels.map(
+          (e) => e.clone(),
+        )
+      ],
+      difficulty: difficulty,
+    );
+  }
 }

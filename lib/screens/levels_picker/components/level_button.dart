@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import '../dialogs/flag_view.dialog.dart';
 import '../features/color_by_difficult.dart';
 
-class LevelButton extends StatelessWidget {
+class LevelButton extends StatefulWidget {
   const LevelButton({
     super.key,
     required this.level,
@@ -27,26 +27,36 @@ class LevelButton extends StatelessWidget {
 
   final void Function(GameLevel level) onLevelSelected;
 
+  @override
+  State<LevelButton> createState() => _LevelButtonState();
+}
+
+class _LevelButtonState extends State<LevelButton> {
   void shoeFlagDialog() {
-    if (!level.completed) return;
+    if (!widget.level.completed) return;
     FlagViewDialog(
-      flag: level.flag,
+      flag: widget.level.flag,
     ).showModal();
   }
+
+  late final fColor = widget.isOpened
+      ? getColorByDifficult(widget.difficult)
+      : ThemePalette.gray;
 
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: level,
+      listenable: widget.level,
       builder: (BuildContext context, _) {
-        final color =
-            isOpened ? getColorByDifficult(difficult) : ThemePalette.gray;
-
+        var color = fColor;
+        if (!widget.level.completed && widget.level.opened) {
+          color = fColor.brighten(0.5);
+        }
         Widget child;
 
-        if (isOpened) {
+        if (widget.isOpened) {
           child = FText(
-            level.flag.name,
+            widget.level.flag.name,
             strokeWidth: 5,
             strokeColor: color.darken(0.7),
             textAlign: TextAlign.center,
@@ -63,7 +73,7 @@ class LevelButton extends StatelessWidget {
         }
 
         return FButton(
-          onPressed: () => onLevelSelected(level),
+          onPressed: () => widget.onLevelSelected(widget.level),
           onLongPress: shoeFlagDialog,
           color: color,
           child: Stack(
@@ -79,7 +89,7 @@ class LevelButton extends StatelessWidget {
                 top: -8,
                 left: 0,
                 child: FText(
-                  "${level.id + 1}",
+                  "${widget.level.id + 1}",
                   strokeWidth: 2,
                   strokeColor: color.darken(0.2),
                   textStyle: const TextStyle(

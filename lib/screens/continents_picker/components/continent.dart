@@ -3,6 +3,7 @@ import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
 import 'package:qlevar_router/qlevar_router.dart';
 
+import '../../../prefabs/levels/levels.dart';
 import '../../../presentation/presenters/continents_picker/route_params.dart';
 import 'completed_levels_count_stream_view.dart';
 
@@ -56,6 +57,9 @@ class ContinentComponent extends StatefulWidget {
 class _ContinentComponentState extends State<ContinentComponent> {
   final params = QR.params['data']!.value as ContinentPickerRouteParams;
 
+  late final levelsCount =
+      FactoryGameContinent.continents[widget.type]!.levels.length;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -87,7 +91,7 @@ class _ContinentComponentState extends State<ContinentComponent> {
                   gameMode: params.gameProcessType,
                   builder: (int quantity) {
                     return FText(
-                      "$quantity/99",
+                      "$quantity/$levelsCount",
                       textStyle: const TextStyle(
                         fontSize: 38,
                         height: 1,

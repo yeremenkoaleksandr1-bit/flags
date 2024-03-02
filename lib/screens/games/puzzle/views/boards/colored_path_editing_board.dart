@@ -29,6 +29,7 @@ class ColoredPathEditingBoardState
   void initState() {
     activeRx.stream.listen((event) {
       if (event) {
+        widget.presenter.boardController.closeFullScreen();
         colorRx.value = Colors.grey;
       }
     });

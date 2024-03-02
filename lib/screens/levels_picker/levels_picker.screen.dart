@@ -28,7 +28,10 @@ class LevelsPickerScreen extends ArGetScreen<ILevelsPickerPresenter> {
                 child: Row(children: [
                   FBackButton(),
                   Gap.h24,
-                  ContinentTitleView(),
+                  Expanded(
+                    child: ContinentTitleView(),
+                  ),
+                  Gap.h24,
                 ]),
               ),
               Expanded(

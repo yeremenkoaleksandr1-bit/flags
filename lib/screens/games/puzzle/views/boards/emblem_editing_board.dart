@@ -52,6 +52,11 @@ class _EmblemEditingBoardState extends ProcessObjectEditingBoardState<
           ),
           child: FastBuilder(
             () {
+              if (widget.presenter.focusedObject.value
+                  is! EmblemSceneObjectState) {
+                return const SizedBox.shrink();
+              }
+
               late final object = widget.presenter.focusedObject.value
                   as EmblemSceneObjectState?;
 

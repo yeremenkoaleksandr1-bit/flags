@@ -1,4 +1,5 @@
 import 'package:flags/domain/game_objects/flag/flag.dart';
+import 'package:flags/domain/game_objects/flag/flag_extensions.dart';
 import 'package:flutter/cupertino.dart';
 
 class GameLevel extends ChangeNotifier {
@@ -22,6 +23,14 @@ class GameLevel extends ChangeNotifier {
   void openLevel() {
     opened = true;
     notifyListeners();
+  }
+
+  GameLevel clone() {
+    return GameLevel(
+      flag: flag.copyWith(),
+      opened: opened,
+      completed: completed,
+    );
   }
 
   GameLevel copyWith({

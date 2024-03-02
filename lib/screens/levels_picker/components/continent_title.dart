@@ -8,12 +8,13 @@ class ContinentTitleView extends ArGetLocatorWidget<ILevelsPickerPresenter> {
 
   @override
   Widget build(BuildContext context, ILevelsPickerPresenter presenter) {
-    return Center(
+    return Align(
+      alignment: Alignment.centerLeft,
       child: FittedBox(
         fit: BoxFit.scaleDown,
         child: FText(
           presenter.state.levels.name,
-          textAlign: TextAlign.center,
+          textAlign: TextAlign.start,
           strokeWidth: 12,
           textStyle: const TextStyle(fontSize: 58),
         ),

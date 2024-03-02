@@ -75,6 +75,13 @@ class PartsBoardState extends State<PartsBoard> {
     super.initState();
   }
 
+  void closeFullScreen() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      isFullScreen.value = false;
+      _positionRx.value = _boardActualPosition;
+    });
+  }
+
   bool _isResizableDragStart = false;
 
   late double _initialPosition = _positionRx.value;
