@@ -1,5 +1,8 @@
 import 'dart:math';
 
+import 'package:armar/armar.dart';
+import 'package:flags/uikit/theme/palette.dart';
+import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../uikit/components/buttons/colors/green_button.dart';
@@ -20,7 +23,7 @@ class EmblemEditingBoard extends ProcessObjectEditingBoard {
 class _EmblemEditingBoardState extends ProcessObjectEditingBoardState<
     EmblemEditingBoard, EmblemSceneObjectState> {
   void rotate(bool direction) {
-    final object =
+    late final object =
         widget.presenter.focusedObject.value! as EmblemSceneObjectState;
 
     var rotation = (object.rotationRx.value + (pi / 4) * (direction ? 1 : -1))
@@ -38,7 +41,34 @@ class _EmblemEditingBoardState extends ProcessObjectEditingBoardState<
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Slider(value: 0.5, onChanged: (v) {}),
+        SliderTheme(
+          data: SliderThemeData(
+            activeTrackColor: ThemePalette.black,
+            inactiveTrackColor: ThemePalette.peach.darken(0.2),
+            trackHeight: 12.0,
+            thumbColor: ThemePalette.black,
+            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12.0),
+            overlayColor: ThemePalette.white,
+          ),
+          child: FastBuilder(
+            () {
+              late final object = widget.presenter.focusedObject.value
+                  as EmblemSceneObjectState?;
+
+              final scale = (object?.scaleRx.value ?? 0).roundToDouble();
+
+              return Slider(
+                value: scale,
+                divisions: 3,
+                max: 3,
+                onChanged: (v) {
+                  object?.scaleRx.value = v;
+                },
+              );
+            },
+          ),
+        ),
+        Gap.v12,
         Row(
           children: [
             const Spacer(),

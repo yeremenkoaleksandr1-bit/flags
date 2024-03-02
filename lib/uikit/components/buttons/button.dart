@@ -10,10 +10,12 @@ class FButton extends StatelessWidget {
     required this.color,
     required this.onPressed,
     required this.child,
+    this.onLongPress,
   });
 
   final Color color;
   final VoidCallback onPressed;
+  final VoidCallback? onLongPress;
 
   final Widget child;
 
@@ -21,6 +23,7 @@ class FButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScaledGestureDetector(
       onTap: onPressed,
+      onLongPress: onLongPress,
       child: AButtonWidget(
         color: color,
         child: Padding(

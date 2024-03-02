@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import '../../../ui/notifications/tap_button_notification.dart';
@@ -8,11 +9,16 @@ class ScaledGestureDetector extends StatefulWidget {
     this.onTap,
     required this.child,
     this.duration,
+    this.onLongPress,
+    this.longPressDuration = const Duration(milliseconds: 500),
   });
 
   final GestureTapCallback? onTap;
+  final GestureTapCallback? onLongPress;
 
   final Duration? duration;
+
+  final Duration longPressDuration;
 
   final Widget child;
 
@@ -64,10 +70,28 @@ class _ScaledGestureDetectorState extends State<ScaledGestureDetector>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => onPointerDown(),
-      onTapCancel: () => onPointerCancel(),
-      onTapUp: (_) => onPointerUp(),
+    return RawGestureDetector(
+      gestures: {
+        TapGestureRecognizer:
+            GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
+          () => TapGestureRecognizer(),
+          (i) {
+            i.onTapDown = (e) => onPointerDown();
+            i.onTapUp = (e) => onPointerUp();
+            i.onTapCancel = () => onPointerCancel();
+          },
+        ),
+        if (widget.onLongPress != null)
+          LongPressGestureRecognizer:
+              GestureRecognizerFactoryWithHandlers<LongPressGestureRecognizer>(
+            () => LongPressGestureRecognizer(
+              duration: widget.longPressDuration,
+            ),
+            (i) {
+              i.onLongPress = widget.onLongPress;
+            },
+          ),
+      },
       child: Builder(builder: (context) {
         return AnimatedBuilder(
           animation: _animationController,

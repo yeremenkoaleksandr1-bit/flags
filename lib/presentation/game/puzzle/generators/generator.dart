@@ -11,6 +11,7 @@ import '../../../../domain/game_objects/emblems/emblems.dart';
 import '../../../../domain/game_objects/flag/flag.dart';
 import '../../../../domain/game_objects/game_objects.dart';
 import '../../../presenters/levels_picker/levels_picker.presenter.dart';
+import '../entities/scallable_emblem.dart';
 
 class PuzzlePartsGenerator {
   PuzzlePartsGenerator({
@@ -108,22 +109,26 @@ class PuzzlePartsGenerator {
 
           final randomIndex = random.nextInt(scalesLen);
 
-          final scales = _generateScales(correctIndex, scalesLen, 0.2);
+          final scales = generateScales(correctIndex, scalesLen, 0.2);
           final randomScale = scales[randomIndex];
           final scale = (randomScale <= 1
               ? randomScale
               : randomScale - 0.2 * randomIndex);
 
-          return e.copyWith(
-            rotation: 0,
-            scale: 1,
+          return ScalableEmblemPart.fromEmblem(
+            e.copyWith(
+              rotation: angle,
+              scale: scale,
+            ),
+            correctScaleIndex: randomIndex,
+            scales: scales,
           );
         },
       ),
     ];
   }
 
-  List<double> _generateScales(int correctIndex, int len, double inclement) {
+  List<double> generateScales(int correctIndex, int len, double inclement) {
     return List.generate(len,
         (index) => (1 + (index - correctIndex) * inclement).roundDouble(1));
   }

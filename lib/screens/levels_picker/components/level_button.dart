@@ -8,6 +8,7 @@ import 'package:flags/uikit/theme/palette.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 
+import '../dialogs/flag_view.dialog.dart';
 import '../features/color_by_difficult.dart';
 
 class LevelButton extends StatelessWidget {
@@ -25,6 +26,13 @@ class LevelButton extends StatelessWidget {
   final bool isOpened;
 
   final void Function(GameLevel level) onLevelSelected;
+
+  void shoeFlagDialog() {
+    if (!level.completed) return;
+    FlagViewDialog(
+      flag: level.flag,
+    ).showModal();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +64,7 @@ class LevelButton extends StatelessWidget {
 
         return FButton(
           onPressed: () => onLevelSelected(level),
+          onLongPress: shoeFlagDialog,
           color: color,
           child: Stack(
             clipBehavior: Clip.none,

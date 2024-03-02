@@ -1,7 +1,6 @@
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flame/game.dart';
 
-import '../../../../domain/game_objects/emblems/emblem.gameObject.dart';
 import '../../../../domain/game_objects/flag/flag.dart';
 import '../../../../domain/game_objects/parts/path_part.dart';
 import '../entities/colored_part.game_object.dart';
@@ -37,10 +36,6 @@ class PuzzleObjectPlacingHandler {
 
     final nearestObject =
         _findNearestObject(position / fitValue, objectsFromFlag);
-
-    if (object is EmblemPart) {
-      return object.copyWith(position: position / fitValue);
-    }
 
     if (object is ColoredPart && nearestObject is PathPart) {
       if (object.color != nearestObject.color) {

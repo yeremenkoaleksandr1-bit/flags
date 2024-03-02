@@ -37,34 +37,46 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
     );
   }
 
+  Vector2 positionConverter(Vector2 position) => position;
+
+  Vector2 sizeConverter(Vector2 size) => size;
+
+  double rotationConverter(double rotation) => rotation;
+
+  double scaleConverter(double scale) => scale;
+
   @override
   Widget build(BuildContext context) {
     final child = buildWidget(context);
 
     return FastBuilder(
       () {
-        final position = positionRx.value;
-        final size = sizeRx.value;
-        final rotation = rotationRx.value;
+        final position = positionConverter(positionRx.value);
+        final size = sizeConverter(sizeRx.value);
+        final rotation = rotationConverter(rotationRx.value);
 
-        final scale = scaleRx.value;
-
-        final transform = MatrixUtils.transformRect(
-          Matrix4.identity()
-            ..translate(size.x / 2, size.y / 2)
-            ..rotateZ(rotation)
-            ..translate(-size.x / 2, -size.y / 2),
-          size.toRect(),
-        );
-
-        final offset = (transform.toVector2() - size) / 2;
+        final scale = scaleConverter(scaleRx.value);
 
         return Positioned(
-          left: position.x - offset.x,
-          top: position.y - offset.y,
-          width: transform.width,
-          height: transform.height,
-          child: child,
+          left: position.x,
+          top: position.y,
+          width: size.x,
+          height: size.y,
+          child: Transform.scale(
+            scale: scale,
+            child: Transform.rotate(
+              angle: rotation,
+              child: Center(
+                child: RepaintBoundary(
+                  child: SizedBox(
+                    width: size.x,
+                    height: size.y,
+                    child: child,
+                  ),
+                ),
+              ),
+            ),
+          ),
         );
       },
     );

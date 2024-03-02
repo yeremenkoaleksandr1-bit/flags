@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../presentation/game/puzzle/puzzle_common.presenter.dart';
 import '../../../../uikit/utils/render_box_exposed.dart';
+import '../scene_components/emblem.dart';
 import '../scene_components/factory.dart';
 
 class GameFlagArea extends StatefulWidget {
@@ -67,7 +68,7 @@ class _GameFlagAreaState extends State<GameFlagArea> {
       (e) {
         return PuzzleSceneItemsFactory.build(
           e,
-          onEmblem: (o) => GameObjectWidget(o),
+          onEmblem: (o) => EmblemSceneObject(o, widget.presenter),
           onDefault: (o) => GameObjectWidget(o),
         );
       },

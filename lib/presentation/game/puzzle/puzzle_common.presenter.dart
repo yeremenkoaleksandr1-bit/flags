@@ -3,6 +3,7 @@
 import 'dart:math';
 
 import 'package:armar/armar.dart';
+import 'package:armar/state_management/get_utils/src/extensions/internacionalization.dart';
 import 'package:dart_numerics/dart_numerics.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/domain/enums/game_difficult.dart';
@@ -10,6 +11,8 @@ import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
 import 'package:flags/domain/game_objects/flag/flag_extensions.dart';
 import 'package:flags/domain/services/game/emblems.service.dart';
+import 'package:flags/presentation/game/puzzle/entities/draggable_emblem_part.game_object.dart';
+import 'package:flags/presentation/game/puzzle/entities/scallable_emblem.dart';
 import 'package:flags/presentation/game/puzzle/generators/easy.dart';
 import 'package:flags/presentation/game/puzzle/generators/extra_hard.dart';
 import 'package:flags/presentation/game/puzzle/generators/hard.dart';
@@ -272,8 +275,45 @@ class PuzzleCommonModePresenterImpl extends GetxController
 
   @override
   bool handleGameObject(Vector2 position, ProcessGameObject object) {
+    ProcessGameObject gameObject = object;
+
+    if (gameObject is ScalableEmblemPart) {
+      final emblemFromFlag = state.flag.emblems.firstOrNull;
+
+      if (emblemFromFlag != null) {
+        gameObject = gameObject.copyWith(
+          previousMustBePlaced: emblemFromFlag.previousMustBePlaced,
+        );
+      }
+
+      final isPreviousPlaced = gameObject.previousMustBePlaced?.every(
+            (e) => state.placedObjects.map((e) => e.name).contains(e),
+          ) ??
+          true;
+
+      if (!isPreviousPlaced) {
+        onIncorrectPlacing();
+        return false;
+      }
+
+      gameObject = DraggableEmblemPart.fromEmblem(
+        gameObject.copyWith(
+          position: position / state.flagFitValue,
+        ),
+        correctScaleIndex: gameObject.correctScaleIndex,
+        scales: gameObject.scales,
+      );
+
+      state.placedObjects.add(gameObject);
+      state.boardObjects.firstWhere((e) {
+        return e.object.uniqueName == gameObject.uniqueName;
+      }).setActive(false);
+
+      return true;
+    }
+
     final availableObject = PuzzleObjectPlacingHandler().handle(
-      object: object,
+      object: gameObject,
       flag: state.level.value.flag,
       placedObjects: state.placedObjects,
       position: position,
@@ -282,15 +322,6 @@ class PuzzleCommonModePresenterImpl extends GetxController
 
     if (availableObject != null) {
       placeObject(availableObject);
-
-      // if (availableObject is EmblemPart) {
-      //   state.placedObjects.add(availableObject);
-      //   state.boardObjects.firstWhere((e) {
-      //     return e.object.uniqueName == object.uniqueName;
-      //   }).setActive(false);
-      // } else {
-      //   placeObject(availableObject);
-      // }
     } else {
       onIncorrectPlacing();
     }
@@ -300,7 +331,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
 
   void onIncorrectPlacing() {
     shakeAnimation.forward(from: 0);
-    heartTriesState.removeOneHeart();
+    // heartTriesState.removeOneHeart();
 
     if (heartTriesState.isOver()) {
       PuzzleLoseDialog(
@@ -379,29 +410,41 @@ class PuzzleCommonModePresenterImpl extends GetxController
     final focussedObject = sceneObject?.widget.gameObject;
 
     if (focussedObject != null) {
-      final flagObject = state.level.value.flag.objects.firstWhere(
-        (e) => e.uniqueName == focussedObject.uniqueName,
-      ) as EmblemPart;
+      final object = focussedObject.toEmblemPart();
+
+      object.position = sceneObject!.positionRx.value;
+      object.rotation = sceneObject.rotationRx.value;
+      object.scale = sceneObject.scaleConverter(sceneObject.scaleRx.value);
+
+      final flagObject = state.level.value.flag.objects.firstWhereOrNull(
+        (e) => e.uniqueName == object.uniqueName,
+      ) as EmblemPart?;
+
+      if (flagObject == null) {
+        onIncorrectPlacing();
+        return;
+      }
 
       final fitValue = state.flagFitValue;
 
-      final fittedFlagObjectPosition = flagObject.position * fitValue;
+      final fittedFlagObjectPosition = flagObject.position;
 
       final isCorrectDistance =
-          fittedFlagObjectPosition.distanceTo(focussedObject.position) < 15;
+          fittedFlagObjectPosition.distanceTo(object.position) <
+              (15 / fitValue);
 
-      var isCorrectRotation = focussedObject.rotation == flagObject.rotation;
+      var isCorrectRotation = object.rotation == flagObject.rotation;
 
       if (!flagObject.emblem.identicalRotation) {
         if (flagObject.emblem.symmetrical180) {
           final rotation180 = (flagObject.rotation + pi) % (2 * pi);
           isCorrectRotation =
-              isCorrectRotation || focussedObject.rotation == rotation180;
+              isCorrectRotation || object.rotation == rotation180;
         }
 
         if (flagObject.emblem.symmetrical90) {
           final double rotationDifference =
-              (focussedObject.rotation - flagObject.rotation).abs();
+              (object.rotation - flagObject.rotation).abs();
           final double rotationRemainder = rotationDifference % (pi / 2);
 
           isCorrectRotation = isCorrectRotation ||
@@ -412,11 +455,11 @@ class PuzzleCommonModePresenterImpl extends GetxController
         isCorrectRotation = true;
       }
 
-      final isCorrectScale = focussedObject.scale == flagObject.scale;
+      final isCorrectScale = object.scale == flagObject.scale;
 
       if (isCorrectDistance && isCorrectRotation && isCorrectScale) {
-        state.placedObjects.remove(sceneObject);
-        placeObject(focussedObject);
+        state.placedObjects.removeWhere((e) => e is DraggableEmblemPart);
+        placeObject(flagObject);
       } else {
         onIncorrectPlacing();
       }

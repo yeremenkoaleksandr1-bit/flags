@@ -1,5 +1,6 @@
 import 'package:armar/armar.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
+import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
 import 'package:flags/screens/games/puzzle/views/board.dart';
@@ -118,30 +119,32 @@ class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
 
   @override
   Widget build(BuildContext context, T presenter) {
-    return presenter.obx(
-      (state) => FastBuilder(
-        () {
-          final level = state!.level.value;
-          return Stack(
-            children: [
-              buildHeader(
-                context,
-                presenter,
-                level,
-              ),
-              buildBody(
-                context,
-                presenter,
-                level,
-              ),
-              EmblemConfirmationWidget(
-                state: presenter.emblemConfirmationView,
-                onConfirm: presenter.tryPlaceFocussedEmblem,
-                onDecline: presenter.tryRemoveFocussedEmblem,
-              )
-            ],
-          );
-        },
+    return DeferredPointerHandler(
+      child: presenter.obx(
+        (state) => FastBuilder(
+          () {
+            final level = state!.level.value;
+            return Stack(
+              children: [
+                buildHeader(
+                  context,
+                  presenter,
+                  level,
+                ),
+                buildBody(
+                  context,
+                  presenter,
+                  level,
+                ),
+                EmblemConfirmationWidget(
+                  state: presenter.emblemConfirmationView,
+                  onConfirm: presenter.tryPlaceFocussedEmblem,
+                  onDecline: presenter.tryRemoveFocussedEmblem,
+                )
+              ],
+            );
+          },
+        ),
       ),
     );
   }

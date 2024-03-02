@@ -69,6 +69,7 @@ class EmblemPart extends FlippableGameObject {
 
   @override
   void draw(ui.Canvas canvas, ui.Size size) {
+    canvas.translate(position.x, position.y);
     canvas.scale(
       this.size.x / _scaledSize.x,
       this.size.y / _scaledSize.y,

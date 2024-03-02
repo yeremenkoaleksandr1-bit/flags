@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_getters_setters
+
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
@@ -7,13 +9,13 @@ abstract class GameObject {
   final String name;
   final String? uniqueName;
 
-  final Vector2 position;
+  late Vector2 position;
 
-  final double scale;
+  late double scale;
 
-  final Vector2 size;
+  late Vector2 size;
 
-  final double rotation;
+  late double rotation;
 
   Rect get rect => position & size;
 
@@ -26,9 +28,9 @@ abstract class GameObject {
     this.scale = 1,
     this.rotation = 0,
   })  : key = key ?? UniqueKey(),
+        uniqueName = uniqueName ?? UniqueKey().toString(),
         position = position ?? Vector2.zero(),
-        size = size ?? Vector2.all(64),
-        uniqueName = uniqueName ?? UniqueKey().toString();
+        size = size ?? Vector2.all(64);
 
   @protected
   Future<void> init();

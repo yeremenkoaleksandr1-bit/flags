@@ -1,12 +1,12 @@
 import 'package:drag_and_drop/extensions/render_box.dart';
-import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
 import 'package:flags/uikit/game_widgets/objects/draggable_object.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
-import 'package:gesture_x_detector/gesture_x_detector.dart';
 
-class EmblemSceneObject extends DraggableGameObject<EmblemPart> {
+import '../../../../presentation/game/puzzle/entities/draggable_emblem_part.game_object.dart';
+
+class EmblemSceneObject extends DraggableGameObject<DraggableEmblemPart> {
   const EmblemSceneObject(
     super.gameObject,
     this.presenter, {
@@ -27,7 +27,7 @@ class EmblemSceneObject extends DraggableGameObject<EmblemPart> {
 }
 
 class EmblemSceneObjectState
-    extends DraggableGameObjectState<EmblemPart, EmblemSceneObject> {
+    extends DraggableGameObjectState<DraggableEmblemPart, EmblemSceneObject> {
   IPuzzleCommonModePresenter get _presenter => widget.presenter;
 
   @override
@@ -55,16 +55,22 @@ class EmblemSceneObjectState
   }
 
   @override
-  void onMoveStart(MoveEvent event, BoxConstraints constraints) {
+  double scaleConverter(double scale) {
+    return gameObject.scales[scale.toInt()];
+  }
+
+  @override
+  void onMoveStart(DragStartDetails event, BoxConstraints constraints) {
     _presenter.onObjectFocusAdded(this);
     _presenter.emblemConfirmationView.hide();
     super.onMoveStart(event, constraints);
   }
 
   @override
-  void onMoveEnd(MoveEvent event, BoxConstraints constraints) {
+  void onMoveEnd(DragEndDetails event, BoxConstraints constraints) {
     _presenter.emblemConfirmationView.show();
     _setConfirmationButtonsPosition();
+
     super.onMoveEnd(event, constraints);
   }
 }
