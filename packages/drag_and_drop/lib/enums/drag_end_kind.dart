@@ -1,0 +1,1 @@
+enum SDragEndKind { dropped, canceled }

@@ -1,0 +1,17 @@
+import 'package:flags/uikit/theme/palette.dart';
+import 'package:flutter/material.dart';
+
+export 'borders.dart';
+export 'indents.dart';
+export 'paddings.dart';
+export 'palette.dart';
+export 'radius.dart';
+export 'text.dart';
+
+abstract class AppTheme {
+  static ThemeData themeData = ThemeData(
+    fontFamily: "Troika",
+    textTheme: const TextTheme().apply(fontFamily: "Troika"),
+    scaffoldBackgroundColor: ThemePalette.transparent,
+  );
+}

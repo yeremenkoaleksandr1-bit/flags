@@ -1,0 +1,173 @@
+import 'package:flame/extensions.dart';
+import 'package:flutter/material.dart';
+import 'package:memoize/memoize.dart';
+
+import '../../../core/elements/paint.dart';
+import '../../../core/path_drawing/path_drawing.dart';
+import '../../../core/utils/utils.dart';
+import '../../entities/path/path.dart';
+import '../base/process.game_object.dart';
+
+class PathPart extends ProcessGameObject {
+  final SPath path;
+
+  PathPart({
+    super.key,
+    required super.name,
+    super.uniqueName,
+    required this.path,
+    super.position,
+    super.scale,
+    super.size,
+    super.rotation,
+    this.previousMustBePlaced,
+  });
+
+  @override
+  final List<String>? previousMustBePlaced;
+
+  @override
+  Vector2 get size => path.bounds.size.toVector2();
+
+  Rect get bounds => path.bounds;
+
+  Color get color => path.paint.color;
+
+  factory PathPart.rect({
+    required String name,
+    String? uniqueName,
+    required Vector2 size,
+    required Vector2 position,
+    required Color color,
+    PaintingStyle style = PaintingStyle.fill,
+    List<String>? mustBePlaced,
+  }) {
+    return PathPart(
+      name: name,
+      uniqueName: uniqueName,
+      path: SPath.rect(
+        paint: SPaint(
+          color: color,
+          style: style,
+        ),
+        rect: position & size,
+      ),
+      previousMustBePlaced: mustBePlaced,
+    );
+  }
+
+  factory PathPart.fromSvgPath(
+    String path, {
+    required String name,
+    String? uniqueName,
+    Vector2? Function(Rect bounds)? position,
+    required Vector2 areaSize,
+    Vector2? visualSize,
+    required Color color,
+    PaintingStyle style = PaintingStyle.fill,
+    double strokeWidth = 1,
+    bool canScale = false,
+    List<String>? previousMustBePlaced,
+  }) {
+    final data = parseSvgPathModel(
+      path,
+      paint: SPaint(
+        color: color,
+        style: style,
+        strokeWidth: strokeWidth,
+      ),
+    );
+
+    final object = PathPart(
+      key: UniqueKey(),
+      name: name,
+      uniqueName: uniqueName,
+      position: position?.call(data.bounds) ?? Vector2.zero(),
+      size: areaSize,
+      path: data,
+      previousMustBePlaced: previousMustBePlaced,
+    );
+
+    if (canScale) {
+      return object.copyWith(
+        scale: Calculator.fraction(
+          visualSize!.toSize(),
+          areaSize.toSize(),
+        ),
+      );
+    }
+
+    return object;
+  }
+
+  late final _fraction = memo1(
+    (Size size) => Calculator.fraction(
+      size,
+      path.bounds.size,
+    ),
+  );
+
+  @override
+  void draw(Canvas canvas, Size size, [double fraction = 1]) {
+    super.draw(canvas, size);
+
+    canvas.translate(
+      position.x,
+      position.y,
+    );
+
+    path.draw(canvas, size);
+  }
+
+  void drawPart(Canvas canvas, Size size) {
+    super.draw(canvas, size);
+
+    canvas.scale(_fraction(size));
+
+    path.draw(canvas, size);
+  }
+
+  bool equalTo(PathPart instance) {
+    return instance.name == name;
+  }
+
+  @override
+  Future<void> init() async => this;
+
+  @override
+  PathPart copyWith({
+    Key? key,
+    String? name,
+    String? uniqueName,
+    Vector2? position,
+    double? scale,
+    Vector2? size,
+    double? rotation,
+    SPath? path,
+  }) {
+    SPath? path0;
+
+    if (size != null) {
+      path0 = this.path.copyWith(rect: size.toRect());
+    }
+
+    return PathPart(
+      key: key ?? this.key,
+      name: name ?? this.name,
+      uniqueName: uniqueName ?? this.uniqueName,
+      position: position ?? this.position,
+      scale: scale ?? this.scale,
+      size: size ?? this.size,
+      rotation: rotation ?? this.rotation,
+      path: path ?? (path0 ?? this.path),
+      previousMustBePlaced: previousMustBePlaced,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is PathPart && other.uniqueName == uniqueName;
+
+  @override
+  int get hashCode => uniqueName.hashCode;
+}

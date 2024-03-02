@@ -1,0 +1,11 @@
+items.png
+size:1024,512
+repeat:none
+coin
+bounds:307,5,253,265
+hand
+bounds:805,14,173,256
+heart
+bounds:2,2,303,268
+locked
+bounds:562,13,241,257

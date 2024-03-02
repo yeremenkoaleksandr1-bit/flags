@@ -1,0 +1,65 @@
+name: flags
+description: "A new Flutter project."
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.5 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  armar:
+    path: packages/armar
+
+  drag_and_drop:
+    path: packages/drag_and_drop
+
+  cupertino_icons: ^1.0.2
+  shared_preferences: ^2.2.2
+  flame_audio: ^2.1.7
+  add_to_cart_animation: ^2.0.3
+  qlevar_router: ^1.10.1
+  defer_pointer: ^0.0.2
+  gesture_x_detector: ^1.1.1
+  flame: ^1.14.0
+  flutter_svg: ^2.0.9
+  touchable: ^1.0.2
+  particle_field: ^1.0.0
+  flutter_animate: ^4.4.0
+  widgets_to_image: ^0.0.2
+  assorted_layout_widgets: ^9.0.1
+  rx_shared_preferences: ^3.1.0
+  flutter_animator: ^3.2.2
+  animate_do: ^3.1.2
+  hive: ^4.0.0-dev.2
+  isar_flutter_libs: ^4.0.0-dev.13
+  path_provider: ^2.1.2
+  dart_numerics: ^0.0.6
+  dough: ^2.0.0
+  statsfl: ^2.3.0
+  matrix4_transform: ^3.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/fonts/
+    - assets/images/
+    - assets/images/continents/
+    - assets/images/emblems/
+    - assets/images/ui/
+
+  fonts:
+    - family: Troika
+      fonts:
+        - asset: assets/fonts/Troika.otf
