@@ -1,39 +1,54 @@
-import 'package:flags/core/extensions/image.dart';
-import 'package:flags/uikit/assets/assets.dart';
-import 'package:flame/extensions.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
-class Background extends LeafRenderObjectWidget {
+class Background extends StatefulWidget {
   const Background({super.key});
 
   @override
-  RenderObject createRenderObject(BuildContext context) {
-    return RenderFittedBox(
-      child: BackgroundRenderBox(),
-      fit: BoxFit.cover,
-      alignment: Alignment.bottomCenter,
-    );
-  }
+  State<Background> createState() => _BackgroundState();
 }
 
-class BackgroundRenderBox extends RenderBox {
-  late final UIImage _image = Assets.images.background.image;
-
+class _BackgroundState extends State<Background> {
   @override
-  bool get sizedByParent => true;
-
-  @override
-  void performResize() {
-    size = _image.size.toSize();
+  void initState() {
+    super.initState();
   }
 
   @override
-  void paint(PaintingContext context, Offset offset) {
-    context.canvas.drawImage(
-      _image,
-      Offset.zero,
-      Paint(),
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        const Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Color(0xff4EBCED),
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Image.asset(
+            'assets/images/ui/bg_p3.png',
+            alignment: Alignment.center,
+            fit: BoxFit.contain,
+          ),
+        ),
+        Positioned(
+          bottom: 0,
+          right: 0,
+          child: Image.asset(
+            'assets/images/ui/bg_p2.png',
+          ),
+        ),
+        Positioned(
+          bottom: 0,
+          left: 0,
+          child: Image.asset(
+            'assets/images/ui/bg_p_1.png',
+          ),
+        ),
+      ],
     );
   }
 }

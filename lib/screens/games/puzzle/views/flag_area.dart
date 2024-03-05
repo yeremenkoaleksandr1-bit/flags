@@ -1,9 +1,11 @@
 import 'package:armar/armar.dart';
+import 'package:armar/logger.dart';
 import 'package:armar/rx/rx.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:drag_and_drop/drag_and_drop.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
+import 'package:flags/presentation/game/puzzle/entities/scallable_emblem.dart';
 import 'package:flags/uikit/game_widgets/game_widgets.dart';
 import 'package:flags/uikit/game_widgets/objects/game_objects_rendering.dart';
 import 'package:flags/uikit/theme/palette.dart';
@@ -83,13 +85,13 @@ class _GameFlagAreaState extends State<GameFlagArea> {
         color: ThemePalette.black.withOpacity(0.7),
         child: Stack(
           fit: StackFit.passthrough,
+          clipBehavior: Clip.antiAlias,
           children: [
             RenderBoxExposed(
               exposer: widget.exposer,
               child: RepaintBoundary(
                 child: FittedBox(
                   fit: BoxFit.fill,
-                  clipBehavior: Clip.antiAlias,
                   alignment: Alignment.topLeft,
                   child: SizedBox.fromSize(
                     size: widget.flag.size.toSize(),

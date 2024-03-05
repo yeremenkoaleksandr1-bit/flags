@@ -1,4 +1,5 @@
 import 'package:drag_and_drop/extensions/render_box.dart';
+import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
 import 'package:flags/uikit/game_widgets/objects/draggable_object.dart';
 import 'package:flutter/scheduler.dart';
@@ -33,7 +34,7 @@ class EmblemSceneObjectState
   @override
   void initState() {
     super.initState();
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+    FlutterEngine.widgetPostFrameCallback((timeStamp) {
       _presenter.emblemConfirmationView.show();
       _presenter.setFocusOnObject(this);
       _setConfirmationButtonsPosition();
@@ -41,22 +42,25 @@ class EmblemSceneObjectState
   }
 
   void _setConfirmationButtonsPosition() {
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      if (!_presenter.emblemConfirmationView.mounted) return;
-      final rect = context.globalPaintBounds!;
+    FlutterEngine.schedulePostFrameCallback((timeStamp) {
+      try {
+        if (!_presenter.emblemConfirmationView.mounted ||
+            !context.mounted ||
+            !mounted) {
+          return;
+        }
 
-      _presenter.emblemConfirmationView.setPosition(
-        rect.topLeft,
-      );
-      _presenter.emblemConfirmationView.setWidth(
-        rect.width,
-      );
+        final scale = scaleConverter(scaleRx.value);
+        final rect = (context.globalPaintBounds ?? Rect.zero);
+
+        _presenter.emblemConfirmationView.setPosition(
+          rect.topLeft.translate(0, -52 * scale),
+        );
+        _presenter.emblemConfirmationView.setWidth(
+          rect.width,
+        );
+      } catch (e) {}
     });
-  }
-
-  @override
-  double scaleConverter(double scale) {
-    return gameObject.scales[scale.toInt()];
   }
 
   @override

@@ -1,4 +1,5 @@
 import 'package:armar/armar.dart';
+import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/domain/game_objects/base/game_object.dart';
 import 'package:flags/uikit/game_widgets/game_widgets.dart';
 import 'package:flame/extensions.dart';
@@ -45,6 +46,22 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
 
   double scaleConverter(double scale) => scale;
 
+  Rect transformRect({
+    required Vector2 position,
+    required Vector2 size,
+    required double rotation,
+    required double scale,
+  }) =>
+      Vector2.zero() & size;
+
+  Matrix4 transformationMatrix({
+    required Vector2 position,
+    required Vector2 size,
+    required double rotation,
+    required double scale,
+  }) =>
+      Matrix4.identity();
+
   @override
   Widget build(BuildContext context) {
     final child = buildWidget(context);
@@ -57,22 +74,27 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
 
         final scale = scaleConverter(scaleRx.value);
 
-        return Positioned(
-          left: position.x,
-          top: position.y,
-          width: size.x,
-          height: size.y,
-          child: Transform.scale(
+        return Positioned.fromRect(
+          rect: transformRect(
+            position: position,
+            size: size,
+            rotation: rotation,
             scale: scale,
-            child: Transform.rotate(
-              angle: rotation,
-              child: Center(
-                child: RepaintBoundary(
-                  child: SizedBox(
-                    width: size.x,
-                    height: size.y,
-                    child: child,
-                  ),
+          ).translate(position.x, position.y),
+          child: Transform(
+            alignment: Alignment.center,
+            transform: transformationMatrix(
+              position: position,
+              size: size,
+              rotation: rotation,
+              scale: scale,
+            ),
+            child: Center(
+              child: RepaintBoundary(
+                child: SizedBox(
+                  width: size.x,
+                  height: size.y,
+                  child: child,
                 ),
               ),
             ),

@@ -1,6 +1,7 @@
 library render_box_exposed;
 
 import 'package:armar/armar.dart';
+import 'package:flags/core/flutter_engine.dart';
 import 'package:flutter/material.dart';
 
 class RenderBoxExposer {
@@ -20,10 +21,12 @@ class RenderBoxExposed extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      exposer.isExposed = true;
-      exposer.renderBox.value =
-          _globalKey.currentContext!.findRenderObject() as RenderBox;
+    FlutterEngine.schedulePostFrameCallback((timeStamp) {
+      try {
+        exposer.isExposed = true;
+        exposer.renderBox.value =
+            _globalKey.currentContext!.findRenderObject() as RenderBox;
+      } catch (e) {}
     });
 
     return KeyedSubtree(

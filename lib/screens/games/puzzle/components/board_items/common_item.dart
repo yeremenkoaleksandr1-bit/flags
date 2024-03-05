@@ -1,11 +1,14 @@
 import 'package:armar/armar.dart';
+import 'package:armar/logger.dart';
 import 'package:drag_and_drop/drag_and_drop.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
+import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../../presentation/game/puzzle/entities/scallable_emblem.dart';
 import 'base.dart';
 
 class BoardCommonItemWidget extends BoardItemWidget {
@@ -24,13 +27,19 @@ class BoardCommonItemWidget extends BoardItemWidget {
   final GameFlag flag;
 
   final void Function(ProcessGameObject object)? onDragStarted;
-  final void Function(ProcessGameObject object, DragUpdateDetails details)?
-      onDragUpdate;
   final void Function(
-          ProcessGameObject object, Velocity velocity, Offset offset)?
-      onDraggableCanceled;
-  final void Function(ProcessGameObject object, SDraggableDetails details)?
-      onDragEnd;
+    ProcessGameObject object,
+    DragUpdateDetails details,
+  )? onDragUpdate;
+  final void Function(
+    ProcessGameObject object,
+    Velocity velocity,
+    Offset offset,
+  )? onDraggableCanceled;
+  final void Function(
+    ProcessGameObject object,
+    SDraggableDetails details,
+  )? onDragEnd;
   final void Function(ProcessGameObject object)? onDragCompleted;
 
   @override
@@ -86,10 +95,17 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
 
     final areaSize = presenter.flagExposer.renderBox.value?.size;
 
-    final fitted = (areaSize?.width ?? 1) / (widget.flag.size.x);
-    final objectSize = widget.item.object.size;
+    var fitted = ((areaSize?.width ?? 1) / (widget.flag.size.x)) * object.scale;
+    var objectSize = object.size;
 
-    final feedBackSize = widget.item.object.size.toSize() * fitted;
+    var feedBackSize = objectSize.toSize() * fitted;
+
+    final feedBackRect = Rect.fromLTWH(
+      -feedBackSize.width / 2,
+      -(feedBackSize.height + 4 * fitted),
+      feedBackSize.width,
+      feedBackSize.height,
+    );
 
     final exposerSize =
         (_exposer.renderBox.value?.size ?? Size.zero).toVector2();
@@ -111,12 +127,7 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
         onDragEnd: (SDraggableDetails details) {
           widget.onDragEnd?.call(object, details);
         },
-        feedbackRect: Rect.fromLTWH(
-          -feedBackSize.width / 2,
-          -(feedBackSize.height + 4 * fitted),
-          feedBackSize.width,
-          feedBackSize.height,
-        ),
+        feedbackRect: feedBackRect,
         feedbackBuilder: (context, animation, setOffset) {
           return AnimatedBuilder(
             animation: animation,
@@ -140,14 +151,15 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
 
               widgetSize.clamp(objectSize, objectSize * fitted);
 
-              final translateOffset = isForwardAnimation
-                  ? ((Offset(
-                            object.size.x / 2,
-                            object.size.y / 2,
-                          ) *
-                          fitted) *
-                      (1 - animation.value))
-                  : Offset.zero;
+              var translateOffset = Offset.zero;
+
+              if (isForwardAnimation) {
+                translateOffset = Offset(
+                      widgetSize.x / 2,
+                      widgetSize.y / 2,
+                    ) *
+                    (1 - animation.value);
+              }
 
               return Transform.translate(
                 offset: translateOffset,

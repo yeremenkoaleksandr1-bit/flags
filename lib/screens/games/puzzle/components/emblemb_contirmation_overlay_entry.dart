@@ -3,6 +3,7 @@
 import 'dart:math';
 
 import 'package:armar/armar.dart';
+import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/uikit/assets/components/close.dart';
 import 'package:flutter/material.dart';
 
@@ -57,34 +58,39 @@ class EmblemConfirmationWidgetState extends State<EmblemConfirmationWidget>
         return Positioned(
           left: (position.dx - (width / 2 - _width.value / 2))
               .clamp(0, mq.size.width - width),
-          top: (position.dy - 48).clamp(mq.padding.top + 64, double.infinity),
+          top: (position.dy).clamp(
+            mq.padding.top + 64,
+            double.infinity,
+          ),
           width: width,
           height: 38,
           child: IgnorePointer(
             ignoring: !isShown,
-            child: AnimatedOpacity(
-              opacity: isShown ? 1 : 0,
-              duration: const Duration(milliseconds: 100),
-              child: Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ScaledGestureDetector(
-                      onTap: widget.onDecline,
-                      child: FCard(
-                        color: ThemePalette.red,
-                        child: UIClose(),
+            child: DeferPointer(
+              child: AnimatedOpacity(
+                opacity: isShown ? 1 : 0,
+                duration: const Duration(milliseconds: 100),
+                child: Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ScaledGestureDetector(
+                        onTap: widget.onDecline,
+                        child: FCard(
+                          color: ThemePalette.red,
+                          child: UIClose(),
+                        ),
                       ),
-                    ),
-                    Gap.h24,
-                    ScaledGestureDetector(
-                      onTap: widget.onConfirm,
-                      child: FCard(
-                        color: ThemePalette.green,
-                        child: UICheckMark(),
+                      Gap.h24,
+                      ScaledGestureDetector(
+                        onTap: widget.onConfirm,
+                        child: FCard(
+                          color: ThemePalette.green,
+                          child: UICheckMark(),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

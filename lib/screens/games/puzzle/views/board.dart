@@ -225,6 +225,9 @@ class PartsBoardState extends State<PartsBoard> {
       onDragStarted: (ProcessGameObject object) {
         activeDragging.value = false;
         widget.onDragStarted?.call(object);
+        if (isFullScreen.value) {
+          closeFullScreen();
+        }
       },
       onDraggableCanceled: widget.onDraggableCanceled,
       onDragCompleted: (ProcessGameObject object) {

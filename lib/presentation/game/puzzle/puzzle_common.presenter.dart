@@ -3,6 +3,7 @@
 import 'dart:math';
 
 import 'package:armar/armar.dart';
+import 'package:armar/logger.dart';
 import 'package:armar/state_management/get_utils/src/extensions/internacionalization.dart';
 import 'package:dart_numerics/dart_numerics.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
@@ -146,6 +147,8 @@ class PuzzleCommonModePresenterImpl extends GetxController
         _seed = savedLevel.seed;
       }
     }
+
+    logger.e(_seed);
 
     flagExposer.renderBox.stream.listen(onFlagBuilt);
 
@@ -300,7 +303,6 @@ class PuzzleCommonModePresenterImpl extends GetxController
         gameObject.copyWith(
           position: position / state.flagFitValue,
         ),
-        correctScaleIndex: gameObject.correctScaleIndex,
         scales: gameObject.scales,
       );
 

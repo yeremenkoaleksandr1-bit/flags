@@ -16,7 +16,6 @@ class DraggableEmblemPart extends ScalableEmblemPart {
     super.flippedVertical,
     super.uniqueName,
     super.previousMustBePlaced,
-    required super.correctScaleIndex,
     required super.scales,
   });
 
@@ -27,7 +26,6 @@ class DraggableEmblemPart extends ScalableEmblemPart {
 
   factory DraggableEmblemPart.fromEmblem(
     EmblemPart emblemPart, {
-    required int correctScaleIndex,
     required List<double> scales,
   }) {
     return DraggableEmblemPart(
@@ -41,7 +39,6 @@ class DraggableEmblemPart extends ScalableEmblemPart {
       flippedHorizontal: emblemPart.flippedHorizontal,
       flippedVertical: emblemPart.flippedVertical,
       previousMustBePlaced: emblemPart.previousMustBePlaced,
-      correctScaleIndex: correctScaleIndex,
       scales: scales,
     );
   }

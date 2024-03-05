@@ -28,7 +28,6 @@ class HomeScreen extends ArGetScreen<IHomePresenter> {
   Widget build(BuildContext context, IHomePresenter presenter) {
     return SafeArea(
       child: GameTransitionPageBuilder(
-        curve: Curves.ease,
         startSlideDirection: GamePageSlideDirection.middle,
         endSlideDirection: GamePageSlideDirection.middle,
         child: Padding(

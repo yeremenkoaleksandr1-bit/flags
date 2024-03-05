@@ -17,17 +17,13 @@ class ScalableEmblemPart extends EmblemPart {
     super.flippedVertical,
     super.uniqueName,
     super.previousMustBePlaced,
-    required this.correctScaleIndex,
     required this.scales,
   });
-
-  final int correctScaleIndex;
 
   final List<double> scales;
 
   factory ScalableEmblemPart.fromEmblem(
     EmblemPart emblemPart, {
-    required int correctScaleIndex,
     required List<double> scales,
   }) {
     return ScalableEmblemPart(
@@ -41,7 +37,6 @@ class ScalableEmblemPart extends EmblemPart {
       flippedHorizontal: emblemPart.flippedHorizontal,
       flippedVertical: emblemPart.flippedVertical,
       previousMustBePlaced: emblemPart.previousMustBePlaced,
-      correctScaleIndex: correctScaleIndex,
       scales: scales,
     );
   }
@@ -74,7 +69,6 @@ class ScalableEmblemPart extends EmblemPart {
       flippedHorizontal: flippedHorizontal ?? this.flippedHorizontal,
       flippedVertical: flippedVertical ?? this.flippedVertical,
       previousMustBePlaced: previousMustBePlaced ?? this.previousMustBePlaced,
-      correctScaleIndex: correctScaleIndex ?? this.correctScaleIndex,
       scales: scales ?? this.scales,
     )..initialEmblemSize = initialEmblemSize;
   }

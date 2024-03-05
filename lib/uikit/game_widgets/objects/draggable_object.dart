@@ -38,6 +38,34 @@ class DraggableGameObjectState<G extends GameObject,
   late Vector2 _startPosition = Vector2.zero();
 
   @override
+  Rect transformRect({
+    required Vector2 position,
+    required Vector2 size,
+    required double rotation,
+    required double scale,
+  }) {
+    return MatrixUtils.transformRect(
+      Matrix4.identity()
+        ..scale(scale)
+        ..rotateZ(rotation)
+        ..translate(-size.x / 2, -size.y / 2),
+      (Vector2.zero() & size),
+    ).translate(size.x / 2, size.y / 2);
+  }
+
+  @override
+  Matrix4 transformationMatrix({
+    required Vector2 position,
+    required Vector2 size,
+    required double rotation,
+    required double scale,
+  }) {
+    return Matrix4.identity()
+      ..scale(scale)
+      ..rotateZ(rotation);
+  }
+
+  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

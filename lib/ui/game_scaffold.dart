@@ -1,4 +1,5 @@
 import 'package:armar/logger.dart';
+import 'package:flags/core/flutter_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
@@ -35,7 +36,7 @@ class GameTransitionPageBuilder extends StatefulWidget {
 }
 
 class _GameTransitionPageBuilderState extends State<GameTransitionPageBuilder>
-    with RouteAware, TickerProviderStateMixin {
+    with RouteAware, TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late final AnimationController _controller;
 
   @override
@@ -55,8 +56,16 @@ class _GameTransitionPageBuilderState extends State<GameTransitionPageBuilder>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    GameTransitionPageBuilder.routeObserver
-        .subscribe(this, ModalRoute.of(context)!);
+    GameTransitionPageBuilder.routeObserver.subscribe(
+      this,
+      ModalRoute.of(context)!,
+    );
+
+    if (ModalRoute.of(context)!.isCurrent) {
+      FlutterEngine.widgetPostFrameCallback((timeStamp) {
+        _controller.reverse(from: 1);
+      });
+    }
   }
 
   @override
@@ -68,6 +77,8 @@ class _GameTransitionPageBuilderState extends State<GameTransitionPageBuilder>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     final startSlideDirection = widget.startSlideDirection;
     final endSlideDirection = widget.endSlideDirection;
     double translationX = 0;
@@ -152,19 +163,30 @@ class _GameTransitionPageBuilderState extends State<GameTransitionPageBuilder>
 
   @override
   void didPop() {
-    _controller.forward(from: 0);
+    FlutterEngine.widgetPostFrameCallback((timeStamp) {
+      _controller.forward(from: 0);
+    });
     super.didPop();
   }
 
   @override
   void didPopNext() {
-    _controller.reverse();
+    FlutterEngine.widgetPostFrameCallback((timeStamp) {
+      _controller.reverse(from: 1);
+    });
+
     super.didPopNext();
   }
 
   @override
   void didPushNext() {
-    _controller.forward();
+    FlutterEngine.widgetPostFrameCallback((timeStamp) {
+      _controller.forward(from: 0);
+    });
+
     super.didPushNext();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

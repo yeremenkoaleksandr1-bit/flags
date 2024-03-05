@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:armar/logger.dart';
+import 'package:flags/core/extensions/extensions.dart';
 import 'package:flags/core/extensions/num.dart';
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/game_objects/flag/flag_extensions.dart';
@@ -99,19 +101,21 @@ class PuzzlePartsGenerator {
     final angles = RotationConstants.assistAngles.toList();
     const scalesLen = 4;
 
-    final correctIndex = random.nextInt(scalesLen);
-
     return [
       ...parts.map(
         (e) {
+          final correctIndex = random.nextInt(scalesLen);
           var angle = (angles.random(random)).remainder(pi * 2);
           if (angle < 0) angle += pi * 2;
 
-          final randomIndex = random.nextInt(scalesLen);
+          final randomIndex = random.nextIntRange(0, scalesLen);
+          logger.d(randomIndex);
 
           final scales = generateScales(correctIndex, scalesLen, 0.2);
+
           final randomScale = scales[randomIndex];
-          final scale = (randomScale <= 1
+
+          final scale = (randomScale >= 1
               ? randomScale
               : randomScale - 0.2 * randomIndex);
 
@@ -120,7 +124,6 @@ class PuzzlePartsGenerator {
               rotation: angle,
               scale: scale,
             ),
-            correctScaleIndex: randomIndex,
             scales: scales,
           );
         },
@@ -129,7 +132,9 @@ class PuzzlePartsGenerator {
   }
 
   List<double> generateScales(int correctIndex, int len, double inclement) {
-    return List.generate(len,
-        (index) => (1 + (index - correctIndex) * inclement).roundDouble(1));
+    return List.generate(
+      len,
+      (index) => (1 + (index - correctIndex) * inclement).roundDouble(1),
+    );
   }
 }
