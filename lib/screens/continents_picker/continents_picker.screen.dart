@@ -17,7 +17,9 @@ class ContinentsPickerScreen extends ArGetScreen<IContinentsPickerPresenter> {
 
   @override
   Widget build(BuildContext context, IContinentsPickerPresenter presenter) {
-    return GameScaffold(
+    return GameTransitionPageBuilder(
+      startSlideDirection: GamePageSlideDirection.middle,
+      endSlideDirection: GamePageSlideDirection.middle,
       child: presenter.obx(
         (state) => SafeArea(
           child: Stack(

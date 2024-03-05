@@ -6,7 +6,6 @@ import 'package:armar/notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class ArmarFlutterCore {
   Future<ArmarFlutterCore> init({
@@ -30,7 +29,6 @@ class ArmarFlutterCore {
       DeviceOrientation.portraitDown,
     ]);
 
-    await initPermissions();
     final appDocumentDir = await getApplicationDocumentsDirectory();
     var hiveDirectory = Directory('${appDocumentDir.path}/local_storage');
 
@@ -39,19 +37,19 @@ class ArmarFlutterCore {
     }
   }
 
-  Future<bool> initPermissions() async {
-    var status = await Permission.manageExternalStorage.status;
-
-    if (!status.isGranted) {
-      await Permission.manageExternalStorage.request();
-    }
-
-    status = await Permission.storage.status;
-
-    if (!status.isGranted) {
-      await Permission.storage.request();
-    }
-
-    return status.isGranted;
-  }
+  // Future<bool> initPermissions() async {
+  //   // var status = await Permission.manageExternalStorage.status;
+  //   //
+  //   // if (!status.isGranted) {
+  //   //   await Permission.manageExternalStorage.request();
+  //   // }
+  //   //
+  //   // status = await Permission.storage.status;
+  //   //
+  //   // if (!status.isGranted) {
+  //   //   await Permission.storage.request();
+  //   // }
+  //   //
+  //   // return status.isGranted;
+  // }
 }

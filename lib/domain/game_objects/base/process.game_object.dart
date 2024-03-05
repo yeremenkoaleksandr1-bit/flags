@@ -1,3 +1,5 @@
+import 'package:flags/domain/interfaces/drawable/i_drawable.dart';
+
 import 'game_object.dart';
 
 abstract class ProcessGameObject extends GameObject {

@@ -24,7 +24,9 @@ class GameModePickerScreen extends ArGetScreen<IGameModePickerPresenter> {
 
     final entries = data.entries;
 
-    return GameScaffold(
+    return GameTransitionPageBuilder(
+      startSlideDirection: GamePageSlideDirection.right,
+      endSlideDirection: GamePageSlideDirection.right,
       child: Stack(
         children: [
           PageView.builder(

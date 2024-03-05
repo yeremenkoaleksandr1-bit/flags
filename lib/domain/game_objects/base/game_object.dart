@@ -1,9 +1,10 @@
 // ignore_for_file: unnecessary_getters_setters
 
+import 'package:flags/domain/interfaces/drawable/i_drawable.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
-abstract class GameObject {
+abstract class GameObject implements IDrawable {
   final Key key;
 
   final String name;
@@ -35,6 +36,7 @@ abstract class GameObject {
   @protected
   Future<void> init();
 
+  @override
   void draw(Canvas canvas, Size size) {}
 
   GameObject copyWith({

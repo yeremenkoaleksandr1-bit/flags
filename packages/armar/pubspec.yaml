@@ -29,7 +29,6 @@ dependencies:
   form_builder_validators: ^9.1.0
   logger: ^2.0.2+1
   memoize: ^3.0.0
-  permission_handler: ^11.0.1
   intl: ^0.18.1
   path_drawing: ^1.0.1
   widget_finder: ^0.2.0

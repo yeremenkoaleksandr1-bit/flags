@@ -27,7 +27,10 @@ class HomeScreen extends ArGetScreen<IHomePresenter> {
   @override
   Widget build(BuildContext context, IHomePresenter presenter) {
     return SafeArea(
-      child: GameScaffold(
+      child: GameTransitionPageBuilder(
+        curve: Curves.ease,
+        startSlideDirection: GamePageSlideDirection.middle,
+        endSlideDirection: GamePageSlideDirection.middle,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(

@@ -17,7 +17,10 @@ class LevelsPickerScreen extends ArGetScreen<ILevelsPickerPresenter> {
 
   @override
   Widget build(BuildContext context, ILevelsPickerPresenter presenter) {
-    return GameScaffold(
+    return GameTransitionPageBuilder(
+      curve: Curves.easeInQuad,
+      startSlideDirection: GamePageSlideDirection.bottom,
+      endSlideDirection: GamePageSlideDirection.bottom,
       child: SafeArea(
         child: presenter.obx(
           (state) => Column(

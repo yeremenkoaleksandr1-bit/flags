@@ -5,6 +5,7 @@ import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
 import 'package:flags/screens/games/puzzle/views/board.dart';
 import 'package:flags/screens/games/puzzle/views/current_level_index.dart';
+import 'package:flags/ui/game_scaffold.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -119,31 +120,35 @@ class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
 
   @override
   Widget build(BuildContext context, T presenter) {
-    return DeferredPointerHandler(
-      child: presenter.obx(
-        (state) => FastBuilder(
-          () {
-            final level = state!.level.value;
-            return Stack(
-              children: [
-                buildHeader(
-                  context,
-                  presenter,
-                  level,
-                ),
-                buildBody(
-                  context,
-                  presenter,
-                  level,
-                ),
-                EmblemConfirmationWidget(
-                  state: presenter.emblemConfirmationView,
-                  onConfirm: presenter.tryPlaceFocussedEmblem,
-                  onDecline: presenter.tryRemoveFocussedEmblem,
-                )
-              ],
-            );
-          },
+    return GameTransitionPageBuilder(
+      startSlideDirection: GamePageSlideDirection.middle,
+      endSlideDirection: GamePageSlideDirection.bottom,
+      child: DeferredPointerHandler(
+        child: presenter.obx(
+          (state) => FastBuilder(
+            () {
+              final level = state!.level.value;
+              return Stack(
+                children: [
+                  buildHeader(
+                    context,
+                    presenter,
+                    level,
+                  ),
+                  buildBody(
+                    context,
+                    presenter,
+                    level,
+                  ),
+                  EmblemConfirmationWidget(
+                    state: presenter.emblemConfirmationView,
+                    onConfirm: presenter.tryPlaceFocussedEmblem,
+                    onDecline: presenter.tryRemoveFocussedEmblem,
+                  )
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

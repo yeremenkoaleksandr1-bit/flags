@@ -1,6 +1,17 @@
-import 'package:flutter/rendering.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../../domain/interfaces/interfaces.dart';
+
+class DrawablePaint extends CustomPaint {
+  DrawablePaint({
+    super.key,
+    required IDrawable drawable,
+    Size? size,
+  }) : super(
+          size: size ?? Size.zero,
+          painter: DrawablePainter(drawable),
+        );
+}
 
 class DrawablePainter extends CustomPainter {
   final IDrawable drawable;

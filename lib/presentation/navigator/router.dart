@@ -10,6 +10,7 @@ import 'package:flags/screens/editor/my_flags/my_flags.screen.dart';
 import 'package:flags/screens/game_mode_picker/game_mode_picker.screen.dart';
 import 'package:flags/screens/games/games_factory.page.dart';
 import 'package:flags/screens/levels_picker/levels_picker.screen.dart';
+import 'package:flame/components.dart';
 import 'package:flutter/widgets.dart';
 import 'package:qlevar_router/qlevar_router.dart';
 
@@ -35,23 +36,9 @@ class AppRouter extends QRouterDelegate {
                 path: '/app',
                 initRoute: '/home',
                 observers: [
-                  GameScaffold.routeObserver,
+                  GameTransitionPageBuilder.routeObserver,
                   HeroController(),
                 ],
-                pageType: QCustomPage(
-                  transitionDuration: const Duration(milliseconds: 150),
-                  transitionsBuilder: (
-                    BuildContext context,
-                    Animation<double> animation,
-                    Animation<double> secondaryAnimation,
-                    Widget child,
-                  ) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: child,
-                    );
-                  },
-                ),
                 builderChild: (router) {
                   return Builder(
                     builder: (BuildContext context) {
@@ -124,19 +111,10 @@ class AppRouter extends QRouterDelegate {
         ) {
     //  QR.settings.globalMiddlewares.add(_easyLoadingMiddleware);
     QR.settings.logger = logger.t;
-    QR.settings.pagesType = QCustomPage(
-      transitionDuration: const Duration(milliseconds: 150),
-      transitionsBuilder: (
-        BuildContext context,
-        Animation<double> animation,
-        Animation<double> secondaryAnimation,
-        Widget child,
-      ) {
-        return FadeTransition(
-          opacity: animation,
-          child: child,
-        );
-      },
+    QR.settings.pagesType = const QCustomPage(
+      transitionDuration: Duration(milliseconds: 500),
+      reverseTransitionDuration: Duration(milliseconds: 500),
+      transitionsBuilder: buildTransitions,
     );
 
     if (unknownRoute != null) {
@@ -146,6 +124,15 @@ class AppRouter extends QRouterDelegate {
     if (initPage != null) {
       QR.settings.initPage = initPage;
     }
+  }
+
+  static Widget buildTransitions<T>(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    return child;
   }
 
   RouteInformationParser<Object>? routeInformationParser =
