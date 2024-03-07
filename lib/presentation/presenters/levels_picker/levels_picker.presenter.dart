@@ -32,7 +32,7 @@ abstract interface class ILevelsPickerPresenter
     GameLevel currentLevel,
   );
 
-  void onLevelPicked(
+  Future<void> onLevelPicked(
     GameLevel level,
     GameDifficult difficult,
     GameStyleType gameStyleType,
@@ -92,11 +92,11 @@ class LevelsPickerPresenterImpl extends GetxController
   }
 
   @override
-  void onLevelPicked(
+  Future<void> onLevelPicked(
     GameLevel level,
     GameDifficult difficult,
     GameStyleType gameStyleType,
-  ) {
+  ) async {
     if (!level.opened) return;
 
     QR.toName(

@@ -1,4 +1,6 @@
 import 'package:flags/domain/interfaces/drawable/i_drawable.dart';
+import 'package:flame/components.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'game_object.dart';
 
@@ -19,4 +21,15 @@ abstract class ProcessGameObject extends GameObject {
   List<String>? get previousMustBePlaced => _previousMustBePlaced != null
       ? List.unmodifiable(_previousMustBePlaced)
       : null;
+
+  @override
+  ProcessGameObject copyWith({
+    Key? key,
+    String? name,
+    String? uniqueName,
+    Vector2? position,
+    double? scale,
+    Vector2? size,
+    double? rotation,
+  });
 }

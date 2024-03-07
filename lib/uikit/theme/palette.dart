@@ -21,4 +21,11 @@ abstract class ThemePalette {
   static const Color gentleYellow = Color(0xffEFEACF);
 
   static const Color redAccent = Color(0xffED1C24);
+
+  static const Color blueButton = Color(0xFF2691F5);
+  static const Color greenButton = Color(0xFF5ACC13);
+  static const Color redButton = Color(0xFFE45844);
+  static const Color redDarkButton = Color(0xffE4392B);
+  static const Color yellowButton = Color(0xFFFDC840);
+  static const Color orangeButton = Color(0xffFC9D23);
 }

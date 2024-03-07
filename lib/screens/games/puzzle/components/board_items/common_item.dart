@@ -1,12 +1,15 @@
 import 'package:armar/armar.dart';
 import 'package:armar/logger.dart';
+import 'package:dart_numerics/dart_numerics.dart';
 import 'package:drag_and_drop/drag_and_drop.dart';
+import 'package:flags/domain/game_objects/base/game_object.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import '../../../../../presentation/game/puzzle/entities/scallable_emblem.dart';
 import 'base.dart';
@@ -90,25 +93,38 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
 
   @override
   Widget buildWidget(BuildContext context, BoxConstraints constraints) {
-    final boardItem = widget.item;
-    final object = boardItem.object;
+    final object = model.object;
 
     final areaSize = presenter.flagExposer.renderBox.value?.size;
 
-    var fitted = ((areaSize?.width ?? 1) / (widget.flag.size.x)) * object.scale;
-    var objectSize = object.size;
-
-    var feedBackSize = objectSize.toSize() * fitted;
-
-    final feedBackRect = Rect.fromLTWH(
-      -feedBackSize.width / 2,
-      -(feedBackSize.height + 4 * fitted),
-      feedBackSize.width,
-      feedBackSize.height,
-    );
+    var fitted = ((areaSize?.width ?? 1) / (widget.flag.size.x));
 
     final exposerSize =
         (_exposer.renderBox.value?.size ?? Size.zero).toVector2();
+
+    final matrix = Matrix4.identity()
+      ..translate(object.size.x / 2, object.size.y / 2)
+      ..scale(fitted)
+      ..rotateZ(object.rotation)
+      ..scale(object.scale)
+      ..translate(-object.size.x / 2, -object.size.y / 2);
+
+    final feedback = MatrixUtils.transformRect(
+      matrix.clone()..rotateZ(-object.rotation),
+      (Vector2.zero() & object.size),
+    );
+
+    var feedBackRect = Rect.fromLTWH(
+      -feedback.width / 2,
+      -(feedback.height),
+      feedback.width,
+      feedback.height,
+    );
+
+    feedBackRect = MatrixUtils.transformRect(
+      Matrix4.identity(),
+      feedBackRect,
+    );
 
     return RenderBoxExposed(
       exposer: _exposer,
@@ -116,7 +132,6 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
         key: _key,
         maxSimultaneousDrags: 1,
         delay: const Duration(milliseconds: 1),
-
         onDragStarted: () {
           _controller.forward(from: 0);
           widget.onDragStarted?.call(object);
@@ -128,6 +143,19 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
           widget.onDragEnd?.call(object, details);
         },
         feedbackRect: feedBackRect,
+        dragAnchorStrategy: (
+          SDraggable<Object> draggable,
+          BuildContext context,
+          Offset position,
+        ) {
+          return MatrixUtils.transformPoint(
+            matrix.clone()
+              ..translate(object.size.x / 2, object.size.y / 2)
+              ..rotateZ(-object.rotation)
+              ..translate(-object.size.x / 2, -object.size.y / 2),
+            Offset(object.size.x / 2, object.size.y),
+          );
+        },
         feedbackBuilder: (context, animation, setOffset) {
           return AnimatedBuilder(
             animation: animation,
@@ -146,43 +174,16 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
                 },
               );
 
-              final widgetSize =
-                  (exposerSize + objectSize * animation.value * fitted);
-
-              widgetSize.clamp(objectSize, objectSize * fitted);
-
-              var translateOffset = Offset.zero;
-
-              if (isForwardAnimation) {
-                translateOffset = Offset(
-                      widgetSize.x / 2,
-                      widgetSize.y / 2,
-                    ) *
-                    (1 - animation.value);
-              }
-
-              return Transform.translate(
-                offset: translateOffset,
-                child: SizedBox.fromSize(
-                  size: widgetSize.toSize(),
-                  child: child!,
-                ),
+              return Transform(
+                transform: matrix,
+                child: child!,
               );
             },
-            child: buildChild(context, constraints),
+            child: super.buildWidget(context, constraints),
           );
         },
         data: widget.item.object,
-        //  feedbackOffset: Offset(0, -object.size.y * fitted),
-        dragAnchorStrategy: (
-          SDraggable<Object> draggable,
-          BuildContext context,
-          Offset position,
-        ) {
-          return Offset(object.size.x / 2, object.size.y + 4) * fitted;
-        },
         childWhenDragging: const SizedBox.shrink(),
-
         child: ConstrainedBox(
           constraints: constraints,
           child: buildChild(context, constraints),

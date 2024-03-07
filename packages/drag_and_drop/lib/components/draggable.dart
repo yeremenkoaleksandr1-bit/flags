@@ -237,7 +237,9 @@ class SDraggableState<T extends Object> extends State<SDraggable<T>> {
       animationDuration: widget.animationDuration,
       animationReverseDuration: widget.animationReverseDuration,
     );
-    widget.onDragStarted?.call();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      widget.onDragStarted?.call();
+    });
     return avatar;
   }
 

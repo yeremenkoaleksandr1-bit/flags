@@ -4,7 +4,7 @@ class PuzzleHardGenerator extends PuzzleMediumGenerator {
   PuzzleHardGenerator({
     super.quantityParts = 10,
     super.quantityEmblem = 9,
-    super.multiplier = 2.5,
     super.quantityColoredPart = 3,
+    required super.levels,
   });
 }

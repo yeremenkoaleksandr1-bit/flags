@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:armar/armar.dart';
 import 'package:armar/logger.dart';
 import 'package:defer_pointer/defer_pointer.dart';
+import 'package:flags/core/extensions/extensions.dart';
 import 'package:flags/uikit/theme/palette.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
@@ -37,12 +38,16 @@ class _EmblemEditingBoardState extends ProcessObjectEditingBoardState<
 
   void _listen(event) {
     if (event is EmblemSceneObjectState) {
-      _scale.value = event.gameObject.scales
-          .indexWhere((e) => e == event.scaleRx.value)
-          .toDouble();
+      _scale.run(() {
+        _scale.value = event.gameObject.scales
+            .indexWhere(
+                (e) => e.roundDouble(1) == event.scaleRx.value.roundDouble(1))
+            .toDouble();
 
-      logger.i(event.scaleRx.value);
-      logger.f(event.gameObject.scales);
+        if (_scale.value == -1) {
+          _scale.value = 0;
+        }
+      });
     }
   }
 

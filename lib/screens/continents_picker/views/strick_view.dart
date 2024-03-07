@@ -35,7 +35,7 @@ class WinnerStreakView extends StatelessWidget {
             ),
             Gap.h12,
             FastValueBuilder(
-              listen: winStreak.currentStreakRx,
+              listen: winStreak.longestStreakRx,
               builder: (int value) {
                 return FText(
                   value.toString(),

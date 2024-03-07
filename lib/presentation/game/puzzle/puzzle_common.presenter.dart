@@ -42,8 +42,8 @@ import '../../../uikit/game_widgets/game_widgets.dart';
 import 'entities/board_item.dart';
 import 'handlers/game_objects_draggable.dart';
 
-abstract interface class IPuzzleCommonModePresenter
-    with StateMixin<PuzzleGameState>, ProcessedObjectFocusHandler {
+abstract interface class IPuzzleCommonModePresenter<S extends PuzzleGameState>
+    with StateMixin<S>, ProcessedObjectFocusHandler {
   GameLevel get level;
 
   RenderBoxExposer get flagExposer;
@@ -72,7 +72,9 @@ class PuzzleCommonModePresenterImpl extends GetxController
         StateMixin<PuzzleGameState>,
         GetSingleTickerProviderStateMixin,
         ProcessedObjectFocusHandler
-    implements IPuzzleCommonModePresenter {
+    implements IPuzzleCommonModePresenter<PuzzleGameState> {
+  final BuildContext context;
+
   ILevelsPickerPresenter get levelsPresenter => ILevelsPickerPresenter.i;
 
   ILevelsService get levelsService => ILevelsService.I;
@@ -81,15 +83,16 @@ class PuzzleCommonModePresenterImpl extends GetxController
 
   final GamesFactoryPageParams params;
 
-  PuzzleCommonModePresenterImpl({
+  PuzzleCommonModePresenterImpl(
+    this.context, {
     required this.params,
-  })  : emblemConfirmationView = EmblemConfirmationWidgetState()..initState(),
-        boardController = PartsBoardState()..initState(),
+  })  : emblemConfirmationView = EmblemConfirmationWidgetState(),
+        boardController = PartsBoardState(),
         heartTriesState = HeartTriesState(
           tries: 3,
-        )..initState();
+        );
 
-  int _seed = -1;
+  int gameSeed = -1;
 
   @override
   late final AnimationController shakeAnimation = AnimationController(
@@ -114,6 +117,28 @@ class PuzzleCommonModePresenterImpl extends GetxController
 
   @override
   void onInit() async {
+    await preInitialization();
+
+    boardController.initState();
+    emblemConfirmationView.initState();
+    heartTriesState.initState();
+
+    change(
+      SuccessStatus(
+        PuzzleGameState(
+          level: params.level,
+          difficult: params.difficult,
+          boardObjects: [],
+          flagFitValue: 1,
+        ),
+      ),
+    );
+    super.onInit();
+
+    await initialization();
+  }
+
+  Future<void> preInitialization() async {
     final savedLevel = levelsService.getLevelData(
       levelId: params.level.id,
       continent: params.continentType,
@@ -131,7 +156,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
         seed: seed,
       );
 
-      _seed = seed;
+      gameSeed = seed;
     } else {
       if (savedLevel.seed == -1) {
         final seed = Random().nextInt(int32MaxValue);
@@ -142,29 +167,13 @@ class PuzzleCommonModePresenterImpl extends GetxController
           gameMode: params.gameMode,
           seed: seed,
         );
-        _seed = seed;
+        gameSeed = seed;
       } else {
-        _seed = savedLevel.seed;
+        gameSeed = savedLevel.seed;
       }
     }
 
-    logger.e(_seed);
-
     flagExposer.renderBox.stream.listen(onFlagBuilt);
-
-    change(
-      SuccessStatus(
-        PuzzleGameState(
-          level: params.level,
-          difficult: params.difficult,
-          boardObjects: [],
-          flagFitValue: 1,
-        ),
-      ),
-    );
-    super.onInit();
-
-    await initialization();
   }
 
   @override
@@ -173,9 +182,10 @@ class PuzzleCommonModePresenterImpl extends GetxController
   }
 
   Future<void> initialization() async {
+    final parts = await generateBoardParts();
     state.boardObjects.run(() {
       state.boardObjects.clear();
-      state.boardObjects.addAll(_generateParts());
+      state.boardObjects.addAll(parts);
     });
   }
 
@@ -263,9 +273,11 @@ class PuzzleCommonModePresenterImpl extends GetxController
     state.difficult.value = data.section!.difficulty;
     state.level.value = data.level!;
 
+    final parts = await generateBoardParts();
+
     state.boardObjects.run(() {
       state.boardObjects.clear();
-      state.boardObjects.addAll(_generateParts());
+      state.boardObjects.addAll(parts);
     });
 
     await Future.delayed(
@@ -333,17 +345,18 @@ class PuzzleCommonModePresenterImpl extends GetxController
 
   void onIncorrectPlacing() {
     shakeAnimation.forward(from: 0);
-    // heartTriesState.removeOneHeart();
+    heartTriesState.removeOneHeart();
 
     if (heartTriesState.isOver()) {
-      PuzzleLoseDialog(
-        onRestart: () async {
-          restartLevel();
-          await QR.back();
-        },
-        onExit: onGameExit,
-      ).showModal();
+      onGameOver();
     }
+  }
+
+  Future<void> onGameOver() async {
+    await PuzzleLoseDialog(
+      onRestart: onRestart,
+      onExit: onGameExit,
+    ).showModal();
   }
 
   void resetLevelState() {
@@ -357,6 +370,11 @@ class PuzzleCommonModePresenterImpl extends GetxController
     boardController.toggleDraggingStatus(true);
   }
 
+  void onRestart() async {
+    restartLevel();
+    await QR.back();
+  }
+
   void restartLevel() async {
     resetLevelState();
 
@@ -365,28 +383,25 @@ class PuzzleCommonModePresenterImpl extends GetxController
     }
   }
 
-  void onGameExit() {
-    QR.back();
-  }
+  List<GameLevel> get levels => ILevelsPickerPresenter.i.levels.levels;
 
-  List<BoardItem> _generateParts() {
+  Future<List<BoardItem<ProcessGameObject>>> generateBoardParts() async {
     final generator = switch (state.difficult.value) {
-      GameDifficult.superEasy => PuzzleSuperEasyGenerator(),
-      GameDifficult.easy => PuzzleEasyGenerator(),
-      GameDifficult.medium => PuzzleMediumGenerator(),
-      GameDifficult.hard => PuzzleHardGenerator(),
-      GameDifficult.extraHard => PuzzleExtraHardGenerator(),
+      GameDifficult.superEasy => PuzzleSuperEasyGenerator(levels: levels),
+      GameDifficult.easy => PuzzleEasyGenerator(levels: levels),
+      GameDifficult.medium => PuzzleMediumGenerator(levels: levels),
+      GameDifficult.hard => PuzzleHardGenerator(levels: levels),
+      GameDifficult.extraHard => PuzzleExtraHardGenerator(levels: levels),
     };
 
+    final parts = await generator.generate(
+      state.level.value.flag,
+      Random(gameSeed),
+    );
     return [
-      ...generator
-          .generate(
-            state.level.value.flag,
-            Random(_seed),
-          )
-          .map(
-            (e) => BoardItem(object: e),
-          ),
+      ...parts.map(
+        (e) => BoardItem(object: e),
+      ),
     ];
   }
 
@@ -492,17 +507,16 @@ class PuzzleCommonModePresenterImpl extends GetxController
     await onMenuOpened();
 
     await PuzzleMenuDialog(
-      onRestart: () {
-        restartLevel();
-        QR.back();
-      },
-      onExit: () {
-        QR.back();
-        QR.back();
-      },
+      onRestart: onRestart,
+      onExit: onGameExit,
     ).showModal();
 
     await onMenuClosed();
+  }
+
+  void onGameExit() {
+    QR.back();
+    QR.back();
   }
 
   Future<void> onMenuOpened() async {}
@@ -513,4 +527,12 @@ class PuzzleCommonModePresenterImpl extends GetxController
   void skipLevel() {
     onLevelCompleted();
   }
+
+  double getScoreMultiplier(GameDifficult difficult) => switch (difficult) {
+        GameDifficult.superEasy => 1,
+        GameDifficult.easy => 1.5,
+        GameDifficult.medium => 2,
+        GameDifficult.hard => 2.5,
+        GameDifficult.extraHard => 3,
+      };
 }

@@ -66,7 +66,6 @@ mixin FormStatePresenterMixin implements IFormStatePresenter {
 
   void invalidateFormFields(Map<String, dynamic> errors) {
     errors.forEach((key, value) {
-      logger.f(key);
       invalidateFormField(
           key, (value is List ? value.first : value).toString());
     });

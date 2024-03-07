@@ -76,6 +76,8 @@ class _ScaledGestureDetectorState extends State<ScaledGestureDetector>
             GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
           () => TapGestureRecognizer(),
           (i) {
+            if (!mounted) return;
+
             i.onTapDown = (e) => onPointerDown();
             i.onTapUp = (e) => onPointerUp();
             i.onTapCancel = () => onPointerCancel();

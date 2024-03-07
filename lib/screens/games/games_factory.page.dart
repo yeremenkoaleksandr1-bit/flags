@@ -5,7 +5,10 @@ import 'package:flags/presentation/game/puzzle/puzzle_fast.presenter.dart';
 import 'package:flags/screens/games/base/game_process_screen.dart';
 import 'package:flags/screens/games/puzzle/common.dart';
 import 'package:flags/screens/games/puzzle/fastmode.dart';
+import 'package:flags/uikit/layout_components/overlayment/overlayment.provider.dart';
 import 'package:flutter/material.dart';
+
+import '../../ui/game_scaffold.dart';
 
 class GamesFactoryPageParams {
   final GameLevel level;
@@ -48,10 +51,12 @@ class _GamesFactoryPageState extends State<GamesFactoryPage> {
     screen = switch (params.gameMode) {
       GameProcessType.puzzle => switch (params.gamesType) {
           GameStyleType.common => PuzzleCommonMode(
-              presenter: () => PuzzleCommonModePresenterImpl(params: params),
+              presenter: (_) =>
+                  PuzzleCommonModePresenterImpl(context, params: params),
             ),
           GameStyleType.fast => PuzzleFastMode(
-              presenter: () => PuzzleFastModePresenterImpl(params: params),
+              presenter: (_) =>
+                  PuzzleFastModePresenterImpl(context, params: params),
             ),
         },
     };
@@ -66,10 +71,23 @@ class _GamesFactoryPageState extends State<GamesFactoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isReady) {
-      return screen;
-    } else {
-      return const SizedBox();
-    }
+    return GameTransitionPageBuilder(
+      startSlideDirection: GamePageSlideDirection.middle,
+      endSlideDirection: GamePageSlideDirection.bottom,
+      child: BackButtonListener(
+        onBackButtonPressed: () async {
+          return false;
+        },
+        child: Builder(
+          builder: (BuildContext context) {
+            if (_isReady) {
+              return screen;
+            } else {
+              return const SizedBox();
+            }
+          },
+        ),
+      ),
+    );
   }
 }

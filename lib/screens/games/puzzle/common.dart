@@ -2,10 +2,12 @@ import 'package:armar/armar.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
+import 'package:flags/domain/game_objects/base/game_object.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
 import 'package:flags/screens/games/puzzle/views/board.dart';
 import 'package:flags/screens/games/puzzle/views/current_level_index.dart';
 import 'package:flags/ui/game_scaffold.dart';
+import 'package:flags/uikit/layout_components/overlayment/overlayment.provider.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -25,6 +27,41 @@ class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
     extends GameProcessScreen<T> {
   const PuzzleCommonMode({super.key, required super.presenter});
 
+  Widget buildHeaderWidget(
+    BuildContext context,
+    T presenter,
+    GameLevel level,
+  ) {
+    return Row(
+      children: [
+        OpenMenuButton(
+          onPressed: presenter.openMenu,
+        ),
+        Gap.h4,
+        SkipLevelButton(
+          onPressed: presenter.skipLevel,
+        ),
+        const Spacer(),
+        HeartTries(
+          state: presenter.heartTriesState,
+        )
+      ],
+    );
+  }
+
+  Widget buildHeaderMiddleWidget(
+    BuildContext context,
+    T presenter,
+    GameLevel level,
+  ) {
+    return Align(
+      alignment: Alignment.center,
+      child: CurrentLevelIndex(
+        level: level,
+      ),
+    );
+  }
+
   Widget buildHeader(
     BuildContext context,
     T presenter,
@@ -37,27 +74,8 @@ class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
           constraints: const BoxConstraints(maxHeight: 48),
           child: Stack(
             children: [
-              Row(
-                children: [
-                  OpenMenuButton(
-                    onPressed: presenter.openMenu,
-                  ),
-                  Gap.h4,
-                  SkipLevelButton(
-                    onPressed: presenter.skipLevel,
-                  ),
-                  const Spacer(),
-                  HeartTries(
-                    state: presenter.heartTriesState,
-                  )
-                ],
-              ),
-              Align(
-                alignment: Alignment.center,
-                child: CurrentLevelIndex(
-                  level: level,
-                ),
-              ),
+              buildHeaderWidget(context, presenter, level),
+              buildHeaderMiddleWidget(context, presenter, level),
             ],
           ),
         ),
@@ -92,8 +110,19 @@ class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
                   onAcceptWithDetails: (context, details) {
                     final renderBox = context.renderBox!;
 
+                    final object = details.data;
+
+                    final sizeDif =
+                        (object.size * object.scale - object.size) * 2;
+
                     return presenter.handleGameObject(
-                      (details.offset - renderBox.localToGlobal(Offset.zero))
+                      renderBox
+                          .globalToLocal(
+                            details.offset.translate(
+                              sizeDif.x,
+                              sizeDif.y,
+                            ),
+                          )
                           .toVector2(),
                       details.data,
                     );
@@ -120,35 +149,31 @@ class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
 
   @override
   Widget build(BuildContext context, T presenter) {
-    return GameTransitionPageBuilder(
-      startSlideDirection: GamePageSlideDirection.middle,
-      endSlideDirection: GamePageSlideDirection.bottom,
-      child: DeferredPointerHandler(
-        child: presenter.obx(
-          (state) => FastBuilder(
-            () {
-              final level = state!.level.value;
-              return Stack(
-                children: [
-                  buildHeader(
-                    context,
-                    presenter,
-                    level,
-                  ),
-                  buildBody(
-                    context,
-                    presenter,
-                    level,
-                  ),
-                  EmblemConfirmationWidget(
-                    state: presenter.emblemConfirmationView,
-                    onConfirm: presenter.tryPlaceFocussedEmblem,
-                    onDecline: presenter.tryRemoveFocussedEmblem,
-                  )
-                ],
-              );
-            },
-          ),
+    return DeferredPointerHandler(
+      child: presenter.obx(
+        (state) => FastBuilder(
+          () {
+            final level = state!.level.value;
+            return Stack(
+              children: [
+                buildHeader(
+                  context,
+                  presenter,
+                  level,
+                ),
+                buildBody(
+                  context,
+                  presenter,
+                  level,
+                ),
+                EmblemConfirmationWidget(
+                  state: presenter.emblemConfirmationView,
+                  onConfirm: presenter.tryPlaceFocussedEmblem,
+                  onDecline: presenter.tryRemoveFocussedEmblem,
+                )
+              ],
+            );
+          },
         ),
       ),
     );

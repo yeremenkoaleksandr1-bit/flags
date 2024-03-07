@@ -1,3 +1,4 @@
+import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
 import 'package:flutter/material.dart';
 
@@ -5,7 +6,8 @@ import '../game_objects.dart';
 import 'flag.dart';
 
 extension FlagExtensions on GameFlag {
-  List<PathPart> get fabrics => [...objects.whereType<PathPart>()];
+  List<ProcessGameObject> get fabrics =>
+      [...objects.where((e) => e is! EmblemPart)];
 
   List<EmblemPart> get emblems => [...objects.whereType<EmblemPart>()];
 

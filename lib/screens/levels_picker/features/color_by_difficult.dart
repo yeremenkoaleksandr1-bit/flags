@@ -6,10 +6,10 @@ import '../../../uikit/theme/palette.dart';
 
 Color getColorByDifficult(GameDifficult difficult) {
   return switch (difficult) {
-    GameDifficult.superEasy => ThemePalette.green,
-    GameDifficult.easy => ThemePalette.gentleYellow,
-    GameDifficult.medium => ThemePalette.yellow,
-    GameDifficult.hard => ThemePalette.red,
-    GameDifficult.extraHard => ThemePalette.redAccent,
+    GameDifficult.superEasy => ThemePalette.greenButton,
+    GameDifficult.easy => ThemePalette.yellowButton,
+    GameDifficult.medium => ThemePalette.orangeButton,
+    GameDifficult.hard => ThemePalette.redButton,
+    GameDifficult.extraHard => ThemePalette.redDarkButton,
   };
 }

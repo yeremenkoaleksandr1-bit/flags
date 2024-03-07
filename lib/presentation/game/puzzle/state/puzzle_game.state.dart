@@ -27,3 +27,15 @@ class PuzzleGameState {
         boardObjects = RxList(boardObjects),
         placedObjects = RxList();
 }
+
+class PuzzleFastModeState extends PuzzleGameState {
+  final RxValue<int> timerRx;
+
+  PuzzleFastModeState({
+    required this.timerRx,
+    required super.boardObjects,
+    required super.difficult,
+    required super.level,
+    required super.flagFitValue,
+  });
+}

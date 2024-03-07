@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/domain/game_objects/game_objects.dart';
 import 'package:flags/uikit/game_widgets/game_widgets.dart';
@@ -5,6 +7,7 @@ import 'package:flags/uikit/utils/render_box_exposed.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
 typedef DraggableMovableDataCallback = void Function(
   DraggableGameObjectState state,
@@ -46,11 +49,12 @@ class DraggableGameObjectState<G extends GameObject,
   }) {
     return MatrixUtils.transformRect(
       Matrix4.identity()
+        ..translate(position.x, position.y)
+        ..translate(size.x / 2, size.y / 2)
         ..scale(scale)
-        ..rotateZ(rotation)
         ..translate(-size.x / 2, -size.y / 2),
       (Vector2.zero() & size),
-    ).translate(size.x / 2, size.y / 2);
+    );
   }
 
   @override
@@ -60,9 +64,7 @@ class DraggableGameObjectState<G extends GameObject,
     required double rotation,
     required double scale,
   }) {
-    return Matrix4.identity()
-      ..scale(scale)
-      ..rotateZ(rotation);
+    return Matrix4.identity();
   }
 
   @override

@@ -13,5 +13,6 @@ abstract class AppTheme {
     fontFamily: "Troika",
     textTheme: const TextTheme().apply(fontFamily: "Troika"),
     scaffoldBackgroundColor: ThemePalette.transparent,
+    useMaterial3: true,
   );
 }

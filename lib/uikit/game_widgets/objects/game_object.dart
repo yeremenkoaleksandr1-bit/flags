@@ -52,7 +52,7 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
     required double rotation,
     required double scale,
   }) =>
-      Vector2.zero() & size;
+      position & size;
 
   Matrix4 transformationMatrix({
     required Vector2 position,
@@ -60,7 +60,7 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
     required double rotation,
     required double scale,
   }) =>
-      Matrix4.identity();
+      Matrix4.identity()..scale(scale);
 
   @override
   Widget build(BuildContext context) {
@@ -69,33 +69,26 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
     return FastBuilder(
       () {
         final position = positionConverter(positionRx.value);
+        final scale = scaleConverter(scaleRx.value);
+
         final size = sizeConverter(sizeRx.value);
         final rotation = rotationConverter(rotationRx.value);
 
-        final scale = scaleConverter(scaleRx.value);
+        final rect = transformRect(
+          position: position,
+          size: size,
+          rotation: rotation,
+          scale: scale,
+        );
 
         return Positioned.fromRect(
-          rect: transformRect(
-            position: position,
-            size: size,
-            rotation: rotation,
-            scale: scale,
-          ).translate(position.x, position.y),
-          child: Transform(
+          rect: rect,
+          child: Transform.rotate(
             alignment: Alignment.center,
-            transform: transformationMatrix(
-              position: position,
-              size: size,
-              rotation: rotation,
-              scale: scale,
-            ),
-            child: Center(
+            angle: rotation,
+            child: SizedBox.expand(
               child: RepaintBoundary(
-                child: SizedBox(
-                  width: size.x,
-                  height: size.y,
-                  child: child,
-                ),
+                child: child,
               ),
             ),
           ),

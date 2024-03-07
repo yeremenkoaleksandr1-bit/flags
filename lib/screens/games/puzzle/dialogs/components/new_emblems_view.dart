@@ -39,7 +39,7 @@ class PuzzleNewEmblemView extends StatelessWidget {
                     child: SizedBox.square(
                       dimension: context.width / 1.2,
                       child: Material(
-                        color: ThemePalette.white,
+                        color: ThemePalette.white.withOpacity(0.3),
                         shape: ThemeBorders.small,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),

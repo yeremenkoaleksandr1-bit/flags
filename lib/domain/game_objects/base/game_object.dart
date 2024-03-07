@@ -83,6 +83,17 @@ extension GameObjectX on GameObject {
         size.y,
       );
 
+  Matrix4 get transformationMatrix => Matrix4.identity()
+    ..translate(size.x / 2, size.y / 2)
+    ..rotateZ(rotation)
+    ..scale(scale)
+    ..translate(-size.x / 2, -size.y / 2);
+
+  Matrix4 transformFromCenterMatrix(Matrix4 matrix) => Matrix4.identity()
+    ..translate(size.x / 2, size.y / 2)
+    ..add(matrix)
+    ..translate(-size.x / 2, -size.y / 2);
+
 // Type get getAbstractType {
 //   if (this is IFabric) {
 //     if (this is IColoredPathGameObject) {

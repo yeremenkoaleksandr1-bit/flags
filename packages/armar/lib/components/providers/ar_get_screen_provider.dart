@@ -1,3 +1,4 @@
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../state_management/get.dart';
@@ -10,7 +11,7 @@ abstract class ArGetScreen<T> extends StatefulWidget {
   });
 
   final String? tag;
-  final T Function() presenter;
+  final T Function(BuildContext context) presenter;
 
   Widget build(BuildContext context, T presenter);
 
@@ -37,15 +38,17 @@ class ArGetScreenState<T> extends State<ArGetScreen<T>> {
 
   @override
   void initState() {
-    presenter = Get.put<T>(widget.presenter(), tag: _tag);
+    presenter = Get.put<T>(widget.presenter(context), tag: _tag);
     super.initState();
   }
 
   @override
   void dispose() {
-    Get.delete<T>(tag: _tag);
-
     super.dispose();
+
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      Get.delete<T>(tag: _tag);
+    });
   }
 
   @override

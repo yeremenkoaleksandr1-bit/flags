@@ -36,7 +36,10 @@ class GameTransitionPageBuilder extends StatefulWidget {
 }
 
 class _GameTransitionPageBuilderState extends State<GameTransitionPageBuilder>
-    with RouteAware, TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+    with
+        RouteAware,
+        SingleTickerProviderStateMixin,
+        AutomaticKeepAliveClientMixin {
   late final AnimationController _controller;
 
   @override

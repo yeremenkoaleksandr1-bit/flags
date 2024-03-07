@@ -10,6 +10,7 @@ import 'package:flags/screens/editor/my_flags/my_flags.screen.dart';
 import 'package:flags/screens/game_mode_picker/game_mode_picker.screen.dart';
 import 'package:flags/screens/games/games_factory.page.dart';
 import 'package:flags/screens/levels_picker/levels_picker.screen.dart';
+import 'package:flags/uikit/layout_components/overlayment/overlayment.provider.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/widgets.dart';
 import 'package:qlevar_router/qlevar_router.dart';
@@ -22,6 +23,9 @@ import '../presenters/continents_picker/route_params.dart';
 import 'routes.dart';
 
 class AppRouter extends QRouterDelegate {
+  static final RouteObserver<ModalRoute<void>> routeObserver =
+      RouteObserver<ModalRoute<void>>();
+
   AppRouter({
     super.initPath = '/app',
     super.alwaysAddInitPath,
@@ -36,32 +40,24 @@ class AppRouter extends QRouterDelegate {
                 path: '/app',
                 initRoute: '/home',
                 observers: [
+                  routeObserver,
                   GameTransitionPageBuilder.routeObserver,
                   HeroController(),
                 ],
-                builderChild: (router) {
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return AppScreen(
-                        presenter: () => AppPresenterImpl(context: context),
-                        router: router,
-                      );
-                    },
-                  );
-                },
+                builderChild: (router) => router,
                 children: [
                   QRoute(
                     path: '/home',
                     name: Routes.home,
                     builder: () => HomeScreen(
-                      presenter: () => HomePresenterImpl(),
+                      presenter: (context) => HomePresenterImpl(),
                     ),
                   ),
                   QRoute(
                     path: '/game_mode_picker',
                     name: Routes.gameModePicker,
                     builder: () => GameModePickerScreen(
-                      presenter: () => GameModePickerPresenterImpl(),
+                      presenter: (context) => GameModePickerPresenterImpl(),
                     ),
                   ),
                   QRoute(
@@ -72,7 +68,7 @@ class AppRouter extends QRouterDelegate {
                           as ContinentPickerRouteParams;
 
                       return ContinentsPickerScreen(
-                        presenter: () => ContinentsPickerPresenterImpl(
+                        presenter: (context) => ContinentsPickerPresenterImpl(
                           routeParams: data,
                         ),
                       );
@@ -82,7 +78,7 @@ class AppRouter extends QRouterDelegate {
                     path: '/levels_picker',
                     name: Routes.levelsPicker,
                     builder: () => LevelsPickerScreen(
-                      presenter: () {
+                      presenter: (context) {
                         final data =
                             QR.params['data']!.value as LevelsPickerRouteParams;
                         return LevelsPickerPresenterImpl(params: data);
@@ -95,14 +91,16 @@ class AppRouter extends QRouterDelegate {
                     builder: () {
                       final data =
                           QR.params['data']!.value as GamesFactoryPageParams;
-                      return GamesFactoryPage(params: data);
+                      return Overlayment(
+                        child: GamesFactoryPage(params: data),
+                      );
                     },
                   ),
                   QRoute(
                     path: '/my_flags',
                     name: Routes.myFlags,
                     builder: () => MyFlagsScreen(
-                      presenter: () => MyFlagsPresenterImpl(),
+                      presenter: (context) => MyFlagsPresenterImpl(),
                     ),
                   ),
                 ]),

@@ -66,9 +66,12 @@ class _ContinentComponentState extends State<ContinentComponent> {
       padding: ThemePaddings.content,
       child: Stack(
         children: [
-          Positioned.fill(
-            child: Image.asset(
-              widget.imagePath,
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 400),
+              child: Image.asset(
+                widget.imagePath,
+              ),
             ),
           ),
           Center(

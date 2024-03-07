@@ -85,7 +85,6 @@ class _GameFlagAreaState extends State<GameFlagArea> {
         color: ThemePalette.black.withOpacity(0.7),
         child: Stack(
           fit: StackFit.passthrough,
-          clipBehavior: Clip.antiAlias,
           children: [
             RenderBoxExposed(
               exposer: widget.exposer,
@@ -93,17 +92,19 @@ class _GameFlagAreaState extends State<GameFlagArea> {
                 child: FittedBox(
                   fit: BoxFit.fill,
                   alignment: Alignment.topLeft,
-                  child: SizedBox.fromSize(
-                    size: widget.flag.size.toSize(),
-                    child: FastValueBuilder(
-                      listen: widget.objects,
-                      builder: (Iterable<ProcessGameObject> value) {
-                        // return FlagView(flag: widget.flag);
+                  child: ClipRRect(
+                    child: SizedBox.fromSize(
+                      size: widget.flag.size.toSize(),
+                      child: FastValueBuilder(
+                        listen: widget.objects,
+                        builder: (Iterable<ProcessGameObject> value) {
+                          // return FlagView(flag: widget.flag);
 
-                        return GameObjectsRendering(
-                          [...buildObjects(value)],
-                        );
-                      },
+                          return GameObjectsRendering(
+                            [...buildObjects(value)],
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),

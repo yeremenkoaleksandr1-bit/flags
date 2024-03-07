@@ -39,15 +39,15 @@ class _LevelButtonState extends State<LevelButton> {
     ).showModal();
   }
 
-  late final fColor = widget.isOpened
-      ? getColorByDifficult(widget.difficult)
-      : ThemePalette.gray;
-
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: widget.level,
       builder: (BuildContext context, _) {
+        late final fColor = widget.isOpened
+            ? getColorByDifficult(widget.difficult)
+            : ThemePalette.gray;
+
         var color = fColor;
         if (!widget.level.completed && widget.level.opened) {
           color = fColor.brighten(0.5);

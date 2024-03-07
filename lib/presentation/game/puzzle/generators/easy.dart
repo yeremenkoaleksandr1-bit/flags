@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/presentation/game/puzzle/entities/colored_part.game_object.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/rendering.dart';
@@ -15,20 +16,24 @@ class PuzzleEasyGenerator extends PuzzleSuperEasyGenerator {
     this.quantityColoredPart = 1,
     super.quantityEmblem = 4,
     super.quantityParts = 5,
-    super.multiplier = 1.5,
+    required super.levels,
   });
 
   @override
-  List<PathPart> generateParts(GameFlag flag, Random random) {
+  Future<List<ProcessGameObject>> generateParts(
+      GameFlag flag, Random random) async {
     const maxRandomColorsQuantity = 4;
 
-    final superParts = super.generateParts(flag, random);
+    final superParts = (await super.generateParts(flag, random)).toList();
 
     final List<PathPart> parts = [];
 
     for (var i = 0; i < quantityColoredPart; i++) {
-      final superPart = superParts.random(random);
+      final superPart =
+          superParts.whereType<PathPart>().toList().random(random);
+
       superParts.remove(superPart);
+
       List<Color> colors = [
         superPart.color,
       ];

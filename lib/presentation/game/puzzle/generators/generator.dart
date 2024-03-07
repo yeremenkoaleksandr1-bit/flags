@@ -1,8 +1,6 @@
 import 'dart:math';
 
-import 'package:armar/logger.dart';
 import 'package:flags/core/extensions/extensions.dart';
-import 'package:flags/core/extensions/num.dart';
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/game_objects/flag/flag_extensions.dart';
 import 'package:flame/extensions.dart';
@@ -11,26 +9,23 @@ import '../../../../domain/entities/game/game_levels/game_level.dart';
 import '../../../../domain/game_objects/base/process.game_object.dart';
 import '../../../../domain/game_objects/emblems/emblems.dart';
 import '../../../../domain/game_objects/flag/flag.dart';
-import '../../../../domain/game_objects/game_objects.dart';
-import '../../../presenters/levels_picker/levels_picker.presenter.dart';
 import '../entities/scallable_emblem.dart';
 
 class PuzzlePartsGenerator {
   PuzzlePartsGenerator({
+    required this.levels,
     required this.quantityParts,
     required this.quantityEmblem,
-    required this.multiplier,
   });
 
   final int quantityParts;
   final int quantityEmblem;
-  final double multiplier;
 
-  List<GameLevel> get levels => ILevelsPickerPresenter.i.state.levels.levels;
+  final List<GameLevel> levels;
 
-  List<ProcessGameObject> generate(GameFlag flag, Random random) {
-    final parts = generateParts(flag, random);
-    final emblems = generateEmblem(flag, random);
+  Future<List<ProcessGameObject>> generate(GameFlag flag, Random random) async {
+    final parts = await generateParts(flag, random);
+    final emblems = await generateEmblem(flag, random);
 
     final all = [...parts, ...emblems];
 
@@ -39,10 +34,11 @@ class PuzzlePartsGenerator {
     return all;
   }
 
-  List<PathPart> generateParts(GameFlag flag, Random random) {
+  Future<List<ProcessGameObject>> generateParts(
+      GameFlag flag, Random random) async {
     final flagFabrics = flag.fabrics;
 
-    List<PathPart> parts = [...flagFabrics];
+    List<ProcessGameObject> parts = [...flagFabrics];
 
     List<String> usedFlags = [flag.name];
 
@@ -54,15 +50,6 @@ class PuzzlePartsGenerator {
           .flag;
 
       final randomPart = randomFlag.fabrics.random(random);
-
-      if (flagFabrics.any(
-        (e) =>
-            e.size == randomPart.size &&
-            e.path.points.length == randomPart.path.points.length,
-      )) {
-        i--;
-        continue;
-      }
 
       parts.add(
         randomPart.copyWith(
@@ -76,7 +63,7 @@ class PuzzlePartsGenerator {
     return parts;
   }
 
-  List<EmblemPart> generateEmblem(GameFlag flag, Random random) {
+  Future<List<EmblemPart>> generateEmblem(GameFlag flag, Random random) async {
     final flagEmblems = flag.emblems;
 
     List<String> usedFlags = [flag.name];
@@ -84,12 +71,16 @@ class PuzzlePartsGenerator {
     List<EmblemPart> parts = [...flagEmblems];
 
     for (var i = 0; i < quantityEmblem - flagEmblems.length; i++) {
-      final randomFlag = levels
+      final fLevels = levels
           .where((e) =>
               !usedFlags.contains(e.flag.name) && e.flag.emblems.isNotEmpty)
-          .toList()
-          .random(random)
-          .flag;
+          .toList();
+
+      if (fLevels.isEmpty) {
+        break;
+      }
+
+      final randomFlag = fLevels.random(random).flag;
 
       final randomPart = randomFlag.emblems.random(random);
 
@@ -109,7 +100,6 @@ class PuzzlePartsGenerator {
           if (angle < 0) angle += pi * 2;
 
           final randomIndex = random.nextIntRange(0, scalesLen);
-          logger.d(randomIndex);
 
           final scales = generateScales(correctIndex, scalesLen, 0.2);
 

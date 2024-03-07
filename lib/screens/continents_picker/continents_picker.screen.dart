@@ -34,7 +34,9 @@ class ContinentsPickerScreen extends ArGetScreen<IContinentsPickerPresenter> {
                   onPressed: presenter.onContinentSelected,
                 ),
               ),
-              const FastModePlayTimerView(),
+              FastModePlayTimerView(
+                onTapPlayFastMode: presenter.onPlayFastMode,
+              ),
               const Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
