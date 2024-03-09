@@ -134,7 +134,6 @@ extension ThemeExt on ThemeData {
       toggleButtonsTheme: other.toggleButtonsTheme,
       tooltipTheme: other.tooltipTheme,
       toggleableActiveColor: other.toggleableActiveColor,
-      selectedRowColor: other.selectedRowColor,
       errorColor: other.errorColor,
       backgroundColor: other.backgroundColor,
       bottomAppBarColor: other.bottomAppBarColor,

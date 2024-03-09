@@ -1,3 +1,4 @@
+import 'package:armar/logger.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flame/game.dart';
 
@@ -11,7 +12,7 @@ class PuzzleObjectPlacingHandler {
   final double availableDistance;
 
   PuzzleObjectPlacingHandler({
-    this.availableDistance = 10.0,
+    this.availableDistance = 15.0,
   });
 
   ProcessGameObject? handle({
@@ -28,9 +29,21 @@ class PuzzleObjectPlacingHandler {
     if (objectsFromFlag.isEmpty) return null;
 
     final isPreviousPlaced = object.previousMustBePlaced?.every(
-          (e) => placedObjects.map((e) => e.name).contains(e),
+          (e) {
+            final objects = placedObjects.map((e) => e.name);
+
+            final mustBePlacedLen =
+                flag.objects.where((o) => o.name == e).length;
+
+            final placedObjectsLen =
+                placedObjects.where((o) => o.name == e).length;
+
+            return objects.contains(e) && placedObjectsLen == mustBePlacedLen;
+          },
         ) ??
         true;
+
+    logger.i(isPreviousPlaced);
 
     if (!isPreviousPlaced) return null;
 
@@ -58,7 +71,7 @@ class PuzzleObjectPlacingHandler {
         return null;
       }
 
-      return nearestObject.copyWith(uniqueName: key) as ProcessGameObject;
+      return nearestObject.copyWith(uniqueName: key);
     }
 
     return null;

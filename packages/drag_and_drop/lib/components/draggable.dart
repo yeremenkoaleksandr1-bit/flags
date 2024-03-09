@@ -24,7 +24,7 @@ typedef SDragTargetBuilder<T> = Widget Function(
 );
 
 typedef SDragUpdateCallback = void Function(
-  DragUpdateDetails details,
+  Offset globalPosition,
 );
 
 typedef SDraggableCanceledCallback = void Function(
@@ -51,7 +51,7 @@ typedef SDragAnchorStrategy = Offset Function(
 typedef SFeedbackBuilder = Widget Function(
   BuildContext context,
   AnimationController controller,
-  void Function(Offset Function(Offset lastOffset) offset) setOverlayOffset,
+  RenderBox renderBox,
 );
 
 Offset childDragAnchorStrategy(
@@ -109,7 +109,7 @@ class SDraggable<T extends Object> extends StatefulWidget {
 
   final int? maxSimultaneousDrags;
 
-  final VoidCallback? onDragStarted;
+  final ValueChanged<Offset>? onDragStarted;
 
   final SDragUpdateCallback? onDragUpdate;
 
@@ -204,7 +204,7 @@ class SDraggableState<T extends Object> extends State<SDraggable<T>> {
       ignoringFeedbackSemantics: widget.ignoringFeedbackSemantics,
       ignoringFeedbackPointer: widget.ignoringFeedbackPointer,
       viewId: View.of(context).viewId,
-      onDragUpdate: (DragUpdateDetails details) {
+      onDragUpdate: (details) {
         if (mounted && widget.onDragUpdate != null) {
           widget.onDragUpdate!(details);
         }
@@ -238,7 +238,7 @@ class SDraggableState<T extends Object> extends State<SDraggable<T>> {
       animationReverseDuration: widget.animationReverseDuration,
     );
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      widget.onDragStarted?.call();
+      widget.onDragStarted?.call(dragStartPoint);
     });
     return avatar;
   }

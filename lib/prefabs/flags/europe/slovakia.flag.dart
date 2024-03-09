@@ -45,7 +45,7 @@ class SlovakiaFlag extends GameFlag {
               EmblemPart.fromType<SlovakiaEmblem>(
                 position: Vector2(15.52, 15.52),
                 size: Vector2(26.56, 33.01),
-                previousMustBePlaced: ['1', '2', '3'],
+                previousMustBePlaced: const ['1', '2', '3'],
               ),
             ];
           },

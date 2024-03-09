@@ -6,12 +6,15 @@ import 'package:drag_and_drop/drag_and_drop.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
 import 'package:flags/presentation/game/puzzle/entities/scallable_emblem.dart';
+import 'package:flags/uikit/game_widgets/flag/flag.dart';
 import 'package:flags/uikit/game_widgets/game_widgets.dart';
 import 'package:flags/uikit/game_widgets/objects/game_objects_rendering.dart';
 import 'package:flags/uikit/theme/palette.dart';
 import 'package:flame/extensions.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../presentation/app/app.presenter.dart';
 import '../../../../presentation/game/puzzle/puzzle_common.presenter.dart';
 import '../../../../uikit/utils/render_box_exposed.dart';
 import '../scene_components/emblem.dart';
@@ -110,6 +113,11 @@ class _GameFlagAreaState extends State<GameFlagArea> {
                 ),
               ),
             ),
+            if (IAppPresenter.i.appPreferences.data.isDebugMode)
+              Opacity(
+                opacity: 0.05,
+                child: FlagView(flag: widget.flag),
+              ),
             buildDragTargetArea(),
           ],
         ),

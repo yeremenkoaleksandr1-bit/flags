@@ -33,7 +33,7 @@ class SaoTomeAndPrincipeFlag extends GameFlag {
               color: const Color(0xffEF3340),
               areaSize: size,
               position: (_) => Vector2(0, 0),
-              previousMustBePlaced: const ['1', '2', '1'],
+              previousMustBePlaced: const ['1', '2'],
             ),
             PathPart.fromSvgPath(
               "M12.873 7.566 10.415 0 7.956 7.566H0l6.436 4.677-2.458 7.566 6.437-4.676 6.436 4.677-2.458-7.567 6.436-4.677h-7.956Z",

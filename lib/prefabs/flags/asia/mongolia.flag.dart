@@ -12,6 +12,7 @@ class MongoliaFlag extends GameFlag {
             return [
               PathPart(
                 name: '1',
+                uniqueName: "1_1",
                 path: SPath.rect(
                   rect: Vector2(unitWidth, size.y).toRect(),
                   paint: SPaint(
@@ -45,7 +46,7 @@ class MongoliaFlag extends GameFlag {
               EmblemPart.fromType<MongoliaEmblem>(
                 position: Vector2(9.6, 6.4),
                 size: Vector2(23.47, 48),
-                previousMustBePlaced: const ['1', '2'],
+                previousMustBePlaced: const ['1_1'],
               )
             ];
           },

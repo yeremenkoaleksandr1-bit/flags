@@ -1,5 +1,6 @@
 import 'package:armar/armar.dart';
 import 'package:flags/main/app.dart';
+import 'package:flags/ui/debug_paint.dart';
 import 'package:flags/uikit/components/progress_indicator/linear_progress_indicator.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flame/flame.dart';

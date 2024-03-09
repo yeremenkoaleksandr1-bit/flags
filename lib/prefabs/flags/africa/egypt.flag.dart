@@ -45,7 +45,7 @@ class EgyptFlag extends GameFlag {
               EmblemPart.fromType<EgyptEmblem>(
                 position: Vector2(40.61, 21.93),
                 size: Vector2(14.78, 20.08),
-                previousMustBePlaced: const ['1', '2', '3'],
+                previousMustBePlaced: const ['2'],
               ),
             ];
           },

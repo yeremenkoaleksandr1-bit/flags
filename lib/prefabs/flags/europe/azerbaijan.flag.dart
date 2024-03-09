@@ -45,7 +45,7 @@ class AzerbaijanFlag extends GameFlag {
               EmblemPart.fromType<AzerbaijanEmblem>(
                 position: Vector2(51.2, 22.4),
                 size: Vector2(25.6, 19.2),
-                previousMustBePlaced: ['1', '2', '3'],
+                previousMustBePlaced: const ['2'],
               ),
             ];
           },

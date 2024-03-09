@@ -28,7 +28,7 @@ class NorwayFlag extends GameFlag {
               name: '3',
               areaSize: size,
               color: const Color(0xff00205B),
-              previousMustBePlaced: const ['1', '2'],
+              previousMustBePlaced: const ['2'],
             ),
           ],
         );

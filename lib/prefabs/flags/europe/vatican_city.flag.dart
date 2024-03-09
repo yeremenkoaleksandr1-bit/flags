@@ -34,7 +34,7 @@ class VaticanCityFlag extends GameFlag {
               EmblemPart.fromType<VaticanCityEmblem>(
                 position: Vector2(37, 13),
                 size: Vector2(22, 34),
-                previousMustBePlaced: const ['1', '2'],
+                previousMustBePlaced: const ['2'],
               )
             ];
           },

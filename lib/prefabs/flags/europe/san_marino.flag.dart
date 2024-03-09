@@ -31,7 +31,7 @@ class SanMarinoFlag extends GameFlag {
             EmblemPart.fromType<SanMarinoEmblem>(
               position: Vector2(26.66, 9.36),
               size: Vector2(32.01, 38.48),
-              previousMustBePlaced: ['1', '2'],
+              previousMustBePlaced: const ['1', '2'],
             ),
           ],
         );

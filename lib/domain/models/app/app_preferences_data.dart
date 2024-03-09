@@ -4,20 +4,25 @@ class AppPreferencesData {
   bool activeSound;
   bool activeVibration;
 
+  bool isDebugMode;
+
   AppPreferencesData({
     required this.activeSound,
     required this.activeVibration,
+    required this.isDebugMode,
   });
 
   Map<String, dynamic> toJson() => {
         'activeSound': activeSound,
         'activeVibration': activeVibration,
+        'isDebugMode': isDebugMode,
       };
 
   factory AppPreferencesData.fromJson(Map<String, dynamic> json) =>
       AppPreferencesData(
-        activeSound: json['activeSound'] as bool,
-        activeVibration: json['activeVibration'] as bool,
+        activeSound: json['activeSound'],
+        activeVibration: json['activeVibration'],
+        isDebugMode: json['isDebugMode'],
       );
 
   static void registerAdapter() => Hive.registerAdapter(

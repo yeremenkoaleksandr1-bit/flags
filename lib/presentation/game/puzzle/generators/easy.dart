@@ -1,12 +1,14 @@
 import 'dart:math';
 
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
+import 'package:flags/domain/game_objects/flag/flag_extensions.dart';
 import 'package:flags/presentation/game/puzzle/entities/colored_part.game_object.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/rendering.dart';
 
 import '../../../../domain/game_objects/flag/flag.dart';
 import '../../../../domain/game_objects/parts/parts.dart';
+import 'generator.dart';
 import 'super_easy.dart';
 
 class PuzzleEasyGenerator extends PuzzleSuperEasyGenerator {
@@ -21,30 +23,59 @@ class PuzzleEasyGenerator extends PuzzleSuperEasyGenerator {
 
   @override
   Future<List<ProcessGameObject>> generateParts(
-      GameFlag flag, Random random) async {
+    GameFlag flag,
+    Random random,
+  ) async {
     const maxRandomColorsQuantity = 4;
 
     final superParts = (await super.generateParts(flag, random)).toList();
 
+    final flagObjects = flag.objects.whereType<PathPart>();
+
     final List<PathPart> parts = [];
 
     for (var i = 0; i < quantityColoredPart; i++) {
+      final List<int> usedColors = [];
+      final allColors = [...PuzzlePartsGenerator.allFlagColors];
+
       final superPart =
           superParts.whereType<PathPart>().toList().random(random);
 
       superParts.remove(superPart);
 
-      List<Color> colors = [
-        superPart.color,
-      ];
+      final isFlagPart = flagObjects.any((e) => e.name == superPart.name);
 
-      colors.addAll(
-        _generateUniqueColors(
-          superPart.color,
-          maxRandomColorsQuantity,
-          random,
-        ),
-      );
+      int loopCount = maxRandomColorsQuantity;
+      List<Color> colors = [];
+
+      if (isFlagPart) {
+        colors.add(superPart.color);
+      } else {
+        loopCount = maxRandomColorsQuantity + 1;
+      }
+
+      for (var j = 0; j < loopCount; j++) {
+        var colorInt = allColors.elementAt(
+          random.nextInt(allColors.length),
+        );
+
+        allColors.remove(colorInt);
+
+        if (colors.any((e) =>
+                e.value == colorInt ||
+                ColorUtils.calculateColorSimilarity(e.value, colorInt) < 30) ||
+            flagObjects.any((e) =>
+                e.color.value == colorInt ||
+                ColorUtils.calculateColorSimilarity(e.color.value, colorInt) <
+                    30)) {
+          j--;
+          continue;
+        }
+
+        final color = Color(colorInt);
+
+        colors.add(color);
+      }
 
       colors.shuffle(random);
 
@@ -64,24 +95,66 @@ class PuzzleEasyGenerator extends PuzzleSuperEasyGenerator {
 
     return [...superParts, ...parts];
   }
+}
 
-  List<Color> _generateUniqueColors(
-      Color originalColor, int len, Random random) {
-    // Extract original color's HSV values
-    final HSVColor originalHSV = HSVColor.fromColor(originalColor);
-    final double originalSaturation = originalHSV.saturation;
+class ColorUtils {
+  static double calculateColorSimilarity(int color1, int color2) {
+    // Convert RGB to CIELAB
+    final lab1 = rgbToLab(color1);
+    final lab2 = rgbToLab(color2);
 
-    // Generate random colors with similar saturation
-    final uniqueColors = List.generate(len, (_) {
-      final double randomHue = random.nextDouble() * 360.0;
-      final double randomValue =
-          random.nextDouble() * (1.0 - originalSaturation) + originalSaturation;
+    // Compute Euclidean distance
+    return sqrt(
+      pow(lab1[0] - lab2[0], 2) +
+          pow(lab1[1] - lab2[1], 2) +
+          pow(lab1[2] - lab2[2], 2),
+    );
+  }
 
-      // Convert HSV back to Color
-      return HSVColor.fromAHSV(1.0, randomHue, originalSaturation, randomValue)
-          .toColor();
-    });
+  static List<double> rgbToLab(int color) {
+    final r = (color >> 16) & 0xFF;
+    final g = (color >> 8) & 0xFF;
+    final b = color & 0xFF;
 
-    return uniqueColors;
+    final xyz = rgbToXyz(r, g, b);
+    return xyzToLab(xyz[0], xyz[1], xyz[2]);
+  }
+
+  static List<double> rgbToXyz(int r, int g, int b) {
+    double rgbToXyzChannel(double c) {
+      c = c / 255.0;
+      if (c > 0.04045) {
+        return pow((c + 0.055) / 1.055, 2.4) * 100;
+      } else {
+        return (c / 12.92) * 100;
+      }
+    }
+
+    final double x =
+        rgbToXyzChannel(0.4124564 * r + 0.3575761 * g + 0.1804375 * b);
+    final double y =
+        rgbToXyzChannel(0.2126729 * r + 0.7151522 * g + 0.072175 * b);
+    final double z =
+        rgbToXyzChannel(0.0193339 * r + 0.119192 * g + 0.9503041 * b);
+    return [x, y, z];
+  }
+
+  static List<double> xyzToLab(double x, double y, double z) {
+    const double referenceX = 95.047;
+    const double referenceY = 100.0;
+    const double referenceZ = 108.883;
+
+    double xyzToLabChannel(double c) {
+      if (c > 0.008856) {
+        return pow(c, 1 / 3) * 116 - 16;
+      } else {
+        return (c * 903.3);
+      }
+    }
+
+    final double labL = xyzToLabChannel(x / referenceX);
+    final double labA = xyzToLabChannel(y / referenceY);
+    final double labB = xyzToLabChannel(z / referenceZ);
+    return [labL, labA, labB];
   }
 }

@@ -23,7 +23,7 @@ class MaldivesFlag extends GameFlag {
             EmblemPart.fromType<MaldivesEmblem>(
               position: Vector2(41.3, 21.33),
               size: Vector2(12.67, 21.33),
-              previousMustBePlaced: const ['1', '2'],
+              previousMustBePlaced: const ['2'],
             ),
           ],
         );

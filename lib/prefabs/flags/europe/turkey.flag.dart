@@ -7,7 +7,7 @@ class TurkeyFlag extends GameFlag {
           proportion: 2 / 3,
           objects: (size) => [
             PathPart(
-              name: "part_1",
+              name: "1",
               position: Vector2.zero(),
               path: SPath.rect(
                 rect: size.toRect(),
@@ -20,6 +20,7 @@ class TurkeyFlag extends GameFlag {
             EmblemPart.fromType<TurkeyEmblem>(
               position: Vector2(16, 16),
               size: Vector2(43, 32),
+              previousMustBePlaced: const ['1'],
             )
           ],
         );

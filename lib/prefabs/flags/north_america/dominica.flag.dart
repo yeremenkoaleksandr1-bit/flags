@@ -39,7 +39,7 @@ class DominicaFlag extends GameFlag {
             EmblemPart.fromType<DominicaEmblem>(
               position: Vector2(48, 16),
               size: Vector2(32, 32),
-              previousMustBePlaced: const ['1', '2', '3', '4'],
+              previousMustBePlaced: const ['2', '3', '4'],
             ),
           ],
         );

@@ -45,7 +45,7 @@ class CroatiaFlag extends GameFlag {
               EmblemPart.fromType<CroatiaEmblem>(
                 position: Vector2(49.09, 8.87),
                 size: Vector2(29.82, 39.68),
-                previousMustBePlaced: ['1', '2', '3'],
+                previousMustBePlaced: const ['1', '2', '3'],
               ),
             ];
           },

@@ -30,7 +30,7 @@ class CambodiaFlag extends GameFlag {
             EmblemPart.fromType<CambodiaEmblem>(
               position: Vector2(29.33, 18.64),
               size: Vector2(41.32, 26.66),
-              previousMustBePlaced: const ['1', '2'],
+              previousMustBePlaced: const ['2'],
             ),
           ],
         );

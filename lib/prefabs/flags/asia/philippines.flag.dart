@@ -38,7 +38,7 @@ class PhilippinesFlag extends GameFlag {
             EmblemPart.fromType<PhilippinesEmblem>(
               position: Vector2(6.4, 18.49),
               size: Vector2(27.02, 27.02),
-              previousMustBePlaced: const ['1', '2', '3'],
+              previousMustBePlaced: const ['4'],
             ),
           ],
         );

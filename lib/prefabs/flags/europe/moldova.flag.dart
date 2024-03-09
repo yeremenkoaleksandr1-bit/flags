@@ -43,13 +43,10 @@ class MoldovaFlag extends GameFlag {
                 ),
               ),
               EmblemPart.fromType<MoldovaEmblem>(
-                  position: Vector2(50.04, 13.03),
-                  size: Vector2(28.46, 35.84),
-                  previousMustBePlaced: [
-                    '1',
-                    '2',
-                    '3',
-                  ]),
+                position: Vector2(50.04, 13.03),
+                size: Vector2(28.46, 35.84),
+                previousMustBePlaced: const ['2'],
+              ),
             ];
           },
         );

@@ -21,9 +21,10 @@ class RepublicOfChinaFlag extends GameFlag {
               previousMustBePlaced: const ['1'],
             ),
             EmblemPart.fromType<RepublicOfChinaEmblem>(
-                position: Vector2(12, 4),
-                size: Vector2(24, 24),
-                previousMustBePlaced: const ['1', '2']),
+              position: Vector2(12, 4),
+              size: Vector2(24, 24),
+              previousMustBePlaced: const ['2'],
+            ),
           ],
         );
 }

@@ -1,5 +1,6 @@
 import 'package:armar/armar.dart';
 import 'package:armar/armar_app.dart';
+import 'package:flags/ui/debug_paint.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -27,9 +28,13 @@ class _AppState extends State<App> {
         GlobalCupertinoLocalizations.delegate,
       ],
       builder: (context, _) {
-        return EasyLoading.init()(
-          context,
-          AppScreen(),
+        return DebugPaintProvider(
+          builder: (BuildContext context) {
+            return EasyLoading.init()(
+              context,
+              AppScreen(),
+            );
+          },
         );
       },
     );

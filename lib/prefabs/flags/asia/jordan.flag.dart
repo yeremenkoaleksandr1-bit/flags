@@ -55,7 +55,7 @@ class JordanFlag extends GameFlag {
                 color: const Color(0xffffffff),
                 areaSize: size,
                 position: (_) => Vector2(15.31, 27.43),
-                previousMustBePlaced: const ['1', '2', '3', '4'],
+                previousMustBePlaced: const ['4'],
               ),
             ];
           },

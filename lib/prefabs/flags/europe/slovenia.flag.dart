@@ -45,6 +45,7 @@ class SloveniaFlag extends GameFlag {
               EmblemPart.fromType<SloveniaEmblem>(
                 position: Vector2(23.65, 10.67),
                 size: Vector2(16.7, 21.33),
+                previousMustBePlaced: const ['1', '2'],
               ),
             ];
           },

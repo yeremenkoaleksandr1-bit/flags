@@ -45,7 +45,7 @@ class SpainFlag extends GameFlag {
               EmblemPart.fromType<SpainEmblem>(
                 position: Vector2(20.29, 19.22),
                 size: Vector2(23.42, 25.53),
-                previousMustBePlaced: ['1', '2', '3'],
+                previousMustBePlaced: const ['2'],
               ),
             ];
           },

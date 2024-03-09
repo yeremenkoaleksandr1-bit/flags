@@ -45,6 +45,7 @@ class SerbiaFlag extends GameFlag {
               EmblemPart.fromType<SerbiaEmblem>(
                 position: Vector2(22.28, 5.69),
                 size: Vector2(24, 47.71),
+                previousMustBePlaced: const ['1', '2', '3'],
               ),
             ];
           },

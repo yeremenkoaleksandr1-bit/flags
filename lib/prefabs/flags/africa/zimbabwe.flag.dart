@@ -99,6 +99,7 @@ class ZimbabweFlag extends GameFlag {
                 color: const Color(0xffffffff),
                 areaSize: size,
                 position: (_) => Vector2(0, 0),
+                previousMustBePlaced: const ['5'],
               ),
               PathPart.fromSvgPath(
                 "m14.412.537-3.194 9.828H.886l8.36 6.073-3.193 9.828 8.36-6.074 8.36 6.074-3.194-9.828 8.36-6.073H17.605L14.412.537Z",

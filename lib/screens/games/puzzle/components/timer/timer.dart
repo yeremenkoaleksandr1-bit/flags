@@ -24,7 +24,7 @@ class _FastModeTimerState extends State<FastModeTimer> {
     return Row(
       children: [
         Transform.scale(
-          scale: 1.4,
+          scale: 1.2,
           child: SpriteUIWidget(image: Assets.images.timer.image),
         ),
         Gap.h14,

@@ -1,6 +1,9 @@
 import 'package:armar/armar.dart';
+import 'package:flags/domain/preferences/app_preference.dart';
+import 'package:flags/presentation/app/app.presenter.dart';
 import 'package:flags/uikit/components/buttons/buttons.dart';
 import 'package:flags/uikit/layout_components/sprite_widget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qlevar_router/qlevar_router.dart';
 
@@ -52,6 +55,28 @@ class HomeScreen extends ArGetScreen<IHomePresenter> {
               const Spacer(
                 flex: 4,
               ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Debug mode"),
+                  StreamBuilder(
+                    stream: IAppPresenter.i.appPreferences.box.watch(),
+                    builder:
+                        (BuildContext context, AsyncSnapshot<void> snapshot) {
+                      return Switch(
+                        activeTrackColor: ThemePalette.red,
+                        trackOutlineColor:
+                            MaterialStateProperty.all(Colors.transparent),
+                        value: IAppPresenter.i.appPreferences.data.isDebugMode,
+                        onChanged: (value) {
+                          IAppPresenter.i.appPreferences.setDebugMode(value);
+                        },
+                      );
+                    },
+                  ),
+                ],
+              )
             ],
           ),
         ),

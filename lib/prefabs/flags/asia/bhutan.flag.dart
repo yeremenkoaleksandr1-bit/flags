@@ -21,9 +21,10 @@ class BhutanFlag extends GameFlag {
               position: (_) => Vector2(0, 0),
             ),
             EmblemPart.fromType<BhutanEmblem>(
-                position: Vector2(13.71, 7.94),
-                size: Vector2(68.27, 49.8),
-                previousMustBePlaced: const ['1', '2'])
+              position: Vector2(13.71, 7.94),
+              size: Vector2(68.27, 49.8),
+              previousMustBePlaced: const ['1', '2'],
+            )
           ],
         );
 }

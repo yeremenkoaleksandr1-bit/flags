@@ -42,9 +42,10 @@ class EthiopiaFlag extends GameFlag {
                 ),
               ),
               EmblemPart.fromType<EthiopiaEmblem>(
-                  position: Vector2(42.67, 10.67),
-                  size: Vector2(42.67, 42.67),
-                  previousMustBePlaced: const ['1', '2', '3']),
+                position: Vector2(42.67, 10.67),
+                size: Vector2(42.67, 42.67),
+                previousMustBePlaced: const ['1', '2', '3'],
+              ),
             ];
           },
         );

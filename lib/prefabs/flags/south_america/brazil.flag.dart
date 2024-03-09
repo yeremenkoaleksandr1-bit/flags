@@ -21,9 +21,10 @@ class BrazilFlag extends GameFlag {
               previousMustBePlaced: const ['1'],
             ),
             EmblemPart.fromType<BrazilEmblem>(
-                position: Vector2(29.71, 16),
-                size: Vector2(32, 32),
-                previousMustBePlaced: const ['2']),
+              position: Vector2(29.71, 16),
+              size: Vector2(32, 32),
+              previousMustBePlaced: const ['2'],
+            ),
           ],
         );
 }

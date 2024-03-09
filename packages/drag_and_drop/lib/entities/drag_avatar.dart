@@ -99,7 +99,7 @@ class SDragAvatar<T extends Object> extends Drag {
     _position += _restrictAxis(details.delta);
     updateDrag(_position);
     if (onDragUpdate != null && _position != oldPosition) {
-      onDragUpdate!(details);
+      onDragUpdate!(_position);
     }
   }
 
@@ -256,8 +256,8 @@ class SDragAvatar<T extends Object> extends Drag {
     final Offset overlayTopLeft = box.localToGlobal(Offset.zero);
 
     return Positioned(
-      left: _lastOffset.dx - overlayTopLeft.dx,
-      top: _lastOffset.dy - overlayTopLeft.dy,
+      top: 0,
+      left: 0,
       child: ExcludeSemantics(
         excluding: ignoringFeedbackSemantics,
         child: IgnorePointer(
@@ -265,9 +265,7 @@ class SDragAvatar<T extends Object> extends Drag {
           child: feedbackBuilder(
             context,
             _animationController,
-            (offset) {
-              _lastOffset = offset(_finalLastPosition);
-            },
+            box,
           ),
         ),
       ),

@@ -34,6 +34,7 @@ class LiechtensteinFlag extends GameFlag {
               EmblemPart.fromType<LiechtensteinEmblem>(
                 position: Vector2(12.79, 5.67),
                 size: Vector2(21.76, 18.95),
+                previousMustBePlaced: const ['1'],
               ),
             ];
           },

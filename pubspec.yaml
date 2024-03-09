@@ -43,6 +43,7 @@ dependencies:
   statsfl: ^2.3.0
   matrix4_transform: ^3.0.1
   rxdart: ^0.27.7
+  color: ^3.0.0
 
 dev_dependencies:
   flutter_test:

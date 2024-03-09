@@ -61,9 +61,10 @@ class ComorosFlag extends GameFlag {
                 previousMustBePlaced: const ['1', '2', '3', '4'],
               ),
               EmblemPart.fromType<ComorosEmblem>(
-                  position: Vector2(3.11, 16.89),
-                  size: Vector2(22.11, 30.22),
-                  previousMustBePlaced: const ['5'])
+                position: Vector2(3.11, 16.89),
+                size: Vector2(22.11, 30.22),
+                previousMustBePlaced: const ['5'],
+              )
             ];
           },
         );

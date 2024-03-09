@@ -47,7 +47,7 @@ class IraqFlag extends GameFlag {
                 color: const Color(0xff017B3D),
                 areaSize: size,
                 position: (_) => Vector2(28.8, 25.7),
-                previousMustBePlaced: const ['1', '2', '3'],
+                previousMustBePlaced: const ['2'],
               ),
             ];
           },

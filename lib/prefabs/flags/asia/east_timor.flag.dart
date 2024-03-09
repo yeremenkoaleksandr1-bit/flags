@@ -26,7 +26,7 @@ class EastTimorFlag extends GameFlag {
               color: const Color(0xff000000),
               areaSize: size,
               position: (_) => Vector2(0, 0),
-              previousMustBePlaced: const ['1', '2'],
+              previousMustBePlaced: const ['2'],
             ),
             PathPart.fromSvgPath(
               "M12.178 6.568 6.997.805l.805 7.708L.72 11.661l7.58 1.616.804 7.708 3.88-6.71 7.579 1.617-5.182-5.763 3.88-6.708-7.082 3.147Z",
@@ -34,7 +34,7 @@ class EastTimorFlag extends GameFlag {
               color: const Color(0xffffffff),
               areaSize: size,
               position: (_) => Vector2(3.61, 22.25),
-              previousMustBePlaced: const ['1', '2', '3'],
+              previousMustBePlaced: const ['3'],
             ),
           ],
         );

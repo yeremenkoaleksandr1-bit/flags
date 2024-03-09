@@ -61,12 +61,12 @@ class UruguayFlag extends GameFlag {
                 name: '5',
                 color: const Color(0xFFFFFFFF),
                 areaSize: size,
-                position: (_) => Vector2(00, 00),
+                position: (_) => Vector2(0, 0),
               ),
               EmblemPart.fromType<UruguayEmblem>(
                 position: Vector2(4.87, 4.39),
                 size: Vector2(26.28, 26.77),
-                previousMustBePlaced: const ['5', '3_1'],
+                previousMustBePlaced: const ['5'],
               ),
               PathPart(
                 path: part2.copyWith(

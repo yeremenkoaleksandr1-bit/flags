@@ -77,7 +77,7 @@ class MalaysiaFlag extends GameFlag {
               EmblemPart.fromType<MalaysiaEmblem>(
                 position: Vector2(12.58, 4.57),
                 size: Vector2(38.57, 27.43),
-                previousMustBePlaced: const ['1', '2', '3', '4'],
+                previousMustBePlaced: const ['4'],
               )
             ];
           },

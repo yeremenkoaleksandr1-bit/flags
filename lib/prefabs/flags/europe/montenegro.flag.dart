@@ -22,10 +22,12 @@ class MontenegroFlag extends GameFlag {
               name: '2',
               areaSize: size,
               color: const Color(0xffE9B528),
+              previousMustBePlaced: const ["1"],
             ),
             EmblemPart.fromType<MontenegroEmblem>(
               position: Vector2(45.5, 10.67),
               size: Vector2(36.99, 42.67),
+              previousMustBePlaced: const ["1"],
             ),
           ],
         );

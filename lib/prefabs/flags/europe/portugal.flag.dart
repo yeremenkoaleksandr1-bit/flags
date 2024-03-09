@@ -29,9 +29,10 @@ class PortugalFlag extends GameFlag {
               ),
             ),
             EmblemPart.fromType<PortugalEmblem>(
-                position: Vector2(22, 16),
-                size: Vector2.all(32),
-                previousMustBePlaced: const ['1', '2'])
+              position: Vector2(22, 16),
+              size: Vector2.all(32),
+              previousMustBePlaced: const ['1', '2'],
+            )
           ],
         );
 }

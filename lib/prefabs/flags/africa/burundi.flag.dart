@@ -48,7 +48,7 @@ class BurundiFlag extends GameFlag {
               color: const Color(0xffffffff),
               areaSize: size,
               position: (_) => Vector2(35.2, 13.87),
-              previousMustBePlaced: const ['5'],
+              previousMustBePlaced: const ['1', '2', '3', '4'],
             ),
             GroupedPathsPart(
               name: 'burundi_stars',

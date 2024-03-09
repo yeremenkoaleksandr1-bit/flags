@@ -1,15 +1,21 @@
+import 'dart:ui';
+
 import 'package:armar/armar.dart';
 import 'package:armar/logger.dart';
 import 'package:dart_numerics/dart_numerics.dart';
 import 'package:drag_and_drop/drag_and_drop.dart';
+import 'package:drag_and_drop/extensions/render_box.dart';
+import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/domain/game_objects/base/game_object.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
+import 'package:flags/ui/debug_paint.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:qlevar_router/qlevar_router.dart';
 
 import '../../../../../presentation/game/puzzle/entities/scallable_emblem.dart';
 import 'base.dart';
@@ -91,16 +97,16 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
     );
   }
 
+  final RxValue<Offset> _feedbackPosition = RxValue(Offset.zero);
+
   @override
   Widget buildWidget(BuildContext context, BoxConstraints constraints) {
     final object = model.object;
 
     final areaSize = presenter.flagExposer.renderBox.value?.size;
 
-    var fitted = ((areaSize?.width ?? 1) / (widget.flag.size.x));
-
-    final exposerSize =
-        (_exposer.renderBox.value?.size ?? Size.zero).toVector2();
+    final areaWidth = (areaSize?.width ?? 1);
+    var fitted = (areaWidth / (widget.flag.size.x));
 
     final matrix = Matrix4.identity()
       ..translate(object.size.x / 2, object.size.y / 2)
@@ -128,66 +134,116 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
 
     return RenderBoxExposed(
       exposer: _exposer,
-      child: SLongPressDraggable<ProcessGameObject>(
-        key: _key,
-        maxSimultaneousDrags: 1,
-        delay: const Duration(milliseconds: 1),
-        onDragStarted: () {
-          _controller.forward(from: 0);
-          widget.onDragStarted?.call(object);
-        },
-        onDragUpdate: (DragUpdateDetails details) {
-          widget.onDragUpdate?.call(object, details);
-        },
-        onDragEnd: (SDraggableDetails details) {
-          widget.onDragEnd?.call(object, details);
-        },
-        feedbackRect: feedBackRect,
-        dragAnchorStrategy: (
-          SDraggable<Object> draggable,
-          BuildContext context,
-          Offset position,
-        ) {
-          return MatrixUtils.transformPoint(
-            matrix.clone()
-              ..translate(object.size.x / 2, object.size.y / 2)
-              ..rotateZ(-object.rotation)
-              ..translate(-object.size.x / 2, -object.size.y / 2),
-            Offset(object.size.x / 2, object.size.y),
-          );
-        },
-        feedbackBuilder: (context, animation, setOffset) {
-          return AnimatedBuilder(
-            animation: animation,
-            builder: (BuildContext context, Widget? child) {
-              final isForwardAnimation =
-                  !(animation.status == AnimationStatus.reverse);
+      child: Builder(
+        builder: (context) {
+          return SLongPressDraggable<ProcessGameObject>(
+            key: _key,
+            maxSimultaneousDrags: 1,
+            delay: const Duration(milliseconds: 1),
+            onDragStarted: (dragStartPoint) {
+              _feedbackPosition.value = dragStartPoint;
+              _controller.forward(from: 0);
+              widget.onDragStarted?.call(object);
+            },
+            onDragUpdate: (Offset globalPosition) {
+              _feedbackPosition.value = globalPosition;
 
-              final renderBox = _key.currentContext!.renderBox;
-
-              final globalPosition =
-                  renderBox?.globalToLocal(Offset.zero) ?? Offset.zero;
-
-              setOffset(
-                (last) {
-                  return last - (last + globalPosition) * (1 - animation.value);
-                },
+              widget.onDragUpdate?.call(
+                object,
+                DragUpdateDetails(
+                  globalPosition: globalPosition,
+                ),
               );
 
-              return Transform(
-                transform: matrix,
-                child: child!,
+              // DebugPainter.paint((canvas, size) {
+              //   canvas.drawPoints(
+              //     PointMode.points,
+              //     [
+              //       feedBackRect.topLeft,
+              //       feedBackRect.topRight,
+              //       feedBackRect.topCenter,
+              //       feedBackRect.bottomLeft,
+              //       feedBackRect.bottomCenter,
+              //       feedBackRect.bottomRight,
+              //       feedBackRect.centerLeft,
+              //       feedBackRect.centerRight,
+              //     ].map((e) => globalPosition + e).toList(),
+              //     Paint()
+              //       ..color = Colors.red
+              //       ..strokeWidth = 4
+              //       ..strokeCap = StrokeCap.round,
+              //   );
+              // });
+            },
+            onDragEnd: (SDraggableDetails details) {
+              widget.onDragEnd?.call(object, details);
+            },
+            feedbackRect: feedBackRect,
+            dragAnchorStrategy: (
+              SDraggable<Object> draggable,
+              BuildContext context,
+              Offset position,
+            ) {
+              return position;
+            },
+            feedbackBuilder: (context, animation, renderBox) {
+              return AnimatedBuilder(
+                animation: animation,
+                builder: (BuildContext context, Widget? child) {
+                  final value = animation.value;
+
+                  final renderBox = _key.currentContext!.renderBox!;
+
+                  final rect = renderBox.rect;
+
+                  final position = (rect.center).toVector2();
+
+                  double scale = lerpDouble(
+                    1,
+                    object.scale,
+                    value,
+                  )!;
+
+                  return FastBuilder(
+                    () {
+                      position.lerp(
+                        _feedbackPosition.value.toVector2(),
+                        animation.value,
+                      );
+
+                      return Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.identity()
+                          ..translate(
+                            position.x,
+                            position.y,
+                          )
+                          ..translate(-object.size.x / 2, -object.size.y / 2)
+                          ..scale(scale)
+                          ..scale(fitted)
+                          ..translate2(
+                            Vector2(0, -object.size.y / 2),
+                          ),
+                        child: child!,
+                      );
+                    },
+                  );
+                },
+                child: Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()..rotateZ(object.rotation),
+                  child: super.buildWidget(context, constraints),
+                ),
               );
             },
-            child: super.buildWidget(context, constraints),
+            data: widget.item.object,
+            childWhenDragging: const SizedBox.expand(),
+            child: ConstrainedBox(
+              constraints: constraints,
+              child: buildChild(context, constraints),
+            ),
           );
         },
-        data: widget.item.object,
-        childWhenDragging: const SizedBox.shrink(),
-        child: ConstrainedBox(
-          constraints: constraints,
-          child: buildChild(context, constraints),
-        ),
       ),
     );
   }

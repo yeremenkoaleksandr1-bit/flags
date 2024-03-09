@@ -31,7 +31,7 @@ class SingaporeFlag extends GameFlag {
             EmblemPart.fromType<SingaporeEmblem>(
               position: Vector2(8.5, 4.22),
               size: Vector2(28.47, 24.5),
-              previousMustBePlaced: const ['1', '2'],
+              previousMustBePlaced: const ['1'],
             ),
           ],
         );

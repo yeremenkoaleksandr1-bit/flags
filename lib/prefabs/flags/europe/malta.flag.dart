@@ -31,7 +31,7 @@ class MaltaFlag extends GameFlag {
             EmblemPart.fromType<MaltaEmblem>(
               position: Vector2.all(2),
               size: Vector2.all(18),
-              previousMustBePlaced: const ['1', '2'],
+              previousMustBePlaced: const ['1'],
             )
           ],
         );

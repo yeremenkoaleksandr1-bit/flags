@@ -21,12 +21,10 @@ class RenderBoxExposed extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterEngine.schedulePostFrameCallback((timeStamp) {
-      try {
-        exposer.isExposed = true;
-        exposer.renderBox.value =
-            _globalKey.currentContext!.findRenderObject() as RenderBox;
-      } catch (e) {}
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      exposer.isExposed = true;
+      exposer.renderBox.value =
+          _globalKey.currentContext!.findRenderObject() as RenderBox;
     });
 
     return KeyedSubtree(

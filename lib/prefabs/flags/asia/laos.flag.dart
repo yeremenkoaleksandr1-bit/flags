@@ -33,7 +33,7 @@ class LaosFlag extends GameFlag {
               color: const Color(0xffFFFFFF),
               areaSize: size,
               position: (_) => Vector2(35.2, 19.2),
-              previousMustBePlaced: const ['1', '2'],
+              previousMustBePlaced: const ['2'],
             ),
           ],
         );

@@ -23,6 +23,7 @@ class LibyaFlag extends GameFlag {
             EmblemPart.fromType<LibyaEmblem>(
               position: Vector2(56, 24),
               size: Vector2(22.65, 16),
+              previousMustBePlaced: const ['2'],
             ),
             PathPart.fromSvgPath(
               "M128 0H0v16h128V0Z",

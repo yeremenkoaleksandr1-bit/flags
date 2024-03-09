@@ -4,6 +4,7 @@ import 'package:flags/domain/game_objects/game_objects.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
 import 'package:flags/presentation/game/puzzle/entities/colored_part.game_object.dart';
 import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../uikit/components/buttons/actions/close_button.dart';
@@ -57,36 +58,30 @@ class ColoredPathEditingBoardState
               ),
             ),
             Gap.v24,
-            Flexible(
-              fit: FlexFit.tight,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: constraints.maxWidth,
-                ),
-                child: FastBuilder(
-                  () {
-                    final color = colorRx.value;
+            Expanded(
+              child: FastBuilder(
+                () {
+                  final color = colorRx.value;
 
-                    var object = (gameObject.object as PathPart);
+                  var object = (gameObject.object as PathPart);
 
-                    object = object.copyWith(
-                      path: object.path.copyWith(
-                        paint: object.path.paint.copyWith(
-                          color: color ?? Colors.grey,
-                        ),
+                  object = object.copyWith(
+                    path: object.path.copyWith(
+                      paint: object.path.paint.copyWith(
+                        color: color ?? Colors.grey,
                       ),
-                    );
+                    ),
+                  );
 
-                    return BoardCommonItemWidget(
-                      key: ValueKey(color),
-                      presenter: widget.presenter,
-                      item: gameObject.copyWith(
-                        object: object,
-                      ),
-                      flag: widget.presenter.state.level.value.flag,
-                    );
-                  },
-                ),
+                  return BoardCommonItemWidget(
+                    key: ValueKey(color),
+                    presenter: widget.presenter,
+                    item: gameObject.copyWith(
+                      object: object,
+                    ),
+                    flag: widget.presenter.state.level.value.flag,
+                  );
+                },
               ),
             ),
             Gap.v48,
