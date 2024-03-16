@@ -1,8 +1,10 @@
 import 'dart:math';
 
+import 'package:armar/logger.dart';
 import 'package:flags/core/extensions/extensions.dart';
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/game_objects/flag/flag_extensions.dart';
+import 'package:flags/domain/game_objects/game_objects.dart';
 import 'package:flame/extensions.dart';
 
 import '../../../../domain/entities/game/game_levels/game_level.dart';
@@ -10,6 +12,7 @@ import '../../../../domain/game_objects/base/process.game_object.dart';
 import '../../../../domain/game_objects/emblems/emblems.dart';
 import '../../../../domain/game_objects/flag/flag.dart';
 import '../entities/scallable_emblem.dart';
+import 'easy.dart';
 
 class PuzzlePartsGenerator {
   PuzzlePartsGenerator({
@@ -35,10 +38,16 @@ class PuzzlePartsGenerator {
   }
 
   Future<List<ProcessGameObject>> generateParts(
-      GameFlag flag, Random random) async {
+    GameFlag flag,
+    Random random,
+  ) async {
     final flagFabrics = flag.fabrics;
 
-    List<ProcessGameObject> parts = [...flagFabrics];
+    List<ProcessGameObject> parts = [
+      ...flagFabrics.map(
+        (e) => e.copyWith(),
+      )
+    ];
 
     List<String> usedFlags = [flag.name];
 
@@ -51,9 +60,24 @@ class PuzzlePartsGenerator {
 
       final randomPart = randomFlag.fabrics.random(random);
 
+      if (randomPart is PathPart) {
+        final isSimilarToOriginal = parts.whereType<PathPart>().any((e) =>
+            e.path.points.length == randomPart.path.points.length &&
+            e.path.rect.size == randomPart.path.rect.size &&
+            ColorUtils.calculateColorSimilarity(
+                  e.color.value,
+                  randomPart.color.value,
+                ) <
+                30);
+        if (isSimilarToOriginal) {
+          randomPart.path.paint.color = Color(allFlagColors.random(random));
+        }
+      }
+
       parts.add(
         randomPart.copyWith(
-          name: "${randomFlag.name}_${randomPart.name}",
+          name: "${randomFlag.name}_${randomPart.uniqueName}",
+          uniqueName: "${randomFlag.name}_${randomPart.uniqueName}",
         ),
       );
 
@@ -68,7 +92,11 @@ class PuzzlePartsGenerator {
 
     List<String> usedFlags = [flag.name];
 
-    List<EmblemPart> parts = [...flagEmblems];
+    List<EmblemPart> parts = [
+      ...flagEmblems.map(
+        (e) => e.copyWith(),
+      )
+    ];
 
     for (var i = 0; i < quantityEmblem - flagEmblems.length; i++) {
       final fLevels = levels
@@ -84,7 +112,12 @@ class PuzzlePartsGenerator {
 
       final randomPart = randomFlag.emblems.random(random);
 
-      parts.add(randomPart);
+      parts.add(
+        randomPart.copyWith(
+          name: "${randomFlag.name}_${randomPart.uniqueName}",
+          uniqueName: "${randomFlag.name}_${randomPart.uniqueName}",
+        ),
+      );
 
       usedFlags.add(randomFlag.name);
     }

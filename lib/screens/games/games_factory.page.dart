@@ -8,6 +8,7 @@ import 'package:flags/screens/games/puzzle/fastmode.dart';
 import 'package:flags/uikit/layout_components/overlayment/overlayment.provider.dart';
 import 'package:flutter/material.dart';
 
+import '../../presentation/app/app.presenter.dart';
 import '../../ui/game_scaffold.dart';
 
 class GamesFactoryPageParams {
@@ -76,7 +77,7 @@ class _GamesFactoryPageState extends State<GamesFactoryPage> {
       endSlideDirection: GamePageSlideDirection.bottom,
       child: BackButtonListener(
         onBackButtonPressed: () async {
-          return false;
+          return !IAppPresenter.isDebugMode;
         },
         child: Builder(
           builder: (BuildContext context) {

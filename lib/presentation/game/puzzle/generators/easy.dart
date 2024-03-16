@@ -43,7 +43,8 @@ class PuzzleEasyGenerator extends PuzzleSuperEasyGenerator {
 
       superParts.remove(superPart);
 
-      final isFlagPart = flagObjects.any((e) => e.name == superPart.name);
+      final isFlagPart =
+          flagObjects.any((e) => e.uniqueName == superPart.uniqueName);
 
       int loopCount = maxRandomColorsQuantity;
       List<Color> colors = [];
@@ -81,6 +82,7 @@ class PuzzleEasyGenerator extends PuzzleSuperEasyGenerator {
 
       parts.add(
         ColoredPart(
+          key: superPart.key,
           name: superPart.name,
           uniqueName: superPart.uniqueName,
           path: superPart.path,

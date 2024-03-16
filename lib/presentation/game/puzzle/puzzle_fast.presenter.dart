@@ -32,7 +32,7 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
     implements IPuzzleFastModePresenter {
   PuzzleFastModePresenterImpl(super.context, {required super.params});
 
-  WinStreak get winStreak => IAppPresenter.i.gamePreferences.data.winStreak;
+  WinStreak get winStreak => IAppPresenter.I.gamePreferences.data.winStreak;
 
   late ContinentType _randomContinent = params.continentType;
 
@@ -107,7 +107,6 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
   Future<void> initializeFastMode(GameDifficult difficult) async {
     _fastModeGenerationCompleter = Completer();
 
-    await EasyLoading.show();
     FlutterEngine.schedulePostFrameCallback((timeStamp) async {
       _randomContinent = [...ContinentType.values].random;
 
@@ -125,13 +124,10 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
       });
 
       await Future.delayed(
-        const Duration(milliseconds: 500),
+        const Duration(milliseconds: 100),
       );
 
-      FlutterEngine.widgetPostFrameCallback((timeStamp) async {
-        await EasyLoading.dismiss();
-        _fastModeGenerationCompleter.complete();
-      });
+      _fastModeGenerationCompleter.complete();
     });
     return await _fastModeGenerationCompleter.future;
   }
@@ -155,6 +151,9 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
     await PreparingFastModeInitializationGame(
       preparingTimer: preparingTimer.stream,
       onReady: () async {
+        final initialTime = getInitialTime([...GameDifficult.values].random);
+        timerRx.value = initialTime;
+
         preparingTimer.value = 3;
 
         await initializeFastMode([...GameDifficult.values].random);
@@ -164,9 +163,7 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
 
           if (event == 0) {
             QR.back();
-            final initialTime =
-                getInitialTime([...GameDifficult.values].random);
-            timerRx.value = initialTime;
+
             periodicTimer.start(initialTime).listen((event) {
               timerRx.value = event;
 

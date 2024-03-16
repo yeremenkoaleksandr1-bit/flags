@@ -12,6 +12,7 @@ import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
 import 'package:flags/domain/game_objects/flag/flag_extensions.dart';
 import 'package:flags/domain/services/game/emblems.service.dart';
+import 'package:flags/presentation/app/app.presenter.dart';
 import 'package:flags/presentation/game/puzzle/entities/draggable_emblem_part.game_object.dart';
 import 'package:flags/presentation/game/puzzle/entities/scallable_emblem.dart';
 import 'package:flags/presentation/game/puzzle/generators/easy.dart';
@@ -33,6 +34,7 @@ import '../../../core/extensions/num.dart';
 import '../../../core/flutter_engine.dart';
 import '../../../domain/services/levels/levels.service.dart';
 import '../../../screens/games/components/heart_tries/heart_tries.dart';
+import '../../../screens/games/puzzle/dialogs/complete_continent.dialog.dart';
 import '../../../screens/games/puzzle/dialogs/lose.dialog.dart';
 import '../../../screens/games/puzzle/dialogs/menu.dialog.dart';
 import '../../../screens/games/puzzle/dialogs/winner.dialog.dart';
@@ -198,7 +200,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
     state.placedObjects.add(object);
 
     state.boardObjects.firstWhere((e) {
-      return e.object.uniqueName == object.uniqueName;
+      return e.object.key == object.key;
     }).setActive(false);
 
     unfocusObject();
@@ -230,22 +232,30 @@ class PuzzleCommonModePresenterImpl extends GetxController
     final emblems = [...level.flag.emblems]..removeWhere(
         (e) => emblemsService.isOpened(e.name),
       );
-    PuzzleWinnerDialog(
-      level: level,
-      nextLevel: data.level,
-      isLastLevelInSection: data.section?.difficulty != state.difficult.value,
-      onExitPressed: () {
-        QR.back();
-        QR.back();
-      },
-      onNextLevelPressed: () async {
-        QR.back();
-        await openNextLevel(data);
-      },
-      emblems: emblems,
-    ).showModal(
-      barrierDismissible: false,
-    );
+
+    if (data.section != null) {
+      PuzzleWinnerDialog(
+        level: level,
+        nextLevel: data.level,
+        isLastLevelInSection: data.section?.difficulty != state.difficult.value,
+        onExitPressed: () {
+          QR.back();
+          QR.back();
+        },
+        onNextLevelPressed: () async {
+          QR.back();
+          await EasyLoading.show();
+
+          await openNextLevel(data);
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+            await EasyLoading.dismiss();
+          });
+        },
+        emblems: emblems,
+      ).showModal(
+        barrierDismissible: false,
+      );
+    }
 
     state.level.value.completeLevel();
 
@@ -264,10 +274,21 @@ class PuzzleCommonModePresenterImpl extends GetxController
     }
 
     levelsPresenter.statusRx.notify();
+
+    if (data.section == null) {
+      PuzzleCompleteContinentDialog(
+        continent: params.continentType,
+        onExit: () {
+          QR.back();
+          QR.back();
+        },
+      ).showModal(
+        barrierDismissible: false,
+      );
+    }
   }
 
   Future<void> openNextLevel(NextLevelData data) async {
-    await EasyLoading.show();
     resetLevelState();
 
     state.difficult.value = data.section!.difficulty;
@@ -283,9 +304,6 @@ class PuzzleCommonModePresenterImpl extends GetxController
     await Future.delayed(
       const Duration(milliseconds: 500),
     );
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      await EasyLoading.dismiss();
-    });
   }
 
   @override
@@ -302,7 +320,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
       }
 
       final isPreviousPlaced = gameObject.previousMustBePlaced?.every(
-            (e) => state.placedObjects.map((e) => e.name).contains(e),
+            (e) => state.placedObjects.map((e) => e.uniqueName).contains(e),
           ) ??
           true;
 
@@ -345,7 +363,10 @@ class PuzzleCommonModePresenterImpl extends GetxController
 
   void onIncorrectPlacing() {
     shakeAnimation.forward(from: 0);
-    heartTriesState.removeOneHeart();
+
+    if (!IAppPresenter.I.appPreferences.data.isDebugMode) {
+      heartTriesState.removeOneHeart();
+    }
 
     if (heartTriesState.isOver()) {
       onGameOver();
@@ -356,7 +377,9 @@ class PuzzleCommonModePresenterImpl extends GetxController
     await PuzzleLoseDialog(
       onRestart: onRestart,
       onExit: onGameExit,
-    ).showModal();
+    ).showModal(
+      barrierDismissible: false,
+    );
   }
 
   void resetLevelState() {

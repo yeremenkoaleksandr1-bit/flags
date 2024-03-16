@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../../domain/domain.dart';
 import '../../domain/entities/game/game_levels/game_level.dart';
 import '../../presentation/presenters/levels_picker/levels_picker.presenter.dart';
+import '../../uikit/components/safe_area/safe_area.dart';
 import '../../uikit/uikit.dart';
 import 'components/continent_title.dart';
 import 'view/levels_view.dart';
@@ -21,7 +22,7 @@ class LevelsPickerScreen extends ArGetScreen<ILevelsPickerPresenter> {
       curve: Curves.easeInQuad,
       startSlideDirection: GamePageSlideDirection.bottom,
       endSlideDirection: GamePageSlideDirection.bottom,
-      child: SafeArea(
+      child: GameSafeArea(
         child: presenter.obx(
           (state) => Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

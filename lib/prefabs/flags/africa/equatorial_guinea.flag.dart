@@ -7,7 +7,7 @@ class EquatorialGuineaFlag extends GameFlag {
           proportion: 2 / 3,
           objects: (size) {
             double totalFlex = 3;
-            double unitHeight = size.x / totalFlex;
+            double unitHeight = size.y / totalFlex;
             return [
               PathPart(
                 name: '1',

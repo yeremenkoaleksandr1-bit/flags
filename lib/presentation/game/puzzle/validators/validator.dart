@@ -30,24 +30,22 @@ class PuzzleObjectPlacingHandler {
 
     final isPreviousPlaced = object.previousMustBePlaced?.every(
           (e) {
-            final objects = placedObjects.map((e) => e.name);
+            final objects = placedObjects.map((e) => e.uniqueName);
 
             final mustBePlacedLen =
-                flag.objects.where((o) => o.name == e).length;
+                flag.objects.where((o) => o.uniqueName == e).length;
 
             final placedObjectsLen =
-                placedObjects.where((o) => o.name == e).length;
+                placedObjects.where((o) => o.uniqueName == e).length;
 
             return objects.contains(e) && placedObjectsLen == mustBePlacedLen;
           },
         ) ??
         true;
 
-    logger.i(isPreviousPlaced);
-
     if (!isPreviousPlaced) return null;
 
-    final nearestObject =
+    var nearestObject =
         _findNearestObject(position / fitValue, objectsFromFlag);
 
     if (object is ColoredPart && nearestObject is PathPart) {
@@ -59,19 +57,26 @@ class PuzzleObjectPlacingHandler {
     final fittedFlagObjectPosition = nearestObject.position * fitValue;
 
     if (fittedFlagObjectPosition.distanceTo(position) < availableDistance) {
-      final key = object.uniqueName == nearestObject.uniqueName
-          ? nearestObject.uniqueName
-          : object.uniqueName;
-
       if (placedObjects.any(
         (e) =>
             e.position == nearestObject.position &&
-            e.name == nearestObject.name,
+            e.uniqueName == nearestObject.uniqueName,
       )) {
         return null;
       }
+      final isOriginalObject = object.key == nearestObject.key;
 
-      return nearestObject.copyWith(uniqueName: key);
+      logger.f(isOriginalObject);
+      if (!isOriginalObject) {
+        final key = object.key;
+        object.key = nearestObject.key;
+
+        return nearestObject.copyWith(
+          key: key,
+        );
+      }
+
+      return nearestObject.copyWith();
     }
 
     return null;

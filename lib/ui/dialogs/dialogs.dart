@@ -17,24 +17,21 @@ abstract class DialogWidget<T> extends StatelessWidget {
     Alignment alignment = Alignment.center,
     RouteSettings? routeSettings,
     bool barrierDismissible = true,
+    EdgeInsets padding = ThemePaddings.screen,
   }) =>
       showDialog<T>(
         context: QR.context!,
         routeSettings: routeSettings,
         barrierDismissible: barrierDismissible,
-        builder: (BuildContext context) => Stack(
-          children: [
-            Padding(
-              padding: ThemePaddings.screen,
-              child: Align(
-                alignment: alignment,
-                child: buildContainer(
-                  context,
-                  build(context),
-                ),
-              ),
+        builder: (BuildContext context) => Padding(
+          padding: padding,
+          child: Align(
+            alignment: alignment,
+            child: buildContainer(
+              context,
+              build(context),
             ),
-          ],
+          ),
         ),
       );
 }

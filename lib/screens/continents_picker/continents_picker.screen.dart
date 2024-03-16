@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../presentation/presentation.dart';
 import '../../ui/game_scaffold.dart';
 import '../../uikit/components/buttons/buttons.dart';
+import '../../uikit/components/safe_area/safe_area.dart';
 import 'views/continent_view.dart';
 import 'views/fast_mode_timer.view.dart';
 
@@ -17,34 +18,36 @@ class ContinentsPickerScreen extends ArGetScreen<IContinentsPickerPresenter> {
 
   @override
   Widget build(BuildContext context, IContinentsPickerPresenter presenter) {
-    return GameTransitionPageBuilder(
-      startSlideDirection: GamePageSlideDirection.middle,
-      endSlideDirection: GamePageSlideDirection.middle,
-      child: presenter.obx(
-        (state) => SafeArea(
-          child: Stack(
-            children: [
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 250,
-                child: ContinentsSlider(
-                  continents: state!.continents,
-                  onPressed: presenter.onContinentSelected,
+    return GameSafeArea(
+      child: GameTransitionPageBuilder(
+        startSlideDirection: GamePageSlideDirection.middle,
+        endSlideDirection: GamePageSlideDirection.middle,
+        child: presenter.obx(
+          (state) => SafeArea(
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 250,
+                  child: ContinentsSlider(
+                    continents: state!.continents,
+                    onPressed: presenter.onContinentSelected,
+                  ),
                 ),
-              ),
-              FastModePlayTimerView(
-                onTapPlayFastMode: presenter.onPlayFastMode,
-              ),
-              const Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: Pad(bottom: ThemeIndents.s12),
-                  child: FBackButton(),
+                FastModePlayTimerView(
+                  onTapPlayFastMode: presenter.onPlayFastMode,
                 ),
-              ),
-            ],
+                const Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: Pad(bottom: ThemeIndents.s12),
+                    child: FBackButton(),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -113,7 +113,7 @@ class _GameFlagAreaState extends State<GameFlagArea> {
                 ),
               ),
             ),
-            if (IAppPresenter.i.appPreferences.data.isDebugMode)
+            if (IAppPresenter.isDebugMode)
               Opacity(
                 opacity: 0.05,
                 child: FlagView(flag: widget.flag),

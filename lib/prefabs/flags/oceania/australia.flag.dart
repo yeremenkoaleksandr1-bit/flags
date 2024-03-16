@@ -17,7 +17,7 @@ class AustraliaFlag extends GameFlag {
               name: '2',
               color: const Color(0xFFFFFFFF),
               areaSize: size,
-              position: (_) => Vector2(275.54, 6.1),
+              position: (_) => Vector2(75.54, 6.1),
               previousMustBePlaced: const ['1'],
             ),
             PathPart.fromSvgPath(

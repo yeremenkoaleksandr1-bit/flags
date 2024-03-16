@@ -11,6 +11,7 @@ import '../../presentation/navigator/routes.dart';
 import '../../presentation/presentation.dart';
 import '../../ui/game_scaffold.dart';
 import '../../uikit/assets/assets.dart';
+import '../../uikit/components/safe_area/safe_area.dart';
 import '../../uikit/uikit.dart';
 
 class HomeScreen extends ArGetScreen<IHomePresenter> {
@@ -29,7 +30,7 @@ class HomeScreen extends ArGetScreen<IHomePresenter> {
 
   @override
   Widget build(BuildContext context, IHomePresenter presenter) {
-    return SafeArea(
+    return GameSafeArea(
       child: GameTransitionPageBuilder(
         startSlideDirection: GamePageSlideDirection.middle,
         endSlideDirection: GamePageSlideDirection.middle,
@@ -61,16 +62,16 @@ class HomeScreen extends ArGetScreen<IHomePresenter> {
                 children: [
                   const Text("Debug mode"),
                   StreamBuilder(
-                    stream: IAppPresenter.i.appPreferences.box.watch(),
+                    stream: IAppPresenter.I.appPreferences.box.watch(),
                     builder:
                         (BuildContext context, AsyncSnapshot<void> snapshot) {
                       return Switch(
                         activeTrackColor: ThemePalette.red,
                         trackOutlineColor:
                             MaterialStateProperty.all(Colors.transparent),
-                        value: IAppPresenter.i.appPreferences.data.isDebugMode,
+                        value: IAppPresenter.I.appPreferences.data.isDebugMode,
                         onChanged: (value) {
-                          IAppPresenter.i.appPreferences.setDebugMode(value);
+                          IAppPresenter.I.appPreferences.setDebugMode(value);
                         },
                       );
                     },

@@ -12,6 +12,7 @@ import 'package:flame/extensions.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../uikit/components/animated/shake.dart';
+import '../../../uikit/components/safe_area/safe_area.dart';
 import '../../../uikit/layout_components/gap/gap.dart';
 import '../base/game_process_screen.dart';
 import '../components/heart_tries/heart_tries.dart';
@@ -67,7 +68,7 @@ class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
     T presenter,
     GameLevel level,
   ) {
-    return SafeArea(
+    return GameSafeArea(
       child: Padding(
         padding: const Pad(horizontal: 8),
         child: ConstrainedBox(
@@ -88,49 +89,49 @@ class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
     T presenter,
     GameLevel level,
   ) {
-    final safeAreaTop = MediaQuery.of(context).padding.top;
-
     return Stack(
       fit: StackFit.passthrough,
       children: [
-        Padding(
-          padding: Pad(top: safeAreaTop + 48),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              LevelTitleView(
-                levelName: level.flag.name,
-              ),
-              ShakeWidget(
-                controller: presenter.shakeAnimation,
-                child: GameFlagArea(
-                  flag: level.flag,
-                  exposer: presenter.flagExposer,
-                  objects: presenter.state.placedObjects,
-                  onAcceptWithDetails: (context, details) {
-                    final renderBox = context.renderBox!;
-
-                    final object = details.data;
-
-                    final sizeDif =
-                        (object.size * object.scale - object.size) * 2;
-
-                    return presenter.handleGameObject(
-                      renderBox
-                          .globalToLocal(
-                            details.offset.translate(
-                              sizeDif.x,
-                              sizeDif.y,
-                            ),
-                          )
-                          .toVector2(),
-                      details.data,
-                    );
-                  },
-                  presenter: presenter,
+        GameSafeArea(
+          child: Padding(
+            padding: const Pad(top: 48),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                LevelTitleView(
+                  levelName: level.flag.name,
                 ),
-              ),
-            ],
+                ShakeWidget(
+                  controller: presenter.shakeAnimation,
+                  child: GameFlagArea(
+                    flag: level.flag,
+                    exposer: presenter.flagExposer,
+                    objects: presenter.state.placedObjects,
+                    onAcceptWithDetails: (context, details) {
+                      final renderBox = context.renderBox!;
+
+                      final object = details.data;
+
+                      final sizeDif =
+                          (object.size * object.scale - object.size) * 2;
+
+                      return presenter.handleGameObject(
+                        renderBox
+                            .globalToLocal(
+                              details.offset.translate(
+                                sizeDif.x,
+                                sizeDif.y,
+                              ),
+                            )
+                            .toVector2(),
+                        details.data,
+                      );
+                    },
+                    presenter: presenter,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         PartsBoard(

@@ -43,7 +43,7 @@ class MyanmarFlag extends GameFlag {
               ),
               PathPart.fromSvgPath(
                 "M17.705 16.963H.57l13.863 10.071-5.295 16.297L23 33.259l13.862 10.072-5.295-16.297 13.863-10.07H28.295L23 .667l-5.295 16.296Z",
-                name: '2',
+                name: '4',
                 color: const Color(0xffffffff),
                 areaSize: size,
                 position: (_) => Vector2(25.57, 10.67),

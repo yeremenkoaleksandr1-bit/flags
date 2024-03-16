@@ -36,7 +36,7 @@ class KenyaFlag extends GameFlag {
             ),
             PathPart.fromSvgPath(
               "M0 .0h96V20H0V.8Z",
-              name: '1',
+              name: '4',
               color: const Color(0xff006600),
               areaSize: size,
               position: (_) => Vector2(0, 44.8),
@@ -44,7 +44,7 @@ class KenyaFlag extends GameFlag {
             EmblemPart.fromType<KenyaEmblem>(
               position: Vector2(34.76, 9.07),
               size: Vector2(26.48, 42.6),
-              previousMustBePlaced: const ['1', '2', '3'],
+              previousMustBePlaced: const ['1', '2', '3', '4'],
             ),
           ],
         );

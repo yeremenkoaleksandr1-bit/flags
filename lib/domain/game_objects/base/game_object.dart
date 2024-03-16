@@ -5,18 +5,18 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
 abstract class GameObject implements IDrawable {
-  final Key key;
+  Key key;
 
-  final String name;
-  final String? uniqueName;
+  String name;
+  String? uniqueName;
 
-  late Vector2 position;
+  Vector2 position;
 
-  late double scale;
+  double scale;
 
-  late Vector2 size;
+  Vector2 size;
 
-  late double rotation;
+  double rotation;
 
   Rect get rect => position & size;
 
@@ -29,7 +29,7 @@ abstract class GameObject implements IDrawable {
     this.scale = 1,
     this.rotation = 0,
   })  : key = key ?? UniqueKey(),
-        uniqueName = uniqueName ?? UniqueKey().toString(),
+        uniqueName = uniqueName ?? name,
         position = position ?? Vector2.zero(),
         size = size ?? Vector2.all(64);
 

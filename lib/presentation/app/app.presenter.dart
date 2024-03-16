@@ -23,7 +23,9 @@ import '../../uikit/assets/assets.dart';
 import '../navigator/router.dart';
 
 abstract interface class IAppPresenter with StateMixin<IAppState> {
-  static IAppPresenter get i => Get.find<IAppPresenter>(tag: "app");
+  static IAppPresenter get I => Get.find<IAppPresenter>(tag: "app");
+
+  static bool get isDebugMode => I.appPreferences.data.isDebugMode;
 
   ILevelsService get levelsService;
 

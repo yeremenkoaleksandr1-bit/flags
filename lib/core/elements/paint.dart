@@ -3,15 +3,15 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class SPaint {
-  final BlendMode blendMode;
-  final Color color;
-  final bool invertColors;
-  final bool isAntiAlias;
-  final StrokeCap strokeCap;
-  final StrokeJoin strokeJoin;
-  final double strokeMiterLimit;
-  final double strokeWidth;
-  final PaintingStyle style;
+  BlendMode blendMode;
+  Color color;
+  bool invertColors;
+  bool isAntiAlias;
+  StrokeCap strokeCap;
+  StrokeJoin strokeJoin;
+  double strokeMiterLimit;
+  double strokeWidth;
+  PaintingStyle style;
 
   SPaint({
     this.blendMode = BlendMode.srcOver,

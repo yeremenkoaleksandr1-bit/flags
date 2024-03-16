@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 
 import '../../presentation/presenters/game_mode_picker/game_mode_picker.presenter.dart';
 import '../../ui/game_scaffold.dart';
+import 'views/coming_soon.dart';
 import 'views/puzzles_mode_view.dart';
 
 class GameModePickerScreen extends ArGetScreen<IGameModePickerPresenter> {
@@ -31,6 +32,10 @@ class GameModePickerScreen extends ArGetScreen<IGameModePickerPresenter> {
         children: [
           PageView.builder(
             itemBuilder: (BuildContext context, int index) {
+              if (entries.length == index) {
+                return const GameModeComingSoon();
+              }
+
               final entry = entries.elementAt(index);
 
               return ScaledGestureDetector(
@@ -38,7 +43,7 @@ class GameModePickerScreen extends ArGetScreen<IGameModePickerPresenter> {
                 child: entry.value,
               );
             },
-            itemCount: entries.length,
+            itemCount: entries.length + 1,
           ),
           const Align(
             alignment: Alignment.bottomCenter,
