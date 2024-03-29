@@ -25,7 +25,6 @@ class GeorgiaFlag extends GameFlag {
                 path: SPath.rect(
                   rect: size.toRect(),
                   paint: SPaint(
-                    style: PaintingStyle.fill,
                     color: const Color(0xFFFFFFFF),
                   ),
                 ),
@@ -37,24 +36,28 @@ class GeorgiaFlag extends GameFlag {
               ),
               PathPart(
                 name: '2',
+                uniqueName: "2_1",
                 position: Vector2(14.25, 6.25),
                 path: part,
                 previousMustBePlaced: const ['1'],
               ),
               PathPart(
                 name: '2',
+                uniqueName: "2_2",
                 position: Vector2(14.25, 44.65),
                 path: part,
                 previousMustBePlaced: const ['1'],
               ),
               PathPart(
                 name: '2',
+                uniqueName: "2_3",
                 position: Vector2(68.65, 44.65),
                 path: part,
                 previousMustBePlaced: const ['1'],
               ),
               PathPart(
                 name: '2',
+                uniqueName: "2_4",
                 position: Vector2(68.65, 6.25),
                 path: part,
                 previousMustBePlaced: const ['1'],

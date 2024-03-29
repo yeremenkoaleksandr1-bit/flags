@@ -26,7 +26,6 @@ class ItalyFlag extends GameFlag {
                   color: const Color(0xFFF4F5F0),
                 ),
               ),
-              previousMustBePlaced: const ['1'],
             ),
             PathPart(
               name: "3",
@@ -38,7 +37,6 @@ class ItalyFlag extends GameFlag {
                   color: const Color(0xFFCD212A),
                 ),
               ),
-              previousMustBePlaced: const ['2'],
             ),
           ],
         );

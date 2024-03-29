@@ -1,18 +1,15 @@
 import 'package:armar/armar.dart';
-import 'package:flags/domain/preferences/app_preference.dart';
 import 'package:flags/presentation/app/app.presenter.dart';
+import 'package:flags/presentation/navigator/routes.dart';
+import 'package:flags/presentation/presentation.dart';
+import 'package:flags/ui/game_scaffold.dart';
+import 'package:flags/uikit/assets/assets.dart';
 import 'package:flags/uikit/components/buttons/buttons.dart';
+import 'package:flags/uikit/components/safe_area/safe_area.dart';
 import 'package:flags/uikit/layout_components/sprite_widget.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
 import 'package:qlevar_router/qlevar_router.dart';
-
-import '../../presentation/navigator/routes.dart';
-import '../../presentation/presentation.dart';
-import '../../ui/game_scaffold.dart';
-import '../../uikit/assets/assets.dart';
-import '../../uikit/components/safe_area/safe_area.dart';
-import '../../uikit/uikit.dart';
 
 class HomeScreen extends ArGetScreen<IHomePresenter> {
   const HomeScreen({

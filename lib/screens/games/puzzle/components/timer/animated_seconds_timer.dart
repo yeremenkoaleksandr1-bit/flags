@@ -27,7 +27,7 @@ class _AnimatedSecondsTimerState extends State<AnimatedSecondsTimer> {
       initialData: 99,
       builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
         return FText(
-          snapshot.data.toString(),
+          (snapshot.data == -1 ? "" : snapshot.data).toString(),
           textStyle: const TextStyle(
             fontSize: 128,
           ),

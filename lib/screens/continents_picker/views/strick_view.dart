@@ -12,7 +12,7 @@ class WinnerStreakView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final winStreak = IAppPresenter.I.gamePreferences.data.winStreak;
+    final winStreak = IAppPresenter.I.gameState.data.winStreak;
 
     return Material(
       color: ThemePalette.yellow.withOpacity(0.8),

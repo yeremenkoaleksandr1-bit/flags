@@ -6,8 +6,8 @@ class AzerbaijanFlag extends GameFlag {
           name: "Azerbaijan",
           proportion: 1 / 2,
           objects: (size) {
-            double totalFlex = 3;
-            double unitHeight = size.y / totalFlex;
+            const double totalFlex = 3;
+            final double unitHeight = size.y / totalFlex;
 
             return [
               PathPart(
@@ -15,7 +15,6 @@ class AzerbaijanFlag extends GameFlag {
                 path: SPath.rect(
                   rect: Vector2(size.x, unitHeight).toRect(),
                   paint: SPaint(
-                    style: PaintingStyle.fill,
                     color: const Color(0xFF00B5E2),
                   ),
                 ),
@@ -26,7 +25,6 @@ class AzerbaijanFlag extends GameFlag {
                 path: SPath.rect(
                   rect: Vector2(size.x, unitHeight).toRect(),
                   paint: SPaint(
-                    style: PaintingStyle.fill,
                     color: const Color(0xFFEF3340),
                   ),
                 ),
@@ -37,7 +35,6 @@ class AzerbaijanFlag extends GameFlag {
                 path: SPath.rect(
                   rect: Vector2(size.x, unitHeight).toRect(),
                   paint: SPaint(
-                    style: PaintingStyle.fill,
                     color: const Color(0xFF509E2F),
                   ),
                 ),

@@ -1,18 +1,18 @@
-import 'package:armar/armar.dart';
-import 'package:armar/logger.dart';
-import 'package:flags/core/flutter_engine.dart';
-import 'package:flags/screens/games/puzzle/components/timer/timer.dart';
-import 'package:flutter/cupertino.dart';
+// ignore_for_file: require_trailing_commas
 
-import '../../../domain/entities/game/game_levels/game_level.dart';
-import '../../../presentation/game/puzzle/puzzle_fast.presenter.dart';
-import '../../../presentation/presenters/levels_picker/levels_picker.presenter.dart';
-import '../../../uikit/layout_components/gap/gap.dart';
-import '../base/game_process_screen.dart';
-import '../components/heart_tries/heart_tries.dart';
-import 'common.dart';
-import 'components/menu_button.dart';
-import 'components/skip_level_button.dart';
+import 'package:armar/armar.dart';
+import 'package:flags/core/flutter_engine.dart';
+import 'package:flags/domain/entities/game/game_levels/game_level.dart';
+import 'package:flags/presentation/game/puzzle/puzzle_fast.presenter.dart';
+import 'package:flags/presentation/presenters/levels_picker/levels_picker.presenter.dart';
+import 'package:flags/screens/games/base/game_process_screen.dart';
+import 'package:flags/screens/games/components/heart_tries/heart_tries.dart';
+import 'package:flags/screens/games/puzzle/common.dart';
+import 'package:flags/screens/games/puzzle/components/menu_button.dart';
+import 'package:flags/screens/games/puzzle/components/skip_level_button.dart';
+import 'package:flags/screens/games/puzzle/components/timer/timer.dart';
+import 'package:flags/uikit/layout_components/gap/gap.dart';
+import 'package:flutter/cupertino.dart';
 
 class PuzzleFastMode extends PuzzleCommonMode<IPuzzleFastModePresenter> {
   const PuzzleFastMode({super.key, required super.presenter});

@@ -3,24 +3,22 @@
 import 'dart:async';
 
 import 'package:armar/armar.dart';
-import 'package:armar/logger.dart';
 import 'package:flags/core/flutter_engine.dart';
+import 'package:flags/domain/adapters.dart';
+import 'package:flags/domain/preferences/preferences.dart';
+import 'package:flags/domain/services/game/emblems.service.dart';
 import 'package:flags/domain/services/levels/levels.service.dart';
 import 'package:flags/presentation/app/state/app.state.dart';
+import 'package:flags/presentation/navigator/router.dart';
 import 'package:flags/resources/resources.dart';
 import 'package:flags/ui/builders/app/components/splash.dart';
+import 'package:flags/uikit/assets/assets.dart';
+import 'package:flags/uikit/shaders/shaders.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:qlevar_router/qlevar_router.dart';
-
-import '../../domain/adapters.dart';
-import '../../domain/preferences/preferences.dart';
-import '../../domain/services/game/emblems.service.dart';
-import '../../uikit/assets/assets.dart';
-import '../navigator/router.dart';
 
 abstract interface class IAppPresenter with StateMixin<IAppState> {
   static IAppPresenter get I => Get.find<IAppPresenter>(tag: "app");
@@ -33,13 +31,13 @@ abstract interface class IAppPresenter with StateMixin<IAppState> {
 
   AppPreferences get appPreferences;
 
-  GamePreferences get gamePreferences;
+  GamePreferences get gameState;
 
   AppRouter get router;
 }
 
 class AppPresenterImpl extends GetxController
-    with StateMixin<IAppState>
+    with StateMixin<IAppState>, GetSingleTickerProviderStateMixin
     implements IAppPresenter {
   @override
   late final ILevelsService levelsService;
@@ -50,7 +48,7 @@ class AppPresenterImpl extends GetxController
   @override
   late final AppPreferences appPreferences;
   @override
-  late final GamePreferences gamePreferences;
+  late final GamePreferences gameState;
 
   final BuildContext context;
 
@@ -60,8 +58,10 @@ class AppPresenterImpl extends GetxController
   AppPresenterImpl({required this.context});
 
   @override
-  void onInit() async {
-    Completer endSplashAnimationCompleter = Completer();
+  Future<void> onInit() async {
+    await GameShaders.init();
+    final Completer<dynamic> endSplashAnimationCompleter = Completer();
+
     AnimationController? splashAnimator;
     final OverlayEntry splashOverlayEntry = OverlayEntry(
       builder: (_) => const Splash().animate(
@@ -102,7 +102,7 @@ class AppPresenterImpl extends GetxController
     await Assets.init(context);
 
     appPreferences = AppPreferences();
-    gamePreferences = GamePreferences();
+    gameState = GamePreferences();
 
     final Resources resources = Resources();
     await resources.initialize();

@@ -1,8 +1,7 @@
+import 'package:flags/domain/enums/continent_type.dart';
+import 'package:flags/domain/enums/game_mode_type.dart';
 import 'package:flags/domain/services/levels/levels.service.dart';
 import 'package:flutter/material.dart';
-
-import '../../../domain/enums/continent_type.dart';
-import '../../../domain/enums/game_mode_type.dart';
 
 class CompletedLevelsCountStreamBuilder extends StatefulWidget {
   const CompletedLevelsCountStreamBuilder({

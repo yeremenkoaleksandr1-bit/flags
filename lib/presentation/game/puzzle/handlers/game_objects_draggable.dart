@@ -12,12 +12,12 @@ mixin ProcessedObjectFocusHandler {
     _object.value = null;
   }
 
-  void setFocusOnObject(dynamic object) {
+  void setFocusOnObject(Object object) {
     _object.value = object;
     onObjectFocusAdded(object);
   }
 
-  void onObjectFocusRemoved(dynamic object);
+  void onObjectFocusRemoved(Object object);
 
-  void onObjectFocusAdded(dynamic object);
+  void onObjectFocusAdded(Object object);
 }

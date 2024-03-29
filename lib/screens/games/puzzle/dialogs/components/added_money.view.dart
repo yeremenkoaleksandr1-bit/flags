@@ -5,22 +5,31 @@ import 'package:flutter/material.dart';
 import '../../../../../uikit/uikit.dart';
 
 class AddedMoneyView extends StatelessWidget {
-  const AddedMoneyView({super.key, required this.money});
+  const AddedMoneyView({
+    super.key,
+    required this.money,
+    required this.widgetKey,
+  });
+
+  final Key widgetKey;
 
   final int money;
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         SizedBox.square(
           dimension: 48,
-          child: SpriteUIWidget(image: Assets.images.cash.image),
+          child: SpriteUIWidget(
+            key: widgetKey,
+            image: Assets.images.cash.image,
+          ),
         ),
         Gap.h12,
-        FText(money.toString()),
+        FText(
+          money.toString(),
+        ),
       ],
     );
   }

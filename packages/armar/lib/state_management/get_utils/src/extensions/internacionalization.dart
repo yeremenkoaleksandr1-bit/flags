@@ -13,8 +13,10 @@ class _IntlHost {
 extension FirstWhereExt<T> on List<T> {
   /// The first element satisfying [test], or `null` if there are none.
   T? firstWhereOrNull(bool Function(T element) test) {
-    for (var element in this) {
-      if (test(element)) return element;
+    for (final element in this) {
+      if (test(element)) {
+        return element;
+      }
     }
     return null;
   }
@@ -85,7 +87,9 @@ extension Trans on String {
     // print(Get.translations.containsKey(Get.locale!.languageCode));
     // print(Get.translations.keys);
     // Returns the key if locale is null.
-    if (Get.locale?.languageCode == null) return this;
+    if (Get.locale?.languageCode == null) {
+      return this;
+    }
 
     if (_fullLocaleAndKey) {
       return Get.translations[

@@ -32,31 +32,34 @@ class GreeceFlag extends GameFlag {
                 path: SPath.rect(
                   rect: size.toRect(),
                   paint: SPaint(
-                    style: PaintingStyle.fill,
                     color: const Color(0xFF0D5EAF),
                   ),
                 ),
               ),
               PathPart(
                 name: '2',
+                uniqueName: "2_1",
                 path: shortLine,
                 position: Vector2(size.x - shortLine.bounds.width, 7.11),
                 previousMustBePlaced: const ['1'],
               ),
               PathPart(
                 name: '2',
+                uniqueName: "2_2",
                 path: shortLine,
                 position: Vector2(size.x - shortLine.bounds.width, 21.33),
                 previousMustBePlaced: const ['1'],
               ),
               PathPart(
                 name: '3',
+                uniqueName: "3_1",
                 path: longLine,
                 position: Vector2(0, 34.93),
                 previousMustBePlaced: const ['1'],
               ),
               PathPart(
                 name: '3',
+                uniqueName: "3_2",
                 path: longLine,
                 position: Vector2(0, 49.78),
                 previousMustBePlaced: const ['1'],

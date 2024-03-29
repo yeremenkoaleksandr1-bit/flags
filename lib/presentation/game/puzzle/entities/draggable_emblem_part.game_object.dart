@@ -7,7 +7,7 @@ class DraggableEmblemPart extends ScalableEmblemPart {
   DraggableEmblemPart({
     super.key,
     required super.emblem,
-    String? name,
+    super.name,
     super.position,
     super.scale,
     super.size,
@@ -29,6 +29,7 @@ class DraggableEmblemPart extends ScalableEmblemPart {
     required List<double> scales,
   }) {
     return DraggableEmblemPart(
+      key: emblemPart.key,
       name: emblemPart.name,
       uniqueName: emblemPart.uniqueName,
       emblem: emblemPart.emblem,
@@ -45,6 +46,7 @@ class DraggableEmblemPart extends ScalableEmblemPart {
 
   EmblemPart toEmblemPart() {
     return EmblemPart(
+      key: key,
       emblem: emblem,
       name: name,
       position: position,

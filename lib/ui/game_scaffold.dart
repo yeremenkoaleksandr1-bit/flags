@@ -1,4 +1,3 @@
-import 'package:armar/logger.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -21,6 +20,8 @@ class GameTransitionPageBuilder extends StatefulWidget {
     this.startSlideDirection = GamePageSlideDirection.right,
     this.endSlideDirection = GamePageSlideDirection.left,
     this.curve = Curves.linear,
+    this.onPageFocussed,
+    this.onPageUnfocused,
   });
 
   final Widget child;
@@ -29,6 +30,9 @@ class GameTransitionPageBuilder extends StatefulWidget {
   final GamePageSlideDirection endSlideDirection;
 
   final Curve curve;
+
+  final VoidCallback? onPageFocussed;
+  final VoidCallback? onPageUnfocused;
 
   @override
   State<GameTransitionPageBuilder> createState() =>
@@ -66,8 +70,12 @@ class _GameTransitionPageBuilderState extends State<GameTransitionPageBuilder>
 
     if (ModalRoute.of(context)!.isCurrent) {
       FlutterEngine.widgetPostFrameCallback((timeStamp) {
-        _controller.reverse(from: 1);
+        _controller.reverse(from: 1).whenCompleteOrCancel(() {
+          widget.onPageFocussed?.call();
+        });
       });
+    } else {
+      widget.onPageFocussed?.call();
     }
   }
 
@@ -113,39 +121,29 @@ class _GameTransitionPageBuilderState extends State<GameTransitionPageBuilder>
                   switch (endSlideDirection) {
                     case GamePageSlideDirection.top:
                       translationY = -screenHeight * value;
-                      break;
                     case GamePageSlideDirection.bottom:
                       translationY = screenHeight * value;
-                      break;
                     case GamePageSlideDirection.left:
                       translationX = -screenWidth * value;
-                      break;
                     case GamePageSlideDirection.right:
                       translationX = screenWidth * value;
-                      break;
                     case GamePageSlideDirection.middle:
                       translationX = 1;
                       translationY = 1;
-                      break;
                   }
                 } else if (_controller.status == AnimationStatus.reverse) {
                   switch (startSlideDirection) {
                     case GamePageSlideDirection.top:
                       translationY = -screenHeight * value;
-                      break;
                     case GamePageSlideDirection.bottom:
                       translationY = screenHeight * value;
-                      break;
                     case GamePageSlideDirection.left:
                       translationX = -screenWidth * value;
-                      break;
                     case GamePageSlideDirection.right:
                       translationX = screenWidth * value;
-                      break;
                     case GamePageSlideDirection.middle:
                       translationX = 1;
                       translationY = 1;
-                      break;
                   }
                 } else {
                   translationX = 1;
@@ -167,7 +165,9 @@ class _GameTransitionPageBuilderState extends State<GameTransitionPageBuilder>
   @override
   void didPop() {
     FlutterEngine.widgetPostFrameCallback((timeStamp) {
-      _controller.forward(from: 0);
+      _controller.forward(from: 0).whenComplete(() {
+        widget.onPageUnfocused?.call();
+      });
     });
     super.didPop();
   }
@@ -185,6 +185,7 @@ class _GameTransitionPageBuilderState extends State<GameTransitionPageBuilder>
   void didPushNext() {
     FlutterEngine.widgetPostFrameCallback((timeStamp) {
       _controller.forward(from: 0);
+      widget.onPageUnfocused?.call();
     });
 
     super.didPushNext();

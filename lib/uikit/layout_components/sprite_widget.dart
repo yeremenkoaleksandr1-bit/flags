@@ -11,15 +11,12 @@ class SpriteUIWidget extends LeafRenderObjectWidget {
   final FilterQuality filterQuality;
 
   const SpriteUIWidget({
-    Key? key,
+    super.key,
     required this.image,
     this.color = Colors.white,
     this.blendMode = BlendMode.modulate,
     this.filterQuality = FilterQuality.high,
-    Widget? child,
-  }) : super(
-          key: key,
-        );
+  });
 
   @override
   RenderObject createRenderObject(BuildContext context) {
@@ -63,9 +60,8 @@ class SpriteUIRenderBox extends RenderShiftedBox with RenderProxyBoxMixin {
     this.image,
     this.color,
     this.blendMode,
-    this.filterQuality, {
-    RenderBox? child,
-  }) : super(child);
+    this.filterQuality,
+  ) : super(null);
 
   @override
   bool hitTest(BoxHitTestResult result, {required Offset position}) {

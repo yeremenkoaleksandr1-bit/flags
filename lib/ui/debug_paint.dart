@@ -1,12 +1,10 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'package:armar/armar.dart';
-import 'package:armar/logger.dart';
+import 'package:armar/rx/rx.dart';
 import 'package:armar/state_management/get.dart';
 import 'package:flags/core/flutter_engine.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class DebugPaintProvider extends StatefulWidget {
   const DebugPaintProvider({
@@ -23,8 +21,11 @@ class DebugPaintProvider extends StatefulWidget {
 abstract class DebugPainter {
   static late final DebugPainter _instance;
 
-  static void paint(void Function(Canvas canvas, Size size) callback) =>
+  static void paint(void Function(Canvas canvas, Size size) callback) {
+    FlutterEngine.widgetPostFrameCallback((timeStamp) {
       _instance.paintFunc(callback);
+    });
+  }
 
   void paintFunc(void Function(Canvas canvas, Size size) callback);
 }
@@ -53,27 +54,20 @@ class _DebugPaintProviderState extends State<DebugPaintProvider>
           child: IgnorePointer(
             child: Material(
               type: MaterialType.transparency,
-              child: StreamBuilder(
-                stream: _queue.stream,
-                initialData: _queue,
-                builder: (
-                  BuildContext context,
-                  AsyncSnapshot<Iterable<dynamic Function(Canvas, Size)>>
-                      snapshot,
-                ) {
+              child: FastValueBuilder(
+                listen: _queue,
+                builder: (Iterable<dynamic Function(Canvas, Size)> value) {
                   return CustomPaint(
                     foregroundPainter: _Painter(
-                      snapshot.data!,
-                      onPaintCompleted: () {
-                        _queue.clear();
-                      },
+                      value,
+                      onPaintCompleted: _queue.clear,
                     ),
                   );
                 },
               ),
             ),
           ),
-        )
+        ),
       ],
     );
   }

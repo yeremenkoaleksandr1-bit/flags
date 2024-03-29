@@ -1,10 +1,9 @@
 import 'dart:math';
 
+import 'package:armar/logger.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
-import 'package:flags/domain/game_objects/flag/flag_extensions.dart';
 import 'package:flags/presentation/game/puzzle/entities/colored_part.game_object.dart';
 import 'package:flame/extensions.dart';
-import 'package:flutter/rendering.dart';
 
 import '../../../../domain/game_objects/flag/flag.dart';
 import '../../../../domain/game_objects/parts/parts.dart';
@@ -47,7 +46,7 @@ class PuzzleEasyGenerator extends PuzzleSuperEasyGenerator {
           flagObjects.any((e) => e.uniqueName == superPart.uniqueName);
 
       int loopCount = maxRandomColorsQuantity;
-      List<Color> colors = [];
+      final List<Color> colors = [];
 
       if (isFlagPart) {
         colors.add(superPart.color);
@@ -56,19 +55,24 @@ class PuzzleEasyGenerator extends PuzzleSuperEasyGenerator {
       }
 
       for (var j = 0; j < loopCount; j++) {
-        var colorInt = allColors.elementAt(
+        logger.f(allColors.length);
+        final colorInt = allColors.elementAt(
           random.nextInt(allColors.length),
         );
 
-        allColors.remove(colorInt);
+        //allColors.remove(colorInt);
 
-        if (colors.any((e) =>
-                e.value == colorInt ||
-                ColorUtils.calculateColorSimilarity(e.value, colorInt) < 30) ||
-            flagObjects.any((e) =>
-                e.color.value == colorInt ||
-                ColorUtils.calculateColorSimilarity(e.color.value, colorInt) <
-                    30)) {
+        if (colors.any(
+              (e) =>
+                  e.value == colorInt ||
+                  ColorUtils.calculateColorSimilarity(e.value, colorInt) < 30,
+            ) ||
+            flagObjects.any(
+              (e) =>
+                  e.color.value == colorInt ||
+                  ColorUtils.calculateColorSimilarity(e.color.value, colorInt) <
+                      30,
+            )) {
           j--;
           continue;
         }

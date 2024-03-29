@@ -184,6 +184,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  color_filter_extension:
+    dependency: "direct main"
+    description:
+      name: color_filter_extension
+      sha256: "591a9f8c135dcb727d156d55b4e811cbdf0a75639c16cae55ee9b22351baeba5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   community_material_icon:
     dependency: transitive
     description:
@@ -529,6 +537,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.17"
+  flutter_shaders:
+    dependency: "direct main"
+    description:
+      name: flutter_shaders
+      sha256: "02750b545c01ff4d8e9bbe8f27a7731aa3778402506c67daa1de7f5fc3f4befe"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.2"
   flutter_spinkit:
     dependency: transitive
     description:
@@ -620,13 +636,13 @@ packages:
     source: hosted
     version: "4.0.2"
   image:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: image
-      sha256: "004a2e90ce080f8627b5a04aecb4cdfac87d2c3f3b520aa291260be5a32c033d"
+      sha256: "4c68bfd5ae83e700b5204c1e74451e7bf3cf750e6843c6e158289cf56bda018e"
       url: "https://pub.dev"
     source: hosted
-    version: "4.1.4"
+    version: "4.1.7"
   intl:
     dependency: transitive
     description:
@@ -691,6 +707,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  lint:
+    dependency: "direct dev"
+    description:
+      name: lint
+      sha256: d758a5211fce7fd3f5e316f804daefecdc34c7e53559716125e6da7388ae8565
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.0"
   lints:
     dependency: transitive
     description:
@@ -1027,6 +1051,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
+  simple_shadow:
+    dependency: "direct main"
+    description:
+      name: simple_shadow
+      sha256: "0c0872b2baffaf12fc91416643785a88081120bac61d704f3f9dbd7e712360fa"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.1"
   sky_engine:
     dependency: transitive
     description: flutter

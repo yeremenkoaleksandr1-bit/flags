@@ -1,6 +1,6 @@
 import 'package:flags/uikit/layout_components/nine_slice_widget.dart';
 
-import '../../../assets/assets.dart';
+import 'package:flags/uikit/assets/assets.dart';
 
 class NineCardView extends NineSliceWidget {
   NineCardView({

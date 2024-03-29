@@ -1,6 +1,5 @@
 import 'package:flags/uikit/assets/assets.dart';
-
-import '../../layout_components/nine_slice_widget.dart';
+import 'package:flags/uikit/layout_components/nine_slice_widget.dart';
 
 class AButtonWidget extends NineSliceWidget {
   AButtonWidget({

@@ -2,27 +2,23 @@ import 'package:armar/armar.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
-import 'package:flags/domain/game_objects/base/game_object.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
+import 'package:flags/screens/games/base/game_process_screen.dart';
+import 'package:flags/screens/games/components/heart_tries/heart_tries.dart';
+import 'package:flags/screens/games/puzzle/components/emblemb_contirmation_overlay_entry.dart';
+import 'package:flags/screens/games/puzzle/components/menu_button.dart';
+import 'package:flags/screens/games/puzzle/components/skip_level_button.dart';
 import 'package:flags/screens/games/puzzle/views/board.dart';
+import 'package:flags/screens/games/puzzle/views/boards/colored_path_editing_board.dart';
+import 'package:flags/screens/games/puzzle/views/boards/emblem_editing_board.dart';
 import 'package:flags/screens/games/puzzle/views/current_level_index.dart';
-import 'package:flags/ui/game_scaffold.dart';
-import 'package:flags/uikit/layout_components/overlayment/overlayment.provider.dart';
+import 'package:flags/screens/games/puzzle/views/flag_area.dart';
+import 'package:flags/screens/games/puzzle/views/level_title.dart';
+import 'package:flags/uikit/components/animated/shake.dart';
+import 'package:flags/uikit/components/safe_area/safe_area.dart';
+import 'package:flags/uikit/layout_components/gap/gap.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/cupertino.dart';
-
-import '../../../uikit/components/animated/shake.dart';
-import '../../../uikit/components/safe_area/safe_area.dart';
-import '../../../uikit/layout_components/gap/gap.dart';
-import '../base/game_process_screen.dart';
-import '../components/heart_tries/heart_tries.dart';
-import 'components/emblemb_contirmation_overlay_entry.dart';
-import 'components/menu_button.dart';
-import 'components/skip_level_button.dart';
-import 'views/boards/colored_path_editing_board.dart';
-import 'views/boards/emblem_editing_board.dart';
-import 'views/flag_area.dart';
-import 'views/level_title.dart';
 
 class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
     extends GameProcessScreen<T> {
@@ -45,7 +41,7 @@ class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
         const Spacer(),
         HeartTries(
           state: presenter.heartTriesState,
-        )
+        ),
       ],
     );
   }
@@ -56,7 +52,6 @@ class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
     GameLevel level,
   ) {
     return Align(
-      alignment: Alignment.center,
       child: CurrentLevelIndex(
         level: level,
       ),
@@ -150,32 +145,32 @@ class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
 
   @override
   Widget build(BuildContext context, T presenter) {
-    return DeferredPointerHandler(
-      child: presenter.obx(
-        (state) => FastBuilder(
-          () {
-            final level = state!.level.value;
-            return Stack(
-              children: [
-                buildHeader(
+    return presenter.obx(
+      (state) => FastBuilder(
+        () {
+          final level = state!.level.value;
+          return Stack(
+            children: [
+              buildHeader(
+                context,
+                presenter,
+                level,
+              ),
+              DeferredPointerHandler(
+                child: buildBody(
                   context,
                   presenter,
                   level,
                 ),
-                buildBody(
-                  context,
-                  presenter,
-                  level,
-                ),
-                EmblemConfirmationWidget(
-                  state: presenter.emblemConfirmationView,
-                  onConfirm: presenter.tryPlaceFocussedEmblem,
-                  onDecline: presenter.tryRemoveFocussedEmblem,
-                )
-              ],
-            );
-          },
-        ),
+              ),
+              EmblemConfirmationWidget(
+                state: presenter.emblemConfirmationView,
+                onConfirm: presenter.tryPlaceFocussedEmblem,
+                onDecline: presenter.tryRemoveFocussedEmblem,
+              ),
+            ],
+          );
+        },
       ),
     );
   }

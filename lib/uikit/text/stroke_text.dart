@@ -10,21 +10,23 @@ class StrokeText extends StatelessWidget {
 
   const StrokeText(
     this.text, {
-    Key? key,
+    super.key,
     this.strokeWidth = 1,
     this.strokeColor = Colors.black,
     this.textColor = Colors.white,
     this.textStyle,
     this.textAlign,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Stack(
+      clipBehavior: Clip.none,
       children: [
         Text(
           text,
           textAlign: textAlign,
+          overflow: TextOverflow.visible,
           style: TextStyle(
             foreground: Paint()
               ..style = PaintingStyle.stroke
@@ -35,6 +37,7 @@ class StrokeText extends StatelessWidget {
         Text(
           text,
           textAlign: textAlign,
+          overflow: TextOverflow.visible,
           style: TextStyle(color: textColor).merge(textStyle),
         ),
       ],

@@ -3,16 +3,19 @@
 import 'dart:math';
 
 import 'package:armar/armar.dart';
-import 'package:armar/logger.dart';
 import 'package:armar/state_management/get_utils/src/extensions/internacionalization.dart';
 import 'package:dart_numerics/dart_numerics.dart';
+import 'package:flags/core/extensions/num.dart';
+import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/domain/enums/game_difficult.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
 import 'package:flags/domain/game_objects/flag/flag_extensions.dart';
 import 'package:flags/domain/services/game/emblems.service.dart';
+import 'package:flags/domain/services/levels/levels.service.dart';
 import 'package:flags/presentation/app/app.presenter.dart';
+import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
 import 'package:flags/presentation/game/puzzle/entities/draggable_emblem_part.game_object.dart';
 import 'package:flags/presentation/game/puzzle/entities/scallable_emblem.dart';
 import 'package:flags/presentation/game/puzzle/generators/easy.dart';
@@ -20,29 +23,24 @@ import 'package:flags/presentation/game/puzzle/generators/extra_hard.dart';
 import 'package:flags/presentation/game/puzzle/generators/hard.dart';
 import 'package:flags/presentation/game/puzzle/generators/medium.dart';
 import 'package:flags/presentation/game/puzzle/generators/super_easy.dart';
+import 'package:flags/presentation/game/puzzle/handlers/game_objects_draggable.dart';
 import 'package:flags/presentation/game/puzzle/state/puzzle_game.state.dart';
 import 'package:flags/presentation/game/puzzle/validators/validator.dart';
 import 'package:flags/presentation/presenters/levels_picker/levels_picker.presenter.dart';
+import 'package:flags/screens/games/components/heart_tries/heart_tries.dart';
 import 'package:flags/screens/games/games_factory.page.dart';
 import 'package:flags/screens/games/puzzle/components/emblemb_contirmation_overlay_entry.dart';
+import 'package:flags/screens/games/puzzle/dialogs/complete_continent.dialog.dart';
+import 'package:flags/screens/games/puzzle/dialogs/lose.dialog.dart';
+import 'package:flags/screens/games/puzzle/dialogs/menu.dialog.dart';
+import 'package:flags/screens/games/puzzle/dialogs/winner.dialog.dart';
+import 'package:flags/screens/games/puzzle/scene_components/emblem.dart';
+import 'package:flags/screens/games/puzzle/views/board.dart';
+import 'package:flags/uikit/game_widgets/game_widgets.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:qlevar_router/qlevar_router.dart';
-
-import '../../../core/extensions/num.dart';
-import '../../../core/flutter_engine.dart';
-import '../../../domain/services/levels/levels.service.dart';
-import '../../../screens/games/components/heart_tries/heart_tries.dart';
-import '../../../screens/games/puzzle/dialogs/complete_continent.dialog.dart';
-import '../../../screens/games/puzzle/dialogs/lose.dialog.dart';
-import '../../../screens/games/puzzle/dialogs/menu.dialog.dart';
-import '../../../screens/games/puzzle/dialogs/winner.dialog.dart';
-import '../../../screens/games/puzzle/scene_components/emblem.dart';
-import '../../../screens/games/puzzle/views/board.dart';
-import '../../../uikit/game_widgets/game_widgets.dart';
-import 'entities/board_item.dart';
-import 'handlers/game_objects_draggable.dart';
 
 abstract interface class IPuzzleCommonModePresenter<S extends PuzzleGameState>
     with StateMixin<S>, ProcessedObjectFocusHandler {
@@ -118,7 +116,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
   GameLevel get level => params.level;
 
   @override
-  void onInit() async {
+  Future<void> onInit() async {
     await preInitialization();
 
     boardController.initState();
@@ -179,7 +177,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
   }
 
   @override
-  onClose() {
+  void onClose() {
     shakeAnimation.dispose();
   }
 
@@ -199,9 +197,15 @@ class PuzzleCommonModePresenterImpl extends GetxController
   Future<void> placeObject(ProcessGameObject object) async {
     state.placedObjects.add(object);
 
-    state.boardObjects.firstWhere((e) {
-      return e.object.key == object.key;
-    }).setActive(false);
+    if (object is EmblemPart) {
+      state.boardObjects.firstWhere((e) {
+        return e.object.uniqueName == object.uniqueName;
+      }).setActive(false);
+    } else {
+      state.boardObjects.firstWhere((e) {
+        return e.object.key == object.key;
+      }).setActive(false);
+    }
 
     unfocusObject();
     tryCompleteLevel();
@@ -224,7 +228,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
       seed: -1,
     );
 
-    NextLevelData data =
+    final NextLevelData data =
         levelsPresenter.getNextLevelFromCurrent(state.level.value);
 
     final level = state.level.value.copyWith();
@@ -260,8 +264,10 @@ class PuzzleCommonModePresenterImpl extends GetxController
     state.level.value.completeLevel();
 
     if (!level.completed) {
+      IAppPresenter.I.gameState.addMoney(level.id);
+
       if (level.flag.emblems.isNotEmpty) {
-        for (var emblem in level.flag.emblems) {
+        for (final emblem in level.flag.emblems) {
           emblemsService.saveEmblem(emblem.name);
         }
       }
@@ -315,6 +321,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
 
       if (emblemFromFlag != null) {
         gameObject = gameObject.copyWith(
+          key: emblemFromFlag.key,
           previousMustBePlaced: emblemFromFlag.previousMustBePlaced,
         );
       }
@@ -331,6 +338,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
 
       gameObject = DraggableEmblemPart.fromEmblem(
         gameObject.copyWith(
+          key: gameObject.key,
           position: position / state.flagFitValue,
         ),
         scales: gameObject.scales,
@@ -393,17 +401,38 @@ class PuzzleCommonModePresenterImpl extends GetxController
     boardController.toggleDraggingStatus(true);
   }
 
-  void onRestart() async {
-    restartLevel();
+  Future<void> onRestart() async {
+    await restartLevel();
     await QR.back();
   }
 
-  void restartLevel() async {
-    resetLevelState();
+  Future<void> restartLevel() async {
+    final level = state.level.value;
+    state.boardObjects.clear();
 
-    for (var e in state.boardObjects.value) {
-      e.setActive(true);
-    }
+    await Future.delayed(
+      const Duration(milliseconds: 10),
+    );
+
+    FlutterEngine.schedulePostFrameCallback((timeStamp) async {
+      final seed = Random().nextInt(int32MaxValue);
+
+      levelsService.saveLevel(
+        levelId: level.id,
+        completed: level.completed,
+        continent: params.continentType,
+        gameMode: params.gameMode,
+        seed: seed,
+      );
+
+      gameSeed = seed;
+
+      final parts = await generateBoardParts();
+
+      state.boardObjects.addAll(parts);
+
+      resetLevelState();
+    });
   }
 
   List<GameLevel> get levels => ILevelsPickerPresenter.i.levels.levels;
@@ -429,14 +458,14 @@ class PuzzleCommonModePresenterImpl extends GetxController
   }
 
   @override
-  void onObjectFocusAdded(dynamic object) {
+  void onObjectFocusAdded(Object object) {
     FlutterEngine.widgetPostFrameCallback((timeStamp) {
       boardController.toggleDraggingStatus(false);
     });
   }
 
   @override
-  void onObjectFocusRemoved(dynamic object) {
+  void onObjectFocusRemoved(Object object) {
     emblemConfirmationView.hide();
 
     FlutterEngine.schedulePostFrameCallback((timeStamp) {
@@ -526,12 +555,13 @@ class PuzzleCommonModePresenterImpl extends GetxController
   }
 
   @override
-  void openMenu() async {
+  Future<void> openMenu() async {
     await onMenuOpened();
 
     await PuzzleMenuDialog(
       onRestart: onRestart,
       onExit: onGameExit,
+      seed: gameSeed,
     ).showModal();
 
     await onMenuClosed();

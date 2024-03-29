@@ -19,7 +19,6 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return FlagsWidgetsApp(
-      debugShowCheckedModeBanner: false,
       title: "FlagsUp",
       theme: AppTheme.themeData,
       localizationsDelegates: const [

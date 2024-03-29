@@ -1,13 +1,14 @@
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/services/levels/levels.service.dart';
+import 'package:flags/features/shop/shop_item.view.dart';
+import 'package:flags/presentation/app/app.presenter.dart';
+import 'package:flags/presentation/presenters/continents_picker/route_params.dart';
+import 'package:flags/screens/continents_picker/components/continent.dart';
 import 'package:flags/uikit/components/buttons/buttons.dart';
 import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
+import 'package:flags/uikit/text/f_text.dart';
 import 'package:flutter/material.dart';
 import 'package:qlevar_router/qlevar_router.dart';
-
-import '../../../presentation/presenters/continents_picker/route_params.dart';
-import '../../../uikit/text/f_text.dart';
-import '../components/continent.dart';
 
 class ContinentsSlider extends StatefulWidget {
   const ContinentsSlider({
@@ -32,31 +33,35 @@ class _ContinentsSliderState extends State<ContinentsSlider> {
     return PageView(
       controller: _controller,
       children: [
-        ...widget.continents.map(
-          (e) => Stack(
-            children: [
-              ScaledGestureDetector(
-                onTap: () => widget.onPressed(e),
-                child: ContinentComponent.fromType(e),
-              ),
-              Align(
-                alignment: Alignment.topCenter,
-                child: FBlueButton(
-                  onPressed: () {
-                    final params =
-                        QR.params['data']!.value as ContinentPickerRouteParams;
+        ...widget.continents.asMap().entries.map(
+              (e) => Stack(
+                children: [
+                  ShopItemView(
+                    tag: "continent_${e.key}",
+                    child: () => ScaledGestureDetector(
+                      onTap: () => widget.onPressed(e.value),
+                      child: ContinentComponent.fromType(e.value),
+                    ),
+                  ),
+                  if (IAppPresenter.isDebugMode)
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: FBlueButton(
+                        onPressed: () {
+                          final params = QR.params['data']!.value!
+                              as ContinentPickerRouteParams;
 
-                    ILevelsService.I.removeDataOfContinent(
-                      continent: e,
-                      gameMode: params.gameProcessType,
-                    );
-                  },
-                  child: FText("reset state"),
-                ),
-              )
-            ],
-          ),
-        ),
+                          ILevelsService.I.removeDataOfContinent(
+                            continent: e.value,
+                            gameMode: params.gameProcessType,
+                          );
+                        },
+                        child: FText("reset state"),
+                      ),
+                    ),
+                ],
+              ),
+            ),
       ],
     );
   }

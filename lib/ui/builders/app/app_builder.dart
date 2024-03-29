@@ -1,14 +1,13 @@
 import 'package:armar/armar.dart';
 import 'package:armar/rx/rx.dart';
+import 'package:flags/features/shop/shop.provider.dart';
 import 'package:flags/presentation/app/app.presenter.dart';
-import 'package:flags/ui/builders/app/components/splash.dart';
 import 'package:flutter/material.dart';
-import 'package:qlevar_router/qlevar_router.dart';
 
+import '../../../features/layers/layer.view.dart';
+import '../../../features/layers/money_layer/money_layer.dart';
 import '../../../presentation/app/state/app.state.dart';
-import '../../../uikit/theme/theme.dart';
 import '../../ui.dart';
-import '../main_view_builder.dart';
 
 class AppScreen extends ArGetScreen<IAppPresenter> {
   AppScreen({
@@ -31,8 +30,15 @@ class AppScreen extends ArGetScreen<IAppPresenter> {
           listen: presenter.statusRx,
           builder: (GetStatus<IAppState> value) {
             if (value.data is AppState) {
-              return AppRouterBuilder(
-                router: presenter.router,
+              return ShopProvider(
+                child: Stack(
+                  children: [
+                    AppRouterBuilder(
+                      router: presenter.router,
+                    ),
+                    const UiMoneyLayer(),
+                  ],
+                ),
               );
             }
 

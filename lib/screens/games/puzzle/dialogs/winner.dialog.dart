@@ -1,18 +1,21 @@
 import 'package:armar/armar.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
+import 'package:drag_and_drop/extensions/render_box.dart';
+import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
+import 'package:flags/features/layers/money_layer/money_layer.dart';
+import 'package:flags/presentation/app/app.presenter.dart';
+import 'package:flags/screens/games/puzzle/dialogs/components/added_money.view.dart';
+import 'package:flags/screens/games/puzzle/dialogs/components/new_emblems_view.dart';
 import 'package:flags/ui/dialogs/dialogs.dart';
 import 'package:flags/uikit/components/buttons/buttons.dart';
+import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../uikit/uikit.dart';
-import 'components/added_money.view.dart';
-import 'components/new_emblems_view.dart';
-
-class PuzzleWinnerDialog extends DialogWidget {
-  const PuzzleWinnerDialog({
+class PuzzleWinnerDialog extends DialogWidget<dynamic> {
+  PuzzleWinnerDialog({
     super.key,
     required this.level,
     this.nextLevel,
@@ -22,6 +25,8 @@ class PuzzleWinnerDialog extends DialogWidget {
     required this.onNextLevelPressed,
   });
 
+  final GlobalKey _moneyStartWidget = GlobalKey();
+
   final GameLevel level;
   final GameLevel? nextLevel;
 
@@ -30,6 +35,8 @@ class PuzzleWinnerDialog extends DialogWidget {
 
   final VoidCallback onExitPressed;
   final void Function() onNextLevelPressed;
+
+  bool isAnimationPlayed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +60,41 @@ class PuzzleWinnerDialog extends DialogWidget {
     final showMoneyAward = addMoneyView != 0;
     final showEmblemsAward = emblems.isNotEmpty;
     final showAward = showMoneyAward || showEmblemsAward;
+
+    if (showMoneyAward && !isAnimationPlayed) {
+      isAnimationPlayed = true;
+      FlutterEngine.widgetPostFrameCallback((timeStamp) {
+        if (_moneyStartWidget.currentContext != null) {
+          final renderBox = _moneyStartWidget.currentContext!
+              .findRenderObject()! as RenderBox;
+
+          final rect = renderBox.rect;
+
+          final uiMoneyLayer = UiMoneyLayer.find();
+
+          uiMoneyLayer.show().then(
+            (value) {
+              uiMoneyLayer
+                  .addMoneys(
+                rect.center,
+                addMoneyView.clamp(1, 50),
+              )
+                  .then(
+                (value) async {
+                  await Future.delayed(
+                    const Duration(
+                      milliseconds: 1000,
+                    ),
+                  );
+
+                  await uiMoneyLayer.hide();
+                },
+              );
+            },
+          );
+        }
+      });
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -78,6 +120,7 @@ class PuzzleWinnerDialog extends DialogWidget {
                 if (showMoneyAward)
                   AddedMoneyView(
                     money: addMoneyView,
+                    widgetKey: _moneyStartWidget,
                   ),
                 if (showEmblemsAward)
                   PuzzleNewEmblemView(
@@ -105,12 +148,14 @@ class PuzzleWinnerDialog extends DialogWidget {
             child: FText("Back to flags"),
           ),
         ),
-        Gap.v48,
-        Text("nextLevel: ${nextLevel?.flag.name}"),
-        Text("is Last Level In Continent: $isLastLevelInContinent"),
-        Text("is Current Level Completed: $isCurrentLevelCompleted"),
-        Text("is Last Level In Section: $isLastLevelInSection"),
-        Text("level Emblems: ${emblems.length}"),
+        if (IAppPresenter.isDebugMode) ...[
+          Gap.v48,
+          Text("nextLevel: ${nextLevel?.flag.name}"),
+          Text("is Last Level In Continent: $isLastLevelInContinent"),
+          Text("is Current Level Completed: $isCurrentLevelCompleted"),
+          Text("is Last Level In Section: $isLastLevelInSection"),
+          Text("level Emblems: ${emblems.length}"),
+        ]
       ],
     );
   }

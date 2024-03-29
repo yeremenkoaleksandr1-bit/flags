@@ -4,12 +4,11 @@ import 'dart:math';
 
 import 'package:armar/armar.dart';
 import 'package:defer_pointer/defer_pointer.dart';
+import 'package:flags/uikit/assets/components/check_mark.dart';
 import 'package:flags/uikit/assets/components/close.dart';
+import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
+import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../uikit/assets/components/check_mark.dart';
-import '../../../../uikit/components/gestures/scaled_gesture.dart';
-import '../../../../uikit/uikit.dart';
 
 class EmblemConfirmationWidget extends StatefulWidget {
   const EmblemConfirmationWidget({
@@ -58,7 +57,7 @@ class EmblemConfirmationWidgetState extends State<EmblemConfirmationWidget>
         return Positioned(
           left: (position.dx - (width / 2 - _width.value / 2))
               .clamp(0, mq.size.width - width),
-          top: (position.dy).clamp(
+          top: position.dy.clamp(
             mq.padding.top + 64,
             double.infinity,
           ),
@@ -66,31 +65,29 @@ class EmblemConfirmationWidgetState extends State<EmblemConfirmationWidget>
           height: 38,
           child: IgnorePointer(
             ignoring: !isShown,
-            child: DeferPointer(
-              child: AnimatedOpacity(
-                opacity: isShown ? 1 : 0,
-                duration: const Duration(milliseconds: 100),
-                child: Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ScaledGestureDetector(
-                        onTap: widget.onDecline,
-                        child: FCard(
-                          color: ThemePalette.red,
-                          child: UIClose(),
-                        ),
+            child: AnimatedOpacity(
+              opacity: isShown ? 1 : 0,
+              duration: const Duration(milliseconds: 100),
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ScaledGestureDetector(
+                      onTap: widget.onDecline,
+                      child: FCard(
+                        color: ThemePalette.red,
+                        child: UIClose(),
                       ),
-                      Gap.h24,
-                      ScaledGestureDetector(
-                        onTap: widget.onConfirm,
-                        child: FCard(
-                          color: ThemePalette.green,
-                          child: UICheckMark(),
-                        ),
+                    ),
+                    Gap.h24,
+                    ScaledGestureDetector(
+                      onTap: widget.onConfirm,
+                      child: FCard(
+                        color: ThemePalette.green,
+                        child: UICheckMark(),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

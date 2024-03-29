@@ -1,10 +1,9 @@
 import 'dart:ui';
 
 import 'package:flags/core/flutter_engine.dart';
+import 'package:flags/screens/games/puzzle/components/timer/animated_seconds_timer.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
-
-import '../components/timer/animated_seconds_timer.dart';
 
 class PreparingFastModeInitializationGame extends StatefulWidget {
   const PreparingFastModeInitializationGame({
@@ -17,7 +16,7 @@ class PreparingFastModeInitializationGame extends StatefulWidget {
 
   final VoidCallback? onReady;
 
-  Future showDialog(BuildContext context) async {
+  Future<dynamic> showDialog(BuildContext context) async {
     return await showGeneralDialog(
       context: context,
       pageBuilder: (
@@ -65,7 +64,7 @@ class _PreparingFastModeInitializationGameState
           child: AnimatedSecondsTimer(
             timerStream: widget.preparingTimer,
           ),
-        )
+        ),
       ],
     );
   }

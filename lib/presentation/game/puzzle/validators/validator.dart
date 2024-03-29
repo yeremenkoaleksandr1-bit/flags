@@ -1,10 +1,9 @@
 import 'package:armar/logger.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
+import 'package:flags/domain/game_objects/flag/flag.dart';
+import 'package:flags/domain/game_objects/parts/path_part.dart';
+import 'package:flags/presentation/game/puzzle/entities/colored_part.game_object.dart';
 import 'package:flame/game.dart';
-
-import '../../../../domain/game_objects/flag/flag.dart';
-import '../../../../domain/game_objects/parts/path_part.dart';
-import '../entities/colored_part.game_object.dart';
 
 class PuzzleObjectPlacingHandlerData {}
 
@@ -26,7 +25,9 @@ class PuzzleObjectPlacingHandler {
       (e) => e.name == object.name,
     );
 
-    if (objectsFromFlag.isEmpty) return null;
+    if (objectsFromFlag.isEmpty) {
+      return null;
+    }
 
     final isPreviousPlaced = object.previousMustBePlaced?.every(
           (e) {
@@ -43,9 +44,11 @@ class PuzzleObjectPlacingHandler {
         ) ??
         true;
 
-    if (!isPreviousPlaced) return null;
+    if (!isPreviousPlaced) {
+      return null;
+    }
 
-    var nearestObject =
+    final nearestObject =
         _findNearestObject(position / fitValue, objectsFromFlag);
 
     if (object is ColoredPart && nearestObject is PathPart) {
@@ -64,19 +67,11 @@ class PuzzleObjectPlacingHandler {
       )) {
         return null;
       }
-      final isOriginalObject = object.key == nearestObject.key;
 
-      logger.f(isOriginalObject);
-      if (!isOriginalObject) {
-        final key = object.key;
-        object.key = nearestObject.key;
-
-        return nearestObject.copyWith(
-          key: key,
-        );
-      }
-
-      return nearestObject.copyWith();
+      return nearestObject.copyWith(
+        key: object.key,
+        uniqueName: object.uniqueName,
+      );
     }
 
     return null;
@@ -95,7 +90,7 @@ class PuzzleObjectPlacingHandler {
 
     for (int i = 1; i < objects.length; i++) {
       final element = objects.elementAt(i);
-      double distance = point.distanceTo(element.position);
+      final double distance = point.distanceTo(element.position);
 
       if (distance < minDistance) {
         minDistance = distance;

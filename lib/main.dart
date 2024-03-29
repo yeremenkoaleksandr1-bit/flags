@@ -39,16 +39,6 @@ void main() async {
     );
 
   runApp(
-    StatsFl(
-      isEnabled: false,
-      width: 600,
-      height: 20,
-      maxFps: 90,
-      showText: true,
-      sampleTime: .5,
-      totalTime: 15,
-      align: Alignment.topCenter,
-      child: const App(),
-    ),
+    const App(),
   );
 }

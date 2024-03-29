@@ -1,6 +1,5 @@
+import 'package:flags/uikit/assets/assets.dart';
 import 'package:flags/uikit/layout_components/sprite_widget.dart';
-
-import '../assets.dart';
 
 class UICheckMark extends SpriteUIWidget {
   UICheckMark({

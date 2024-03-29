@@ -1,11 +1,8 @@
 import 'dart:ui';
 
-import 'package:armar/logger.dart';
-import 'package:armar/rx/rx.dart';
+import 'package:flags/screens/games/puzzle/components/timer/animated_seconds_timer.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
-
-import '../components/timer/animated_seconds_timer.dart';
 
 class PreparingFastModeTimer extends StatefulWidget {
   const PreparingFastModeTimer({super.key, required this.preparingTimer});
@@ -13,11 +10,13 @@ class PreparingFastModeTimer extends StatefulWidget {
   final Stream<int> preparingTimer;
 
   OverlayEntry overlay() {
-    return OverlayEntry(builder: (BuildContext context) {
-      return PreparingFastModeTimer(
-        preparingTimer: preparingTimer,
-      );
-    });
+    return OverlayEntry(
+      builder: (BuildContext context) {
+        return PreparingFastModeTimer(
+          preparingTimer: preparingTimer,
+        );
+      },
+    );
   }
 
   @override
@@ -42,7 +41,7 @@ class _PreparingFastModeTimerState extends State<PreparingFastModeTimer> {
             child: AnimatedSecondsTimer(
               timerStream: widget.preparingTimer,
             ),
-          )
+          ),
         ],
       ),
     );
