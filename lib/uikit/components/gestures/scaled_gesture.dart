@@ -1,7 +1,8 @@
+import 'package:flags/features/audio/audio.provider.dart';
+import 'package:flags/features/audio/sound_data.dart';
+import 'package:flags/ui/notifications/tap_button_notification.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
-import '../../../ui/notifications/tap_button_notification.dart';
 
 class ScaledGestureDetector extends StatefulWidget {
   const ScaledGestureDetector({
@@ -28,6 +29,8 @@ class ScaledGestureDetector extends StatefulWidget {
 
 class _ScaledGestureDetectorState extends State<ScaledGestureDetector>
     with SingleTickerProviderStateMixin {
+  late final audioService = AudioProvider.of(context);
+
   late final AnimationController _animationController;
 
   bool get isDisabled => widget.onTap == null;
@@ -48,16 +51,16 @@ class _ScaledGestureDetectorState extends State<ScaledGestureDetector>
     super.dispose();
   }
 
-  void onPointerDown() {
+  Future<void> onPointerDown() async {
     if (!isDisabled) {
       _animationController.forward(from: _animationController.value);
     }
   }
 
-  void onPointerUp() {
+  Future<void> onPointerUp() async {
     if (!isDisabled) {
+      await audioService.playSfx(GameSfx.button);
       widget.onTap?.call();
-      context.dispatchNotification(const TapButtonNotification());
       onPointerCancel();
     }
   }
@@ -74,13 +77,15 @@ class _ScaledGestureDetectorState extends State<ScaledGestureDetector>
       gestures: {
         TapGestureRecognizer:
             GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
-          () => TapGestureRecognizer(),
+          TapGestureRecognizer.new,
           (i) {
-            if (!mounted) return;
+            if (!mounted) {
+              return;
+            }
 
             i.onTapDown = (e) => onPointerDown();
             i.onTapUp = (e) => onPointerUp();
-            i.onTapCancel = () => onPointerCancel();
+            i.onTapCancel = onPointerCancel;
           },
         ),
         if (widget.onLongPress != null)
@@ -94,20 +99,22 @@ class _ScaledGestureDetectorState extends State<ScaledGestureDetector>
             },
           ),
       },
-      child: Builder(builder: (context) {
-        return AnimatedBuilder(
-          animation: _animationController,
-          builder: (BuildContext context, Widget? child) {
-            final value = _animationController.value;
+      child: Builder(
+        builder: (context) {
+          return AnimatedBuilder(
+            animation: _animationController,
+            builder: (BuildContext context, Widget? child) {
+              final value = _animationController.value;
 
-            return Transform.scale(
-              scale: 1 - (0.05 * Curves.easeInBack.transform(value)),
-              child: child!,
-            );
-          },
-          child: widget.child,
-        );
-      }),
+              return Transform.scale(
+                scale: 1 - (0.05 * Curves.easeInBack.transform(value)),
+                child: child!,
+              );
+            },
+            child: widget.child,
+          );
+        },
+      ),
     );
   }
 

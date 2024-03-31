@@ -4,6 +4,7 @@ import 'package:flags/presentation/navigator/routes.dart';
 import 'package:flags/presentation/presentation.dart';
 import 'package:flags/ui/game_scaffold.dart';
 import 'package:flags/uikit/assets/assets.dart';
+import 'package:flags/uikit/components/buttons/actions/sound_mute.button.dart';
 import 'package:flags/uikit/components/buttons/buttons.dart';
 import 'package:flags/uikit/components/safe_area/safe_area.dart';
 import 'package:flags/uikit/layout_components/sprite_widget.dart';
@@ -31,31 +32,45 @@ class HomeScreen extends ArGetScreen<IHomePresenter> {
       child: GameTransitionPageBuilder(
         startSlideDirection: GamePageSlideDirection.middle,
         endSlideDirection: GamePageSlideDirection.middle,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              SpriteUIWidget(image: Assets.images.logo.image),
-              const Spacer(),
-              FYellowButton(
-                onPressed: openGamePickerPage,
-                child: Center(
-                  child: FText("PLAY"),
-                ),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  SpriteUIWidget(image: Assets.images.logo.image),
+                  const Spacer(),
+                  FYellowButton(
+                    onPressed: openGamePickerPage,
+                    child: Center(
+                      child: FText("PLAY"),
+                    ),
+                  ),
+                  Gap.v12,
+                  FYellowButton(
+                    onPressed: openMyFlagsPage,
+                    child: Center(
+                      child: FText("MY FLAGS"),
+                    ),
+                  ),
+                  const Spacer(
+                    flex: 4,
+                  ),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      FSoundMuteButton(),
+                    ],
+                  ),
+                  Gap.v24,
+                ],
               ),
-              Gap.v12,
-              FYellowButton(
-                onPressed: openMyFlagsPage,
-                child: Center(
-                  child: FText("MY FLAGS"),
-                ),
-              ),
-              const Spacer(
-                flex: 4,
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+            ),
+            Positioned(
+              right: 0,
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text("Debug mode"),
                   StreamBuilder(
@@ -74,9 +89,9 @@ class HomeScreen extends ArGetScreen<IHomePresenter> {
                     },
                   ),
                 ],
-              )
-            ],
-          ),
+              ),
+            ),
+          ],
         ),
       ),
     );

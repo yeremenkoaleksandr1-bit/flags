@@ -1,6 +1,8 @@
 import 'package:armar/contexts/contexts.dart';
 import 'package:armar/logger.dart';
+import 'package:flags/presentation/navigator/routes.dart';
 import 'package:flags/presentation/presentation.dart';
+import 'package:flags/presentation/presenters/continents_picker/route_params.dart';
 import 'package:flags/presentation/presenters/game_mode_picker/game_mode_picker.presenter.dart';
 import 'package:flags/presentation/presenters/levels_picker/levels_picker.presenter.dart';
 import 'package:flags/presentation/presenters/levels_picker/route_params.dart';
@@ -9,18 +11,12 @@ import 'package:flags/screens/continents_picker/continents_picker.screen.dart';
 import 'package:flags/screens/editor/my_flags/my_flags.screen.dart';
 import 'package:flags/screens/game_mode_picker/game_mode_picker.screen.dart';
 import 'package:flags/screens/games/games_factory.page.dart';
+import 'package:flags/screens/home/home.screen.dart';
 import 'package:flags/screens/levels_picker/levels_picker.screen.dart';
+import 'package:flags/ui/game_scaffold.dart';
 import 'package:flags/uikit/layout_components/overlayment/overlayment.provider.dart';
-import 'package:flame/components.dart';
 import 'package:flutter/widgets.dart';
 import 'package:qlevar_router/qlevar_router.dart';
-
-import '../../screens/home/home.screen.dart';
-import '../../ui/builders/app/app_builder.dart';
-import '../../ui/game_scaffold.dart';
-import '../app/app.presenter.dart';
-import '../presenters/continents_picker/route_params.dart';
-import 'routes.dart';
 
 class AppRouter extends QRouterDelegate {
   static final RouteObserver<ModalRoute<void>> routeObserver =
@@ -37,73 +33,74 @@ class AppRouter extends QRouterDelegate {
   }) : super(
           [
             QRoute.withChild(
-                path: '/app',
-                initRoute: '/home',
-                observers: [
-                  routeObserver,
-                  GameTransitionPageBuilder.routeObserver,
-                  HeroController(),
-                ],
-                builderChild: (router) => router,
-                children: [
-                  QRoute(
-                    path: '/home',
-                    name: Routes.home,
-                    builder: () => HomeScreen(
-                      presenter: (context) => HomePresenterImpl(),
-                    ),
+              path: '/app',
+              initRoute: '/home',
+              observers: [
+                routeObserver,
+                GameTransitionPageBuilder.routeObserver,
+                HeroController(),
+              ],
+              builderChild: (router) => router,
+              children: [
+                QRoute(
+                  path: '/home',
+                  name: Routes.home,
+                  builder: () => HomeScreen(
+                    presenter: (context) => HomePresenterImpl(),
                   ),
-                  QRoute(
-                    path: '/game_mode_picker',
-                    name: Routes.gameModePicker,
-                    builder: () => GameModePickerScreen(
-                      presenter: (context) => GameModePickerPresenterImpl(),
-                    ),
+                ),
+                QRoute(
+                  path: '/game_mode_picker',
+                  name: Routes.gameModePicker,
+                  builder: () => GameModePickerScreen(
+                    presenter: (context) => GameModePickerPresenterImpl(),
                   ),
-                  QRoute(
-                    path: '/continents_picker',
-                    name: Routes.continentsPicker,
-                    builder: () {
-                      final data = QR.params['data']!.value
-                          as ContinentPickerRouteParams;
+                ),
+                QRoute(
+                  path: '/continents_picker',
+                  name: Routes.continentsPicker,
+                  builder: () {
+                    final data =
+                        QR.params['data']!.value! as ContinentPickerRouteParams;
 
-                      return ContinentsPickerScreen(
-                        presenter: (context) => ContinentsPickerPresenterImpl(
-                          routeParams: data,
-                        ),
-                      );
-                    },
-                  ),
-                  QRoute(
-                    path: '/levels_picker',
-                    name: Routes.levelsPicker,
-                    builder: () => LevelsPickerScreen(
-                      presenter: (context) {
-                        final data =
-                            QR.params['data']!.value as LevelsPickerRouteParams;
-                        return LevelsPickerPresenterImpl(params: data);
-                      },
-                    ),
-                  ),
-                  QRoute(
-                    path: '/game_process_factory',
-                    name: Routes.gameProcessFactory,
-                    builder: () {
+                    return ContinentsPickerScreen(
+                      presenter: (context) => ContinentsPickerPresenterImpl(
+                        routeParams: data,
+                      ),
+                    );
+                  },
+                ),
+                QRoute(
+                  path: '/levels_picker',
+                  name: Routes.levelsPicker,
+                  builder: () => LevelsPickerScreen(
+                    presenter: (context) {
                       final data =
-                          QR.params['data']!.value as GamesFactoryPageParams;
-                      return Overlayment(
-                        child: GamesFactoryPage(params: data),
-                      );
+                          QR.params['data']!.value! as LevelsPickerRouteParams;
+                      return LevelsPickerPresenterImpl(params: data);
                     },
                   ),
-                  QRoute(
-                    path: '/my_flags',
-                    name: Routes.myFlags,
-                    builder: () => MyFlagsScreen(
-                      presenter: (context) => MyFlagsPresenterImpl(),
-                    ),
+                ),
+                QRoute(
+                  path: '/game_process_factory',
+                  name: Routes.gameProcessFactory,
+                  builder: () {
+                    final data =
+                        QR.params['data']!.value! as GamesFactoryPageParams;
+                    return Overlayment(
+                      child: GamesFactoryPage(params: data),
+                    );
+                  },
+                ),
+                QRoute(
+                  path: '/my_flags',
+                  name: Routes.myFlags,
+                  builder: () => MyFlagsScreen(
+                    presenter: (context) => MyFlagsPresenterImpl(),
                   ),
-                ]),
+                ),
+              ],
+            ),
           ],
           navKey: ArAppContexts.keys.navigatorKey,
         ) {

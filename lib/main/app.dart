@@ -1,12 +1,10 @@
 import 'package:armar/armar.dart';
-import 'package:armar/armar_app.dart';
 import 'package:flags/ui/debug_paint.dart';
+import 'package:flags/uikit/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import '../presentation/navigator/router.dart';
-import '../ui/builders/app/app_builder.dart';
-import '../uikit/theme/theme.dart';
+import 'app_builder.dart';
 
 class App extends StatefulWidget {
   const App({super.key});

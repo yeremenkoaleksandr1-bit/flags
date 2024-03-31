@@ -20,7 +20,7 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   shared_preferences: ^2.2.2
-  flame_audio: ^2.1.7
+  flame_audio: ^2.10.1
   add_to_cart_animation: ^2.0.3
   qlevar_router: ^1.10.1
   defer_pointer: ^0.0.2
@@ -71,6 +71,8 @@ flutter:
     - assets/images/continents/
     - assets/images/emblems/
     - assets/images/ui/
+    - assets/audio/music/
+    - assets/audio/sfx/
 
   fonts:
     - family: Troika
