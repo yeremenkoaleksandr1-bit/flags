@@ -76,8 +76,9 @@ class MoneyAnimatedItemController extends State<MoneyAnimatedView>
       animation: controller,
       builder: (BuildContext context, Widget? child) {
         if (_curve != null) {
-          currentPosition = _curve!.moveByWhile(
+          currentPosition = _curve!.lerp(
             animation.value,
+            Curves.easeIn,
           );
 
           if (animation.value >= 1) {

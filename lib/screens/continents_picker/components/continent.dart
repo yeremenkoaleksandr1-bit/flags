@@ -55,7 +55,13 @@ class ContinentComponent extends StatefulWidget {
 }
 
 class _ContinentComponentState extends State<ContinentComponent> {
-  final params = QR.params['data']!.value as ContinentPickerRouteParams;
+  late final ContinentPickerRouteParams params;
+
+  @override
+  void initState() {
+    params = QR.params['data']!.value! as ContinentPickerRouteParams;
+    super.initState();
+  }
 
   late final levelsCount =
       FactoryGameContinent.continents[widget.type]!.levels.length;
@@ -78,7 +84,6 @@ class _ContinentComponentState extends State<ContinentComponent> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 FText(
                   widget.name,
@@ -104,7 +109,7 @@ class _ContinentComponentState extends State<ContinentComponent> {
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

@@ -48,6 +48,11 @@ dependencies:
   flutter_shaders: ^0.1.2
   color_filter_extension: ^0.0.2
   image: ^4.1.7
+  flutter_vibrate: ^1.3.0
+  vibration: ^1.8.4
+  community_material_icon: ^5.9.55
+  showcaseview:
+    path: packages/showcaseview
 
 dev_dependencies:
   flutter_test:

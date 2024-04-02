@@ -12,10 +12,15 @@ import 'package:flags/domain/enums/game_difficult.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
 import 'package:flags/domain/game_objects/flag/flag_extensions.dart';
+import 'package:flags/domain/game_objects/game_objects.dart';
 import 'package:flags/domain/services/game/emblems.service.dart';
 import 'package:flags/domain/services/levels/levels.service.dart';
+import 'package:flags/features/audio/audio.provider.dart';
+import 'package:flags/features/audio/sound_data.dart';
+import 'package:flags/features/onboarding/onboarding.service.dart';
 import 'package:flags/presentation/app/app.presenter.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
+import 'package:flags/presentation/game/puzzle/entities/colored_part.game_object.dart';
 import 'package:flags/presentation/game/puzzle/entities/draggable_emblem_part.game_object.dart';
 import 'package:flags/presentation/game/puzzle/entities/scallable_emblem.dart';
 import 'package:flags/presentation/game/puzzle/generators/easy.dart';
@@ -24,6 +29,10 @@ import 'package:flags/presentation/game/puzzle/generators/hard.dart';
 import 'package:flags/presentation/game/puzzle/generators/medium.dart';
 import 'package:flags/presentation/game/puzzle/generators/super_easy.dart';
 import 'package:flags/presentation/game/puzzle/handlers/game_objects_draggable.dart';
+import 'package:flags/presentation/game/puzzle/onboarding/colored_part/colored_object.showcase_step_1.dart';
+import 'package:flags/presentation/game/puzzle/onboarding/common_object/common_object.showcase.dart';
+import 'package:flags/presentation/game/puzzle/onboarding/emblem/emblem_object.showcase_step_1.dart';
+import 'package:flags/presentation/game/puzzle/puzzle_fast.presenter.dart';
 import 'package:flags/presentation/game/puzzle/state/puzzle_game.state.dart';
 import 'package:flags/presentation/game/puzzle/validators/validator.dart';
 import 'package:flags/presentation/presenters/levels_picker/levels_picker.presenter.dart';
@@ -42,8 +51,13 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:qlevar_router/qlevar_router.dart';
 
+import '../../../features/vibration/vibration.provider.dart';
+import 'onboarding/showcase.dart';
+
 abstract interface class IPuzzleCommonModePresenter<S extends PuzzleGameState>
     with StateMixin<S>, ProcessedObjectFocusHandler {
+  PuzzleGameShowcase get showcase;
+
   GameLevel get level;
 
   RenderBoxExposer get flagExposer;
@@ -73,7 +87,18 @@ class PuzzleCommonModePresenterImpl extends GetxController
         GetSingleTickerProviderStateMixin,
         ProcessedObjectFocusHandler
     implements IPuzzleCommonModePresenter<PuzzleGameState> {
+  // SHOWCASE
+
+  final IOnboardingService onboardingService = IOnboardingService.I;
+
+  @override
+  final PuzzleGameShowcase showcase = PuzzleGameShowcase();
+
+  // ________
+
   final BuildContext context;
+  late final IAudioController audioController = AudioProvider.of(context);
+  late final vibrationService = PhoneVibrationProvider.of(context);
 
   ILevelsPickerPresenter get levelsPresenter => ILevelsPickerPresenter.i;
 
@@ -117,7 +142,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
 
   @override
   Future<void> onInit() async {
-    await preInitialization();
+    super.onInit();
 
     boardController.initState();
     emblemConfirmationView.initState();
@@ -133,9 +158,31 @@ class PuzzleCommonModePresenterImpl extends GetxController
         ),
       ),
     );
+    await preInitialization();
     super.onInit();
 
     await initialization();
+    tryShowShowcases();
+  }
+
+  void tryShowShowcases() {
+    if (this is IPuzzleFastModePresenter) {
+      return;
+    }
+    showcase.show(
+      [showcase.showcaseCommonObject],
+      "puzzle.common_object",
+    );
+
+    showcase.show(
+      [showcase.emblemObjectStep1],
+      "puzzle_emblem_object",
+    );
+
+    showcase.show(
+      [showcase.coloredObjectStep1],
+      "puzzle_colored_object_1",
+    );
   }
 
   Future<void> preInitialization() async {
@@ -195,6 +242,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
   }
 
   Future<void> placeObject(ProcessGameObject object) async {
+    await audioController.playSfx(GameSfx.correctlyObjectPlacing);
     state.placedObjects.add(object);
 
     if (object is EmblemPart) {
@@ -237,11 +285,14 @@ class PuzzleCommonModePresenterImpl extends GetxController
         (e) => emblemsService.isOpened(e.name),
       );
 
+    final isLastLevelInSection =
+        data.section?.difficulty != state.difficult.value;
+
     if (data.section != null) {
       PuzzleWinnerDialog(
         level: level,
         nextLevel: data.level,
-        isLastLevelInSection: data.section?.difficulty != state.difficult.value,
+        isLastLevelInSection: isLastLevelInSection,
         onExitPressed: () {
           QR.back();
           QR.back();
@@ -264,6 +315,9 @@ class PuzzleCommonModePresenterImpl extends GetxController
     state.level.value.completeLevel();
 
     if (!level.completed) {
+      if (isLastLevelInSection) {
+        audioController.playSfx(GameSfx.sectionCompleted);
+      }
       IAppPresenter.I.gameState.addMoney(level.id);
 
       if (level.flag.emblems.isNotEmpty) {
@@ -310,6 +364,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
     await Future.delayed(
       const Duration(milliseconds: 500),
     );
+    tryShowShowcases();
   }
 
   @override
@@ -369,7 +424,9 @@ class PuzzleCommonModePresenterImpl extends GetxController
     return availableObject != null;
   }
 
-  void onIncorrectPlacing() {
+  Future<void> onIncorrectPlacing() async {
+    await audioController.playSfx(GameSfx.incorrectObjectPlacing);
+    vibrationService.vibrate();
     shakeAnimation.forward(from: 0);
 
     if (!IAppPresenter.I.appPreferences.data.isDebugMode) {
@@ -382,6 +439,8 @@ class PuzzleCommonModePresenterImpl extends GetxController
   }
 
   Future<void> onGameOver() async {
+    await audioController.playSfx(GameSfx.gameLoose);
+    await audioController.pauseBgm();
     await PuzzleLoseDialog(
       onRestart: onRestart,
       onExit: onGameExit,
@@ -407,6 +466,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
   }
 
   Future<void> restartLevel() async {
+    await audioController.resumeBgm();
     final level = state.level.value;
     state.boardObjects.clear();
 
@@ -436,26 +496,6 @@ class PuzzleCommonModePresenterImpl extends GetxController
   }
 
   List<GameLevel> get levels => ILevelsPickerPresenter.i.levels.levels;
-
-  Future<List<BoardItem<ProcessGameObject>>> generateBoardParts() async {
-    final generator = switch (state.difficult.value) {
-      GameDifficult.superEasy => PuzzleSuperEasyGenerator(levels: levels),
-      GameDifficult.easy => PuzzleEasyGenerator(levels: levels),
-      GameDifficult.medium => PuzzleMediumGenerator(levels: levels),
-      GameDifficult.hard => PuzzleHardGenerator(levels: levels),
-      GameDifficult.extraHard => PuzzleExtraHardGenerator(levels: levels),
-    };
-
-    final parts = await generator.generate(
-      state.level.value.flag,
-      Random(gameSeed),
-    );
-    return [
-      ...parts.map(
-        (e) => BoardItem(object: e),
-      ),
-    ];
-  }
 
   @override
   void onObjectFocusAdded(Object object) {
@@ -588,4 +628,92 @@ class PuzzleCommonModePresenterImpl extends GetxController
         GameDifficult.hard => 2.5,
         GameDifficult.extraHard => 3,
       };
+
+  Future<List<BoardItem<ProcessGameObject>>> generateBoardParts() async {
+    final generator = switch (state.difficult.value) {
+      GameDifficult.superEasy => PuzzleSuperEasyGenerator(levels: levels),
+      GameDifficult.easy => PuzzleEasyGenerator(levels: levels),
+      GameDifficult.medium => PuzzleMediumGenerator(levels: levels),
+      GameDifficult.hard => PuzzleHardGenerator(levels: levels),
+      GameDifficult.extraHard => PuzzleExtraHardGenerator(levels: levels),
+    };
+
+    final generatedObjects = await generator.generate(
+      state.level.value.flag,
+      Random(gameSeed),
+    );
+
+    final parts = [
+      ...generatedObjects.map(
+        (e) => BoardItem(object: e),
+      ),
+    ];
+
+    if (this is! IPuzzleFastModePresenter) {
+      if (!showcase.isCompleted("puzzle.common_object")) {
+        final flagPartIndex = parts.indexWhere(
+          (e) => state.level.value.flag.objects.whereType<PathPart>().any(
+                (element) => e.object.uniqueName == element.uniqueName,
+              ),
+        );
+
+        if (flagPartIndex != -1) {
+          final object = parts[flagPartIndex];
+
+          parts[flagPartIndex] = BoardItem(
+            object: object.object,
+            build: (instance) => PuzzleCommonObjectShowcase(
+              showcaseKey: showcase.showcaseCommonObject,
+              flagExposer: flagExposer,
+              child: instance,
+            ),
+          );
+        }
+      }
+
+      if (!showcase.isCompleted("puzzle_emblem_object")) {
+        final flagPartIndex = parts.indexWhere(
+          (e) => state.level.value.flag.objects.whereType<EmblemPart>().any(
+                (element) => e.object.uniqueName == element.uniqueName,
+              ),
+        );
+
+        if (flagPartIndex != -1) {
+          final object = parts[flagPartIndex];
+
+          parts[flagPartIndex] = BoardItem(
+            object: object.object,
+            build: (instance) => PuzzleEmblemObjectStep1Showcase(
+              showcaseKey: showcase.emblemObjectStep1,
+              flagExposer: flagExposer,
+              child: instance,
+            ),
+          );
+        }
+      }
+
+      if (!showcase.isCompleted("puzzle_colored_object_1")) {
+        final flagPartIndex = parts.indexWhere(
+          (e) => e.object is ColoredPart,
+        );
+
+        if (flagPartIndex != -1) {
+          final object = parts[flagPartIndex];
+
+          parts[flagPartIndex] = BoardItem(
+            object: object.object,
+            build: (instance) => PuzzleColoredObjectStep1Showcase(
+              showcaseKey: showcase.coloredObjectStep1,
+              onTap: () {
+                showcase.complete("puzzle_colored_object_1");
+              },
+              child: instance,
+            ),
+          );
+        }
+      }
+    }
+
+    return parts;
+  }
 }

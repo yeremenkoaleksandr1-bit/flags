@@ -6,11 +6,8 @@ import 'package:flutter/material.dart';
 class AudioProvider extends StatefulWidget {
   const AudioProvider({
     super.key,
-    required this.audioService,
     required this.child,
   });
-
-  final IAudioService audioService;
 
   final Widget child;
 
@@ -41,7 +38,7 @@ abstract interface class IAudioController {
 
 class _AudioProviderState extends State<AudioProvider>
     implements IAudioController {
-  IAudioService get audioService => widget.audioService;
+  final IAudioService audioService = AudioServiceImpl();
 
   @override
   Future<void> pauseBgm() => audioService.pauseBgm();

@@ -1,13 +1,13 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
+import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/presentation/game/puzzle/entities/colored_part.game_object.dart';
+import 'package:flags/presentation/game/puzzle/puzzle_fast.presenter.dart';
 import 'package:flags/screens/games/puzzle/components/board_items/base.dart';
 import 'package:flags/uikit/layout_components/containers/card.dart';
 import 'package:flags/uikit/theme/palette.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-
-import '../../../../../domain/game_objects/base/process.game_object.dart';
 
 class BoardColoredPartWidget extends BoardItemWidget {
   const BoardColoredPartWidget({
@@ -28,14 +28,24 @@ class BoardColoredPartWidgetState
   void _longPressHandler(LongPressGestureRecognizer i) {
     i.onLongPress = _controller.show;
     i.onLongPressEnd = (e) => _controller.hide();
-    i.onLongPressCancel = () => _controller.hide();
+    i.onLongPressCancel = _controller.hide;
   }
 
-  void onTap() => presenter.setFocusOnObject(model);
+  Future<void> onTap() async {
+    presenter.setFocusOnObject(model);
+
+    if (presenter is! IPuzzleFastModePresenter) {
+      await Future.delayed(const Duration(milliseconds: 101));
+      presenter.showcase.show(
+        [presenter.showcase.coloredObjectStep2],
+        "puzzle_colored_object_2",
+      );
+    }
+  }
 
   @override
   ProcessGameObject get renderedObject {
-    final object = (super.renderedObject as ColoredPart);
+    final object = super.renderedObject as ColoredPart;
     return object.copyWith(
       path: object.path.copyWith(
         paint: object.path.paint.copyWith(

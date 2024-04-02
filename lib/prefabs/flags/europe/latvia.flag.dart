@@ -6,12 +6,13 @@ class LatviaFlag extends GameFlag {
           name: "Latvia",
           proportion: 1 / 2,
           objects: (size) {
-            double totalFlex = 5;
-            double unitHeight = size.y / totalFlex;
+            const double totalFlex = 5;
+            final double unitHeight = size.y / totalFlex;
 
             return [
               PathPart(
                 name: '1',
+                uniqueName: "1_1",
                 path: SPath.rect(
                   rect: Vector2(size.x, unitHeight * 2).toRect(),
                   paint: SPaint(
@@ -33,6 +34,7 @@ class LatviaFlag extends GameFlag {
               ),
               PathPart(
                 name: "1",
+                uniqueName: "1_2",
                 position: Vector2(0, unitHeight * 3),
                 path: SPath.rect(
                   rect: Vector2(size.x, unitHeight * 2).toRect(),

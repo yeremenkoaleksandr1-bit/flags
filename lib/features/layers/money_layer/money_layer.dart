@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:armar/armar.dart';
@@ -36,7 +37,7 @@ class UiMoneyLayerState extends UiLayerState<UiMoneyLayer, IUiMoneyLayer>
   RenderBox? get moneyRenderBox => widgetKey.currentContext?.renderBox;
 
   final WidgetsPool<MoneyAnimatedItemController> widgetsPool =
-      WidgetsPool(initialSize: 8);
+      WidgetsPool(initialSize: 20);
 
   @override
   Widget buildChild(BuildContext context) {
@@ -60,50 +61,72 @@ class UiMoneyLayerState extends UiLayerState<UiMoneyLayer, IUiMoneyLayer>
     );
   }
 
+  late StreamSubscription<dynamic>? _subscription = null;
+
+  late Completer<dynamic>? _availableCompleter;
+  late Completer<dynamic>? _completer;
+
   @override
   Future<void> addMoneys(Offset fromPosition, int count) async {
-    final random = Random();
+    _subscription?.cancel();
+
     if (moneyRenderBox != null) {
-      print(count);
-      int availableItem = 8;
+      final Random random = Random();
+      _completer = Completer();
+      int availableItem = 20;
       int totalMoneys = count;
 
-      await Future.doWhile(() async {
+      _subscription = Stream.periodic(
+        const Duration(milliseconds: 100),
+      ).listen((event) async {
         if (availableItem <= 0) {
-          return true;
+          await _availableCompleter?.future;
         }
-
         totalMoneys--;
-
         if (totalMoneys <= 0) {
-          return false;
+          _subscription?.cancel();
+          if (_completer != null && !_completer!.isCompleted) {
+            _completer?.complete();
+          }
         }
 
-        availableItem--;
-
-        await Future.delayed(
-          Duration(
-            milliseconds: random.nextIntRange(100, 250),
-          ),
-        );
         if (moneyRenderBox != null) {
           final rect = moneyRenderBox!.rect;
 
           widgetsPool.acquire(
-            onCall: (MoneyAnimatedItemController state) {
+            onCall: (MoneyAnimatedItemController state) async {
+              availableItem--;
+
+              if (availableItem <= 0) {
+                _availableCompleter = Completer();
+              }
+
+              await Future.delayed(
+                Duration(
+                  milliseconds: random.nextIntRange(100, 250),
+                ),
+              );
+
               state.playAnimation(
                 OVector(fromPosition, rect.center),
                 onCompleted: (key) {
                   availableItem++;
+
                   widgetsPool.release(key);
+                  if (availableItem <= 0) {
+                    if (_availableCompleter != null &&
+                        !_availableCompleter!.isCompleted) {
+                      _availableCompleter?.complete();
+                    }
+                  }
                 },
               );
             },
           );
         }
-
-        return true;
       });
     }
+
+    return _completer?.future;
   }
 }

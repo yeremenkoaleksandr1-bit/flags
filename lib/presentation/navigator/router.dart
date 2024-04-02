@@ -1,3 +1,4 @@
+import 'package:armar/armar.dart';
 import 'package:armar/contexts/contexts.dart';
 import 'package:armar/logger.dart';
 import 'package:flags/presentation/navigator/routes.dart';
@@ -37,7 +38,8 @@ class AppRouter extends QRouterDelegate {
               initRoute: '/home',
               observers: [
                 routeObserver,
-                GameTransitionPageBuilder.routeObserver,
+                ArGetScreen.routeObserver,
+                GamePageBuilder.routeObserver,
                 HeroController(),
               ],
               builderChild: (router) => router,

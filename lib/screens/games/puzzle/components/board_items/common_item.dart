@@ -1,24 +1,16 @@
 import 'dart:ui';
 
 import 'package:armar/armar.dart';
-import 'package:armar/logger.dart';
-import 'package:dart_numerics/dart_numerics.dart';
 import 'package:drag_and_drop/drag_and_drop.dart';
 import 'package:drag_and_drop/extensions/render_box.dart';
-import 'package:flags/core/flutter_engine.dart';
-import 'package:flags/domain/game_objects/base/game_object.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
-import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
-import 'package:flags/ui/debug_paint.dart';
+import 'package:flags/features/audio/audio.provider.dart';
+import 'package:flags/features/audio/sound_data.dart';
+import 'package:flags/screens/games/puzzle/components/board_items/base.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:qlevar_router/qlevar_router.dart';
-
-import '../../../../../presentation/game/puzzle/entities/scallable_emblem.dart';
-import 'base.dart';
 
 class BoardCommonItemWidget extends BoardItemWidget {
   const BoardCommonItemWidget({
@@ -57,6 +49,8 @@ class BoardCommonItemWidget extends BoardItemWidget {
 
 class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
     extends BoardItemWidgetState<T> with SingleTickerProviderStateMixin {
+  late final IAudioController audioController = AudioProvider.of(context);
+
   late final GlobalKey _key = GlobalKey();
 
   final RenderBoxExposer _exposer = RenderBoxExposer();
@@ -78,17 +72,17 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
       ..rotateZ(object.rotation)
       ..scale(object.scale);
 
-    Rect parentRect = Offset.zero & constraints.biggest;
-    Rect transformedRect = MatrixUtils.transformRect(
+    final Rect parentRect = Offset.zero & constraints.biggest;
+    final Rect transformedRect = MatrixUtils.transformRect(
       transform,
       parentRect,
     );
 
-    double scaleX = parentRect.width / transformedRect.width;
-    double scaleY = parentRect.height / transformedRect.height;
-    double scaleToFit = scaleX < scaleY ? scaleX : scaleY;
+    final double scaleX = parentRect.width / transformedRect.width;
+    final double scaleY = parentRect.height / transformedRect.height;
+    final double scaleToFit = scaleX < scaleY ? scaleX : scaleY;
 
-    Matrix4 finalTransform = transform.clone()..scale(scaleToFit);
+    final Matrix4 finalTransform = transform.clone()..scale(scaleToFit);
 
     return Transform(
       alignment: Alignment.center,
@@ -105,8 +99,8 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
 
     final areaSize = presenter.flagExposer.renderBox.value?.size;
 
-    final areaWidth = (areaSize?.width ?? 1);
-    var fitted = (areaWidth / (widget.flag.size.x));
+    final areaWidth = areaSize?.width ?? 1;
+    final fitted = areaWidth / (widget.flag.size.x);
 
     final matrix = Matrix4.identity()
       ..translate(object.size.x / 2, object.size.y / 2)
@@ -117,12 +111,12 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
 
     final feedback = MatrixUtils.transformRect(
       matrix.clone()..rotateZ(-object.rotation),
-      (Vector2.zero() & object.size),
+      Vector2.zero() & object.size,
     );
 
     var feedBackRect = Rect.fromLTWH(
       -feedback.width / 2,
-      -(feedback.height),
+      -feedback.height,
       feedback.width,
       feedback.height,
     );
@@ -141,6 +135,14 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
             maxSimultaneousDrags: 1,
             delay: const Duration(milliseconds: 1),
             onDragStarted: (dragStartPoint) {
+              final showcase = widget.presenter.showcase;
+              if (!showcase.isCompleted("puzzle.common_object")) {
+                showcase.showcaseState.next();
+                showcase.complete("puzzle.common_object");
+              } else if (!showcase.isCompleted("puzzle_emblem_object")) {
+                showcase.showcaseState.next();
+              }
+
               _feedbackPosition.value = dragStartPoint;
               _controller.forward(from: 0);
               widget.onDragStarted?.call(object);
@@ -178,6 +180,8 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
             onDragEnd: (SDraggableDetails details) {
               widget.onDragEnd?.call(object, details);
             },
+            onDragCanceled: () =>
+                audioController.playSfx(GameSfx.cancelObjectPlacing),
             feedbackRect: feedBackRect,
             dragAnchorStrategy: (
               SDraggable<Object> draggable,
@@ -196,9 +200,9 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
 
                   final rect = renderBox.rect;
 
-                  final position = (rect.center).toVector2();
+                  final position = rect.center.toVector2();
 
-                  double scale = lerpDouble(
+                  final double scale = lerpDouble(
                     1,
                     object.scale,
                     value,
@@ -224,7 +228,7 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
                           ..translate2(
                             Vector2(0, -object.size.y / 2),
                           ),
-                        child: child!,
+                        child: child,
                       );
                     },
                   );

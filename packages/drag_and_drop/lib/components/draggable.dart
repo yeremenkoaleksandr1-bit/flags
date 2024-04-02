@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 
@@ -83,6 +85,7 @@ class SDraggable<T extends Object> extends StatefulWidget {
     this.onDraggableCanceled,
     this.onDragCompleted,
     this.onDragEnd,
+    this.onDragCanceled,
     required this.feedbackBuilder,
     this.childWhenDragging,
     this.animationDuration = const Duration(milliseconds: 150),
@@ -118,6 +121,7 @@ class SDraggable<T extends Object> extends StatefulWidget {
   final VoidCallback? onDragCompleted;
 
   final SDragEndCallback? onDragEnd;
+  final FutureOr<void> Function()? onDragCanceled;
 
   final bool rootOverlay;
 
@@ -209,6 +213,7 @@ class SDraggableState<T extends Object> extends State<SDraggable<T>> {
           widget.onDragUpdate!(details);
         }
       },
+      onDragCanceled: widget.onDragCanceled,
       onDragEnd: (Velocity velocity, Offset offset, bool wasAccepted) {
         if (mounted) {
           setState(() {

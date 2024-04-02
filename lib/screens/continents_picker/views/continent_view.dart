@@ -30,39 +30,46 @@ class _ContinentsSliderState extends State<ContinentsSlider> {
 
   @override
   Widget build(BuildContext context) {
-    return PageView(
-      controller: _controller,
-      children: [
-        ...widget.continents.asMap().entries.map(
-              (e) => Stack(
-                children: [
-                  ShopItemView(
-                    tag: "continent_${e.key}",
-                    child: () => ScaledGestureDetector(
-                      onTap: () => widget.onPressed(e.value),
-                      child: ContinentComponent.fromType(e.value),
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        return SizedBox.square(
+          dimension: constraints.maxWidth,
+          child: PageView(
+            controller: _controller,
+            children: [
+              ...widget.continents.asMap().entries.map(
+                    (e) => Stack(
+                      children: [
+                        ShopItemView(
+                          tag: "continent_${e.key}",
+                          child: () => ScaledGestureDetector(
+                            onTap: () => widget.onPressed(e.value),
+                            child: ContinentComponent.fromType(e.value),
+                          ),
+                        ),
+                        if (IAppPresenter.isDebugMode)
+                          Align(
+                            alignment: Alignment.topCenter,
+                            child: FBlueButton(
+                              onPressed: () {
+                                final params = QR.params['data']!.value!
+                                    as ContinentPickerRouteParams;
+
+                                ILevelsService.I.removeDataOfContinent(
+                                  continent: e.value,
+                                  gameMode: params.gameProcessType,
+                                );
+                              },
+                              child: FText("reset state"),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-                  if (IAppPresenter.isDebugMode)
-                    Align(
-                      alignment: Alignment.topCenter,
-                      child: FBlueButton(
-                        onPressed: () {
-                          final params = QR.params['data']!.value!
-                              as ContinentPickerRouteParams;
-
-                          ILevelsService.I.removeDataOfContinent(
-                            continent: e.value,
-                            gameMode: params.gameProcessType,
-                          );
-                        },
-                        child: FText("reset state"),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-      ],
+            ],
+          ),
+        );
+      },
     );
   }
 }

@@ -51,7 +51,6 @@ abstract class UiLayerState<T extends UiLayer, I extends IUiLayer>
       child: FastValueBuilder(
         listen: shownRx,
         builder: (bool value) {
-          logger.i(value);
           return IgnorePointer(
             ignoring: !value,
             child: AnimatedOpacity(

@@ -1,14 +1,18 @@
 import 'package:armar/armar.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
+import 'package:flutter/material.dart';
 
 class BoardItem<T extends ProcessGameObject> {
   final T object;
   final RxValue<bool> active;
 
+  final Widget Function(Widget instance)? build;
+
   void setActive(bool value) => active.value = value;
 
   BoardItem({
     required this.object,
+    this.build,
   }) : active = RxValue(true);
 
   BoardItem copyWith({

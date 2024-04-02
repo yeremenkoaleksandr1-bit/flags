@@ -61,7 +61,7 @@ abstract class ProcessObjectEditingBoardState<
         final rect = flagRenderBox?.rect ?? Offset.zero & Size.zero;
 
         if (activeRx.value) {
-          top = (rect.bottom + 24);
+          top = rect.bottom + 24;
         } else {
           top = mq.size.height + mq.padding.bottom;
         }

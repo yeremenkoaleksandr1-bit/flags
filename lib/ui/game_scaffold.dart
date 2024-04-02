@@ -10,11 +10,11 @@ enum GamePageSlideDirection {
   middle,
 }
 
-class GameTransitionPageBuilder extends StatefulWidget {
+class GamePageBuilder extends StatefulWidget {
   static final RouteObserver<ModalRoute<void>> routeObserver =
       RouteObserver<ModalRoute<void>>();
 
-  const GameTransitionPageBuilder({
+  const GamePageBuilder({
     super.key,
     required this.child,
     this.startSlideDirection = GamePageSlideDirection.right,
@@ -35,11 +35,10 @@ class GameTransitionPageBuilder extends StatefulWidget {
   final VoidCallback? onPageUnfocused;
 
   @override
-  State<GameTransitionPageBuilder> createState() =>
-      _GameTransitionPageBuilderState();
+  State<GamePageBuilder> createState() => _GamePageBuilderState();
 }
 
-class _GameTransitionPageBuilderState extends State<GameTransitionPageBuilder>
+class _GamePageBuilderState extends State<GamePageBuilder>
     with
         RouteAware,
         SingleTickerProviderStateMixin,
@@ -63,7 +62,7 @@ class _GameTransitionPageBuilderState extends State<GameTransitionPageBuilder>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    GameTransitionPageBuilder.routeObserver.subscribe(
+    GamePageBuilder.routeObserver.subscribe(
       this,
       ModalRoute.of(context)!,
     );
@@ -82,7 +81,7 @@ class _GameTransitionPageBuilderState extends State<GameTransitionPageBuilder>
   @override
   void dispose() {
     _controller.dispose();
-    GameTransitionPageBuilder.routeObserver.unsubscribe(this);
+    GamePageBuilder.routeObserver.unsubscribe(this);
     super.dispose();
   }
 
@@ -151,7 +150,10 @@ class _GameTransitionPageBuilderState extends State<GameTransitionPageBuilder>
                 }
 
                 return Transform.translate(
-                  offset: Offset(translationX, translationY),
+                  offset: Offset(
+                    translationX - 1,
+                    translationY - 1,
+                  ),
                   child: child,
                 );
               },
@@ -164,7 +166,8 @@ class _GameTransitionPageBuilderState extends State<GameTransitionPageBuilder>
 
   @override
   void didPop() {
-    FlutterEngine.widgetPostFrameCallback((timeStamp) {
+    FlutterEngine.schedulePostFrameCallback((timeStamp) async {
+      await Future.delayed(const Duration());
       _controller.forward(from: 0).whenComplete(() {
         widget.onPageUnfocused?.call();
       });
@@ -174,7 +177,8 @@ class _GameTransitionPageBuilderState extends State<GameTransitionPageBuilder>
 
   @override
   void didPopNext() {
-    FlutterEngine.widgetPostFrameCallback((timeStamp) {
+    FlutterEngine.schedulePostFrameCallback((timeStamp) async {
+      await Future.delayed(const Duration());
       _controller.reverse(from: 1);
     });
 
@@ -183,7 +187,8 @@ class _GameTransitionPageBuilderState extends State<GameTransitionPageBuilder>
 
   @override
   void didPushNext() {
-    FlutterEngine.widgetPostFrameCallback((timeStamp) {
+    FlutterEngine.schedulePostFrameCallback((timeStamp) async {
+      await Future.delayed(const Duration());
       _controller.forward(from: 0);
       widget.onPageUnfocused?.call();
     });

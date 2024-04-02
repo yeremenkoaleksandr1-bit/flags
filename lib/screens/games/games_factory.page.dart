@@ -72,7 +72,7 @@ class _GamesFactoryPageState extends State<GamesFactoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return GameTransitionPageBuilder(
+    return GamePageBuilder(
       startSlideDirection: GamePageSlideDirection.middle,
       endSlideDirection: GamePageSlideDirection.bottom,
       child: BackButtonListener(

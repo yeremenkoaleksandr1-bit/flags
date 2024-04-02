@@ -8,6 +8,7 @@ import 'package:flags/domain/adapters.dart';
 import 'package:flags/domain/preferences/preferences.dart';
 import 'package:flags/domain/services/game/emblems.service.dart';
 import 'package:flags/domain/services/levels/levels.service.dart';
+import 'package:flags/features/onboarding/onboarding.service.dart';
 import 'package:flags/main/components/splash.dart';
 import 'package:flags/presentation/app/state/app.state.dart';
 import 'package:flags/presentation/navigator/router.dart';
@@ -111,6 +112,8 @@ class AppPresenterImpl extends GetxController
     emblemsService = await EmblemsServiceImpl().initialize();
 
     router = AppRouter();
+
+    Get.put<IOnboardingService>(OnboardingServiceImpl(), permanent: true);
 
     super.onInit();
 

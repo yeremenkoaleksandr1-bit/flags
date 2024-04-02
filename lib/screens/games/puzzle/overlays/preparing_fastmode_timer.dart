@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:armar/armar.dart';
 import 'package:flags/screens/games/puzzle/components/timer/animated_seconds_timer.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,7 @@ import 'package:flutter/material.dart';
 class PreparingFastModeTimer extends StatefulWidget {
   const PreparingFastModeTimer({super.key, required this.preparingTimer});
 
-  final Stream<int> preparingTimer;
+  final RxValue<int> preparingTimer;
 
   OverlayEntry overlay() {
     return OverlayEntry(
@@ -37,10 +38,8 @@ class _PreparingFastModeTimerState extends State<PreparingFastModeTimer> {
               ),
             ),
           ),
-          Center(
-            child: AnimatedSecondsTimer(
-              timerStream: widget.preparingTimer,
-            ),
+          AnimatedSecondsTimer(
+            timerStream: widget.preparingTimer,
           ),
         ],
       ),

@@ -2,6 +2,7 @@ import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/presentation/game/puzzle/entities/draggable_emblem_part.game_object.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
+import 'package:flags/presentation/game/puzzle/puzzle_fast.presenter.dart';
 import 'package:flags/uikit/game_widgets/objects/draggable_object.dart';
 import 'package:flutter/widgets.dart';
 
@@ -27,22 +28,32 @@ class EmblemSceneObject extends DraggableGameObject<DraggableEmblemPart> {
 
 class EmblemSceneObjectState
     extends DraggableGameObjectState<DraggableEmblemPart, EmblemSceneObject> {
-  IPuzzleCommonModePresenter get _presenter => widget.presenter;
+  IPuzzleCommonModePresenter get presenter => widget.presenter;
 
   @override
   void initState() {
     super.initState();
-    FlutterEngine.widgetPostFrameCallback((timeStamp) {
-      _presenter.emblemConfirmationView.show();
-      _presenter.setFocusOnObject(this);
+    FlutterEngine.widgetPostFrameCallback((timeStamp) async {
+      presenter.emblemConfirmationView.show();
+      presenter.setFocusOnObject(this);
       _setConfirmationButtonsPosition();
+
+      if (presenter is! IPuzzleFastModePresenter) {
+        await Future.delayed(const Duration(milliseconds: 101));
+        FlutterEngine.schedulePostFrameCallback((timeStamp) {
+          presenter.showcase.show(
+            [presenter.showcase.emblemObjectStep2],
+            "puzzle_emblem_object",
+          );
+        });
+      }
     });
   }
 
   void _setConfirmationButtonsPosition() {
     FlutterEngine.schedulePostFrameCallback((timeStamp) {
       try {
-        if (!_presenter.emblemConfirmationView.mounted ||
+        if (!presenter.emblemConfirmationView.mounted ||
             !context.mounted ||
             !mounted) {
           return;
@@ -51,10 +62,10 @@ class EmblemSceneObjectState
         final scale = scaleConverter(scaleRx.value);
         final rect = context.globalPaintBounds ?? Rect.zero;
 
-        _presenter.emblemConfirmationView.setPosition(
+        presenter.emblemConfirmationView.setPosition(
           rect.topLeft.translate(0, -52 * scale),
         );
-        _presenter.emblemConfirmationView.setWidth(
+        presenter.emblemConfirmationView.setWidth(
           rect.width,
         );
       } catch (e) {}
@@ -63,14 +74,14 @@ class EmblemSceneObjectState
 
   @override
   void onMoveStart(DragStartDetails event, BoxConstraints constraints) {
-    _presenter.onObjectFocusAdded(this);
-    _presenter.emblemConfirmationView.hide();
+    presenter.onObjectFocusAdded(this);
+    presenter.emblemConfirmationView.hide();
     super.onMoveStart(event, constraints);
   }
 
   @override
   void onMoveEnd(DragEndDetails event, BoxConstraints constraints) {
-    _presenter.emblemConfirmationView.show();
+    presenter.emblemConfirmationView.show();
     _setConfirmationButtonsPosition();
 
     super.onMoveEnd(event, constraints);

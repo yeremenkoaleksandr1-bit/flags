@@ -17,6 +17,7 @@ class SLongPressDraggable<T extends Object> extends SDraggable<T> {
     super.onDragUpdate,
     super.onDraggableCanceled,
     super.onDragEnd,
+    super.onDragCanceled,
     super.onDragCompleted,
     this.hapticFeedbackOnStart = true,
     super.ignoringFeedbackSemantics,

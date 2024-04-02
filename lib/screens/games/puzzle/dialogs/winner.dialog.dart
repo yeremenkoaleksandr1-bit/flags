@@ -73,23 +73,19 @@ class PuzzleWinnerDialog extends DialogWidget<dynamic> {
           final uiMoneyLayer = UiMoneyLayer.find();
 
           uiMoneyLayer.show().then(
-            (value) {
-              uiMoneyLayer
-                  .addMoneys(
+            (value) async {
+              await uiMoneyLayer.addMoneys(
                 rect.center,
                 addMoneyView.clamp(1, 50),
-              )
-                  .then(
-                (value) async {
-                  await Future.delayed(
-                    const Duration(
-                      milliseconds: 1000,
-                    ),
-                  );
-
-                  await uiMoneyLayer.hide();
-                },
               );
+
+              await Future.delayed(
+                const Duration(
+                  milliseconds: 1250,
+                ),
+              );
+
+              await uiMoneyLayer.hide();
             },
           );
         }

@@ -2,25 +2,33 @@
 
 import 'dart:async';
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:armar/armar.dart';
+import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/core/extensions/num.dart';
 import 'package:flags/core/features/features.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/domain/models/game/scores/win_streak.dart';
+import 'package:flags/features/audio/sound_data.dart';
 import 'package:flags/features/layers/money_layer/money_layer.dart';
 import 'package:flags/prefabs/levels/levels.dart';
 import 'package:flags/presentation/app/app.presenter.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
 import 'package:flags/screens/games/puzzle/overlays/start_game.dart';
+import 'package:flags/uikit/assets/components/money.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:qlevar_router/qlevar_router.dart';
+
+import '../../../uikit/uikit.dart';
+import 'onboarding/showcase_fastmode.dart';
 
 abstract interface class IPuzzleFastModePresenter
     implements IPuzzleCommonModePresenter {
-  Stream<int> get timerStream;
+  PuzzleGameFastModeShowcase get showcaseFm;
+
+  RxValue<int> get timerStream;
 
   int get initialTimerValue;
 }
@@ -28,6 +36,9 @@ abstract interface class IPuzzleFastModePresenter
 class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
     implements IPuzzleFastModePresenter {
   PuzzleFastModePresenterImpl(super.context, {required super.params});
+
+  @override
+  final PuzzleGameFastModeShowcase showcaseFm = PuzzleGameFastModeShowcase();
 
   WinStreak get winStreak => IAppPresenter.I.gameState.data.winStreak;
 
@@ -50,42 +61,69 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
   int get initialTimerValue => timerRx.value;
 
   @override
-  Stream<int> get timerStream => timerRx.stream;
+  RxValue<int> get timerStream => timerRx;
 
   @override
   Future<void> preInitialization() async {
-    FlutterEngine.schedulePostFrameCallback((timeStamp) async {
-      await PreparingFastModeInitializationGame(
-        preparingTimer: preparingTimer.stream,
-        onReady: () async {
-          timerRx.notify();
-          preparingTimer.value = 3;
-          await Future.delayed(const Duration(milliseconds: 250), () {
-            periodicTimer.start(3).listen(
-              (event) {
-                preparingTimer.value = event;
+    gameSeed = Random().nextInt(int32MaxValue);
 
-                if (event <= 0) {
-                  periodicTimer.start(timerRx.value).listen((event) {
-                    timerRx.value = event;
+    flagExposer.renderBox.stream.listen(onFlagBuilt);
 
-                    if (event <= 0) {
-                      onGameOver();
-                    }
-                  });
-                  QR.back();
-                }
-              },
-            );
-          });
-        },
-      ).showDialog(context);
+    FlutterEngine.widgetPostFrameCallback((timeStamp) async {
+      if (!showcaseFm.isCompleted("fast_mode")) {
+        showcaseFm.completeFuture = Completer();
 
-      // initializeFastMode(params.difficult);
+        showcaseFm.show(
+          [
+            showcaseFm.step1,
+            showcaseFm.step2,
+          ],
+          "fast_mode",
+        );
 
-      gameSeed = Random().nextInt(int32MaxValue);
+        timerRx.notify();
 
-      flagExposer.renderBox.stream.listen(onFlagBuilt);
+        await showcaseFm.completeFuture?.future;
+
+        initializeInGameTimer();
+      } else {
+        await PreparingFastModeInitializationGame(
+          preparingTimer: preparingTimer,
+          onReady: () async {
+            timerRx.notify();
+            preparingTimer.value = 3;
+            await Future.delayed(const Duration(milliseconds: 250), () {
+              periodicTimer.start(3).listen(
+                (event) {
+                  preparingTimer.value = event;
+
+                  if (event <= 0) {
+                    initializeInGameTimer();
+                    QR.back();
+                  }
+                },
+              );
+            });
+          },
+        ).showDialog(context);
+      }
+    });
+  }
+
+  Future<void> initializeInGameTimer() async {
+    periodicTimer.start(initialTime).listen((event) async {
+      timerRx.value = event;
+
+      if (event <= 0) {
+        await audioController.playSfx(GameSfx.timerEnd);
+        onGameOver();
+      } else if (event <= 3) {
+        if (event % 1 == 1) {
+          audioController.playSfx(GameSfx.timerTick1);
+        } else {
+          audioController.playSfx(GameSfx.timerTick2);
+        }
+      }
     });
   }
 
@@ -97,7 +135,7 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
     onGameOver();
   }
 
-  late Completer _fastModeGenerationCompleter;
+  late Completer<dynamic> _fastModeGenerationCompleter;
 
   Future<void> initializeFastMode(GameDifficult difficult) async {
     _fastModeGenerationCompleter = Completer();
@@ -142,36 +180,73 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
     await prepareFastModeLevel();
   }
 
-  Future<void> prepareFastModeLevel() async {
+  Future<void> prepareFastModeLevel([bool isRestart = false]) async {
     await PreparingFastModeInitializationGame(
-      preparingTimer: preparingTimer.stream,
+      preparingTimer: preparingTimer,
       onReady: () async {
         // add money
-        final uiMoneyLayer = UiMoneyLayer.find();
 
-        await uiMoneyLayer.show();
+        if (!isRestart) {
+          final uiMoneyLayer = UiMoneyLayer.find();
+          preparingTimer.value = -1;
+          await uiMoneyLayer.show();
 
-        final moneys = calcWinnerMoney(state.difficult.value);
+          final GlobalKey moneyKey = GlobalKey();
+
+          final moneys = calcWinnerMoney(state.difficult.value);
+
+          final entry = OverlayEntry(
+            builder: (context) {
+              return Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      height: 52,
+                      child: UIMoney(
+                        key: moneyKey,
+                      ),
+                    ),
+                    Gap.h12,
+                    FText("+$moneys"),
+                  ],
+                ),
+              );
+            },
+          );
+
+          Overlay.of(QR.context!).insert(entry);
+
+          await Future.delayed(
+            const Duration(milliseconds: 500),
+          );
+
+          IAppPresenter.I.gameState.addMoney(
+            calcWinnerMoney(state.difficult.value),
+          );
+
+          final rect = moneyKey.currentContext!.renderBox!.rect;
+
+          await uiMoneyLayer.addMoneys(
+            rect.center,
+            moneys.clamp(
+              1,
+              25,
+            ),
+          );
+          await Future.delayed(
+            const Duration(milliseconds: 1000),
+          );
+          await uiMoneyLayer.hide();
+          entry.remove();
+          await Future.delayed(
+            const Duration(milliseconds: 250),
+          );
+        }
 
         final initialTime = getInitialTime([...GameDifficult.values].random);
         timerRx.value = initialTime;
         this.initialTime = initialTime;
-
-        preparingTimer.value = -1;
-
-        await Future.delayed(
-          const Duration(milliseconds: 500),
-        );
-
-        IAppPresenter.I.gameState.addMoney(
-          calcWinnerMoney(state.difficult.value),
-        );
-
-        await uiMoneyLayer.addMoneys(const Offset(-20, 100), 5);
-        await Future.delayed(
-          const Duration(milliseconds: 1000),
-        );
-        await uiMoneyLayer.hide();
 
         preparingTimer.value = 3;
 
@@ -183,13 +258,7 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
           if (event == 0) {
             QR.back();
 
-            periodicTimer.start(initialTime).listen((event) {
-              timerRx.value = event;
-
-              if (event <= 0) {
-                onGameOver();
-              }
-            });
+            initializeInGameTimer();
           }
         });
       },
@@ -206,7 +275,7 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
   @override
   Future<void> onRestart() async {
     await super.onRestart();
-    await prepareFastModeLevel();
+    await prepareFastModeLevel(true);
   }
 
   @override

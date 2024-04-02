@@ -1,5 +1,6 @@
 import 'dart:math';
-import 'dart:ui';
+
+import 'package:flutter/animation.dart';
 
 extension OffsetExt on Offset {
   double distanceTo(Offset arg) => sqrt(distanceToSquared(arg));
@@ -76,6 +77,30 @@ class BezierCurve {
     this.p4,
   );
 
+  factory BezierCurve.fromVector(Offset start, Offset end, double distance) {
+    final m = start.median(end);
+    final m1 = m.median(start);
+    final m2 = m.median(end);
+
+    var normalizedDirection = start.normalizedDirectionTo(end);
+
+    normalizedDirection = Offset(
+      normalizedDirection.dy,
+      -normalizedDirection.dx,
+    );
+
+    final p1 = Offset(
+      m1.dx + normalizedDirection.dx * distance,
+      m1.dy + normalizedDirection.dy * distance,
+    );
+    final p2 = Offset(
+      m2.dx + normalizedDirection.dx * distance,
+      m2.dy + normalizedDirection.dy * distance,
+    );
+
+    return BezierCurve(start, p1, p2, end);
+  }
+
   late final List<Offset> points = [p1, p2, p3, p4];
 
   Offset moveByLerp(double t) {
@@ -86,8 +111,8 @@ class BezierCurve {
     )!;
   }
 
-  Offset moveByWhile(double time) {
-    final t = cubicBezierEasing(time);
+  Offset lerp(double time, [Curve curve = Curves.linear]) {
+    final t = curve.transform(time);
 
     // Bernstein polynomial for cubic Bezier curve
     final double mt = 1 - t;
@@ -103,10 +128,5 @@ class BezierCurve {
         p1.dy * mt3 + 3 * p2.dy * mt2 * t + 3 * p3.dy * mt * t2 + p4.dy * t3;
 
     return Offset(x, y);
-  }
-
-  // Cubic Bezier easing function
-  double cubicBezierEasing(double t) {
-    return t * t * (3 - 2 * t);
   }
 }

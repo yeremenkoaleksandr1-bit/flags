@@ -1,14 +1,12 @@
 import 'dart:math';
 
-import 'package:armar/logger.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
+import 'package:flags/domain/game_objects/flag/flag.dart';
+import 'package:flags/domain/game_objects/parts/parts.dart';
 import 'package:flags/presentation/game/puzzle/entities/colored_part.game_object.dart';
+import 'package:flags/presentation/game/puzzle/generators/generator.dart';
+import 'package:flags/presentation/game/puzzle/generators/super_easy.dart';
 import 'package:flame/extensions.dart';
-
-import '../../../../domain/game_objects/flag/flag.dart';
-import '../../../../domain/game_objects/parts/parts.dart';
-import 'generator.dart';
-import 'super_easy.dart';
 
 class PuzzleEasyGenerator extends PuzzleSuperEasyGenerator {
   final int quantityColoredPart;
@@ -55,7 +53,6 @@ class PuzzleEasyGenerator extends PuzzleSuperEasyGenerator {
       }
 
       for (var j = 0; j < loopCount; j++) {
-        logger.f(allColors.length);
         final colorInt = allColors.elementAt(
           random.nextInt(allColors.length),
         );
@@ -154,7 +151,7 @@ class ColorUtils {
       if (c > 0.008856) {
         return pow(c, 1 / 3) * 116 - 16;
       } else {
-        return (c * 903.3);
+        return c * 903.3;
       }
     }
 

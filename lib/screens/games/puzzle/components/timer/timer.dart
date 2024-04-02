@@ -1,10 +1,9 @@
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
+import 'package:armar/armar.dart';
+import 'package:armar/rx/rx.dart';
 import 'package:flags/uikit/assets/assets.dart';
 import 'package:flags/uikit/layout_components/sprite_widget.dart';
-import 'package:flame/widgets.dart';
-import 'package:flutter/widgets.dart';
-
 import 'package:flags/uikit/uikit.dart';
+import 'package:flutter/widgets.dart';
 
 class FastModeTimer extends StatefulWidget {
   const FastModeTimer({
@@ -12,7 +11,7 @@ class FastModeTimer extends StatefulWidget {
     required this.timerStream,
   });
 
-  final Stream<int> timerStream;
+  final RxValue<int> timerStream;
 
   @override
   State<FastModeTimer> createState() => _FastModeTimerState();
@@ -28,11 +27,11 @@ class _FastModeTimerState extends State<FastModeTimer> {
           child: SpriteUIWidget(image: Assets.images.timer.image),
         ),
         Gap.h14,
-        StreamBuilder(
-          stream: widget.timerStream,
-          builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+        FastValueBuilder(
+          listen: widget.timerStream,
+          builder: (int value) {
             return FText(
-              (snapshot.data ?? "--").toString(),
+              "$value",
             );
           },
         ),

@@ -1,5 +1,6 @@
 import 'package:flags/features/audio/audio.provider.dart';
 import 'package:flags/features/audio/sound_data.dart';
+import 'package:flags/features/vibration/vibration.provider.dart';
 import 'package:flags/ui/notifications/tap_button_notification.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,7 @@ class ScaledGestureDetector extends StatefulWidget {
 class _ScaledGestureDetectorState extends State<ScaledGestureDetector>
     with SingleTickerProviderStateMixin {
   late final audioService = AudioProvider.of(context);
+  late final vibrationService = PhoneVibrationProvider.of(context);
 
   late final AnimationController _animationController;
 
@@ -59,7 +61,9 @@ class _ScaledGestureDetectorState extends State<ScaledGestureDetector>
 
   Future<void> onPointerUp() async {
     if (!isDisabled) {
+      vibrationService.vibrate(milliseconds: 50);
       await audioService.playSfx(GameSfx.button);
+
       widget.onTap?.call();
       onPointerCancel();
     }
@@ -99,21 +103,17 @@ class _ScaledGestureDetectorState extends State<ScaledGestureDetector>
             },
           ),
       },
-      child: Builder(
-        builder: (context) {
-          return AnimatedBuilder(
-            animation: _animationController,
-            builder: (BuildContext context, Widget? child) {
-              final value = _animationController.value;
+      child: AnimatedBuilder(
+        animation: _animationController,
+        builder: (BuildContext context, Widget? child) {
+          final value = _animationController.value;
 
-              return Transform.scale(
-                scale: 1 - (0.05 * Curves.easeInBack.transform(value)),
-                child: child!,
-              );
-            },
-            child: widget.child,
+          return Transform.scale(
+            scale: 1 - (0.05 * Curves.easeInBack.transform(value)),
+            child: child,
           );
         },
+        child: widget.child,
       ),
     );
   }

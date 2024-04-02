@@ -7,16 +7,15 @@ import 'package:drag_and_drop/drag_and_drop.dart';
 import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
+import 'package:flags/domain/game_objects/flag/flag.dart';
+import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
 import 'package:flags/presentation/game/puzzle/entities/colored_part.game_object.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
+import 'package:flags/screens/games/puzzle/components/board_items/base.dart';
 import 'package:flags/screens/games/puzzle/components/board_items/colored_item.dart';
+import 'package:flags/screens/games/puzzle/components/board_items/common_item.dart';
+import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../domain/game_objects/flag/flag.dart';
-import '../../../../presentation/game/puzzle/entities/board_item.dart';
-import '../../../../uikit/uikit.dart';
-import '../components/board_items/base.dart';
-import '../components/board_items/common_item.dart';
 
 class PartsBoard extends StatefulWidget {
   const PartsBoard({
@@ -66,9 +65,11 @@ class PartsBoardState extends State<PartsBoard> {
     FlutterEngine.schedulePostFrameCallback((timeStamp) {
       widget.presenter.flagExposer.renderBox.stream.listen((event) {
         if (event != null) {
-          isFullScreen.value = false;
-          _positionRx.value = event.rect.bottom;
-          _boardActualPosition = _positionRx.value;
+          try {
+            isFullScreen.value = false;
+            _positionRx.value = event.rect.bottom;
+            _boardActualPosition = _positionRx.value;
+          } catch (e) {}
         }
       });
     });
@@ -194,7 +195,9 @@ class PartsBoardState extends State<PartsBoard> {
     return FastValueBuilder(
       listen: widget.presenter.flagExposer.renderBox,
       builder: (RenderBox? value) {
-        if (value == null || !value.attached) return const SizedBox();
+        if (value == null || !value.attached) {
+          return const SizedBox();
+        }
 
         final position = _positionRx.value;
 

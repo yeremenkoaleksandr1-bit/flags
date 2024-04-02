@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:drag_and_drop/components/drag_target_area.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
@@ -24,6 +26,7 @@ class SDragAvatar<T extends Object> extends Drag {
     required this.feedbackRect,
     this.onDragUpdate,
     this.onDragEnd,
+    this.onDragCanceled,
     required this.ignoringFeedbackSemantics,
     required this.ignoringFeedbackPointer,
     required this.viewId,
@@ -59,6 +62,7 @@ class SDragAvatar<T extends Object> extends Drag {
   final SDragUpdateCallback? onDragUpdate;
 
   final _OnDragEnd? onDragEnd;
+  final FutureOr<void> Function()? onDragCanceled;
 
   final OverlayState overlayState;
 
@@ -226,7 +230,10 @@ class SDragAvatar<T extends Object> extends Drag {
       _enteredTargets.remove(_activeTarget);
     }
 
-    if (!wasAccepted) await animateToInitialPosition();
+    if (!wasAccepted) {
+      onDragCanceled?.call();
+      await animateToInitialPosition();
+    }
 
     onDragEnd?.call(
       velocity ?? Velocity.zero,
