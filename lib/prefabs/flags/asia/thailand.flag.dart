@@ -26,28 +26,32 @@ class ThailandFlag extends GameFlag {
             );
 
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
+                uniqueName: "1_1",
                 path: part1,
                 position: Vector2(0, 0),
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
+                uniqueName: "2_1",
                 path: part2,
                 position: Vector2(0, 10),
               ),
-              PathPart(
+              PathGameObject(
                 name: '3',
                 path: part3,
                 position: Vector2(0, 21),
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
+                uniqueName: "2_2",
                 path: part2,
                 position: Vector2(0, 42),
               ),
-              PathPart(
+              PathGameObject(
                 name: '1',
+                uniqueName: "1_2",
                 path: part1,
                 position: Vector2(0, 53),
               ),

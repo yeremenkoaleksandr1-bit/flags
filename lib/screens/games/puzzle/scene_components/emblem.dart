@@ -6,7 +6,7 @@ import 'package:flags/presentation/game/puzzle/puzzle_fast.presenter.dart';
 import 'package:flags/uikit/game_widgets/objects/draggable_object.dart';
 import 'package:flutter/widgets.dart';
 
-class EmblemSceneObject extends DraggableGameObject<DraggableEmblemPart> {
+class EmblemSceneObject extends DraggableGameObjectWidget<DraggableEmblemPart> {
   const EmblemSceneObject(
     super.gameObject,
     this.presenter, {
@@ -18,7 +18,7 @@ class EmblemSceneObject extends DraggableGameObject<DraggableEmblemPart> {
     this.currentActiveWidget,
   });
 
-  final DraggableGameObjectState? currentActiveWidget;
+  final DraggableGameObjectWidgetState? currentActiveWidget;
 
   final IPuzzleCommonModePresenter presenter;
 
@@ -26,8 +26,8 @@ class EmblemSceneObject extends DraggableGameObject<DraggableEmblemPart> {
   State<EmblemSceneObject> createState() => EmblemSceneObjectState();
 }
 
-class EmblemSceneObjectState
-    extends DraggableGameObjectState<DraggableEmblemPart, EmblemSceneObject> {
+class EmblemSceneObjectState extends DraggableGameObjectWidgetState<
+    DraggableEmblemPart, EmblemSceneObject> {
   IPuzzleCommonModePresenter get presenter => widget.presenter;
 
   @override

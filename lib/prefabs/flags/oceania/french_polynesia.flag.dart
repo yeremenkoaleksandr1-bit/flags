@@ -6,13 +6,13 @@ class FrenchPolynesiaFlag extends GameFlag {
           name: "French Polynesia",
           proportion: 2 / 3,
           objects: (size) => [
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M0 0h96v16H0V0Z",
               name: '2',
               color: const Color(0xFFCE1126),
               areaSize: size,
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M0 0h96v32H0V0Z",
               name: '3',
               color: const Color(0xFFFFFFFF),
@@ -24,7 +24,7 @@ class FrenchPolynesiaFlag extends GameFlag {
               size: Vector2(27.52, 28.27),
               previousMustBePlaced: const ['3'],
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M0 0h96v16H0V0Z",
               name: '2',
               color: const Color(0xFFCE1126),

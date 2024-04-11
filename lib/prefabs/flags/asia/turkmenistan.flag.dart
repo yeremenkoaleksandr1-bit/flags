@@ -6,7 +6,7 @@ class TurkmenistanFlag extends GameFlag {
           name: "Turkmenistan",
           proportion: 2 / 3,
           objects: (size) => [
-            PathPart.rect(
+            PathGameObject.rect(
               name: '1',
               position: Vector2.zero(),
               size: size,

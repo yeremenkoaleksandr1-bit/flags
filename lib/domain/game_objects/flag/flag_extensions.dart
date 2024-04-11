@@ -29,7 +29,7 @@ extension FlagExtensions on GameFlag {
 
   GameFlag copyWith({
     String? name,
-    List<PathPart>? objects,
+    List<PathGameObject>? objects,
     double? proportion,
   }) {
     return GameFlag(

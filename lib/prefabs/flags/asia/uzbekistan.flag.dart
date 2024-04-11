@@ -33,22 +33,22 @@ class UzbekistanFlag extends GameFlag {
             );
 
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: part1,
                 position: Vector2(0, 0),
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 path: part2,
                 position: Vector2(0, 20),
               ),
-              PathPart(
+              PathGameObject(
                 name: '3',
                 path: part4,
                 position: Vector2(0, 43),
               ),
-              PathPart(
+              PathGameObject(
                 name: '4',
                 path: part3,
                 position: Vector2(0, 21),

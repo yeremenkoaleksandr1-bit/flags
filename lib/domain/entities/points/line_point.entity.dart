@@ -1,18 +1,18 @@
 import 'dart:ui';
 
-import 'base/point_entity.dart';
+import 'package:flags/domain/entities/points/base/point_entity.dart';
 
-class LinePointEntity implements PointEntity {
+class SLinePoint implements SPoint {
   @override
   final double x;
   @override
   final double y;
 
-  LinePointEntity(this.x, this.y);
+  SLinePoint(this.x, this.y);
 
   @override
-  LinePointEntity copyWith({double scale = 1, double? x, double? y}) {
-    return LinePointEntity(
+  SLinePoint copyWith({double scale = 1, double? x, double? y}) {
+    return SLinePoint(
       x ?? this.x * scale,
       y ?? this.y * scale,
     );
@@ -25,9 +25,13 @@ class LinePointEntity implements PointEntity {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
-    final LinePointEntity typedOther = other as LinePointEntity;
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    final SLinePoint typedOther = other as SLinePoint;
     return typedOther.x == x && typedOther.y == y;
   }
 
@@ -40,16 +44,13 @@ class LinePointEntity implements PointEntity {
   }
 
   @override
-  LinePointEntity addPosition(Offset value) {
-    return LinePointEntity(
+  SLinePoint addPosition(Offset value) {
+    return SLinePoint(
       x + value.dx,
       y + value.dy,
     );
   }
 
   @override
-  List<Object> get props => [x, y];
-
-  @override
-  bool? get stringify => true;
+  List<double> get points => [x, y];
 }

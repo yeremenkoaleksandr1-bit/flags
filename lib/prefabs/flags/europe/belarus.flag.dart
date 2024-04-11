@@ -6,7 +6,7 @@ class BelarusFlag extends GameFlag {
           name: "Belarus",
           proportion: 1 / 2,
           objects: (size) => [
-            PathPart(
+            PathGameObject(
               name: '1',
               path: SPath.rect(
                 rect: size.toRect(),
@@ -16,7 +16,7 @@ class BelarusFlag extends GameFlag {
                 ),
               ),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M0 0h113v21H0V0Z",
               name: '2',
               areaSize: size,

@@ -6,15 +6,16 @@ class IsraelFlag extends GameFlag {
           name: "Israel",
           proportion: 8 / 11,
           objects: (size) => [
-            PathPart.rect(
+            PathGameObject.rect(
               name: '1',
               position: Vector2.zero(),
               size: size,
               color: const Color(0xffffffff),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M0 0h88v10H0V0Z",
               name: '2',
+              uniqueName: "2_1",
               color: const Color(0xff0038B8),
               areaSize: size,
               position: (_) => Vector2(0, 6),
@@ -25,9 +26,10 @@ class IsraelFlag extends GameFlag {
               size: Vector2(24, 27.71),
               previousMustBePlaced: const ['1'],
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M0 0h88v10H0V0Z",
               name: '2',
+              uniqueName: "2_2",
               color: const Color(0xff0038B8),
               areaSize: size,
               position: (_) => Vector2(0, 48),

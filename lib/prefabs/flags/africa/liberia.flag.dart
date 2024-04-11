@@ -13,91 +13,102 @@ class LiberiaFlag extends GameFlag {
             final paint2 = SPaint(color: const Color(0xffFFFFFF));
 
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
+                uniqueName: "1_1",
                 path: part1.copyWith(
                   paint: paint1,
                 ),
                 position: Vector2(29.09, 0),
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
+                uniqueName: "2_1",
                 path: part1.copyWith(
                   paint: paint2,
                 ),
                 position: Vector2(29.09, 5.82),
               ),
-              PathPart(
+              PathGameObject(
                 name: '1',
+                uniqueName: "1_2",
                 path: part1.copyWith(
                   paint: paint1,
                 ),
                 position: Vector2(29.09, 11.64),
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
+                uniqueName: "2_2",
                 path: part1.copyWith(
                   paint: paint2,
                 ),
                 position: Vector2(29.09, 17.45),
               ),
-              PathPart(
+              PathGameObject(
                 name: '1',
+                uniqueName: "1_3",
                 path: part1.copyWith(
                   paint: paint1,
                 ),
                 position: Vector2(29.09, 23.27),
               ),
-              PathPart(
+              PathGameObject(
                 name: '3',
+                uniqueName: "3_1",
                 path: part2.copyWith(
                   paint: paint2,
                 ),
                 position: Vector2(0, 29),
               ),
-              PathPart(
+              PathGameObject(
                 name: '4',
+                uniqueName: "4_1",
                 path: part2.copyWith(
                   paint: paint1,
                 ),
                 position: Vector2(0, 34.91),
               ),
-              PathPart(
+              PathGameObject(
                 name: '3',
+                uniqueName: "3_2",
                 path: part2.copyWith(
                   paint: paint2,
                 ),
                 position: Vector2(0, 40.73),
               ),
-              PathPart(
+              PathGameObject(
                 name: '4',
+                uniqueName: "4_2",
                 path: part2.copyWith(
                   paint: paint1,
                 ),
                 position: Vector2(0, 46.55),
               ),
-              PathPart(
+              PathGameObject(
                 name: '3',
+                uniqueName: "3_3",
                 path: part2.copyWith(
                   paint: paint2,
                 ),
                 position: Vector2(0, 52.36),
               ),
-              PathPart(
+              PathGameObject(
                 name: '4',
+                uniqueName: "4_3",
                 path: part2.copyWith(
                   paint: paint1,
                 ),
                 position: Vector2(0, 58.18),
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M0 0h29.09v29.091H0V0Z",
                 name: '5',
                 color: const Color(0xff002868),
                 areaSize: size,
                 position: (_) => Vector2(0, 0),
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "m.246 6.849 5.13 3.727-1.96 6.03 5.13-3.727 5.13 3.727-1.96-6.03 5.13-3.727h-6.34L8.545.819l-1.96 6.03H.246Z",
                 name: '6',
                 color: const Color(0xffffffff),

@@ -10,7 +10,7 @@ class LiechtensteinFlag extends GameFlag {
             double unitHeight = size.y / totalFlex;
 
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: SPath.rect(
                   rect: Vector2(size.x, unitHeight).toRect(),
@@ -20,7 +20,7 @@ class LiechtensteinFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "2",
                 position: Vector2(0, unitHeight),
                 path: SPath.rect(

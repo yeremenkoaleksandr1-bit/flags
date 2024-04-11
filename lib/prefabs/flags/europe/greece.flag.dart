@@ -27,7 +27,7 @@ class GreeceFlag extends GameFlag {
             );
 
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: SPath.rect(
                   rect: size.toRect(),
@@ -36,35 +36,35 @@ class GreeceFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 uniqueName: "2_1",
                 path: shortLine,
                 position: Vector2(size.x - shortLine.bounds.width, 7.11),
                 previousMustBePlaced: const ['1'],
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 uniqueName: "2_2",
                 path: shortLine,
                 position: Vector2(size.x - shortLine.bounds.width, 21.33),
                 previousMustBePlaced: const ['1'],
               ),
-              PathPart(
+              PathGameObject(
                 name: '3',
                 uniqueName: "3_1",
                 path: longLine,
                 position: Vector2(0, 34.93),
                 previousMustBePlaced: const ['1'],
               ),
-              PathPart(
+              PathGameObject(
                 name: '3',
                 uniqueName: "3_2",
                 path: longLine,
                 position: Vector2(0, 49.78),
                 previousMustBePlaced: const ['1'],
               ),
-              PathPart(
+              PathGameObject(
                 name: '4',
                 path: cross,
                 previousMustBePlaced: const ['1'],

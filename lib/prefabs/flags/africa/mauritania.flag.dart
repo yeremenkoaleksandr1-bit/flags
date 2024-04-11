@@ -7,14 +7,15 @@ class MauritaniaFlag extends GameFlag {
           proportion: 2 / 3,
           objects: (size) {
             return [
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M0 0h96v12.8H0V0Z",
                 name: '1',
+                uniqueName: "1_1",
                 color: const Color(0xffD01C1F),
                 areaSize: size,
                 position: (_) => Vector2(0, 0),
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M0 .8h96v38.4H0V.8Z",
                 name: '2',
                 color: const Color(0xff00A95C),
@@ -26,9 +27,10 @@ class MauritaniaFlag extends GameFlag {
                 size: Vector2(48, 25.6),
                 previousMustBePlaced: const ['2'],
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M0 0h96v12.8H0V0Z",
                 name: '1',
+                uniqueName: "1_2",
                 color: const Color(0xffD01C1F),
                 areaSize: size,
                 position: (_) => Vector2(0, 51.2),

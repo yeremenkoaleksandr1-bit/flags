@@ -10,7 +10,7 @@ class ParaguayFlag extends GameFlag {
             double unit = size.y / totalFlex;
 
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: SPath.rect(
                   paint: SPaint(
@@ -20,7 +20,7 @@ class ParaguayFlag extends GameFlag {
                   rect: Vector2(size.x, unit).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 position: Vector2(0, unit),
                 path: SPath.rect(
@@ -36,7 +36,7 @@ class ParaguayFlag extends GameFlag {
                 size: Vector2(16.22, 16.22),
                 previousMustBePlaced: const ['2'],
               ),
-              PathPart(
+              PathGameObject(
                 name: '3',
                 position: Vector2(0, unit * 2),
                 path: SPath.rect(

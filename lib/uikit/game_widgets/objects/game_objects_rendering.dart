@@ -1,8 +1,7 @@
 import 'package:defer_pointer/defer_pointer.dart';
+import 'package:flags/uikit/game_widgets/objects/game_object.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
 import 'package:flutter/material.dart';
-
-import 'game_object.dart';
 
 class GameObjectsRendering extends StatefulWidget {
   const GameObjectsRendering(

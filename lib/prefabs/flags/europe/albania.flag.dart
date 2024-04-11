@@ -6,7 +6,7 @@ class AlbaniaFlag extends GameFlag {
           name: "Albania",
           proportion: 5 / 7,
           objects: (size) => [
-            PathPart(
+            PathGameObject(
               name: "1",
               position: Vector2.zero(),
               path: SPath.rect(

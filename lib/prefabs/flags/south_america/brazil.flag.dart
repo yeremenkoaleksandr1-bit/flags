@@ -6,13 +6,13 @@ class BrazilFlag extends GameFlag {
           name: "Brazil",
           proportion: 7 / 10,
           objects: (size) => [
-            PathPart.rect(
+            PathGameObject.rect(
               name: '1',
               position: Vector2.zero(),
               size: size,
               color: const Color(0xff009B3A),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "m.771 25 37.943 24.23L76.657 25 38.714.771.771 25.001Z",
               name: '2',
               color: const Color(0xFFFEDF00),

@@ -6,13 +6,13 @@ class EastTimorFlag extends GameFlag {
           name: "East Timor",
           proportion: 1 / 2,
           objects: (size) => [
-            PathPart.rect(
+            PathGameObject.rect(
               name: '1',
               position: Vector2.zero(),
               size: size,
               color: const Color(0xffDA291C),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M64 32 0 64V0l64 32Z",
               name: '2',
               color: const Color(0xffFFC72C),
@@ -20,7 +20,7 @@ class EastTimorFlag extends GameFlag {
               position: (_) => Vector2(0, 0),
               previousMustBePlaced: const ['1'],
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M42.667 32 0 64V0l42.667 32Z",
               name: '3',
               color: const Color(0xff000000),
@@ -28,7 +28,7 @@ class EastTimorFlag extends GameFlag {
               position: (_) => Vector2(0, 0),
               previousMustBePlaced: const ['2'],
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M12.178 6.568 6.997.805l.805 7.708L.72 11.661l7.58 1.616.804 7.708 3.88-6.71 7.579 1.617-5.182-5.763 3.88-6.708-7.082 3.147Z",
               name: '4',
               color: const Color(0xffffffff),

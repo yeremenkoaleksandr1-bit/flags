@@ -60,8 +60,8 @@ class PuzzlePartsGenerator {
 
       final randomPart = randomFlag.fabrics.random(random);
 
-      if (randomPart is PathPart) {
-        final isSimilarToOriginal = parts.whereType<PathPart>().any(
+      if (randomPart is PathGameObject) {
+        final isSimilarToOriginal = parts.whereType<PathGameObject>().any(
               (e) =>
                   e.path.points.length == randomPart.path.points.length &&
                   e.path.rect.size == randomPart.path.rect.size &&

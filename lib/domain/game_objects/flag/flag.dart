@@ -26,11 +26,8 @@ class GameFlag implements IDrawable {
 
   @override
   void draw(Canvas canvas, Size size) {
-    for (GameObject object in objects) {
+    for (final GameObject object in objects) {
       canvas.save();
-      if (object is EmblemPart) {
-        // canvas.translate(object.size.x / 2, object.size.y / 2);
-      }
       object.draw(canvas, size);
       canvas.restore();
     }

@@ -4,7 +4,7 @@ import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
-class PuzzleMenuDialog extends DialogWidget<Object> {
+class PuzzleMenuDialog extends DialogWidget {
   const PuzzleMenuDialog({
     super.key,
     required this.onRestart,

@@ -13,7 +13,7 @@ class PalestineFlag extends GameFlag {
                 'M0 32C0 .563 0 0 .281 0c.163 0 .312.06.341.119.03.059 9.496 7.2 21.037 15.851 11.556 8.652 21.008 15.793 21.008 15.882 0 .089-9.452 7.23-20.993 15.866C10.118 56.37.563 63.57.414 63.718.282 63.881.135 64 .09 64 .044 64 0 49.6 0 32Z');
 
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: SPath.rect(
                   paint: SPaint(
@@ -23,7 +23,7 @@ class PalestineFlag extends GameFlag {
                   rect: Vector2(size.x, unitHeight).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "2",
                 position: Vector2(0, unitHeight),
                 path: SPath.rect(
@@ -34,7 +34,7 @@ class PalestineFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "3",
                 position: Vector2(0, unitHeight * 2),
                 path: SPath.rect(
@@ -51,7 +51,7 @@ class PalestineFlag extends GameFlag {
                 size: Vector2(64, 32),
                 previousMustBePlaced: const ['1', '2', '3'],
                 objects: (visualSize) => [
-                  PathPart(
+                  PathGameObject(
                     name: '4',
                     position: Vector2(0, 0),
                     path: triangle.copyWith(
@@ -60,7 +60,7 @@ class PalestineFlag extends GameFlag {
                       ),
                     ),
                   ),
-                  PathPart(
+                  PathGameObject(
                     name: '4',
                     position: Vector2(0, 0),
                     path: triangle.copyWith(

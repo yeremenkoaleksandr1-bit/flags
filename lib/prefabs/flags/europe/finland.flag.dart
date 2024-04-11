@@ -6,7 +6,7 @@ class FinlandFlag extends GameFlag {
           name: "Finland",
           proportion: 11 / 18,
           objects: (size) => [
-            PathPart(
+            PathGameObject(
               name: "1",
               path: SPath.rect(
                 rect: size.toRect(),
@@ -16,7 +16,7 @@ class FinlandFlag extends GameFlag {
                 ),
               ),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M29.09 23.273V0h17.455v23.273h58.182v17.454H46.545V64H29.091V40.727H0V23.273h29.09Z",
               name: '2',
               areaSize: size,

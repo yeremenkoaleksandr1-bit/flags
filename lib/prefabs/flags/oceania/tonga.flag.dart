@@ -6,20 +6,20 @@ class TongaFlag extends GameFlag {
           name: "Tonga",
           proportion: 1 / 2,
           objects: (size) => [
-            PathPart.rect(
+            PathGameObject.rect(
               name: '1',
               position: Vector2.zero(),
               size: size,
               color: const Color(0xffC10000),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M53.333 0H0v32h53.333V0Z",
               name: '2',
               color: const Color(0xFFFFFFFF),
               areaSize: size,
               previousMustBePlaced: const ['1'],
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M8.666 0h8v8h8v8h-8v8h-8v-8h-8V8h8V0Z",
               name: '3',
               color: const Color(0xFFC10000),

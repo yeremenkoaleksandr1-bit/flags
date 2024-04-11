@@ -6,14 +6,14 @@ class BhutanFlag extends GameFlag {
           name: "Bhutan",
           proportion: 2 / 3,
           objects: (size) => [
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M96 0H0v64L96 0Z",
               name: '1',
               color: const Color(0xffFFCD00),
               areaSize: size,
               position: (_) => Vector2(0, 0),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M0 64h96V0L0 64Z",
               name: '2',
               color: const Color(0xffFF671F),

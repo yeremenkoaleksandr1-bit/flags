@@ -7,21 +7,21 @@ class TajikistanFlag extends GameFlag {
           proportion: 1 / 2,
           objects: (size) {
             return [
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M0 0h128v18.286H0V0Z",
                 name: '1',
                 color: const Color(0xFFCC0000),
                 areaSize: size,
                 position: (_) => Vector2(0, 0),
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M-.004.276h128v27.438h-128V.276Z",
                 name: '2',
                 color: const Color(0xFFFFFFFF),
                 areaSize: size,
                 position: (_) => Vector2(0, 18),
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M0 .714h128V19H0V.714Z",
                 name: '3',
                 color: const Color(0xFF006600),

@@ -6,7 +6,7 @@ class BelgiumFlag extends GameFlag {
           name: "Belgium",
           proportion: 13 / 15,
           objects: (size) => [
-            PathPart(
+            PathGameObject(
               name: '1',
               path: SPath.rect(
                 rect: Vector2(size.x / 3, size.y).toRect(),
@@ -16,7 +16,7 @@ class BelgiumFlag extends GameFlag {
                 ),
               ),
             ),
-            PathPart(
+            PathGameObject(
               name: "2",
               position: Vector2(size.x / 3, 0),
               path: SPath.rect(
@@ -27,7 +27,7 @@ class BelgiumFlag extends GameFlag {
                 ),
               ),
             ),
-            PathPart(
+            PathGameObject(
               name: "3",
               position: Vector2((size.x / 3) * 2, 0),
               path: SPath.rect(

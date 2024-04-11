@@ -12,7 +12,7 @@ class GroupedPathsPart extends ProcessGameObject {
     super.key,
     required super.name,
     super.uniqueName,
-    required List<PathPart> Function(Vector2 size) objects,
+    required List<PathGameObject> Function(Vector2 size) objects,
     super.position,
     super.scale,
     super.size,
@@ -20,7 +20,7 @@ class GroupedPathsPart extends ProcessGameObject {
     super.previousMustBePlaced,
   }) : objects = objects(size ?? Vector2.all(64));
 
-  late final List<PathPart> objects;
+  late final List<PathGameObject> objects;
 
   @override
   Vector2 get size => _bounds.size.toVector2();
@@ -72,7 +72,7 @@ class GroupedPathsPart extends ProcessGameObject {
     Key? key,
     String? name,
     String? uniqueName,
-    List<PathPart>? objects,
+    List<PathGameObject>? objects,
     Vector2? position,
     double? rotation,
     double? scale,

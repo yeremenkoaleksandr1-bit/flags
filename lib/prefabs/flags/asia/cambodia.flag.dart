@@ -6,23 +6,25 @@ class CambodiaFlag extends GameFlag {
           name: "Cambodia",
           proportion: 16 / 25,
           objects: (size) => [
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M0 0h100v16H0z",
               name: '1',
+              uniqueName: "1_1",
               color: const Color(0xff032EA1),
               areaSize: size,
               position: (_) => Vector2(0, 0),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M0 0h100v32H0V0Z",
               name: '2',
               color: const Color(0xffE00025),
               areaSize: size,
               position: (_) => Vector2(0, 16),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M0 0h100v16H0z",
               name: '1',
+              uniqueName: "1_2",
               color: const Color(0xff032EA1),
               areaSize: size,
               position: (_) => Vector2(0, 48),

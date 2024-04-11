@@ -9,7 +9,7 @@ class AngolaFlag extends GameFlag {
             double totalFlex = 2;
             double unitHeight = size.y / totalFlex;
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: SPath.rect(
                   paint: SPaint(
@@ -19,7 +19,7 @@ class AngolaFlag extends GameFlag {
                   rect: Vector2(size.x, unitHeight).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "2",
                 position: Vector2(0, unitHeight),
                 path: SPath.rect(

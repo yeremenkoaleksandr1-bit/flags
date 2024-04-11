@@ -1,14 +1,17 @@
 import 'package:armar/armar.dart';
 import 'package:armar/contexts/contexts.dart';
 import 'package:armar/logger.dart';
+import 'package:flags/domain/editor/editor_flag.dart';
 import 'package:flags/presentation/navigator/routes.dart';
 import 'package:flags/presentation/presentation.dart';
 import 'package:flags/presentation/presenters/continents_picker/route_params.dart';
+import 'package:flags/presentation/presenters/editor/editor.presenter.dart';
 import 'package:flags/presentation/presenters/game_mode_picker/game_mode_picker.presenter.dart';
 import 'package:flags/presentation/presenters/levels_picker/levels_picker.presenter.dart';
 import 'package:flags/presentation/presenters/levels_picker/route_params.dart';
 import 'package:flags/presentation/presenters/my_flags/my_flags.presenter.dart';
 import 'package:flags/screens/continents_picker/continents_picker.screen.dart';
+import 'package:flags/screens/editor/editor/editor.screen.dart';
 import 'package:flags/screens/editor/my_flags/my_flags.screen.dart';
 import 'package:flags/screens/game_mode_picker/game_mode_picker.screen.dart';
 import 'package:flags/screens/games/games_factory.page.dart';
@@ -100,6 +103,16 @@ class AppRouter extends QRouterDelegate {
                   builder: () => MyFlagsScreen(
                     presenter: (context) => MyFlagsPresenterImpl(),
                   ),
+                ),
+                QRoute(
+                  path: '/editor',
+                  name: Routes.editor,
+                  builder: () {
+                    final data = QR.params['data']!.value! as EditorFlagData;
+                    return EditorScreen(
+                      presenter: (context) => EditorPresenterImpl(data),
+                    );
+                  },
                 ),
               ],
             ),

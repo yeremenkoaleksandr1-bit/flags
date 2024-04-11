@@ -27,16 +27,16 @@ class PuzzleEasyGenerator extends PuzzleSuperEasyGenerator {
 
     final superParts = (await super.generateParts(flag, random)).toList();
 
-    final flagObjects = flag.objects.whereType<PathPart>();
+    final flagObjects = flag.objects.whereType<PathGameObject>();
 
-    final List<PathPart> parts = [];
+    final List<PathGameObject> parts = [];
 
     for (var i = 0; i < quantityColoredPart; i++) {
       final List<int> usedColors = [];
       final allColors = [...PuzzlePartsGenerator.allFlagColors];
 
       final superPart =
-          superParts.whereType<PathPart>().toList().random(random);
+          superParts.whereType<PathGameObject>().toList().random(random);
 
       superParts.remove(superPart);
 

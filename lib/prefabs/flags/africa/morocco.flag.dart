@@ -6,7 +6,7 @@ class MoroccoFlag extends GameFlag {
           name: "Morocco",
           proportion: 2 / 3,
           objects: (size) => [
-            PathPart.rect(
+            PathGameObject.rect(
               name: '1',
               position: Vector2.zero(),
               size: size,

@@ -6,7 +6,7 @@ class CzechFlag extends GameFlag {
           name: "Czech",
           proportion: 2 / 3,
           objects: (size) => [
-            PathPart(
+            PathGameObject(
               name: "1",
               position: Vector2.zero(),
               path: SPath.rect(
@@ -17,7 +17,7 @@ class CzechFlag extends GameFlag {
                 ),
               ),
             ),
-            PathPart(
+            PathGameObject(
               name: "2",
               position: Vector2(0, size.y / 2),
               path: SPath.rect(
@@ -28,7 +28,7 @@ class CzechFlag extends GameFlag {
                 ),
               ),
             ),
-            PathPart(
+            PathGameObject(
               name: "3",
               path: SPath(
                 rect: size.toRect(),
@@ -37,9 +37,9 @@ class CzechFlag extends GameFlag {
                   color: const Color(0xFF11457E),
                 ),
                 points: [
-                  PointEntity.line(size.x / 2, size.y / 2),
-                  PointEntity.line(0, size.y),
-                  PointEntity.line(0, 0),
+                  SPoint.line(size.x / 2, size.y / 2),
+                  SPoint.line(0, size.y),
+                  SPoint.line(0, 0),
                 ],
               ),
             ),

@@ -7,7 +7,7 @@ class CyprusFlag extends GameFlag {
           proportion: 2 / 3,
           objects: (size) {
             return [
-              PathPart(
+              PathGameObject(
                 name: "1",
                 position: Vector2.zero(),
                 path: SPath.rect(

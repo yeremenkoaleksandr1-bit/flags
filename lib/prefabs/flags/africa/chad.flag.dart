@@ -9,7 +9,7 @@ class ChadFlag extends GameFlag {
             double totalFlex = 3;
             double unitWidth = size.x / totalFlex;
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: SPath.rect(
                   paint: SPaint(
@@ -19,7 +19,7 @@ class ChadFlag extends GameFlag {
                   rect: Vector2(unitWidth, size.y).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "2",
                 position: Vector2(unitWidth, 0),
                 path: SPath.rect(
@@ -30,7 +30,7 @@ class ChadFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "3",
                 position: Vector2(unitWidth * 2, 0),
                 path: SPath.rect(

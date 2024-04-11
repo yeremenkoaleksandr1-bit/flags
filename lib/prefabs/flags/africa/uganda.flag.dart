@@ -6,11 +6,12 @@ class UgandaFlag extends GameFlag {
           name: "Uganda",
           proportion: 2 / 3,
           objects: (size) {
-            double totalFlex = 6;
-            double unitHeight = size.y / totalFlex;
+            const double totalFlex = 6;
+            final double unitHeight = size.y / totalFlex;
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
+                uniqueName: "1_1",
                 path: SPath.rect(
                   paint: SPaint(
                     style: PaintingStyle.fill,
@@ -19,8 +20,9 @@ class UgandaFlag extends GameFlag {
                   rect: Vector2(size.x, unitHeight).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
+                uniqueName: "2_1",
                 position: Vector2(0, unitHeight),
                 path: SPath.rect(
                   rect: Vector2(size.x, unitHeight).toRect(),
@@ -30,7 +32,7 @@ class UgandaFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: '3',
                 uniqueName: '0_1',
                 position: Vector2(0, unitHeight * 2),
@@ -42,7 +44,7 @@ class UgandaFlag extends GameFlag {
                   rect: Vector2(size.x, unitHeight).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: '1',
                 uniqueName: '0_2',
                 position: Vector2(0, unitHeight * 3),
@@ -54,8 +56,9 @@ class UgandaFlag extends GameFlag {
                   rect: Vector2(size.x, unitHeight).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
+                uniqueName: "2_2",
                 position: Vector2(0, unitHeight * 4),
                 path: SPath.rect(
                   rect: Vector2(size.x, unitHeight).toRect(),
@@ -65,8 +68,9 @@ class UgandaFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: '3',
+                uniqueName: "3_1",
                 position: Vector2(0, unitHeight * 5),
                 path: SPath.rect(
                   paint: SPaint(
@@ -76,7 +80,7 @@ class UgandaFlag extends GameFlag {
                   rect: Vector2(size.x, unitHeight).toRect(),
                 ),
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M10 19.973c5.508 0 9.973-4.465 9.973-9.973 0-5.508-4.465-9.973-9.973-9.973C4.492.027.027 4.492.027 10c0 5.508 4.465 9.973 9.973 9.973Z",
                 name: '4',
                 color: const Color(0xffffffff),

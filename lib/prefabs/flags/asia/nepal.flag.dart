@@ -6,14 +6,14 @@ class NepalFlag extends GameFlag {
           name: "Nepal",
           proportion: 1.22 / 1,
           objects: (size) => [
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "m0 0 52.502 32.878H19.36l31.122 31.123H0V0Z",
               name: '1',
               color: const Color(0xff003893),
               areaSize: size,
               position: (_) => Vector2(0, 0),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "m.894.421 44.013 27.563H13.785l31.122 31.122H.895V.42Z",
               name: '2',
               color: const Color(0xffDC143C),

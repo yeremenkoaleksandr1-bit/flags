@@ -6,11 +6,12 @@ class NigeriaFlag extends GameFlag {
           name: "Nigeria",
           proportion: 1 / 2,
           objects: (size) {
-            double totalFlex = 3;
-            double unitWidth = size.x / totalFlex;
+            const double totalFlex = 3;
+            final double unitWidth = size.x / totalFlex;
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
+                uniqueName: "1_1",
                 path: SPath.rect(
                   paint: SPaint(
                     style: PaintingStyle.fill,
@@ -19,7 +20,7 @@ class NigeriaFlag extends GameFlag {
                   rect: Vector2(unitWidth, size.y).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "2",
                 position: Vector2(unitWidth, 0),
                 path: SPath.rect(
@@ -30,8 +31,9 @@ class NigeriaFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "1",
+                uniqueName: "1_2",
                 position: Vector2(unitWidth * 2, 0),
                 path: SPath.rect(
                   rect: Vector2(unitWidth, size.y).toRect(),

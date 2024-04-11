@@ -6,13 +6,13 @@ class TaiwanFlag extends GameFlag {
           name: "Taiwan",
           proportion: 2 / 3,
           objects: (size) => [
-            PathPart.rect(
+            PathGameObject.rect(
               name: '1',
               position: Vector2.zero(),
               size: size,
               color: const Color(0xffFE0000),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M0 0h48v32H0V0Z",
               name: '2',
               color: const Color(0xff000095),

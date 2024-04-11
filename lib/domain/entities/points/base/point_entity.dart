@@ -7,34 +7,33 @@ import '../cubit_point.dart';
 import '../line_point.entity.dart';
 import '../move_point.entity.dart';
 
-abstract class PointEntity extends Equatable {
+abstract interface class SPoint {
   double get x;
 
   double get y;
 
+  List<double> get points;
+
   void modify(Path path);
 
-  PointEntity copyWith({double scale});
+  SPoint copyWith({double scale});
 
-  PointEntity addPosition(Offset value);
+  SPoint addPosition(Offset value);
 
-  factory PointEntity.move(double x, double y) {
-    return MovePointEntity(x, y);
+  factory SPoint.move(double x, double y) {
+    return SMovePoint(x, y);
   }
 
-  factory PointEntity.line(double x, double y) {
-    return LinePointEntity(x, y);
+  factory SPoint.line(double x, double y) {
+    return SLinePoint(x, y);
   }
 
-  factory PointEntity.cubit(
+  factory SPoint.cubit(
       double x1, double y1, double x2, double y2, double x3, double y3) {
-    return CubitPointEntity(x1, y1, x2, y2, x3, y3);
+    return SCubitPoint(x1, y1, x2, y2, x3, y3);
   }
 
-  factory PointEntity.close() {
-    return ClosePath();
+  factory SPoint.close() {
+    return SClosePoint();
   }
-
-  @override
-  List<Object> get props => [x, y];
 }

@@ -10,7 +10,7 @@ class VaticanCityFlag extends GameFlag {
             double unitWidth = size.x / totalFlex;
 
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: SPath.rect(
                   rect: Vector2(unitWidth, size.y).toRect(),
@@ -20,7 +20,7 @@ class VaticanCityFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 position: Vector2(unitWidth, 0),
                 path: SPath.rect(

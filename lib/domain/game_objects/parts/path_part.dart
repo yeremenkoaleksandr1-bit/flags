@@ -8,10 +8,10 @@ import '../../../core/utils/utils.dart';
 import '../../entities/path/path.dart';
 import '../base/process.game_object.dart';
 
-class PathPart extends ProcessGameObject {
+class PathGameObject extends ProcessGameObject {
   final SPath path;
 
-  PathPart({
+  PathGameObject({
     super.key,
     required super.name,
     super.uniqueName,
@@ -33,7 +33,7 @@ class PathPart extends ProcessGameObject {
 
   Color get color => path.paint.color;
 
-  factory PathPart.rect({
+  factory PathGameObject.rect({
     required String name,
     String? uniqueName,
     required Vector2 size,
@@ -42,7 +42,7 @@ class PathPart extends ProcessGameObject {
     PaintingStyle style = PaintingStyle.fill,
     List<String>? mustBePlaced,
   }) {
-    return PathPart(
+    return PathGameObject(
       name: name,
       uniqueName: uniqueName,
       path: SPath.rect(
@@ -56,7 +56,7 @@ class PathPart extends ProcessGameObject {
     );
   }
 
-  factory PathPart.fromSvgPath(
+  factory PathGameObject.fromSvgPath(
     String path, {
     required String name,
     String? uniqueName,
@@ -78,7 +78,7 @@ class PathPart extends ProcessGameObject {
       ),
     );
 
-    final object = PathPart(
+    final object = PathGameObject(
       key: UniqueKey(),
       name: name,
       uniqueName: uniqueName,
@@ -127,7 +127,7 @@ class PathPart extends ProcessGameObject {
     path.draw(canvas, size);
   }
 
-  bool equalTo(PathPart instance) {
+  bool equalTo(PathGameObject instance) {
     return instance.name == name;
   }
 
@@ -135,7 +135,7 @@ class PathPart extends ProcessGameObject {
   Future<void> init() async => this;
 
   @override
-  PathPart copyWith({
+  PathGameObject copyWith({
     Key? key,
     String? name,
     String? uniqueName,
@@ -151,7 +151,7 @@ class PathPart extends ProcessGameObject {
       path0 = this.path.copyWith(rect: size.toRect());
     }
 
-    return PathPart(
+    return PathGameObject(
       key: key ?? this.key,
       name: name ?? this.name,
       uniqueName: uniqueName ?? this.uniqueName,
@@ -166,7 +166,7 @@ class PathPart extends ProcessGameObject {
 
   @override
   bool operator ==(Object other) =>
-      other is PathPart && other.uniqueName == uniqueName;
+      other is PathGameObject && other.uniqueName == uniqueName;
 
   @override
   int get hashCode => uniqueName.hashCode;

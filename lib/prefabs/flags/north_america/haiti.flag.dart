@@ -9,7 +9,7 @@ class HaitiFlag extends GameFlag {
             double totalFlex = 2;
             double unitHeight = size.y / totalFlex;
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: SPath.rect(
                   paint: SPaint(
@@ -19,7 +19,7 @@ class HaitiFlag extends GameFlag {
                   rect: Vector2(size.x, unitHeight).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 position: Vector2(0, unitHeight),
                 path: SPath.rect(
@@ -30,7 +30,7 @@ class HaitiFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M0 0h20.23v16.528H0V0Z",
                 name: '3',
                 color: const Color(0xFFFFFFFF),

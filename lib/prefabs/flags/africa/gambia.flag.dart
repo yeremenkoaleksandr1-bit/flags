@@ -6,10 +6,10 @@ class GambiaFlag extends GameFlag {
           name: "Gambia",
           proportion: 2 / 3,
           objects: (size) {
-            double totalFlex = 3;
-            double unitHeight = size.y / totalFlex;
+            const double totalFlex = 3;
+            final double unitHeight = size.y / totalFlex;
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: SPath.rect(
                   paint: SPaint(
@@ -19,7 +19,7 @@ class GambiaFlag extends GameFlag {
                   rect: Vector2(size.x, unitHeight).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "2",
                 position: Vector2(0, unitHeight),
                 path: SPath.rect(
@@ -30,7 +30,7 @@ class GambiaFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "3",
                 position: Vector2(0, unitHeight * 2),
                 path: SPath.rect(
@@ -41,7 +41,7 @@ class GambiaFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M0 0h96v14.222H0V0Z",
                 name: '4',
                 color: const Color(0xff0C1C8C),

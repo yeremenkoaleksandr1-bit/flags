@@ -2,12 +2,12 @@ import 'dart:ui';
 
 import 'base/point_entity.dart';
 
-class ClosePath implements PointEntity {
-  ClosePath();
+class SClosePoint implements SPoint {
+  SClosePoint();
 
   @override
-  ClosePath copyWith({double scale = 1}) {
-    return ClosePath();
+  SClosePoint copyWith({double scale = 1}) {
+    return SClosePoint();
   }
 
   @override
@@ -27,13 +27,10 @@ class ClosePath implements PointEntity {
   double get y => double.nan;
 
   @override
-  PointEntity addPosition(Offset value) {
+  SPoint addPosition(Offset value) {
     return this;
   }
 
   @override
-  List<Object> get props => [];
-
-  @override
-  bool? get stringify => true;
+  List<double> get points => [];
 }

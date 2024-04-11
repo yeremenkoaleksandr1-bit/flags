@@ -20,7 +20,7 @@ class GeorgiaFlag extends GameFlag {
             );
 
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: SPath.rect(
                   rect: size.toRect(),
@@ -29,33 +29,33 @@ class GeorgiaFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: '3',
                 path: cross,
                 previousMustBePlaced: const ['1'],
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 uniqueName: "2_1",
                 position: Vector2(14.25, 6.25),
                 path: part,
                 previousMustBePlaced: const ['1'],
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 uniqueName: "2_2",
                 position: Vector2(14.25, 44.65),
                 path: part,
                 previousMustBePlaced: const ['1'],
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 uniqueName: "2_3",
                 position: Vector2(68.65, 44.65),
                 path: part,
                 previousMustBePlaced: const ['1'],
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 uniqueName: "2_4",
                 position: Vector2(68.65, 6.25),

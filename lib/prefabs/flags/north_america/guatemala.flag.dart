@@ -6,12 +6,13 @@ class GuatemalaFlag extends GameFlag {
           name: "Guatemala",
           proportion: 5 / 8,
           objects: (size) {
-            double totalFlex = 3;
-            double unitWidth = size.x / totalFlex;
+            const double totalFlex = 3;
+            final double unitWidth = size.x / totalFlex;
 
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
+                uniqueName: "1_1",
                 path: SPath.rect(
                   paint: SPaint(
                     style: PaintingStyle.fill,
@@ -20,7 +21,7 @@ class GuatemalaFlag extends GameFlag {
                   rect: Vector2(unitWidth, size.y).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 position: Vector2(unitWidth, 0),
                 path: SPath.rect(
@@ -36,8 +37,9 @@ class GuatemalaFlag extends GameFlag {
                 size: Vector2(22.74, 19.83),
                 previousMustBePlaced: const ['2'],
               ),
-              PathPart(
+              PathGameObject(
                 name: '1',
+                uniqueName: "1_2",
                 position: Vector2(unitWidth * 2, 0),
                 path: SPath.rect(
                   rect: Vector2(unitWidth, size.y).toRect(),

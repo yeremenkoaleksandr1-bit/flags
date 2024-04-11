@@ -10,43 +10,47 @@ class UruguayFlag extends GameFlag {
             final part2 = parseSvgPathModel("M0 0h96v7.111H0V0Z");
 
             return [
-              PathPart(
+              PathGameObject(
                 path: part1.copyWith(
                   paint: SPaint(
                     color: const Color(0xFFFFFFFF),
                   ),
                 ),
                 name: '1',
+                uniqueName: "1_1",
                 position: Vector2(35.56, 0),
               ),
-              PathPart(
+              PathGameObject(
                 path: part1.copyWith(
                   paint: SPaint(
                     color: const Color(0xFF0038A8),
                   ),
                 ),
                 name: '2',
+                uniqueName: "2_1",
                 position: Vector2(35.56, 7.11),
               ),
-              PathPart(
+              PathGameObject(
                 path: part1.copyWith(
                   paint: SPaint(
                     color: const Color(0xFFFFFFFF),
                   ),
                 ),
                 name: '1',
+                uniqueName: "1_2",
                 position: Vector2(35.56, 14.18),
               ),
-              PathPart(
+              PathGameObject(
                 path: part1.copyWith(
                   paint: SPaint(
                     color: const Color(0xFF0038A8),
                   ),
                 ),
                 name: '2',
+                uniqueName: "2_2",
                 position: Vector2(35.56, 21.33),
               ),
-              PathPart(
+              PathGameObject(
                 path: part2.copyWith(
                   paint: SPaint(
                     color: const Color(0xFFFFFFFF),
@@ -56,7 +60,7 @@ class UruguayFlag extends GameFlag {
                 uniqueName: '3_1',
                 position: Vector2(0, 28.36),
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M0 0h35.556v28.364H0V0Z",
                 name: '5',
                 color: const Color(0xFFFFFFFF),
@@ -68,40 +72,44 @@ class UruguayFlag extends GameFlag {
                 size: Vector2(26.28, 26.77),
                 previousMustBePlaced: const ['5'],
               ),
-              PathPart(
+              PathGameObject(
                 path: part2.copyWith(
                   paint: SPaint(
                     color: const Color(0xFF0038A8),
                   ),
                 ),
                 name: '4',
+                uniqueName: "4_1",
                 position: Vector2(0, 35.56),
               ),
-              PathPart(
+              PathGameObject(
                 path: part2.copyWith(
                   paint: SPaint(
                     color: const Color(0xFFFFFFFF),
                   ),
                 ),
                 name: '3',
+                uniqueName: "3_1",
                 position: Vector2(0, 42.67),
               ),
-              PathPart(
+              PathGameObject(
                 path: part2.copyWith(
                   paint: SPaint(
                     color: const Color(0xFF0038A8),
                   ),
                 ),
                 name: '4',
+                uniqueName: "4_2",
                 position: Vector2(0, 49.78),
               ),
-              PathPart(
+              PathGameObject(
                 path: part2.copyWith(
                   paint: SPaint(
                     color: const Color(0xFFFFFFFF),
                   ),
                 ),
                 name: '3',
+                uniqueName: "3_2",
                 position: Vector2(0, 56.85),
               ),
             ];

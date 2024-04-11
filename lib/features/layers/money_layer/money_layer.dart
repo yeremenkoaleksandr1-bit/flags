@@ -7,11 +7,10 @@ import 'package:flags/core/extensions/extensions.dart';
 import 'package:flags/core/extensions/offset.dart';
 import 'package:flags/core/features/object_pooling/object_pool.dart';
 import 'package:flags/features/layers/layer.view.dart';
+import 'package:flags/features/layers/money_layer/components/money_item.dart';
 import 'package:flags/features/layers/money_layer/components/total_moneys_view.dart';
 import 'package:flags/uikit/components/safe_area/safe_area.dart';
 import 'package:flutter/material.dart';
-
-import 'components/money_item.dart';
 
 class UiMoneyLayer extends UiLayer {
   const UiMoneyLayer({super.key})

@@ -77,7 +77,7 @@ class ColoredPathEditingBoardState
                       () {
                         final color = colorRx.value;
 
-                        var object = gameObject.object as PathPart;
+                        var object = gameObject.object as PathGameObject;
 
                         object = object.copyWith(
                           path: object.path.copyWith(

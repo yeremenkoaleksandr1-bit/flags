@@ -14,7 +14,7 @@ import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class PuzzleWinnerDialog extends DialogWidget<dynamic> {
+class PuzzleWinnerDialog extends DialogWidget {
   PuzzleWinnerDialog({
     super.key,
     required this.level,

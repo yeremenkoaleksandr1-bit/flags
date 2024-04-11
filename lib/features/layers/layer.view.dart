@@ -1,5 +1,4 @@
 import 'package:armar/armar.dart';
-import 'package:armar/logger.dart';
 import 'package:armar/rx/rx.dart';
 import 'package:flutter/widgets.dart';
 
@@ -28,6 +27,10 @@ abstract interface class IUiLayer {
 abstract class UiLayerState<T extends UiLayer, I extends IUiLayer>
     extends State<T> implements IUiLayer {
   late final RxValue<bool> shownRx = RxValue(widget.initialShown);
+
+  void onShow() {}
+
+  void onHide() {}
 
   @override
   void initState() {
@@ -67,11 +70,13 @@ abstract class UiLayerState<T extends UiLayer, I extends IUiLayer>
   @override
   Future<void> show() async {
     shownRx.value = true;
+    onShow();
   }
 
   @override
   Future<void> hide() async {
     shownRx.value = false;
+    onHide();
   }
 
   @override

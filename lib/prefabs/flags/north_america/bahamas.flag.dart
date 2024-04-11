@@ -6,12 +6,13 @@ class BahamasFlag extends GameFlag {
           name: "Bahamas",
           proportion: 1 / 2,
           objects: (size) {
-            double totalFlex = 3;
-            double unitFlex = size.y / totalFlex;
+            const double totalFlex = 3;
+            final double unitFlex = size.y / totalFlex;
 
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
+                uniqueName: "1_1",
                 path: SPath.rect(
                   paint: SPaint(
                     style: PaintingStyle.fill,
@@ -20,7 +21,7 @@ class BahamasFlag extends GameFlag {
                   rect: Vector2(size.x, unitFlex).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 position: Vector2(0, unitFlex),
                 path: SPath.rect(
@@ -31,8 +32,9 @@ class BahamasFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: '1',
+                uniqueName: "1_2",
                 position: Vector2(0, unitFlex * 2),
                 path: SPath.rect(
                   rect: Vector2(size.x, unitFlex).toRect(),
@@ -42,7 +44,7 @@ class BahamasFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M55.426 32 0 64V0l55.426 32Z",
                 name: '3',
                 color: const Color(0xFF000000),

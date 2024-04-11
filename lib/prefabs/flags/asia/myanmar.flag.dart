@@ -9,7 +9,7 @@ class MyanmarFlag extends GameFlag {
             double totalFlex = 3;
             double unitHeight = size.y / totalFlex;
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: SPath.rect(
                   paint: SPaint(
@@ -19,7 +19,7 @@ class MyanmarFlag extends GameFlag {
                   rect: Vector2(size.x, unitHeight).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "2",
                 position: Vector2(0, unitHeight),
                 path: SPath.rect(
@@ -30,7 +30,7 @@ class MyanmarFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "3",
                 position: Vector2(0, unitHeight * 2),
                 path: SPath.rect(
@@ -41,7 +41,7 @@ class MyanmarFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M17.705 16.963H.57l13.863 10.071-5.295 16.297L23 33.259l13.862 10.072-5.295-16.297 13.863-10.07H28.295L23 .667l-5.295 16.296Z",
                 name: '4',
                 color: const Color(0xffffffff),

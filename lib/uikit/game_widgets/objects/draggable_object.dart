@@ -10,12 +10,13 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
 typedef DraggableMovableDataCallback = void Function(
-  DraggableGameObjectState state,
+  DraggableGameObjectWidgetState state,
   Vector2 position,
 );
 
-class DraggableGameObject<G extends GameObject> extends GameObjectWidget<G> {
-  const DraggableGameObject(
+class DraggableGameObjectWidget<G extends GameObject>
+    extends GameObjectWidget<G> {
+  const DraggableGameObjectWidget(
     super.gameObject, {
     super.key,
     this.onRenderBoxChanged,
@@ -31,11 +32,13 @@ class DraggableGameObject<G extends GameObject> extends GameObjectWidget<G> {
   final void Function(RenderBox renderBox)? onRenderBoxChanged;
 
   @override
-  State<DraggableGameObject<G>> createState() => DraggableGameObjectState();
+  State<DraggableGameObjectWidget<G>> createState() =>
+      DraggableGameObjectWidgetState();
 }
 
-class DraggableGameObjectState<G extends GameObject,
-    T extends DraggableGameObject<G>> extends GameObjectWidgetState<G, T> {
+class DraggableGameObjectWidgetState<G extends GameObject,
+        T extends DraggableGameObjectWidget<G>>
+    extends GameObjectWidgetState<G, T> {
   final RenderBoxExposer exposer = RenderBoxExposer();
 
   late Vector2 _startPosition = Vector2.zero();
@@ -53,7 +56,7 @@ class DraggableGameObjectState<G extends GameObject,
         ..translate(size.x / 2, size.y / 2)
         ..scale(scale)
         ..translate(-size.x / 2, -size.y / 2),
-      (Vector2.zero() & size),
+      Vector2.zero() & size,
     );
   }
 
@@ -116,7 +119,7 @@ class DraggableGameObjectState<G extends GameObject,
             gestures: {
               PanGestureRecognizer:
                   GestureRecognizerFactoryWithHandlers<PanGestureRecognizer>(
-                () => PanGestureRecognizer(),
+                PanGestureRecognizer.new,
                 (i) {
                   i.onStart = (event) => onMoveStart(event, constraints);
                   i.onUpdate = (event) => onMoveUpdate(event, constraints);

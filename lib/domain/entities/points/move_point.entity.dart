@@ -1,18 +1,18 @@
 import 'dart:ui';
 
-import 'base/point_entity.dart';
+import 'package:flags/domain/entities/points/base/point_entity.dart';
 
-class MovePointEntity implements PointEntity {
+class SMovePoint implements SPoint {
   @override
   final double x;
   @override
   final double y;
 
-  MovePointEntity(this.x, this.y);
+  SMovePoint(this.x, this.y);
 
   @override
-  MovePointEntity copyWith({double scale = 1, double? x, double? y}) {
-    return MovePointEntity(
+  SMovePoint copyWith({double scale = 1, double? x, double? y}) {
+    return SMovePoint(
       x ?? this.x * scale,
       y ?? this.y * scale,
     );
@@ -27,7 +27,7 @@ class MovePointEntity implements PointEntity {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final MovePointEntity typedOther = other as MovePointEntity;
+    final SMovePoint typedOther = other as SMovePoint;
     return typedOther.x == x && typedOther.y == y;
   }
 
@@ -40,16 +40,13 @@ class MovePointEntity implements PointEntity {
   }
 
   @override
-  MovePointEntity addPosition(Offset value) {
-    return MovePointEntity(
+  SMovePoint addPosition(Offset value) {
+    return SMovePoint(
       x + value.dx,
       y + value.dy,
     );
   }
 
   @override
-  List<Object> get props => [x, y];
-
-  @override
-  bool? get stringify => true;
+  List<double> get points => [x, y];
 }

@@ -2,22 +2,21 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:collection/collection.dart';
-import 'package:equatable/equatable.dart';
+import 'package:flags/core/elements/paint.dart';
 import 'package:flags/core/path_drawing/path_drawing.dart';
+import 'package:flags/core/utils/utils.dart';
+import 'package:flags/domain/entities/points/points.dart';
+import 'package:flags/domain/interfaces/interfaces.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:memoize/memoize.dart';
 
-import '../../../core/elements/paint.dart';
-import '../../../core/utils/utils.dart';
-import '../points/points.dart';
-
 // ignore: must_be_immutable
-class SPath extends Equatable {
+class SPath implements IDrawable {
   late Path _path = Path();
 
   final Rect rect;
   final SPaint paint;
-  final List<PointEntity> points;
+  final List<SPoint> points;
 
   SPath({
     required this.paint,
@@ -26,12 +25,12 @@ class SPath extends Equatable {
   }) {
     _path = Path();
 
-    for (var point in points) {
+    for (final point in points) {
       point.modify(_path);
     }
   }
 
-  Rect get bounds => memo0(() => getBounds())();
+  Rect get bounds => memo0(getBounds)();
 
   Color get color => paint.color;
 
@@ -49,17 +48,60 @@ class SPath extends Equatable {
     return SPath(
       paint: paint,
       points: [
-        PointEntity.move(0, 0),
-        PointEntity.line(rect.width, 0),
-        PointEntity.line(rect.width, rect.height),
-        PointEntity.line(0, rect.height),
-        PointEntity.line(0, 0),
+        SPoint.move(0, 0),
+        SPoint.line(rect.width, 0),
+        SPoint.line(rect.width, rect.height),
+        SPoint.line(0, rect.height),
+        SPoint.line(0, 0),
       ],
       rect: rect,
     );
   }
 
-  double distance(PointEntity p1, PointEntity p2) {
+  @override
+  void draw(Canvas canvas, Size size) {
+    canvas.drawPath(_path, paint.flutterPaint);
+  }
+
+  SPath copyWith({
+    SPaint? paint,
+    Rect? rect,
+    List<SPoint>? points,
+  }) {
+    return SPath(
+      rect: rect ?? this.rect,
+      paint: paint ?? this.paint,
+      points: points ?? this.points,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'PathEntity{rect: $rect, paint: $paint, points: $points}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      super == other &&
+          other is SPath &&
+          runtimeType == other.runtimeType &&
+          _path == other._path &&
+          rect == other.rect &&
+          paint == other.paint &&
+          points == other.points;
+
+  @override
+  int get hashCode =>
+      super.hashCode ^
+      _path.hashCode ^
+      rect.hashCode ^
+      paint.hashCode ^
+      points.hashCode;
+}
+
+extension SPatchExt on SPath {
+  double distance(SPoint p1, SPoint p2) {
     final dx = p2.x - p1.x;
     final dy = p2.y - p1.y;
     return sqrt(dx * dx + dy * dy);
@@ -128,7 +170,7 @@ class SPath extends Equatable {
   void _updatePath() {
     _path = Path();
 
-    for (var point in points) {
+    for (final point in points) {
       point.modify(_path);
     }
     _path.close();
@@ -146,7 +188,7 @@ class SPath extends Equatable {
     final points = [
       ...this.points.map((e) {
         return e.copyWith(scale: fraction);
-      })
+      }),
     ];
 
     return copyWith(points: points);
@@ -158,47 +200,4 @@ class SPath extends Equatable {
 
     return Rect.fromLTRB(xValues.min, yValues.min, xValues.max, yValues.max);
   }
-
-  void draw(Canvas canvas, Size size, [SPaint? paint]) {
-    canvas.drawPath(_path, (paint ?? this.paint).paint);
-  }
-
-  SPath copyWith({
-    SPaint? paint,
-    Rect? rect,
-    List<PointEntity>? points,
-  }) {
-    return SPath(
-      rect: rect ?? this.rect,
-      paint: paint ?? this.paint,
-      points: points ?? this.points,
-    );
-  }
-
-  @override
-  String toString() {
-    return 'PathEntity{rect: $rect, paint: $paint, points: $points}';
-  }
-
-  @override
-  List<Object> get props => [rect, paint, points];
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      super == other &&
-          other is SPath &&
-          runtimeType == other.runtimeType &&
-          _path == other._path &&
-          rect == other.rect &&
-          paint == other.paint &&
-          points == other.points;
-
-  @override
-  int get hashCode =>
-      super.hashCode ^
-      _path.hashCode ^
-      rect.hashCode ^
-      paint.hashCode ^
-      points.hashCode;
 }

@@ -6,7 +6,7 @@ class SwedenFlag extends GameFlag {
           name: "Sweden",
           proportion: 5 / 8,
           objects: (size) => [
-            PathPart(
+            PathGameObject(
               name: "1",
               position: Vector2.zero(),
               path: SPath.rect(
@@ -17,7 +17,7 @@ class SwedenFlag extends GameFlag {
                 ),
               ),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M32 0h12.8v25.6h57.6v12.8H44.8V64H32V38.4H0V25.6h32V0Z",
               name: '2',
               areaSize: size,

@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_getters_setters
 
+import 'package:armar/state_management/get.dart';
 import 'package:flags/domain/interfaces/drawable/i_drawable.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
@@ -8,15 +9,24 @@ abstract class GameObject implements IDrawable {
   Key key;
 
   String name;
+
   String? uniqueName;
 
-  Vector2 position;
+  final RxValue<Vector2> positionRx;
 
-  double scale;
+  Vector2 get position => positionRx.value;
 
-  Vector2 size;
+  final RxValue<double> scaleRx;
 
-  double rotation;
+  double get scale => scaleRx.value;
+
+  final RxValue<Vector2> sizeRx;
+
+  Vector2 get size => sizeRx.value;
+
+  final RxValue<double> rotationRx;
+
+  double get rotation => rotationRx.value;
 
   Rect get rect => position & size;
 
@@ -26,12 +36,14 @@ abstract class GameObject implements IDrawable {
     String? uniqueName,
     Vector2? position,
     Vector2? size,
-    this.scale = 1,
-    this.rotation = 0,
+    double scale = 1,
+    double rotation = 0,
   })  : key = key ?? UniqueKey(),
         uniqueName = uniqueName ?? name,
-        position = position ?? Vector2.zero(),
-        size = size ?? Vector2.all(64);
+        positionRx = RxValue(position ?? Vector2.zero()),
+        sizeRx = RxValue(size ?? Vector2.all(64)),
+        scaleRx = RxValue(scale),
+        rotationRx = RxValue(rotation);
 
   @protected
   Future<void> init();

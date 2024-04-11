@@ -160,28 +160,31 @@ class PartsBoardState extends State<PartsBoard> {
             child: FastValueBuilder(
               listen: widget.presenter.state.boardObjects,
               builder: (Iterable<BoardItem> objects) {
+                final boardItems = GridView.count(
+                  crossAxisCount: 4,
+                  mainAxisSpacing: 2,
+                  crossAxisSpacing: 2,
+                  children: [
+                    ...objects.mapIndexed((e, i) {
+                      return RepaintBoundary.wrap(
+                        FCard(
+                          child: Material(
+                            color: Colors.transparent,
+                            child: buildBoardCommonItemView(e),
+                          ),
+                        ),
+                        i,
+                      );
+                    }),
+                  ],
+                );
+
                 return FastValueBuilder(
                   listen: activeDragging,
                   builder: (bool value) {
                     return IgnorePointer(
                       ignoring: !value,
-                      child: GridView.count(
-                        crossAxisCount: 4,
-                        mainAxisSpacing: 2,
-                        crossAxisSpacing: 2,
-                        children: [
-                          ...objects.map(
-                            (e) {
-                              return FCard(
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: buildBoardCommonItemView(e),
-                                ),
-                              );
-                            },
-                          )
-                        ],
-                      ),
+                      child: boardItems,
                     );
                   },
                 );

@@ -7,14 +7,14 @@ class LesothoFlag extends GameFlag {
           proportion: 2 / 3,
           objects: (size) {
             return [
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M0 0h96v19.2H0V0Z",
                 name: '1',
                 color: const Color(0xff001489),
                 areaSize: size,
                 position: (_) => Vector2(0, 0),
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M0 .0h96v25.6H0V.2Z",
                 name: '2',
                 color: const Color(0xffffffff),
@@ -26,7 +26,7 @@ class LesothoFlag extends GameFlag {
                 size: Vector2(20.83, 23.55),
                 previousMustBePlaced: const ['2'],
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M0 .0h96V20H0V.8Z",
                 name: '3',
                 color: const Color(0xff009A44),

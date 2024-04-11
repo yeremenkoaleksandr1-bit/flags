@@ -21,7 +21,7 @@ class BosniaAndHerzegovinaFlag extends GameFlag {
             );
 
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: SPath.rect(
                   rect: size.toRect(),
@@ -30,69 +30,69 @@ class BosniaAndHerzegovinaFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: '3',
                 path: triangle,
                 position: Vector2(33.92, 0),
                 previousMustBePlaced: const ["1"],
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 uniqueName: "2_1",
                 path: star,
                 position: Vector2(16.62, -6.8),
                 previousMustBePlaced: const ["1"],
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 uniqueName: "2_2",
                 path: star,
                 position: Vector2(24.62, 1.2),
                 previousMustBePlaced: const ["1"],
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 uniqueName: "2_3",
                 path: star,
                 position: Vector2(32.62, 9.2),
                 previousMustBePlaced: const ["1"],
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 uniqueName: "2_4",
                 path: star,
                 position: Vector2(40.62, 17.2),
                 previousMustBePlaced: const ["1"],
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 uniqueName: "2_5",
                 path: star,
                 position: Vector2(48.62, 25.2),
                 previousMustBePlaced: const ["1"],
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 uniqueName: "2_6",
                 path: star,
                 position: Vector2(56.62, 33.2),
                 previousMustBePlaced: const ["1"],
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 uniqueName: "2_7",
                 path: star,
                 position: Vector2(64.62, 41.2),
                 previousMustBePlaced: const ["1"],
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 uniqueName: "2_8",
                 path: star,
                 position: Vector2(72.62, 49.2),
                 previousMustBePlaced: const ["1"],
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 uniqueName: "2_8",
                 path: star,

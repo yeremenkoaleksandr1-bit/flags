@@ -6,7 +6,7 @@ class RwandaFlag extends GameFlag {
           name: "Rwanda",
           proportion: 2 / 3,
           objects: (size) => [
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M0 0h96v32H0V0Z",
               name: '1',
               color: const Color(0xff00A3E0),
@@ -18,14 +18,14 @@ class RwandaFlag extends GameFlag {
               size: Vector2(20.68, 20.68),
               previousMustBePlaced: const ['1'],
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M0 0h96v16H0V0Z",
               name: '2',
               color: const Color(0xffFAD201),
               areaSize: size,
               position: (_) => Vector2(0, 32),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M0 0h96v16H0V0Z",
               name: '3',
               color: const Color(0xff20603D),

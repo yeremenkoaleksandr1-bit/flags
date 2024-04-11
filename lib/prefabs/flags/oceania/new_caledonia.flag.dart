@@ -6,20 +6,20 @@ class NewCaledoniaFlag extends GameFlag {
           name: "New Caledonia",
           proportion: 1 / 2,
           objects: (size) => [
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M0 0h128v21.333H0z",
               name: '1',
               areaSize: size,
               color: const Color(0xff0035AD),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M0 .333h128v18.56H0z",
               name: '2',
               areaSize: size,
               color: const Color(0xffED4135),
               position: (_) => Vector2(0, 21),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M0 .893h128V25H0z",
               name: '3',
               areaSize: size,

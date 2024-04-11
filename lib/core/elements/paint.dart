@@ -49,7 +49,7 @@ class SPaint {
     );
   }
 
-  Paint get paint => Paint().copyWith(
+  Paint get flutterPaint => Paint().copyWith(
         blendMode: blendMode,
         color: color,
         invertColors: invertColors,

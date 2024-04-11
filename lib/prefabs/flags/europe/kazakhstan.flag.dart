@@ -7,7 +7,7 @@ class KazakhstanFlag extends GameFlag {
           proportion: 1 / 2,
           objects: (size) {
             return [
-              PathPart(
+              PathGameObject(
                 name: "1",
                 path: SPath.rect(
                   rect: size.toRect(),

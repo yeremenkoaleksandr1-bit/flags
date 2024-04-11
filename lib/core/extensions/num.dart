@@ -9,7 +9,7 @@ extension NumX on num {
 
   double roundDouble(int places) {
     final mod = pow(10.0, places);
-    return ((this * mod).round().toDouble() / mod);
+    return (this * mod).round().toDouble() / mod;
   }
 
   double toPrecision(int n) => double.parse(toStringAsFixed(n));

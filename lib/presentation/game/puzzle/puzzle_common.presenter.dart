@@ -399,10 +399,14 @@ class PuzzleCommonModePresenterImpl extends GetxController
         scales: gameObject.scales,
       );
 
-      state.placedObjects.add(gameObject);
-      state.boardObjects.firstWhere((e) {
-        return e.object.uniqueName == gameObject.uniqueName;
-      }).setActive(false);
+      state.placedObjects.run(() {
+        state.placedObjects.add(gameObject);
+        final object = state.boardObjects.firstWhere((e) {
+          return e.object.uniqueName == gameObject.uniqueName;
+        });
+
+        object.setActive(false);
+      });
 
       return true;
     }
@@ -521,9 +525,10 @@ class PuzzleCommonModePresenterImpl extends GetxController
     if (focussedObject != null) {
       final object = focussedObject.toEmblemPart();
 
-      object.position = sceneObject!.positionRx.value;
-      object.rotation = sceneObject.rotationRx.value;
-      object.scale = sceneObject.scaleConverter(sceneObject.scaleRx.value);
+      object.positionRx.value = sceneObject!.positionRx.value;
+      object.rotationRx.value = sceneObject.rotationRx.value;
+      object.scaleRx.value =
+          sceneObject.scaleConverter(sceneObject.scaleRx.value);
 
       final flagObject = state.level.value.flag.objects.firstWhereOrNull(
         (e) => e.uniqueName == object.uniqueName,
@@ -652,7 +657,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
     if (this is! IPuzzleFastModePresenter) {
       if (!showcase.isCompleted("puzzle.common_object")) {
         final flagPartIndex = parts.indexWhere(
-          (e) => state.level.value.flag.objects.whereType<PathPart>().any(
+          (e) => state.level.value.flag.objects.whereType<PathGameObject>().any(
                 (element) => e.object.uniqueName == element.uniqueName,
               ),
         );

@@ -1,5 +1,4 @@
 import 'package:armar/armar.dart';
-import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/domain/game_objects/base/game_object.dart';
 import 'package:flags/uikit/game_widgets/game_widgets.dart';
 import 'package:flame/extensions.dart';
@@ -27,10 +26,13 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
 
   double get fitValue => areaRenderBox.size.width / widget.gameObject.size.x;
 
-  late final RxValue<Vector2> positionRx = RxValue(widget.gameObject.position);
-  late final RxValue<Vector2> sizeRx = RxValue(widget.gameObject.size);
-  late final RxValue<double> rotationRx = RxValue(widget.gameObject.rotation);
-  late final RxValue<double> scaleRx = RxValue(widget.gameObject.scale);
+  RxValue<Vector2> get positionRx => widget.gameObject.positionRx;
+
+  RxValue<Vector2> get sizeRx => widget.gameObject.sizeRx;
+
+  RxValue<double> get rotationRx => widget.gameObject.rotationRx;
+
+  RxValue<double> get scaleRx => widget.gameObject.scaleRx;
 
   Widget buildWidget(BuildContext context) {
     return GameObjectPaint(

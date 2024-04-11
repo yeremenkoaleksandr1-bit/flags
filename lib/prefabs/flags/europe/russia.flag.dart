@@ -10,7 +10,7 @@ class RussiaFlag extends GameFlag {
             double unitHeight = size.y / totalFlex;
 
             return [
-              PathPart(
+              PathGameObject(
                 name: 'part_1',
                 path: SPath.rect(
                   paint: SPaint(
@@ -20,7 +20,7 @@ class RussiaFlag extends GameFlag {
                   rect: Vector2(size.x, unitHeight).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "part_2",
                 position: Vector2(0, unitHeight),
                 path: SPath.rect(
@@ -31,7 +31,7 @@ class RussiaFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "part_3",
                 position: Vector2(0, unitHeight * 2),
                 path: SPath.rect(

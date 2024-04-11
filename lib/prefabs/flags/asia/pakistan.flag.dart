@@ -6,14 +6,14 @@ class PakistanFlag extends GameFlag {
           name: "Pakistan",
           proportion: 2 / 3,
           objects: (size) => [
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M0 0h24v64H0z",
               name: '1',
               color: const Color(0xffffffff),
               areaSize: size,
               position: (_) => Vector2(0, 0),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M72 0H0v64h72V0Z",
               name: '2',
               color: const Color(0xff01411C),

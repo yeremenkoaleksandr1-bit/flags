@@ -9,7 +9,7 @@ class SenegalFlag extends GameFlag {
             double totalFlex = 3;
             double unitWidth = size.x / totalFlex;
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: SPath.rect(
                   paint: SPaint(
@@ -19,7 +19,7 @@ class SenegalFlag extends GameFlag {
                   rect: Vector2(unitWidth, size.y).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "2",
                 position: Vector2(unitWidth, 0),
                 path: SPath.rect(
@@ -30,7 +30,7 @@ class SenegalFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M13.396 7.814 11 .44 8.604 7.814H.85l6.273 4.558-2.396 7.375L11 15.189l6.273 4.558-2.396-7.375 6.273-4.558h-7.754Z",
                 name: '4',
                 color: const Color(0xFF00853F),
@@ -38,7 +38,7 @@ class SenegalFlag extends GameFlag {
                 position: (_) => Vector2(37.83, 21.41),
                 previousMustBePlaced: const ['2'],
               ),
-              PathPart(
+              PathGameObject(
                 name: "3",
                 position: Vector2(unitWidth * 2, 0),
                 path: SPath.rect(

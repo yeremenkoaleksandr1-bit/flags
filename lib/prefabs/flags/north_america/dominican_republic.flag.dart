@@ -8,43 +8,47 @@ class DominicanRepublicFlag extends GameFlag {
           objects: (size) {
             final path = parseSvgPathModel("M0 0h41.6v25.6H0V0Z");
             return [
-              PathPart(
+              PathGameObject(
                 path: path.copyWith(
                   paint: SPaint(
                     color: const Color(0xFF002D62),
                   ),
                 ),
                 name: '1',
+                uniqueName: "1_1",
                 position: Vector2(0, 0),
               ),
-              PathPart(
+              PathGameObject(
                 path: path.copyWith(
                   paint: SPaint(
                     color: const Color(0xFF002D62),
                   ),
                 ),
                 name: '1',
+                uniqueName: "1_2",
                 position: Vector2(54.4, 38.4),
               ),
-              PathPart(
+              PathGameObject(
                 path: path.copyWith(
                   paint: SPaint(
                     color: const Color(0xFFCE1126),
                   ),
                 ),
                 name: '2',
+                uniqueName: "2_1",
                 position: Vector2(54.4, 0),
               ),
-              PathPart(
+              PathGameObject(
                 path: path.copyWith(
                   paint: SPaint(
                     color: const Color(0xFFCE1126),
                   ),
                 ),
                 name: '2',
+                uniqueName: "2_2",
                 position: Vector2(0, 38.4),
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M54.4 0H41.6v25.6H0v12.8h41.6V64h12.8V38.4H96V25.6H54.4V0Z",
                 name: '3',
                 color: const Color(0xFFFFFFFF),

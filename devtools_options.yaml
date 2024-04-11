@@ -1,0 +1,3 @@
+extensions:
+  - flame: true
+  - provider: true

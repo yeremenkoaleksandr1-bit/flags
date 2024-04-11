@@ -6,20 +6,20 @@ class AmericanSamoaFlag extends GameFlag {
           name: "American Samoa",
           proportion: 1 / 2,
           objects: (size) => [
-            PathPart.rect(
+            PathGameObject.rect(
               name: '1',
               position: Vector2.zero(),
               size: size,
               color: const Color(0xff000066),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "m.478 32 128-32v64l-128-32Z",
               name: '2',
               areaSize: size,
               color: const Color(0xffBD1021),
               previousMustBePlaced: const ['1'],
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M.192 29 114.478.43v57.14",
               name: '3',
               areaSize: size,

@@ -18,55 +18,63 @@ class MalaysiaFlag extends GameFlag {
             );
 
             return [
-              PathPart.rect(
+              PathGameObject.rect(
                 name: '1',
+                uniqueName: "1_1",
                 position: Vector2.zero(),
                 size: size,
                 color: const Color(0xffffffff),
               ),
-              PathPart(
+              PathGameObject(
                 path: smallLine,
                 name: '2',
+                uniqueName: "2_1",
                 position: Vector2(64, 0),
                 previousMustBePlaced: const ['1'],
               ),
-              PathPart(
+              PathGameObject(
                 path: smallLine,
                 name: '2',
+                uniqueName: "2_2",
                 position: Vector2(64, 9),
                 previousMustBePlaced: const ['1'],
               ),
-              PathPart(
+              PathGameObject(
                 path: smallLine,
                 name: '2',
+                uniqueName: "2_3",
                 position: Vector2(64, 18),
                 previousMustBePlaced: const ['1'],
               ),
-              PathPart(
+              PathGameObject(
                 path: smallLine,
                 name: '2',
+                uniqueName: "2_4",
                 position: Vector2(64, 27),
                 previousMustBePlaced: const ['1'],
               ),
-              PathPart(
+              PathGameObject(
                 path: longLine,
                 name: '3',
+                uniqueName: "3_1",
                 position: Vector2(0, 36),
                 previousMustBePlaced: const ['1'],
               ),
-              PathPart(
+              PathGameObject(
                 path: longLine,
                 name: '3',
+                uniqueName: "3_2",
                 position: Vector2(0, 45),
                 previousMustBePlaced: const ['1'],
               ),
-              PathPart(
+              PathGameObject(
                 path: longLine,
                 name: '3',
+                uniqueName: "3_3",
                 position: Vector2(0, 54),
                 previousMustBePlaced: const ['1'],
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M0 0h64v36.572H0V0Z",
                 name: '4',
                 color: const Color(0xff000066),

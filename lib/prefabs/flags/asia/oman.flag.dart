@@ -6,14 +6,14 @@ class OmanFlag extends GameFlag {
           name: "Oman",
           proportion: 1 / 2,
           objects: (size) => [
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M42.667 0H0v64h42.667V0Z",
               name: '1',
               color: const Color(0xffDF1A23),
               areaSize: size,
               position: (_) => Vector2(0, 0),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M86 0H.667v21.334H86V0Z",
               name: '2',
               color: const Color(0xffFFFFFF),
@@ -21,7 +21,7 @@ class OmanFlag extends GameFlag {
               position: (_) => Vector2(42, 0),
               previousMustBePlaced: const ['1'],
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M86 0H.667v21.334H86V0Z",
               name: '3',
               color: const Color(0xffDF1A23),
@@ -29,7 +29,7 @@ class OmanFlag extends GameFlag {
               position: (_) => Vector2(42, 21.33),
               previousMustBePlaced: const ['1'],
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M86 0H.667v21.334H86V0Z",
               name: '4',
               color: const Color(0xff007E3C),

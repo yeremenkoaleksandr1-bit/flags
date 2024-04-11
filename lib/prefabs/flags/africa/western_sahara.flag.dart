@@ -10,7 +10,7 @@ class WesternSaharaFlag extends GameFlag {
             double unitHeight = size.y / totalFlex;
 
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: SPath.rect(
                   paint: SPaint(
@@ -20,7 +20,7 @@ class WesternSaharaFlag extends GameFlag {
                   rect: Vector2(size.x, unitHeight).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "2",
                 position: Vector2(0, unitHeight),
                 path: SPath.rect(
@@ -36,7 +36,7 @@ class WesternSaharaFlag extends GameFlag {
                 size: Vector2(15.77, 17.07),
                 previousMustBePlaced: const ['2'],
               ),
-              PathPart(
+              PathGameObject(
                 name: "3",
                 position: Vector2(0, unitHeight * 2),
                 path: SPath.rect(
@@ -47,7 +47,7 @@ class WesternSaharaFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "m0 0 42.667 32L0 64V0Z",
                 name: '4',
                 color: const Color(0xffC4111B),

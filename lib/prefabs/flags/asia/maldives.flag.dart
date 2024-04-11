@@ -6,13 +6,13 @@ class MaldivesFlag extends GameFlag {
           name: "Maldives",
           proportion: 2 / 3,
           objects: (size) => [
-            PathPart.rect(
+            PathGameObject.rect(
               name: '1',
               position: Vector2.zero(),
               size: size,
               color: const Color(0xffD21034),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M64 0H0v32h64V0Z",
               name: '2',
               color: const Color(0xff007E3A),

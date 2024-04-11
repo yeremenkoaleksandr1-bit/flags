@@ -29,7 +29,7 @@ class _PuzzleModeViewState extends State<PuzzleModeView> {
     proportion: 2 / 3,
     objects: (size) {
       return [
-        PathPart(
+        PathGameObject(
           name: '1',
           path: SPath.rect(
             rect: Vector2(19.4, size.y).toRect(),
@@ -39,7 +39,7 @@ class _PuzzleModeViewState extends State<PuzzleModeView> {
             ),
           ),
         ),
-        PathPart(
+        PathGameObject(
           name: "2",
           position: Vector2(19.4, 0),
           path: SPath.rect(
@@ -50,7 +50,7 @@ class _PuzzleModeViewState extends State<PuzzleModeView> {
             ),
           ),
         ),
-        PathPart(
+        PathGameObject(
           name: '1',
           position: Vector2(76.6, 0),
           path: SPath.rect(
@@ -61,7 +61,7 @@ class _PuzzleModeViewState extends State<PuzzleModeView> {
             ),
           ),
         ),
-        PathPart.fromSvgPath(
+        PathGameObject.fromSvgPath(
           "M31.598 19 .402 37.011V.99L31.598 19Z",
           name: "name",
           areaSize: size,

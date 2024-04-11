@@ -51,7 +51,7 @@ class PuzzleObjectPlacingHandler {
     final nearestObject =
         _findNearestObject(position / fitValue, objectsFromFlag);
 
-    if (object is ColoredPart && nearestObject is PathPart) {
+    if (object is ColoredPart && nearestObject is PathGameObject) {
       if (object.color != nearestObject.color) {
         return null;
       }

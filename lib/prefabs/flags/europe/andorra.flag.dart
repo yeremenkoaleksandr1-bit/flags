@@ -10,7 +10,7 @@ class AndorraFlag extends GameFlag {
             double unitWidth = size.x / totalFlex;
 
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: SPath.rect(
                   paint: SPaint(
@@ -20,7 +20,7 @@ class AndorraFlag extends GameFlag {
                   rect: Vector2(unitWidth, size.y).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "2",
                 position: Vector2(unitWidth, 0),
                 path: SPath.rect(
@@ -36,7 +36,7 @@ class AndorraFlag extends GameFlag {
                 size: Vector2(27.38, 29.54),
                 previousMustBePlaced: const ['2'],
               ),
-              PathPart(
+              PathGameObject(
                 name: "3",
                 position: Vector2(unitWidth * 2, 0),
                 path: SPath.rect(

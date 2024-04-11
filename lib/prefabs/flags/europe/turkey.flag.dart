@@ -6,7 +6,7 @@ class TurkeyFlag extends GameFlag {
           name: "Turkey",
           proportion: 2 / 3,
           objects: (size) => [
-            PathPart(
+            PathGameObject(
               name: "1",
               position: Vector2.zero(),
               path: SPath.rect(

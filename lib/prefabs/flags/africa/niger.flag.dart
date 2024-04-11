@@ -9,7 +9,7 @@ class NigerFlag extends GameFlag {
             double totalFlex = 3;
             double unitHeight = size.y / totalFlex;
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: SPath.rect(
                   paint: SPaint(
@@ -19,7 +19,7 @@ class NigerFlag extends GameFlag {
                   rect: Vector2(size.x, unitHeight).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 position: Vector2(0, unitHeight),
                 path: SPath.rect(
@@ -30,7 +30,7 @@ class NigerFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M9.333 19.067a9.067 9.067 0 1 0 0-18.134 9.067 9.067 0 0 0 0 18.134Z",
                 name: '4',
                 color: const Color(0xffE05206),
@@ -38,7 +38,7 @@ class NigerFlag extends GameFlag {
                 position: (_) => Vector2(28, 22),
                 previousMustBePlaced: const ['2'],
               ),
-              PathPart(
+              PathGameObject(
                 name: '3',
                 position: Vector2(0, unitHeight * 2),
                 path: SPath.rect(

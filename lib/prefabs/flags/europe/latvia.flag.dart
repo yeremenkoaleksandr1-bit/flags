@@ -10,7 +10,7 @@ class LatviaFlag extends GameFlag {
             final double unitHeight = size.y / totalFlex;
 
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 uniqueName: "1_1",
                 path: SPath.rect(
@@ -21,7 +21,7 @@ class LatviaFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "2",
                 position: Vector2(0, unitHeight * 2),
                 path: SPath.rect(
@@ -32,7 +32,7 @@ class LatviaFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "1",
                 uniqueName: "1_2",
                 position: Vector2(0, unitHeight * 3),

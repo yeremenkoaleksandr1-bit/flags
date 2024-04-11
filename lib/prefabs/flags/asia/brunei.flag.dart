@@ -6,13 +6,13 @@ class BruneiFlag extends GameFlag {
           name: "Brunei",
           proportion: 1 / 2,
           objects: (size) => [
-            PathPart.rect(
+            PathGameObject.rect(
               name: '1',
               position: Vector2.zero(),
               size: size,
               color: const Color(0xffF7E017),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M-.072 15.556V.444l128 26.667v15.111l-128-26.666Z",
               name: '2',
               color: const Color(0xffffffff),
@@ -20,7 +20,7 @@ class BruneiFlag extends GameFlag {
               position: (_) => Vector2(0, 4.44),
               previousMustBePlaced: const ['1'],
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M0 .556v13.333l128 26.667V27.222L0 .556Z",
               name: '3',
               color: const Color(0xff000000),

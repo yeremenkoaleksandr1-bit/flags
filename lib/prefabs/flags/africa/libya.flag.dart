@@ -6,14 +6,14 @@ class LibyaFlag extends GameFlag {
           name: "Libya",
           proportion: 1 / 2,
           objects: (size) => [
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M128 0H0v16h128V0Z",
               name: '1',
               color: const Color(0xffE70013),
               areaSize: size,
               position: (_) => Vector2(0, 0),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M128 0H0v32h128V0Z",
               name: '2',
               color: const Color(0xff000000),
@@ -25,7 +25,7 @@ class LibyaFlag extends GameFlag {
               size: Vector2(22.65, 16),
               previousMustBePlaced: const ['2'],
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M128 0H0v16h128V0Z",
               name: '3',
               color: const Color(0xff239E46),

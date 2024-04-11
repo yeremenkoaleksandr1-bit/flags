@@ -9,7 +9,7 @@ class KuwaitFlag extends GameFlag {
             double totalFlex = 3;
             double unitHeight = size.y / totalFlex;
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: SPath.rect(
                   paint: SPaint(
@@ -19,7 +19,7 @@ class KuwaitFlag extends GameFlag {
                   rect: Vector2(size.x, unitHeight).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "2",
                 position: Vector2(0, unitHeight),
                 path: SPath.rect(
@@ -30,7 +30,7 @@ class KuwaitFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "3",
                 position: Vector2(0, unitHeight * 2),
                 path: SPath.rect(
@@ -41,7 +41,7 @@ class KuwaitFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "m0 0 32 21.333v21.334L0 64V0Z",
                 name: '4',
                 color: const Color(0xff000000),

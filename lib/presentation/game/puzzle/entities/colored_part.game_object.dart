@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 
 import '../../../../domain/entities/path/path.dart';
 
-class ColoredPart extends PathPart {
+class ColoredPart extends PathGameObject {
   ColoredPart({
     super.key,
     required super.name,

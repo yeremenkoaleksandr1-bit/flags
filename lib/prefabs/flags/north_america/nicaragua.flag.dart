@@ -10,7 +10,7 @@ class NicaraguaFlag extends GameFlag {
             double unitFlex = size.y / totalFlex;
 
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: SPath.rect(
                   paint: SPaint(
@@ -20,7 +20,7 @@ class NicaraguaFlag extends GameFlag {
                   rect: Vector2(size.x, unitFlex).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 position: Vector2(0, unitFlex),
                 path: SPath.rect(
@@ -36,7 +36,7 @@ class NicaraguaFlag extends GameFlag {
                 size: Vector2(19.2, 19.2),
                 previousMustBePlaced: const ['2'],
               ),
-              PathPart(
+              PathGameObject(
                 name: '1',
                 position: Vector2(0, unitFlex * 2),
                 path: SPath.rect(

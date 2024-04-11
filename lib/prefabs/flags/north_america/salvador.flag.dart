@@ -6,11 +6,12 @@ class SalvadorFlag extends GameFlag {
           name: "Salvador",
           proportion: 9 / 16,
           objects: (size) {
-            double totalFlex = 3;
-            double unitHeight = size.y / totalFlex;
+            const double totalFlex = 3;
+            final double unitHeight = size.y / totalFlex;
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
+                uniqueName: "1_1",
                 path: SPath.rect(
                   paint: SPaint(
                     style: PaintingStyle.fill,
@@ -19,7 +20,7 @@ class SalvadorFlag extends GameFlag {
                   rect: Vector2(size.x, unitHeight).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: '2',
                 position: Vector2(0, unitHeight),
                 path: SPath.rect(
@@ -35,8 +36,9 @@ class SalvadorFlag extends GameFlag {
                 size: Vector2(19.98, 19.01),
                 previousMustBePlaced: const ['2'],
               ),
-              PathPart(
+              PathGameObject(
                 name: '1',
+                uniqueName: "1_2",
                 position: Vector2(0, unitHeight * 2),
                 path: SPath.rect(
                   rect: Vector2(size.x, unitHeight).toRect(),

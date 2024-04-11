@@ -1,4 +1,5 @@
 import 'package:armar/armar.dart';
+import 'package:armar/logger.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
@@ -50,6 +51,7 @@ abstract class BoardItemWidgetState<T extends BoardItemWidget>
     return RepaintBoundary(
       child: FastBuilder(() {
         final active = model.active.value;
+        i++;
 
         if (!active) {
           return const SizedBox.shrink();
@@ -60,3 +62,5 @@ abstract class BoardItemWidgetState<T extends BoardItemWidget>
     );
   }
 }
+
+int i = 0;

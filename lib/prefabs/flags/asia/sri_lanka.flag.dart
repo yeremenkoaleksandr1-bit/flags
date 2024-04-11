@@ -6,13 +6,13 @@ class SriLankaFlag extends GameFlag {
           name: "Sri Lanka",
           proportion: 1 / 2,
           objects: (size) => [
-            PathPart.rect(
+            PathGameObject.rect(
               name: '1',
               position: Vector2.zero(),
               size: size,
               color: const Color(0xffFFBE29),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M.973.973h16.64v52.054H.973V.973Z",
               name: '2',
               color: const Color(0xff00534E),
@@ -20,7 +20,7 @@ class SriLankaFlag extends GameFlag {
               position: (_) => Vector2(6, 6),
               previousMustBePlaced: const ['1'],
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M.613.973h16.64v52.054H.613V.973Z",
               name: '3',
               color: const Color(0xffEB7400),
@@ -28,7 +28,7 @@ class SriLankaFlag extends GameFlag {
               position: (_) => Vector2(22, 6),
               previousMustBePlaced: const ['1'],
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M.227.973h76.8v52.054H.227V.973Z",
               name: '4',
               color: const Color(0xff8D153A),

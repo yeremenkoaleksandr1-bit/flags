@@ -6,13 +6,13 @@ class NauruFlag extends GameFlag {
           name: "Nauru",
           proportion: 1 / 2,
           objects: (size) => [
-            PathPart.rect(
+            PathGameObject.rect(
               name: '1',
               position: Vector2.zero(),
               size: size,
               color: const Color(0xff002B7F),
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "M128.455.333h-128v5.334h128V.333Z",
               name: '2',
               areaSize: size,
@@ -20,7 +20,7 @@ class NauruFlag extends GameFlag {
               position: (bounds) => Vector2(0, 29.33),
               previousMustBePlaced: const ['1'],
             ),
-            PathPart.fromSvgPath(
+            PathGameObject.fromSvgPath(
               "m11.455 22-1.38-5.515-3.953 4.086 1.562-5.466-5.466 1.562 4.086-3.953-5.515-1.38 5.515-1.381L2.218 6l5.466 1.562-1.562-5.466 3.953 4.086 1.38-5.515 1.38 5.515 3.954-4.086-1.563 5.466L20.694 6l-4.086 3.953 5.515 1.38-5.515 1.38 4.086 3.954-5.467-1.562 1.563 5.466-3.953-4.086L11.456 22Z",
               name: '3',
               areaSize: size,

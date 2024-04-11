@@ -9,7 +9,7 @@ class EquatorialGuineaFlag extends GameFlag {
             double totalFlex = 3;
             double unitHeight = size.y / totalFlex;
             return [
-              PathPart(
+              PathGameObject(
                 name: '1',
                 path: SPath.rect(
                   paint: SPaint(
@@ -19,7 +19,7 @@ class EquatorialGuineaFlag extends GameFlag {
                   rect: Vector2(size.x, unitHeight).toRect(),
                 ),
               ),
-              PathPart(
+              PathGameObject(
                 name: "2",
                 position: Vector2(0, unitHeight),
                 path: SPath.rect(
@@ -35,7 +35,7 @@ class EquatorialGuineaFlag extends GameFlag {
                 size: Vector2(15.82, 18.89),
                 previousMustBePlaced: const ['2'],
               ),
-              PathPart(
+              PathGameObject(
                 name: "3",
                 position: Vector2(0, unitHeight * 2),
                 path: SPath.rect(
@@ -46,7 +46,7 @@ class EquatorialGuineaFlag extends GameFlag {
                   ),
                 ),
               ),
-              PathPart.fromSvgPath(
+              PathGameObject.fromSvgPath(
                 "M0 0v64l24-32L0 0Z",
                 name: '4',
                 color: const Color(0xff0073CE),

@@ -6,7 +6,7 @@ class MaltaFlag extends GameFlag {
           name: "Malta",
           proportion: 2 / 3,
           objects: (size) => [
-            PathPart(
+            PathGameObject(
               name: "1",
               position: Vector2.zero(),
               path: SPath.rect(
@@ -17,7 +17,7 @@ class MaltaFlag extends GameFlag {
                 rect: Vector2(size.x / 2, size.y).toRect(),
               ),
             ),
-            PathPart(
+            PathGameObject(
               name: "2",
               position: Vector2(size.x / 2, 0),
               path: SPath.rect(
