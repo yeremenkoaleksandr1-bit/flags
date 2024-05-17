@@ -1,6 +1,5 @@
-import 'package:armar/armar.dart';
-import 'package:armar/state_management/get.dart';
 import 'package:flutter/material.dart';
+import 'package:state_manager/state_manager.dart';
 
 import '../showcaseview.dart';
 
@@ -101,8 +100,9 @@ class ShowCaseWidget extends StatefulWidget {
 }
 
 class ShowCaseWidgetState<T extends ShowCaseWidget> extends State<T> {
-  RxList<GlobalKey> ids = RxList();
-  final RxValue<int?> activeWidgetId = RxValue(null);
+  ValueNotifierList<GlobalKey> ids = ValueNotifierList();
+  final ValueNotifier<int?> activeWidgetId = ValueNotifier(null);
+
   RenderBox? rootRenderObject;
   Size? rootWidgetSize;
   Key? anchoredOverlayKey;
@@ -137,6 +137,14 @@ class ShowCaseWidgetState<T extends ShowCaseWidget> extends State<T> {
     initRootWidget();
   }
 
+  @override
+  void dispose() {
+    ids.dispose();
+    activeWidgetId.dispose();
+
+    super.dispose();
+  }
+
   void initRootWidget() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final rootWidget = context.findAncestorStateOfType<State<WidgetsApp>>();
@@ -159,7 +167,8 @@ class ShowCaseWidgetState<T extends ShowCaseWidget> extends State<T> {
       );
     }
     if (!mounted) return;
-    ids = RxList(widgetIds);
+    ids.dispose();
+    ids = ValueNotifierList(widgetIds);
     activeWidgetId.value = 0;
     _onStart();
   }
@@ -234,8 +243,13 @@ class ShowCaseWidgetState<T extends ShowCaseWidget> extends State<T> {
   Widget build(BuildContext context) {
     final child = widget.builder(context);
 
-    return FastBuilder(
-      () {
+    return ValueListenableBuilder(
+      valueListenable: ids,
+      builder: (
+        BuildContext context,
+        List<GlobalKey<State<StatefulWidget>>> value,
+        Widget? child,
+      ) {
         final idsV = ids.value;
 
         final activeWidget = activeWidgetId.value;
@@ -243,9 +257,10 @@ class ShowCaseWidgetState<T extends ShowCaseWidget> extends State<T> {
         return _InheritedShowCaseView(
           activeWidgetIds:
               activeWidget != null ? idsV.elementAt(activeWidget) : null,
-          child: child,
+          child: child!,
         );
       },
+      child: child,
     );
   }
 }

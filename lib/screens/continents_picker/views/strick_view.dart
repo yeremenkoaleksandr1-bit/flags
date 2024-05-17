@@ -1,4 +1,3 @@
-import 'package:armar/rx/rx.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/presentation/app/app.presenter.dart';
 import 'package:flags/uikit/assets/assets.dart';
@@ -6,6 +5,7 @@ import 'package:flags/uikit/layout_components/sprite_widget.dart';
 import 'package:flags/uikit/shaders/outline_shader.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flame/components.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class WinnerStreakView extends StatelessWidget {
@@ -32,9 +32,9 @@ class WinnerStreakView extends StatelessWidget {
             ),
           ),
           Gap.h12,
-          FastValueBuilder(
-            listen: winStreak.longestStreakRx,
-            builder: (int value) {
+          ValueListenableBuilder(
+            valueListenable: winStreak.longestStreakRx,
+            builder: (BuildContext context, value, Widget? child) {
               return FText(
                 value.toString(),
                 textStyle: const TextStyle(

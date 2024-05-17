@@ -1,5 +1,3 @@
-import 'package:armar/armar.dart';
-import 'package:armar/logger.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
@@ -10,11 +8,11 @@ abstract class BoardItemWidget extends StatefulWidget {
   const BoardItemWidget({
     super.key,
     required this.item,
-    required this.presenter,
+    required this.controller,
   });
 
   final BoardItem item;
-  final IPuzzleCommonModePresenter presenter;
+  final IPuzzleCommonModePresenter controller;
 }
 
 abstract class BoardItemWidgetState<T extends BoardItemWidget>
@@ -23,7 +21,7 @@ abstract class BoardItemWidgetState<T extends BoardItemWidget>
 
   BoardItem get model => widget.item;
 
-  IPuzzleCommonModePresenter get presenter => widget.presenter;
+  IPuzzleCommonModePresenter get presenter => widget.controller;
 
   ProcessGameObject get renderedObject => model.object;
 
@@ -38,6 +36,11 @@ abstract class BoardItemWidgetState<T extends BoardItemWidget>
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   @protected
   Widget build(BuildContext context) {
     Widget child = LayoutBuilder(
@@ -49,18 +52,21 @@ abstract class BoardItemWidgetState<T extends BoardItemWidget>
     }
 
     return RepaintBoundary(
-      child: FastBuilder(() {
-        final active = model.active.value;
-        i++;
+      child: ValueListenableBuilder(
+        valueListenable: model.active,
+        builder: (
+          BuildContext context,
+          bool value,
+          Widget? child,
+        ) {
+          if (!value) {
+            return const SizedBox.shrink();
+          }
 
-        if (!active) {
-          return const SizedBox.shrink();
-        }
-
-        return child;
-      }),
+          return child!;
+        },
+        child: child,
+      ),
     );
   }
 }
-
-int i = 0;

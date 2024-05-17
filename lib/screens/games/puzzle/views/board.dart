@@ -1,8 +1,7 @@
 // ignore_for_file: no_logic_in_create_state
 
-import 'package:armar/armar.dart';
-import 'package:armar/rx/rx.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
+import 'package:collection/collection.dart';
 import 'package:drag_and_drop/drag_and_drop.dart';
 import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/core/flutter_engine.dart';
@@ -16,11 +15,12 @@ import 'package:flags/screens/games/puzzle/components/board_items/colored_item.d
 import 'package:flags/screens/games/puzzle/components/board_items/common_item.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
+import 'package:state_manager/state_manager.dart';
 
 class PartsBoard extends StatefulWidget {
   const PartsBoard({
     super.key,
-    required this.presenter,
+    required this.controller,
     required this.flag,
     this.onDragStarted,
     this.onDragUpdate,
@@ -30,7 +30,7 @@ class PartsBoard extends StatefulWidget {
   });
 
   final GameFlag flag;
-  final IPuzzleCommonModePresenter presenter;
+  final IPuzzleCommonModePresenter controller;
 
   final void Function(ProcessGameObject object)? onDragStarted;
   final void Function(ProcessGameObject object, DragUpdateDetails details)?
@@ -48,14 +48,14 @@ class PartsBoard extends StatefulWidget {
   final void Function(ProcessGameObject object)? onDragCompleted;
 
   @override
-  State<PartsBoard> createState() => presenter.boardController;
+  State<PartsBoard> createState() => controller.boardController;
 }
 
 class PartsBoardState extends State<PartsBoard> {
-  RxValue<bool> activeDragging = RxValue(true);
-  RxValue<bool> isFullScreen = RxValue(false);
+  final ValueNotifier<bool> activeDragging = ValueNotifier(true);
+  final ValueNotifier<bool> isFullScreen = ValueNotifier(false);
 
-  final RxValue<double> _positionRx = RxValue(0.0);
+  final ValueNotifier<double> _positionRx = ValueNotifier(0.0);
 
   double _boardActualPosition = 0;
   late final _mediaQueryPaddingTop = context.mediaQueryPadding.top;
@@ -63,17 +63,32 @@ class PartsBoardState extends State<PartsBoard> {
   @override
   void initState() {
     FlutterEngine.schedulePostFrameCallback((timeStamp) {
-      widget.presenter.flagExposer.renderBox.stream.listen((event) {
-        if (event != null) {
-          try {
-            isFullScreen.value = false;
-            _positionRx.value = event.rect.bottom;
-            _boardActualPosition = _positionRx.value;
-          } catch (e) {}
-        }
-      });
+      widget.controller.flagExposer.renderBox.addListener(
+        renderBoxListenFunc,
+      );
     });
     super.initState();
+  }
+
+  void renderBoxListenFunc() {
+    final value = widget.controller.flagExposer.renderBox.value;
+    if (value != null) {
+      try {
+        isFullScreen.value = false;
+        _positionRx.value = value.rect.bottom;
+        _boardActualPosition = _positionRx.value;
+      } catch (e) {}
+    }
+  }
+
+  @override
+  void dispose() {
+    activeDragging.dispose();
+    isFullScreen.dispose();
+
+    _positionRx.dispose();
+
+    super.dispose();
   }
 
   void closeFullScreen() {
@@ -132,14 +147,18 @@ class PartsBoardState extends State<PartsBoard> {
             onPointerUp: _onPointerEnd,
             child: Material(
               color: Colors.transparent,
-              child: FastBuilder(
-                () {
-                  final isFullScreen = this.isFullScreen.value;
+              child: ValueListenableBuilder(
+                valueListenable: isFullScreen,
+                builder: (
+                  BuildContext context,
+                  bool value,
+                  Widget? child,
+                ) {
                   return Padding(
                     padding: Pad(
                       all: 8,
                       bottom: 8,
-                      top: isFullScreen ? _mediaQueryPaddingTop + 8 : 0,
+                      top: value ? _mediaQueryPaddingTop + 8 : 0,
                     ),
                     child: const Center(
                       child: Material(
@@ -157,15 +176,19 @@ class PartsBoardState extends State<PartsBoard> {
             ),
           ),
           Expanded(
-            child: FastValueBuilder(
-              listen: widget.presenter.state.boardObjects,
-              builder: (Iterable<BoardItem> objects) {
+            child: ValueListenableBuilder(
+              valueListenable: widget.controller.state.boardObjects,
+              builder: (
+                BuildContext context,
+                List<BoardItem<ProcessGameObject>> value,
+                Widget? child,
+              ) {
                 final boardItems = GridView.count(
                   crossAxisCount: 4,
                   mainAxisSpacing: 2,
                   crossAxisSpacing: 2,
                   children: [
-                    ...objects.mapIndexed((e, i) {
+                    ...value.mapIndexed((i, e) {
                       return RepaintBoundary.wrap(
                         FCard(
                           child: Material(
@@ -179,9 +202,13 @@ class PartsBoardState extends State<PartsBoard> {
                   ],
                 );
 
-                return FastValueBuilder(
-                  listen: activeDragging,
-                  builder: (bool value) {
+                return ValueListenableBuilder(
+                  valueListenable: activeDragging,
+                  builder: (
+                    BuildContext context,
+                    value,
+                    Widget? child,
+                  ) {
                     return IgnorePointer(
                       ignoring: !value,
                       child: boardItems,
@@ -195,31 +222,44 @@ class PartsBoardState extends State<PartsBoard> {
       ),
     );
 
-    return FastValueBuilder(
-      listen: widget.presenter.flagExposer.renderBox,
-      builder: (RenderBox? value) {
+    return ValueListenableBuilder(
+      valueListenable: widget.controller.flagExposer.renderBox,
+      builder: (
+        BuildContext context,
+        RenderBox? value,
+        Widget? child,
+      ) {
         if (value == null || !value.attached) {
           return const SizedBox();
         }
 
-        final position = _positionRx.value;
-
-        return AnimatedPositioned(
-          top: position + 24,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          duration: const Duration(milliseconds: 80),
+        return ValueListenableBuilder(
+          valueListenable: _positionRx,
+          builder: (
+            BuildContext context,
+            double value,
+            Widget? child,
+          ) {
+            return AnimatedPositioned(
+              top: value + 24,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              duration: const Duration(milliseconds: 80),
+              child: child!,
+            );
+          },
           child: child,
         );
       },
+      child: child,
     );
   }
 
   BoardItemWidget buildBoardCommonItemView(BoardItem e) {
     if (e.object is ColoredPart) {
       return BoardColoredPartWidget(
-        presenter: widget.presenter,
+        controller: widget.controller,
         item: e,
       );
     }
@@ -246,7 +286,7 @@ class PartsBoardState extends State<PartsBoard> {
       ) {
         activeDragging.value = true;
       },
-      presenter: widget.presenter,
+      controller: widget.controller,
     );
   }
 

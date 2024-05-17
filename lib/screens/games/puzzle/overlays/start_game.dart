@@ -1,9 +1,9 @@
 import 'dart:ui';
 
-import 'package:armar/armar.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/screens/games/puzzle/components/timer/animated_seconds_timer.dart';
 import 'package:flags/uikit/uikit.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class PreparingFastModeInitializationGame extends StatefulWidget {
@@ -13,7 +13,7 @@ class PreparingFastModeInitializationGame extends StatefulWidget {
     this.onReady,
   });
 
-  final RxValue<int> preparingTimer;
+  final ValueListenable<int> preparingTimer;
 
   final VoidCallback? onReady;
 

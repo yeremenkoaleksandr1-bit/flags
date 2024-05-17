@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:armar/armar.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/uikit/assets/components/money.dart';
 import 'package:flags/uikit/layout_components/layout_components.dart';

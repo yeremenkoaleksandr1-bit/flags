@@ -1,4 +1,4 @@
-import 'package:armar/armar.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
@@ -8,7 +8,7 @@ import 'package:flutter/widgets.dart';
 
 import '../components/levels_section.dart';
 
-class ContinentLevelsView extends ArGetLocatorWidget<ILevelsPickerPresenter> {
+class ContinentLevelsView extends GetConsumer<ILevelsPickerPresenter> {
   const ContinentLevelsView({
     super.key,
     required this.onSelected,

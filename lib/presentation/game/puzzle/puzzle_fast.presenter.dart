@@ -3,7 +3,8 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:armar/armar.dart';
+import 'package:flutter/foundation.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/core/extensions/num.dart';
 import 'package:flags/core/features/features.dart';
@@ -28,7 +29,7 @@ abstract interface class IPuzzleFastModePresenter
     implements IPuzzleCommonModePresenter {
   PuzzleGameFastModeShowcase get showcaseFm;
 
-  RxValue<int> get timerStream;
+  ValueListenable<int> get timerStream;
 
   int get initialTimerValue;
 }
@@ -50,24 +51,25 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
 
   late final PeriodicTimer periodicTimer = PeriodicTimer();
 
-  late final RxValue<int> timerRx = RxValue(getInitialTime(params.difficult));
+  late final ValueNotifier<int> timerRx =
+      ValueNotifier(getInitialTime(params.difficult));
 
   late int initialTime = timerRx.value;
 
-  late final RxValue<int> preparingTimer = RxValue(-1);
+  late final ValueNotifier<int> preparingTimer = ValueNotifier(-1);
   final Completer prepareGameCompleter = Completer();
 
   @override
   int get initialTimerValue => timerRx.value;
 
   @override
-  RxValue<int> get timerStream => timerRx;
+  ValueNotifier<int> get timerStream => timerRx;
 
   @override
   Future<void> preInitialization() async {
     gameSeed = Random().nextInt(int32MaxValue);
 
-    flagExposer.renderBox.stream.listen(onFlagBuilt);
+    flagExposer.renderBox.addListener(onFlagBuilt);
 
     FlutterEngine.widgetPostFrameCallback((timeStamp) async {
       if (!showcaseFm.isCompleted("fast_mode")) {
@@ -81,7 +83,7 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
           "fast_mode",
         );
 
-        timerRx.notify();
+        timerRx.notifyListeners();
 
         await showcaseFm.completeFuture?.future;
 
@@ -90,7 +92,7 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
         await PreparingFastModeInitializationGame(
           preparingTimer: preparingTimer,
           onReady: () async {
-            timerRx.notify();
+            timerRx.notifyListeners();
             preparingTimer.value = 3;
             await Future.delayed(const Duration(milliseconds: 250), () {
               periodicTimer.start(3).listen(
@@ -151,10 +153,8 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
       state.level.value = randomLevel;
 
       final parts = await generateBoardParts();
-      state.boardObjects.run(() {
-        state.boardObjects.clear();
-        state.boardObjects.addAll(parts);
-      });
+      state.boardObjects.clear();
+      state.boardObjects.addAll(parts);
 
       await Future.delayed(
         const Duration(milliseconds: 100),
@@ -169,6 +169,7 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
   void onClose() {
     periodicTimer.pause();
     periodicTimer.dispose();
+    flagExposer.renderBox.removeListener(onFlagBuilt);
     super.onClose();
   }
 

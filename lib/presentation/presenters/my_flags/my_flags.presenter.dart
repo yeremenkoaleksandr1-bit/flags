@@ -1,5 +1,5 @@
-import 'package:armar/armar.dart';
-import 'package:armar/logger.dart';
+import 'package:flags/shared/services/disposable.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:flags/domain/editor/create_flag_data.dart';
 import 'package:flags/domain/editor/editor_flag.dart';
 import 'package:flags/domain/services/editor/editr_gallery.service.dart';
@@ -8,12 +8,13 @@ import 'package:flags/screens/editor/my_flags/dialogs/create_flag.dialog.dart';
 import 'package:qlevar_router/qlevar_router.dart';
 
 abstract interface class IMyFlagsPresenter
-    with StateMixin<List<EditorFlagData>> {
+    with StateMixin<List<EditorFlagData>>
+    implements IDisposable {
   Future<void> createFlag();
 
   Future<void> openFlag(EditorFlagData flag);
 
-  RxList<EditorFlagData> get flags;
+  ValueListenableList<EditorFlagData> get flags;
 }
 
 class MyFlagsPresenterImpl extends GetxController
@@ -22,7 +23,7 @@ class MyFlagsPresenterImpl extends GetxController
   late final IEditorGalleryService editorGalleryService;
 
   @override
-  RxList<EditorFlagData> get flags => editorGalleryService.flags;
+  ValueListenableList<EditorFlagData> get flags => editorGalleryService.flags;
 
   @override
   Future<void> onInit() async {
@@ -43,7 +44,6 @@ class MyFlagsPresenterImpl extends GetxController
   @override
   Future<void> createFlag() async {
     final data = await const CreateFlagDialog().showModal<CreateFlagData>();
-    logger.i(data);
 
     if (data != null) {
       final flag = EditorFlagData(

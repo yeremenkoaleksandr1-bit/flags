@@ -1,10 +1,8 @@
 // ignore_for_file: invalid_use_of_protected_member
 
-import 'package:armar/armar.dart';
-import 'package:armar/rx/rx.dart';
-import 'package:armar/state_management/get.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flutter/material.dart';
+import 'package:state_manager/state_manager.dart';
 
 class DebugPaintProvider extends StatefulWidget {
   const DebugPaintProvider({
@@ -32,7 +30,8 @@ abstract class DebugPainter {
 
 class _DebugPaintProviderState extends State<DebugPaintProvider>
     implements DebugPainter {
-  final RxSet<Function(Canvas canvas, Size size)> _queue = RxSet();
+  final ValueNotifierSet<Function(Canvas canvas, Size size)> _queue =
+      ValueNotifierSet();
 
   @override
   void initState() {
@@ -54,9 +53,13 @@ class _DebugPaintProviderState extends State<DebugPaintProvider>
           child: IgnorePointer(
             child: Material(
               type: MaterialType.transparency,
-              child: FastValueBuilder(
-                listen: _queue,
-                builder: (Iterable<dynamic Function(Canvas, Size)> value) {
+              child: ValueListenableBuilder(
+                valueListenable: _queue,
+                builder: (
+                  BuildContext context,
+                  Set<dynamic Function(Canvas, Size)> value,
+                  Widget? child,
+                ) {
                   return CustomPaint(
                     foregroundPainter: _Painter(
                       value,

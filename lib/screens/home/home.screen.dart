@@ -1,4 +1,4 @@
-import 'package:armar/armar.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:flags/features/audio/audio.provider.dart';
 import 'package:flags/features/audio/sound_data.dart';
 import 'package:flags/features/onboarding/onbloarding.controller.dart';
@@ -18,10 +18,10 @@ import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
 import 'package:qlevar_router/qlevar_router.dart';
 
-class HomeScreen extends ArGetScreen<IHomePresenter> {
+class HomeScreen extends GetScreen<IHomePresenter> {
   HomeScreen({
     super.key,
-    required super.presenter,
+    required super.controller,
   }) : super(tag: "single");
 
   final GlobalKey oPlayButton = GlobalKey();

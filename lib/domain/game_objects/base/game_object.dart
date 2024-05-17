@@ -1,30 +1,30 @@
 // ignore_for_file: unnecessary_getters_setters
 
-import 'package:armar/state_management/get.dart';
 import 'package:flags/domain/interfaces/drawable/i_drawable.dart';
+import 'package:flags/shared/services/disposable.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
-abstract class GameObject implements IDrawable {
+abstract class GameObject implements IDrawable, IDisposable {
   Key key;
 
   String name;
 
   String? uniqueName;
 
-  final RxValue<Vector2> positionRx;
+  final ValueNotifier<Vector2> positionRx;
 
   Vector2 get position => positionRx.value;
 
-  final RxValue<double> scaleRx;
+  final ValueNotifier<double> scaleRx;
 
   double get scale => scaleRx.value;
 
-  final RxValue<Vector2> sizeRx;
+  final ValueNotifier<Vector2> sizeRx;
 
   Vector2 get size => sizeRx.value;
 
-  final RxValue<double> rotationRx;
+  final ValueNotifier<double> rotationRx;
 
   double get rotation => rotationRx.value;
 
@@ -40,10 +40,18 @@ abstract class GameObject implements IDrawable {
     double rotation = 0,
   })  : key = key ?? UniqueKey(),
         uniqueName = uniqueName ?? name,
-        positionRx = RxValue(position ?? Vector2.zero()),
-        sizeRx = RxValue(size ?? Vector2.all(64)),
-        scaleRx = RxValue(scale),
-        rotationRx = RxValue(rotation);
+        positionRx = ValueNotifier(position ?? Vector2.zero()),
+        sizeRx = ValueNotifier(size ?? Vector2.all(64)),
+        scaleRx = ValueNotifier(scale),
+        rotationRx = ValueNotifier(rotation);
+
+  @override
+  void dispose() {
+    positionRx.dispose();
+    sizeRx.dispose();
+    scaleRx.dispose();
+    rotationRx.dispose();
+  }
 
   @protected
   Future<void> init();

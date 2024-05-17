@@ -1,14 +1,14 @@
 import 'dart:ui';
 
-import 'package:armar/armar.dart';
 import 'package:flags/screens/games/puzzle/components/timer/animated_seconds_timer.dart';
 import 'package:flags/uikit/uikit.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class PreparingFastModeTimer extends StatefulWidget {
   const PreparingFastModeTimer({super.key, required this.preparingTimer});
 
-  final RxValue<int> preparingTimer;
+  final ValueListenable<int> preparingTimer;
 
   OverlayEntry overlay() {
     return OverlayEntry(

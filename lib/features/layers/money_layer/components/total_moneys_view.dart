@@ -1,4 +1,3 @@
-import 'package:armar/rx/rx.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/presentation/app/app.presenter.dart';
 import 'package:flags/uikit/assets/components/money.dart';
@@ -47,9 +46,13 @@ class TotalMoneysView extends StatelessWidget {
             ),
             Padding(
               padding: const Pad(left: 42, right: 14, top: 3),
-              child: FastValueBuilder(
-                listen: moneyRx,
-                builder: (int value) {
+              child: ValueListenableBuilder(
+                valueListenable: moneyRx,
+                builder: (
+                  BuildContext context,
+                  int value,
+                  Widget? child,
+                ) {
                   return OutlineWidget(
                     child: FText(
                       "$value",

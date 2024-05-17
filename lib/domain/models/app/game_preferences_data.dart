@@ -1,15 +1,17 @@
-import 'package:armar/armar.dart';
+import 'package:flags/shared/services/disposable.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:dart_numerics/dart_numerics.dart';
 import 'package:flags/domain/models/game/scores/win_streak.dart';
 import 'package:hive/hive.dart';
 
-class GamePreferencesData {
+class GamePreferencesData implements IDisposable {
   GamePreferencesData({
     required int money,
     required this.winStreak,
-  }) : moneyRx = RxValue(money);
+  }) : moneyRx = ValueNotifier(money);
 
-  final RxValue<int> moneyRx;
+  final ValueNotifier<int> moneyRx;
 
   int get money => moneyRx.value;
 
@@ -35,4 +37,10 @@ class GamePreferencesData {
         "GamePreferences",
         (json) => GamePreferencesData.fromJson(json),
       );
+
+  @override
+  void dispose() {
+    moneyRx.dispose();
+
+  }
 }

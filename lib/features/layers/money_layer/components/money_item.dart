@@ -2,7 +2,6 @@
 
 import 'dart:math';
 
-import 'package:armar/logger.dart';
 import 'package:flags/core/extensions/extensions.dart';
 import 'package:flags/core/extensions/offset.dart';
 import 'package:flags/uikit/assets/components/money.dart';

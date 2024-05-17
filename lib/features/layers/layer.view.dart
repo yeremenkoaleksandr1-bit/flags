@@ -1,6 +1,5 @@
-import 'package:armar/armar.dart';
-import 'package:armar/rx/rx.dart';
 import 'package:flutter/widgets.dart';
+import 'package:state_manager/state_manager.dart';
 
 abstract class UiLayer extends StatefulWidget {
   const UiLayer({
@@ -26,7 +25,7 @@ abstract interface class IUiLayer {
 
 abstract class UiLayerState<T extends UiLayer, I extends IUiLayer>
     extends State<T> implements IUiLayer {
-  late final RxValue<bool> shownRx = RxValue(widget.initialShown);
+  late final ValueNotifier<bool> shownRx = ValueNotifier(widget.initialShown);
 
   void onShow() {}
 
@@ -41,6 +40,7 @@ abstract class UiLayerState<T extends UiLayer, I extends IUiLayer>
   @override
   void dispose() {
     Get.delete<I>(tag: widget.tag);
+    shownRx.dispose();
     super.dispose();
   }
 
@@ -48,12 +48,10 @@ abstract class UiLayerState<T extends UiLayer, I extends IUiLayer>
 
   @override
   Widget build(BuildContext context) {
-    final child = buildChild(context);
-
     return Positioned(
-      child: FastValueBuilder(
-        listen: shownRx,
-        builder: (bool value) {
+      child: ValueListenableBuilder(
+        valueListenable: shownRx,
+        builder: (BuildContext context, bool value, Widget? child) {
           return IgnorePointer(
             ignoring: !value,
             child: AnimatedOpacity(
@@ -63,6 +61,7 @@ abstract class UiLayerState<T extends UiLayer, I extends IUiLayer>
             ),
           );
         },
+        child: buildChild(context),
       ),
     );
   }

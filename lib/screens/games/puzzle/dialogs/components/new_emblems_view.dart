@@ -1,4 +1,4 @@
-import 'package:armar/armar.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
 import 'package:flags/uikit/game_widgets/game_widgets.dart';
 import 'package:flags/uikit/theme/borders.dart';

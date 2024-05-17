@@ -1,4 +1,4 @@
-import 'package:armar/armar.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:flags/core/elements/paint.dart';
 import 'package:flags/domain/editor/styles/style.dart';
 import 'package:flags/domain/entities/path/path.dart';

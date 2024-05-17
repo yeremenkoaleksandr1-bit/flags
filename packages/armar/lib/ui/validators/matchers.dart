@@ -1,1 +1,0 @@
-String youtubeMatchPattern() => r"https?://(?:www\.)?(?:youtube\.com/[\w-]+|youtu\.be/[\w-]+)";

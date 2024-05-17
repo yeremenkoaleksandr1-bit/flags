@@ -1,24 +1,23 @@
-import 'package:armar/armar.dart';
-import 'package:drag_and_drop/extensions/render_box.dart';
+import 'package:flags/core/extensions/render_box.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
+import 'package:flags/uikit/layout_components/containers/card.dart';
 import 'package:flutter/widgets.dart';
-
-import '../../../../../uikit/layout_components/containers/card.dart';
+import 'package:multi_value_listenable_builder/multi_value_listenable_builder.dart';
 
 abstract class ProcessObjectEditingBoard extends StatefulWidget {
   const ProcessObjectEditingBoard({
     super.key,
-    required this.presenter,
+    required this.controller,
   });
 
-  final IPuzzleCommonModePresenter presenter;
+  final IPuzzleCommonModePresenter controller;
 }
 
 abstract class ProcessObjectEditingBoardState<
     T extends ProcessObjectEditingBoard, G> extends State<T> {
-  final RxValue<G?> _currentObject = RxValue(null);
+  final ValueNotifier<G?> _currentObject = ValueNotifier(null);
 
-  final RxValue<bool> activeRx = RxValue(false);
+  final ValueNotifier<bool> activeRx = ValueNotifier(false);
 
   void show() {
     activeRx.value = true;
@@ -29,16 +28,30 @@ abstract class ProcessObjectEditingBoardState<
   }
 
   @override
+  void dispose() {
+    _currentObject.dispose();
+    activeRx.dispose();
+
+    super.dispose();
+  }
+
+  @override
   void initState() {
-    activeRx.stream.listen((event) {
-      if (event) {
-        _currentObject.value = widget.presenter.focusedObject.value;
-      }
-    });
-    widget.presenter.focusedObject.stream.listen((event) {
-      activeRx.value = event != null && event is G;
+    activeRx.addListener(activeRxListenerFunc);
+    widget.controller.focusedObject.addListener(() {
+      final value = widget.controller.focusedObject.value;
+
+      activeRx.value = value != null && value is G;
     });
     super.initState();
+  }
+
+  void activeRxListenerFunc() {
+    final value = activeRx.value;
+
+    if (value) {
+      _currentObject.value = widget.controller.focusedObject.value;
+    }
   }
 
   Widget buildWidget(BuildContext context, G? gameObject);
@@ -48,17 +61,27 @@ abstract class ProcessObjectEditingBoardState<
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
-    final presenter = widget.presenter;
+    final presenter = widget.controller;
 
-    return FastBuilder(
-      () {
+    return MultiValueListenableBuilder(
+      valueListenables: [
+        presenter.flagExposer.renderBox,
+        activeRx,
+        _currentObject,
+      ],
+      builder: (
+        BuildContext context,
+        List<dynamic> values,
+        Widget? child,
+      ) {
         double top;
-        final flagRenderBox = presenter.flagExposer.renderBox.value;
+        final RenderBox? flagRenderBox = values[0];
+
         if (flagRenderBox != null && !flagRenderBox.attached) {
           return const SizedBox.shrink();
         }
 
-        final rect = flagRenderBox?.rect ?? Offset.zero & Size.zero;
+        final rect = flagRenderBox?.getRect() ?? Offset.zero & Size.zero;
 
         if (activeRx.value) {
           top = rect.bottom + 24;

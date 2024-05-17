@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:armar/armar.dart';
 import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/core/extensions/extensions.dart';
 import 'package:flags/presentation/game/puzzle/onboarding/emblem/emblem_object.showcase_step_2.dart';
@@ -10,12 +9,13 @@ import 'package:flags/uikit/components/buttons/colors/green_button.dart';
 import 'package:flags/uikit/layout_components/gap/gap.dart';
 import 'package:flags/uikit/theme/palette.dart';
 import 'package:flame/extensions.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class EmblemEditingBoard extends ProcessObjectEditingBoard {
   const EmblemEditingBoard({
     super.key,
-    required super.presenter,
+    required super.controller,
   });
 
   @override
@@ -24,30 +24,31 @@ class EmblemEditingBoard extends ProcessObjectEditingBoard {
 
 class _EmblemEditingBoardState extends ProcessObjectEditingBoardState<
     EmblemEditingBoard, EmblemSceneObjectState> {
-  final RxValue<double> _scale = RxValue(0.0);
+  final ValueNotifier<double> _scale = ValueNotifier(0.0);
 
-  late final RxValue _focusedObject = widget.presenter.focusedObject;
+  late final ValueListenable<dynamic> _focusedObject =
+      widget.controller.focusedObject;
 
   @override
   void initState() {
-    _focusedObject.stream.listen(_listen);
+    _focusedObject.addListener(_listen);
 
     super.initState();
   }
 
-  void _listen(event) {
-    if (event is EmblemSceneObjectState) {
-      _scale.run(() {
-        _scale.value = event.gameObject.scales
-            .indexWhere(
-              (e) => e.roundDouble(1) == event.scaleRx.value.roundDouble(1),
-            )
-            .toDouble();
+  void _listen() {
+    final value = _focusedObject.value;
 
-        if (_scale.value == -1) {
-          _scale.value = 0;
-        }
-      });
+    if (value is EmblemSceneObjectState) {
+      _scale.value = value.gameObject.scales
+          .indexWhere(
+            (e) => e.roundDouble(1) == value.scaleRx.value.roundDouble(1),
+          )
+          .toDouble();
+
+      if (_scale.value == -1) {
+        _scale.value = 0;
+      }
     }
   }
 
@@ -69,10 +70,10 @@ class _EmblemEditingBoardState extends ProcessObjectEditingBoardState<
     EmblemSceneObjectState? focussedObject,
   ) {
     return PuzzleEmblemObjectStep2Showcase(
-      showcaseKey: widget.presenter.showcase.emblemObjectStep2,
+      showcaseKey: widget.controller.showcase.emblemObjectStep2,
       onTap: () {
-        widget.presenter.showcase.complete("puzzle_emblem_object");
-        widget.presenter.showcase.showcaseState.next();
+        widget.controller.showcase.complete("puzzle_emblem_object");
+        widget.controller.showcase.showcaseState.next();
       },
       child: DeferPointer(
         child: Column(
@@ -88,8 +89,13 @@ class _EmblemEditingBoardState extends ProcessObjectEditingBoardState<
                     const RoundSliderThumbShape(enabledThumbRadius: 12.0),
                 overlayColor: ThemePalette.white,
               ),
-              child: FastBuilder(
-                () {
+              child: ValueListenableBuilder(
+                valueListenable: _focusedObject,
+                builder: (
+                  BuildContext context,
+                  value,
+                  Widget? child,
+                ) {
                   if (_focusedObject.value is! EmblemSceneObjectState) {
                     return const SizedBox.shrink();
                   }

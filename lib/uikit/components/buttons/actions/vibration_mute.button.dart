@@ -1,4 +1,3 @@
-import 'package:armar/rx/rx.dart';
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flags/features/vibration/vibration.provider.dart';
 import 'package:flags/uikit/components/buttons/buttons.dart';
@@ -15,9 +14,9 @@ class FVibrationMuteButton extends StatelessWidget {
 
     return FBlueButton(
       onPressed: audioService.toggleMute,
-      child: FastValueBuilder(
-        listen: audioService.muted,
-        builder: (value) {
+      child: ValueListenableBuilder(
+        valueListenable: audioService.muted,
+        builder: (BuildContext context, bool value, Widget? child) {
           return Icon(
             value
                 ? CommunityMaterialIcons.vibrate_off

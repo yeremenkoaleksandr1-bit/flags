@@ -1,12 +1,14 @@
-import 'package:armar/armar.dart';
+import 'package:flags/shared/services/disposable.dart';
+import 'package:flutter/foundation.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:vibration/vibration.dart';
 
 const String _phoneVibrationMuteKey = "33b783382f73";
 
-abstract class IPhoneVibrationService {
-  RxValue<bool> get muted;
+abstract class IPhoneVibrationService implements IDisposable {
+  ValueNotifier<bool> get muted;
 
   Future<void> toggleMute();
 
@@ -19,14 +21,15 @@ class PhoneVibrationServiceImpl implements IPhoneVibrationService {
   final Box<bool> _preferences = Hive.box(name: "preferences");
 
   @override
-  late final RxValue<bool> muted;
+  late final ValueNotifier<bool> muted;
 
   bool get isMuted => muted.value;
 
   PhoneVibrationServiceImpl({
     bool initialMuted = false,
   }) {
-    muted = RxValue(_preferences.get(_phoneVibrationMuteKey) ?? initialMuted);
+    muted =
+        ValueNotifier(_preferences.get(_phoneVibrationMuteKey) ?? initialMuted);
   }
 
   @override
@@ -51,5 +54,10 @@ class PhoneVibrationServiceImpl implements IPhoneVibrationService {
     try {
       await Vibration.vibrate(duration: milliseconds);
     } catch (e) {}
+  }
+
+  @override
+  void dispose() {
+    muted.dispose();
   }
 }

@@ -1,15 +1,12 @@
-import 'package:armar/armar.dart';
-import 'package:armar/logger.dart';
 import 'package:flags/domain/domain.dart';
+import 'package:flags/prefabs/levels/levels.dart';
 import 'package:flags/presentation/navigator/routes.dart';
 import 'package:flags/presentation/presenters/continents_picker/route_params.dart';
+import 'package:flags/presentation/presenters/continents_picker/state/continents_picker.state.dart';
 import 'package:flags/presentation/presenters/levels_picker/route_params.dart';
+import 'package:flags/screens/games/games_factory.page.dart';
 import 'package:qlevar_router/qlevar_router.dart';
-
-import '../../../prefabs/levels/levels.dart';
-import '../../../screens/games/games_factory.page.dart';
-import '../levels_picker/levels_picker.presenter.dart';
-import 'state/continents_picker.state.dart';
+import 'package:state_manager/state_manager.dart';
 
 abstract interface class IContinentsPickerPresenter
     with StateMixin<ContinentsPickerState> {
@@ -29,7 +26,7 @@ class ContinentsPickerPresenterImpl extends GetxController
   ContinentsPickerPresenterImpl({required this.routeParams});
 
   @override
-  void onInit() async {
+  Future<void> onInit() async {
     final continents = [
       ContinentType.europe,
       ContinentType.asia,
@@ -52,16 +49,19 @@ class ContinentsPickerPresenterImpl extends GetxController
 
   @override
   void onContinentSelected(ContinentType continent) {
-    QR.toName(Routes.levelsPicker, params: {
-      'data': LevelsPickerRouteParams(
-        gameProcessType: routeParams.gameProcessType,
-        continentType: continent,
-      ),
-    });
+    QR.toName(
+      Routes.levelsPicker,
+      params: {
+        'data': LevelsPickerRouteParams(
+          gameProcessType: routeParams.gameProcessType,
+          continentType: continent,
+        ),
+      },
+    );
   }
 
   @override
-  void onPlayFastMode() async {
+  Future<void> onPlayFastMode() async {
     final continent = [...ContinentType.values].random;
 
     final levels = FactoryGameContinent().create(continent);

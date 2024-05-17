@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:armar/armar.dart';
 import 'package:drag_and_drop/drag_and_drop.dart';
 import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
@@ -8,14 +7,16 @@ import 'package:flags/domain/game_objects/flag/flag.dart';
 import 'package:flags/features/audio/audio.provider.dart';
 import 'package:flags/features/audio/sound_data.dart';
 import 'package:flags/screens/games/puzzle/components/board_items/base.dart';
+import 'package:flags/ui/debug_paint.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:state_manager/state_manager.dart';
 
 class BoardCommonItemWidget extends BoardItemWidget {
   const BoardCommonItemWidget({
     super.key,
-    required super.presenter,
+    required super.controller,
     required super.item,
     required this.flag,
     this.onDragStarted,
@@ -91,7 +92,13 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
     );
   }
 
-  final RxValue<Offset> _feedbackPosition = RxValue(Offset.zero);
+  final ValueNotifier<Offset> _feedbackPosition = ValueNotifier(Offset.zero);
+
+  @override
+  void dispose() {
+    _feedbackPosition.dispose();
+    super.dispose();
+  }
 
   @override
   Widget buildWidget(BuildContext context, BoxConstraints constraints) {
@@ -135,7 +142,7 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
             maxSimultaneousDrags: 1,
             delay: const Duration(milliseconds: 1),
             onDragStarted: (dragStartPoint) {
-              final showcase = widget.presenter.showcase;
+              final showcase = widget.controller.showcase;
               if (!showcase.isCompleted("puzzle.common_object")) {
                 showcase.showcaseState.next();
                 showcase.complete("puzzle.common_object");
@@ -157,25 +164,25 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
                 ),
               );
 
-              // DebugPainter.paint((canvas, size) {
-              //   canvas.drawPoints(
-              //     PointMode.points,
-              //     [
-              //       feedBackRect.topLeft,
-              //       feedBackRect.topRight,
-              //       feedBackRect.topCenter,
-              //       feedBackRect.bottomLeft,
-              //       feedBackRect.bottomCenter,
-              //       feedBackRect.bottomRight,
-              //       feedBackRect.centerLeft,
-              //       feedBackRect.centerRight,
-              //     ].map((e) => globalPosition + e).toList(),
-              //     Paint()
-              //       ..color = Colors.red
-              //       ..strokeWidth = 4
-              //       ..strokeCap = StrokeCap.round,
-              //   );
-              // });
+              DebugPainter.paint((canvas, size) {
+                canvas.drawPoints(
+                  PointMode.points,
+                  [
+                    feedBackRect.topLeft,
+                    feedBackRect.topRight,
+                    feedBackRect.topCenter,
+                    feedBackRect.bottomLeft,
+                    feedBackRect.bottomCenter,
+                    feedBackRect.bottomRight,
+                    feedBackRect.centerLeft,
+                    feedBackRect.centerRight,
+                  ].map((e) => globalPosition + e).toList(),
+                  Paint()
+                    ..color = Colors.red
+                    ..strokeWidth = 4
+                    ..strokeCap = StrokeCap.round,
+                );
+              });
             },
             onDragEnd: (SDraggableDetails details) {
               widget.onDragEnd?.call(object, details);
@@ -208,10 +215,15 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
                     value,
                   )!;
 
-                  return FastBuilder(
-                    () {
+                  return ValueListenableBuilder(
+                    valueListenable: _feedbackPosition,
+                    builder: (
+                      BuildContext context,
+                      Offset value,
+                      Widget? child,
+                    ) {
                       position.lerp(
-                        _feedbackPosition.value.toVector2(),
+                        value.toVector2(),
                         animation.value,
                       );
 

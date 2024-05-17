@@ -12,8 +12,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  armar:
-    path: packages/armar
+  state_manager:
+    path: packages/state_manager
 
   drag_and_drop:
     path: packages/drag_and_drop
@@ -53,6 +53,10 @@ dependencies:
   community_material_icon: ^5.9.55
   showcaseview:
     path: packages/showcaseview
+  flutter_easyloading: ^3.0.5
+  reactive_forms: ^17.0.1
+  multi_value_listenable_builder: ^0.0.2
+  memoize: ^3.0.0
 
 dev_dependencies:
   flutter_test:

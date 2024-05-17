@@ -1,10 +1,9 @@
-import 'package:armar/armar.dart';
-import 'package:armar/rx/rx.dart';
 import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/domain/game_objects/base/game_object.dart';
 import 'package:flags/presentation/presenters/editor/editor.presenter.dart';
 import 'package:flags/uikit/game_widgets/objects/draggable_object.dart';
 import 'package:flutter/material.dart';
+import 'package:state_manager/state_manager.dart';
 
 import 'handle_button.dart';
 
@@ -21,7 +20,7 @@ class EditorDraggableWidget extends DraggableGameObjectWidget<GameObject> {
 class EditorDraggableWidgetState
     extends DraggableGameObjectWidgetState<GameObject, EditorDraggableWidget> {
   late final IEditorPresenter presenter =
-      ArGetScreen.of<IEditorPresenter>(context).presenter;
+      GetScreen.of<IEditorPresenter>(context).presenter;
 
   @override
   void onMoveStart(DragStartDetails event, BoxConstraints constraints) {
@@ -44,9 +43,13 @@ class EditorDraggableWidgetState
           right: -12,
           top: -12,
           bottom: -12,
-          child: FastValueBuilder(
-            listen: presenter.state.selectedObject,
-            builder: (EditorDraggableWidget? value) {
+          child: ValueListenableBuilder(
+            valueListenable: presenter.state.selectedObject,
+            builder: (
+              BuildContext context,
+              EditorDraggableWidget? value,
+              Widget? child,
+            ) {
               final selected = value == widget;
 
               if (!selected) {

@@ -1,4 +1,3 @@
-import 'package:armar/logger.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/features/onboarding/onboarding.service.dart';
 import 'package:flutter/material.dart';

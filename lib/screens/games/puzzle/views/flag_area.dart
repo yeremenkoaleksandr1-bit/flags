@@ -1,24 +1,19 @@
-import 'package:armar/armar.dart';
-import 'package:armar/logger.dart';
-import 'package:armar/rx/rx.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:drag_and_drop/drag_and_drop.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
-import 'package:flags/presentation/game/puzzle/entities/scallable_emblem.dart';
+import 'package:flags/presentation/app/app.presenter.dart';
+import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
+import 'package:flags/screens/games/puzzle/scene_components/emblem.dart';
+import 'package:flags/screens/games/puzzle/scene_components/factory.dart';
 import 'package:flags/uikit/game_widgets/flag/flag.dart';
 import 'package:flags/uikit/game_widgets/game_widgets.dart';
 import 'package:flags/uikit/game_widgets/objects/game_objects_rendering.dart';
 import 'package:flags/uikit/theme/palette.dart';
+import 'package:flags/uikit/utils/render_box_exposed.dart';
 import 'package:flame/extensions.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../presentation/app/app.presenter.dart';
-import '../../../../presentation/game/puzzle/puzzle_common.presenter.dart';
-import '../../../../uikit/utils/render_box_exposed.dart';
-import '../scene_components/emblem.dart';
-import '../scene_components/factory.dart';
+import 'package:state_manager/state_manager.dart';
 
 class GameFlagArea extends StatefulWidget {
   const GameFlagArea({
@@ -32,13 +27,13 @@ class GameFlagArea extends StatefulWidget {
     this.onAcceptWithDetails,
     this.onLeave,
     this.onMove,
-    required this.presenter,
+    required this.controller,
   });
 
-  final IPuzzleCommonModePresenter presenter;
+  final IPuzzleCommonModePresenter controller;
 
   final GameFlag flag;
-  final RxList<ProcessGameObject> objects;
+  final ValueListenableList<ProcessGameObject> objects;
   final RenderBoxExposer exposer;
 
   final DragTargetWillAccept<ProcessGameObject>? onWillAccept;
@@ -73,7 +68,7 @@ class _GameFlagAreaState extends State<GameFlagArea> {
       (e) {
         return PuzzleSceneItemsFactory.build(
           e,
-          onEmblem: (o) => EmblemSceneObject(o, widget.presenter),
+          onEmblem: (o) => EmblemSceneObject(o, widget.controller),
           onDefault: (o) => GameObjectWidget(o),
         );
       },
@@ -98,11 +93,13 @@ class _GameFlagAreaState extends State<GameFlagArea> {
                   child: ClipRRect(
                     child: SizedBox.fromSize(
                       size: widget.flag.size.toSize(),
-                      child: FastValueBuilder(
-                        listen: widget.objects,
-                        builder: (Iterable<ProcessGameObject> value) {
-                          // return FlagView(flag: widget.flag);
-
+                      child: ValueListenableBuilder(
+                        valueListenable: widget.objects,
+                        builder: (
+                          BuildContext context,
+                          List<ProcessGameObject> value,
+                          Widget? child,
+                        ) {
                           return GameObjectsRendering(
                             [...buildObjects(value)],
                           );

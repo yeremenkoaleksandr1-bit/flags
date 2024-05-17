@@ -1,6 +1,6 @@
-import 'package:armar/armar.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
-import 'package:flags/domain/game_objects/game_objects.dart';
+import 'package:flags/domain/entities/game/game_levels/game_level.dart';
+import 'package:flags/domain/game_objects/parts/path_part.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
 import 'package:flags/presentation/game/puzzle/entities/colored_part.game_object.dart';
 import 'package:flags/presentation/game/puzzle/onboarding/colored_part/colored_object.showcase_step_2.dart';
@@ -11,11 +11,12 @@ import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
 import 'package:flutter/material.dart';
+import 'package:multi_value_listenable_builder/multi_value_listenable_builder.dart';
 
 class ColoredPathEditingBoard extends ProcessObjectEditingBoard {
   const ColoredPathEditingBoard({
     super.key,
-    required super.presenter,
+    required super.controller,
   });
 
   @override
@@ -25,29 +26,37 @@ class ColoredPathEditingBoard extends ProcessObjectEditingBoard {
 class ColoredPathEditingBoardState
     extends ProcessObjectEditingBoardState<ColoredPathEditingBoard, BoardItem> {
   final RenderBoxExposer colorsListExposer = RenderBoxExposer();
-  final RxValue<Color?> colorRx = RxValue(null);
+  final ValueNotifier<Color?> colorRx = ValueNotifier(null);
 
   @override
   void initState() {
-    activeRx.stream.listen(reset);
+    activeRx.addListener(reset);
     super.initState();
   }
 
-  Future<void> reset(bool event) async {
-    if (event) {
-      widget.presenter.boardController.closeFullScreen();
+  Future<void> reset() async {
+    final value = activeRx.value;
+
+    if (value) {
+      widget.controller.boardController.closeFullScreen();
       colorRx.value = Colors.grey;
     }
   }
 
   @override
+  void dispose() {
+    colorRx.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget buildWidget(BuildContext context, BoardItem? gameObject) {
     return PuzzleColoredObjectStep2Showcase(
-      showcaseKey: widget.presenter.showcase.coloredObjectStep2,
+      showcaseKey: widget.controller.showcase.coloredObjectStep2,
       colorsListExposer: colorsListExposer,
       onTap: () {
-        widget.presenter.showcase.showcaseState.next();
-        widget.presenter.showcase.complete("puzzle_colored_object_2");
+        widget.controller.showcase.showcaseState.next();
+        widget.controller.showcase.complete("puzzle_colored_object_2");
       },
       child: Builder(
         builder: (context) {
@@ -67,15 +76,24 @@ class ColoredPathEditingBoardState
                     alignment: Alignment.centerRight,
                     child: FCloseButton(
                       onTap: () {
-                        widget.presenter.unfocusObject();
+                        widget.controller.unfocusObject();
                       },
                     ),
                   ),
                   Gap.v24,
                   Expanded(
-                    child: FastBuilder(
-                      () {
-                        final color = colorRx.value;
+                    child: MultiValueListenableBuilder(
+                      valueListenables: [
+                        colorRx,
+                        widget.controller.state.level
+                      ],
+                      builder: (
+                        BuildContext context,
+                        List<dynamic> values,
+                        Widget? child,
+                      ) {
+                        final Color? color = values[0];
+                        final GameLevel level = values[1];
 
                         var object = gameObject.object as PathGameObject;
 
@@ -89,11 +107,11 @@ class ColoredPathEditingBoardState
 
                         return BoardCommonItemWidget(
                           key: ValueKey(color),
-                          presenter: widget.presenter,
+                          controller: widget.controller,
                           item: gameObject.copyWith(
                             object: object,
                           ),
-                          flag: widget.presenter.state.level.value.flag,
+                          flag: level.flag,
                         );
                       },
                     ),

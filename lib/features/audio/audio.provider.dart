@@ -1,6 +1,6 @@
-import 'package:armar/armar.dart';
 import 'package:flags/features/audio/audio.service.dart';
 import 'package:flags/features/audio/sound_data.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class AudioProvider extends StatefulWidget {
@@ -23,7 +23,7 @@ class AudioProvider extends StatefulWidget {
 }
 
 abstract interface class IAudioController {
-  RxValue<bool> get muted;
+  ValueListenable<bool> get muted;
 
   Future<void> toggleMute();
 
@@ -58,7 +58,7 @@ class _AudioProviderState extends State<AudioProvider>
   Widget build(BuildContext context) => widget.child;
 
   @override
-  RxValue<bool> get muted => audioService.muted;
+  ValueNotifier<bool> get muted => audioService.muted;
 
   @override
   Future<void> toggleMute() => audioService.toggleMute();

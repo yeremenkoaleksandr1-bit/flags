@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:armar/armar.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:flags/domain/editor/styles/bends_style.dart';
 import 'package:flags/domain/editor/styles/bicolour_style.dart';
 import 'package:flags/domain/editor/styles/border_style.dart';

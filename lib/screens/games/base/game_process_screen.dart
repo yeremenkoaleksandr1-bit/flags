@@ -1,15 +1,15 @@
-import 'package:armar/armar.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:flags/presentation/navigator/router.dart';
 import 'package:flutter/widgets.dart';
 
-abstract class GameProcessScreen<T> extends ArGetScreen<T> {
-  const GameProcessScreen({super.key, required super.presenter});
+abstract class GameProcessScreen<T> extends GetScreen<T> {
+  const GameProcessScreen({super.key, required super.controller});
 
   @override
-  State<ArGetScreen<T>> createState() => GameProcessScreenState();
+  State<GetScreen<T>> createState() => GameProcessScreenState();
 }
 
-class GameProcessScreenState<T> extends ArGetScreenState<T> with RouteAware {
+class GameProcessScreenState<T> extends GetScreenState<T> with RouteAware {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();

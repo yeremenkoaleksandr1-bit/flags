@@ -1,18 +1,16 @@
 import 'dart:math';
 
-import 'package:armar/logger.dart';
 import 'package:flags/core/extensions/extensions.dart';
 import 'package:flags/domain/domain.dart';
+import 'package:flags/domain/entities/game/game_levels/game_level.dart';
+import 'package:flags/domain/game_objects/base/process.game_object.dart';
+import 'package:flags/domain/game_objects/emblems/emblems.dart';
+import 'package:flags/domain/game_objects/flag/flag.dart';
 import 'package:flags/domain/game_objects/flag/flag_extensions.dart';
 import 'package:flags/domain/game_objects/game_objects.dart';
+import 'package:flags/presentation/game/puzzle/entities/scallable_emblem.dart';
+import 'package:flags/presentation/game/puzzle/generators/easy.dart';
 import 'package:flame/extensions.dart';
-
-import '../../../../domain/entities/game/game_levels/game_level.dart';
-import '../../../../domain/game_objects/base/process.game_object.dart';
-import '../../../../domain/game_objects/emblems/emblems.dart';
-import '../../../../domain/game_objects/flag/flag.dart';
-import '../entities/scallable_emblem.dart';
-import 'easy.dart';
 
 class PuzzlePartsGenerator {
   PuzzlePartsGenerator({

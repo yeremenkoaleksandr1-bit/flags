@@ -1,4 +1,4 @@
-import 'package:armar/armar.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:flags/features/layers/layer.view.dart';
 import 'package:flags/presentation/presenters/editor/editor.presenter.dart';
 import 'package:flags/uikit/layout_components/containers/card.dart';
@@ -23,7 +23,7 @@ class EditorEmblemsState
     extends UiLayerState<EditorEmblemsBoard, IEditorEmblemsController>
     implements IEditorEmblemsController {
   late final IEditorPresenter presenter =
-      ArGetScreen.of<IEditorPresenter>(context).presenter;
+      GetScreen.of<IEditorPresenter>(context).presenter;
 
   @override
   Widget buildChild(BuildContext context) {

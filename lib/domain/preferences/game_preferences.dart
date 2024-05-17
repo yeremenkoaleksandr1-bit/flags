@@ -1,8 +1,9 @@
 import 'package:flags/domain/models/app/app.dart';
 import 'package:flags/domain/models/game/scores/win_streak.dart';
+import 'package:flags/shared/services/disposable.dart';
 import 'package:hive/hive.dart';
 
-class GamePreferences {
+class GamePreferences implements IDisposable {
   late final GamePreferencesData data;
   final Box<dynamic> box = Hive.box<dynamic>(name: "game_preferences");
 
@@ -15,16 +16,16 @@ class GamePreferences {
       ),
     );
 
-    data.winStreak.currentStreakRx.stream.listen((event) {
-      box.put('currentStreak', event);
+    data.winStreak.currentStreakRx.addListener(() {
+      box.put('currentStreak', data.winStreak.currentStreakRx.value);
     });
 
-    data.winStreak.longestStreakRx.stream.listen((event) {
-      box.put('longestStreak', event);
+    data.winStreak.longestStreakRx.addListener(() {
+      box.put('longestStreak', data.winStreak.longestStreakRx.value);
     });
 
-    data.moneyRx.stream.listen((event) {
-      box.put('money', event);
+    data.moneyRx.addListener(() {
+      box.put('money', data.moneyRx.value);
     });
   }
 
@@ -34,5 +35,10 @@ class GamePreferences {
 
   void addMoney(int value) {
     data.money += value;
+  }
+
+  @override
+  void dispose() {
+    data.dispose();
   }
 }

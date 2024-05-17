@@ -1,4 +1,4 @@
-import 'package:armar/armar.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/domain/editor/shapes/shapes.dart';
 import 'package:flags/domain/game_objects/game_objects.dart';
@@ -28,7 +28,7 @@ class EditorShapesState
     extends UiLayerState<EditorShapesBoard, IEditorShapesController>
     implements IEditorShapesController {
   late final IEditorPresenter presenter =
-      ArGetScreen.of<IEditorPresenter>(context).presenter;
+      GetScreen.of<IEditorPresenter>(context).presenter;
 
   final ScrollController scrollController = ScrollController();
 

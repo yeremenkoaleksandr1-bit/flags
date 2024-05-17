@@ -1,6 +1,4 @@
-import 'package:armar/armar.dart';
-import 'package:armar/contexts/contexts.dart';
-import 'package:armar/logger.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:flags/domain/editor/editor_flag.dart';
 import 'package:flags/presentation/navigator/routes.dart';
 import 'package:flags/presentation/presentation.dart';
@@ -41,7 +39,7 @@ class AppRouter extends QRouterDelegate {
               initRoute: '/home',
               observers: [
                 routeObserver,
-                ArGetScreen.routeObserver,
+                GetScreen.routeObserver,
                 GamePageBuilder.routeObserver,
                 HeroController(),
               ],
@@ -51,14 +49,14 @@ class AppRouter extends QRouterDelegate {
                   path: '/home',
                   name: Routes.home,
                   builder: () => HomeScreen(
-                    presenter: (context) => HomePresenterImpl(),
+                    controller: (context) => HomePresenterImpl(),
                   ),
                 ),
                 QRoute(
                   path: '/game_mode_picker',
                   name: Routes.gameModePicker,
                   builder: () => GameModePickerScreen(
-                    presenter: (context) => GameModePickerPresenterImpl(),
+                    controller: (context) => GameModePickerPresenterImpl(),
                   ),
                 ),
                 QRoute(
@@ -69,7 +67,7 @@ class AppRouter extends QRouterDelegate {
                         QR.params['data']!.value! as ContinentPickerRouteParams;
 
                     return ContinentsPickerScreen(
-                      presenter: (context) => ContinentsPickerPresenterImpl(
+                      controller: (context) => ContinentsPickerPresenterImpl(
                         routeParams: data,
                       ),
                     );
@@ -79,7 +77,7 @@ class AppRouter extends QRouterDelegate {
                   path: '/levels_picker',
                   name: Routes.levelsPicker,
                   builder: () => LevelsPickerScreen(
-                    presenter: (context) {
+                    controller: (context) {
                       final data =
                           QR.params['data']!.value! as LevelsPickerRouteParams;
                       return LevelsPickerPresenterImpl(params: data);
@@ -101,7 +99,7 @@ class AppRouter extends QRouterDelegate {
                   path: '/my_flags',
                   name: Routes.myFlags,
                   builder: () => MyFlagsScreen(
-                    presenter: (context) => MyFlagsPresenterImpl(),
+                    controller: (context) => MyFlagsPresenterImpl(),
                   ),
                 ),
                 QRoute(
@@ -110,17 +108,16 @@ class AppRouter extends QRouterDelegate {
                   builder: () {
                     final data = QR.params['data']!.value! as EditorFlagData;
                     return EditorScreen(
-                      presenter: (context) => EditorPresenterImpl(data),
+                      controller: (context) => EditorPresenterImpl(data),
                     );
                   },
                 ),
               ],
             ),
           ],
-          navKey: ArAppContexts.keys.navigatorKey,
         ) {
     //  QR.settings.globalMiddlewares.add(_easyLoadingMiddleware);
-    QR.settings.logger = logger.t;
+    //  QR.settings.logger = logger.t;
     QR.settings.pagesType = const QCustomPage(
       transitionDuration: Duration(milliseconds: 500),
       reverseTransitionDuration: Duration(milliseconds: 500),

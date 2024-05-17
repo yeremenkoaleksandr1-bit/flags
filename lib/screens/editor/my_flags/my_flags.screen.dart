@@ -1,4 +1,4 @@
-import 'package:armar/armar.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/presentation/presenters/my_flags/my_flags.presenter.dart';
 import 'package:flags/screens/editor/my_flags/views/flags_list.view.dart';
@@ -9,8 +9,8 @@ import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class MyFlagsScreen extends ArGetScreen<IMyFlagsPresenter> {
-  const MyFlagsScreen({super.key, required super.presenter});
+class MyFlagsScreen extends GetScreen<IMyFlagsPresenter> {
+  const MyFlagsScreen({super.key, required super.controller});
 
   @override
   Widget build(BuildContext context, IMyFlagsPresenter presenter) {

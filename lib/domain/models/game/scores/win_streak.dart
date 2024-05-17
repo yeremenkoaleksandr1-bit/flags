@@ -1,15 +1,16 @@
-import 'package:armar/armar.dart';
+import 'package:flags/shared/services/disposable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
 
-class WinStreak {
+class WinStreak implements IDisposable {
   WinStreak({
     int currentStreak = 0,
     int longestStreak = 0,
-  })  : currentStreakRx = RxValue(currentStreak),
-        longestStreakRx = RxValue(longestStreak);
+  })  : currentStreakRx = ValueNotifier(currentStreak),
+        longestStreakRx = ValueNotifier(longestStreak);
 
-  final RxValue<int> currentStreakRx;
-  final RxValue<int> longestStreakRx;
+  final ValueNotifier<int> currentStreakRx;
+  final ValueNotifier<int> longestStreakRx;
 
   void recordWin() {
     currentStreakRx.value++;
@@ -48,4 +49,10 @@ class WinStreak {
         "WinStreak",
         (json) => WinStreak.fromJson(json),
       );
+
+  @override
+  void dispose() {
+    currentStreakRx.dispose();
+    longestStreakRx.dispose();
+  }
 }

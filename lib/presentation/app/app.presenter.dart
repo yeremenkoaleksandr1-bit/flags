@@ -2,7 +2,7 @@
 
 import 'dart:async';
 
-import 'package:armar/armar.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/domain/adapters.dart';
 import 'package:flags/domain/preferences/preferences.dart';
@@ -134,5 +134,11 @@ class AppPresenterImpl extends GetxController
         });
       });
     });
+  }
+
+  @override
+  void dispose() {
+    gameState.dispose();
+    super.dispose();
   }
 }

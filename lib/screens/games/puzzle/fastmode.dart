@@ -1,6 +1,5 @@
 // ignore_for_file: require_trailing_commas
 
-import 'package:armar/armar.dart';
 import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
@@ -19,12 +18,13 @@ import 'package:flags/uikit/layout_components/gap/gap.dart';
 import 'package:flags/uikit/layout_components/showcase/showcase.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:qlevar_router/qlevar_router.dart';
+import 'package:state_manager/state_manager.dart';
 
 import '../../../features/audio/audio.provider.dart';
 import '../../../features/audio/sound_data.dart';
 
 class PuzzleFastMode extends PuzzleCommonMode<IPuzzleFastModePresenter> {
-  const PuzzleFastMode({super.key, required super.presenter});
+  const PuzzleFastMode({super.key, required super.controller});
 
   @override
   void onPreInit(BuildContext context) {
@@ -89,9 +89,13 @@ class PuzzleFastMode extends PuzzleCommonMode<IPuzzleFastModePresenter> {
         return FShowcaseWidget(
           showcaseKey: presenter.showcaseFm.key,
           builder: (BuildContext context) {
-            return FastBuilder(
-              () {
-                final level = state!.level.value;
+            return ValueListenableBuilder(
+              valueListenable: state!.level,
+              builder: (
+                BuildContext context,
+                GameLevel level,
+                Widget? child,
+              ) {
                 return Stack(
                   children: [
                     Positioned.fill(
@@ -133,7 +137,7 @@ class PuzzleFastMode extends PuzzleCommonMode<IPuzzleFastModePresenter> {
   }
 
   @override
-  State<ArGetScreen<IPuzzleFastModePresenter>> createState() =>
+  State<GetScreen<IPuzzleFastModePresenter>> createState() =>
       PuzzleFastModePageState();
 }
 

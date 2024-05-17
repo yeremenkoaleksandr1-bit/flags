@@ -52,11 +52,11 @@ class _GamesFactoryPageState extends State<GamesFactoryPage> {
     screen = switch (params.gameMode) {
       GameProcessType.puzzle => switch (params.gamesType) {
           GameStyleType.common => PuzzleCommonMode(
-              presenter: (_) =>
+              controller: (_) =>
                   PuzzleCommonModePresenterImpl(context, params: params),
             ),
           GameStyleType.fast => PuzzleFastMode(
-              presenter: (_) =>
+              controller: (_) =>
                   PuzzleFastModePresenterImpl(context, params: params),
             ),
         },

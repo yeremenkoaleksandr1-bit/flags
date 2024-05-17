@@ -1,4 +1,4 @@
-import 'package:armar/armar.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/domain/domain.dart';
 import 'package:flags/uikit/components/buttons/actions/actions.dart';
@@ -11,10 +11,10 @@ import '../../ui/game_scaffold.dart';
 import 'views/coming_soon.dart';
 import 'views/puzzles_mode_view.dart';
 
-class GameModePickerScreen extends ArGetScreen<IGameModePickerPresenter> {
+class GameModePickerScreen extends GetScreen<IGameModePickerPresenter> {
   const GameModePickerScreen({
     super.key,
-    required super.presenter,
+    required super.controller,
   }) : super(tag: "single");
 
   @override

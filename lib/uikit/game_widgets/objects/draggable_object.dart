@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/domain/game_objects/game_objects.dart';
 import 'package:flags/uikit/game_widgets/game_widgets.dart';
@@ -7,7 +5,6 @@ import 'package:flags/uikit/utils/render_box_exposed.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 
 typedef DraggableMovableDataCallback = void Function(
   DraggableGameObjectWidgetState state,
@@ -75,13 +72,23 @@ class DraggableGameObjectWidgetState<G extends GameObject,
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (widget.onRenderBoxChanged != null) {
-        exposer.renderBox.stream.listen((event) {
-          if (event != null) {
-            widget.onRenderBoxChanged!.call(event);
-          }
-        });
+        exposer.renderBox.addListener(renderBoxListenFunc);
       }
     });
+  }
+
+  void renderBoxListenFunc() {
+    final value = exposer.renderBox.value;
+
+    if (value != null) {
+      widget.onRenderBoxChanged!.call(value);
+    }
+  }
+
+  @override
+  void dispose() {
+    exposer.dispose();
+    super.dispose();
   }
 
   @mustCallSuper

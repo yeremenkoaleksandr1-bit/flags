@@ -1,4 +1,3 @@
-import 'package:armar/contexts/contexts.dart';
 import 'package:flags/presentation/navigator/router.dart';
 import 'package:flags/uikit/text/f_text.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +16,7 @@ class AppRouterBuilder extends StatelessWidget {
     return Router(
       backButtonDispatcher: DoubleTapBackButtonDispatcher(
         onFirstPress: () {
-          ScaffoldMessenger.of(ArAppContexts.globalScaffold).showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: FText("double_press_exit_message"),
             ),

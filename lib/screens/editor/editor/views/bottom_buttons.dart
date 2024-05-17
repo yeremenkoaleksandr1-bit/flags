@@ -1,9 +1,9 @@
-import 'package:armar/armar.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:flags/presentation/presenters/editor/editor.presenter.dart';
 import 'package:flags/uikit/components/buttons/buttons.dart';
 import 'package:flutter/cupertino.dart';
 
-class EditorBottomButtonsView extends ArGetLocatorWidget<IEditorPresenter> {
+class EditorBottomButtonsView extends GetConsumer<IEditorPresenter> {
   const EditorBottomButtonsView({super.key});
 
   @override

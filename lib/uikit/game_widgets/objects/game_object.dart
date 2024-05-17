@@ -1,8 +1,8 @@
-import 'package:armar/armar.dart';
 import 'package:flags/domain/game_objects/base/game_object.dart';
 import 'package:flags/uikit/game_widgets/game_widgets.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/widgets.dart';
+import 'package:multi_value_listenable_builder/multi_value_listenable_builder.dart';
 
 import 'game_objects_rendering.dart';
 
@@ -26,13 +26,13 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
 
   double get fitValue => areaRenderBox.size.width / widget.gameObject.size.x;
 
-  RxValue<Vector2> get positionRx => widget.gameObject.positionRx;
+  ValueNotifier<Vector2> get positionRx => widget.gameObject.positionRx;
 
-  RxValue<Vector2> get sizeRx => widget.gameObject.sizeRx;
+  ValueNotifier<Vector2> get sizeRx => widget.gameObject.sizeRx;
 
-  RxValue<double> get rotationRx => widget.gameObject.rotationRx;
+  ValueNotifier<double> get rotationRx => widget.gameObject.rotationRx;
 
-  RxValue<double> get scaleRx => widget.gameObject.scaleRx;
+  ValueNotifier<double> get scaleRx => widget.gameObject.scaleRx;
 
   Widget buildWidget(BuildContext context) {
     return GameObjectPaint(
@@ -68,13 +68,14 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
   Widget build(BuildContext context) {
     final child = buildWidget(context);
 
-    return FastBuilder(
-      () {
-        final position = positionConverter(positionRx.value);
-        final scale = scaleConverter(scaleRx.value);
+    return MultiValueListenableBuilder(
+      valueListenables: [positionRx, scaleRx, sizeRx, rotationRx],
+      builder: (BuildContext context, List<dynamic> values, Widget? child) {
+        final position = positionConverter(values[0]);
+        final scale = scaleConverter(values[1]);
 
-        final size = sizeConverter(sizeRx.value);
-        final rotation = rotationConverter(rotationRx.value);
+        final size = sizeConverter(values[2]);
+        final rotation = rotationConverter(values[3]);
 
         final rect = transformRect(
           position: position,
@@ -96,6 +97,7 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
           ),
         );
       },
+      child: child,
     );
   }
 }

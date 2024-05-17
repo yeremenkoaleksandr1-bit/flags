@@ -1,4 +1,4 @@
-import 'package:armar/armar.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:flags/features/layers/layer.view.dart';
 import 'package:flags/presentation/presenters/editor/editor.presenter.dart';
 import 'package:flags/screens/editor/editor/components/flag_style.dart';
@@ -25,7 +25,7 @@ class EditorStylesState
     extends UiLayerState<EditorStylesBoard, IEditorStylesController>
     implements IEditorStylesController {
   late final IEditorPresenter presenter =
-      ArGetScreen.of<IEditorPresenter>(context).presenter;
+      GetScreen.of<IEditorPresenter>(context).presenter;
 
   final ScrollController scrollController = ScrollController();
 

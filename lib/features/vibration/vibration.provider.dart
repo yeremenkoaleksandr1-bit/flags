@@ -1,5 +1,5 @@
-import 'package:armar/armar.dart';
 import 'package:flags/features/vibration/vibration.service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class PhoneVibrationProvider extends StatefulWidget {
@@ -25,7 +25,7 @@ class PhoneVibrationProvider extends StatefulWidget {
 }
 
 abstract interface class IPhoneVibrationController {
-  RxValue<bool> get muted;
+  ValueListenable<bool> get muted;
 
   Future<void> toggleMute();
 
@@ -41,7 +41,7 @@ class _PhoneVibrationProvider extends State<PhoneVibrationProvider>
 
   @override
   // TODO: implement muted
-  RxValue<bool> get muted => service.muted;
+  ValueNotifier<bool> get muted => service.muted;
 
   @override
   Future<void> toggleMute() => service.toggleMute();
@@ -49,4 +49,10 @@ class _PhoneVibrationProvider extends State<PhoneVibrationProvider>
   @override
   Future<void> vibrate({int milliseconds = 150}) =>
       service.vibrate(milliseconds: milliseconds);
+
+  @override
+  void dispose() {
+    service.dispose();
+    super.dispose();
+  }
 }

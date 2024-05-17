@@ -1,4 +1,4 @@
-import 'package:armar/armar.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/features/layers/money_layer/components/total_moneys_view.dart';
 import 'package:flags/presentation/presenters/editor/editor.presenter.dart';
@@ -15,8 +15,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-class EditorScreen extends ArGetScreen<IEditorPresenter> {
-  const EditorScreen({super.key, required super.presenter});
+class EditorScreen extends GetScreen<IEditorPresenter> {
+  const EditorScreen({super.key, required super.controller});
 
   @override
   Widget build(BuildContext context, IEditorPresenter presenter) {

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:armar/armar.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/core/extensions/extensions.dart';
 import 'package:flags/core/extensions/offset.dart';

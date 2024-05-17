@@ -12,7 +12,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 class BoardColoredPartWidget extends BoardItemWidget {
   const BoardColoredPartWidget({
     super.key,
-    required super.presenter,
+    required super.controller,
     required super.item,
   });
 

@@ -1,12 +1,14 @@
-import 'package:armar/armar.dart';
+import 'package:flags/shared/services/disposable.dart';
+import 'package:flutter/foundation.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:flags/features/audio/sound_data.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:hive/hive.dart';
 
 const String _soundMuteKey = "94aa258bd3a5";
 
-abstract class IAudioService {
-  RxValue<bool> get muted;
+abstract class IAudioService implements IDisposable {
+  ValueNotifier<bool> get muted;
 
   Future<void> toggleMute();
 
@@ -23,14 +25,14 @@ class AudioServiceImpl implements IAudioService {
   final Box<bool> _preferences = Hive.box(name: "preferences");
 
   @override
-  late final RxValue<bool> muted;
+  late final ValueNotifier<bool> muted;
 
   bool get isMuted => muted.value;
 
   AudioServiceImpl({
     bool initialMuted = false,
   }) {
-    muted = RxValue(_preferences.get(_soundMuteKey) ?? initialMuted);
+    muted = ValueNotifier(_preferences.get(_soundMuteKey) ?? initialMuted);
 
     FlameAudio.bgm.initialize();
   }
@@ -84,5 +86,10 @@ class AudioServiceImpl implements IAudioService {
     } else {
       await resumeBgm();
     }
+  }
+
+  @override
+  void dispose() {
+    muted.dispose();
   }
 }

@@ -1,9 +1,9 @@
-import 'package:armar/armar.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:flags/presentation/presenters/levels_picker/levels_picker.presenter.dart';
 import 'package:flags/uikit/text/f_text.dart';
 import 'package:flutter/widgets.dart';
 
-class ContinentTitleView extends ArGetLocatorWidget<ILevelsPickerPresenter> {
+class ContinentTitleView extends GetConsumer<ILevelsPickerPresenter> {
   const ContinentTitleView({super.key});
 
   @override

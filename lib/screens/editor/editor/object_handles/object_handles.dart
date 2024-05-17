@@ -1,11 +1,10 @@
-import 'package:armar/armar.dart';
-import 'package:armar/logger.dart';
 import 'package:flags/domain/game_objects/game_objects.dart';
 import 'package:flags/presentation/presenters/editor/editor.presenter.dart';
 import 'package:flags/screens/editor/editor/object_handles/editor_draggable.dart';
 import 'package:flags/uikit/game_widgets/objects/draggable_object.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:state_manager/state_manager.dart';
 
 class EditorObjectHandleGameObject extends GameObject {
   EditorObjectHandleGameObject({
@@ -59,11 +58,11 @@ class EditorObjectHandlerWidget
 class EditorObjectHandleGameObjectState<T extends EditorObjectHandlerWidget>
     extends DraggableGameObjectWidgetState<EditorObjectHandleGameObject, T> {
   late final IEditorPresenter presenter =
-      ArGetScreen.of<IEditorPresenter>(context).presenter;
+      GetScreen.of<IEditorPresenter>(context).presenter;
 
   @override
   void initState() {
-    presenter.state.selectedObject.stream.listen(_listenGameObjectSelection);
+    presenter.state.selectedObject.addListener(_listenGameObjectSelection);
     super.initState();
   }
 
@@ -96,16 +95,17 @@ class EditorObjectHandleGameObjectState<T extends EditorObjectHandlerWidget>
 
   EditorDraggableWidget? _lastSelected;
 
-  void _listenGameObjectSelection(EditorDraggableWidget? event) {
-    logger.e("234234");
-    if (event != null) {
-      positionRx.value = event.gameObject.position;
-      scaleRx.value = event.gameObject.scale;
-      rotationRx.value = event.gameObject.rotation;
-      sizeRx.value = event.gameObject.size;
+  void _listenGameObjectSelection() {
+    final value = presenter.state.selectedObject.value;
+
+    if (value != null) {
+      positionRx.value = value.gameObject.position;
+      scaleRx.value = value.gameObject.scale;
+      rotationRx.value = value.gameObject.rotation;
+      sizeRx.value = value.gameObject.size;
     } else {}
 
-    _lastSelected = event;
+    _lastSelected = value;
   }
 
   @override

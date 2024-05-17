@@ -1,0 +1,21 @@
+name: state_manager
+description: "state_manager dipflix implementation"
+version: 0.0.1
+
+environment:
+  sdk: '>=3.2.0-199.0.dev <4.0.0'
+  flutter: ">=1.17.0"
+
+
+dependencies:
+  fast_extensions: ^0.1.5
+  flutter:
+    sdk: flutter
+  path_parsing: ^1.0.1
+
+
+
+dev_dependencies:
+  lint: ^2.3.0
+
+

@@ -1,8 +1,8 @@
-import 'package:armar/armar.dart';
-import 'package:armar/rx/rx.dart';
 import 'package:flags/uikit/assets/assets.dart';
 import 'package:flags/uikit/layout_components/sprite_widget.dart';
 import 'package:flags/uikit/uikit.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 class FastModeTimer extends StatefulWidget {
@@ -11,7 +11,7 @@ class FastModeTimer extends StatefulWidget {
     required this.timerStream,
   });
 
-  final RxValue<int> timerStream;
+  final ValueListenable<int> timerStream;
 
   @override
   State<FastModeTimer> createState() => _FastModeTimerState();
@@ -27,9 +27,13 @@ class _FastModeTimerState extends State<FastModeTimer> {
           child: SpriteUIWidget(image: Assets.images.timer.image),
         ),
         Gap.h14,
-        FastValueBuilder(
-          listen: widget.timerStream,
-          builder: (int value) {
+        ValueListenableBuilder(
+          valueListenable: widget.timerStream,
+          builder: (
+            BuildContext context,
+            int value,
+            Widget? child,
+          ) {
             return FText(
               "$value",
             );

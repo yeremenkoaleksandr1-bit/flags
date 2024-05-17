@@ -1,4 +1,3 @@
-import 'package:armar/armar.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
@@ -20,10 +19,11 @@ import 'package:flags/uikit/layout_components/gap/gap.dart';
 import 'package:flags/uikit/layout_components/showcase/showcase.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:state_manager/state_manager.dart';
 
 class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
     extends GameProcessScreen<T> {
-  const PuzzleCommonMode({super.key, required super.presenter});
+  const PuzzleCommonMode({super.key, required super.controller});
 
   Widget buildHeaderWidget(
     BuildContext context,
@@ -123,7 +123,7 @@ class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
                         details.data,
                       );
                     },
-                    presenter: presenter,
+                    controller: presenter,
                   ),
                 ),
               ],
@@ -131,14 +131,14 @@ class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
           ),
         ),
         PartsBoard(
-          presenter: presenter,
+          controller: presenter,
           flag: level.flag,
         ),
         EmblemEditingBoard(
-          presenter: presenter,
+          controller: presenter,
         ),
         ColoredPathEditingBoard(
-          presenter: presenter,
+          controller: presenter,
         ),
       ],
     );
@@ -151,9 +151,13 @@ class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
         return FShowcaseWidget(
           showcaseKey: presenter.showcase.key,
           builder: (BuildContext context) {
-            return FastBuilder(
-              () {
-                final level = state!.level.value;
+            return ValueListenableBuilder(
+              valueListenable: state!.level,
+              builder: (
+                BuildContext context,
+                level,
+                Widget? child,
+              ) {
                 return Stack(
                   children: [
                     buildHeader(

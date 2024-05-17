@@ -1,4 +1,3 @@
-import 'package:armar/logger.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
 import 'package:flags/domain/game_objects/parts/path_part.dart';

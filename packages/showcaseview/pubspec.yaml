@@ -11,8 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  armar:
-    path: ../armar
+  state_manager:
+    path: ../state_manager
 
 dev_dependencies:
   flutter_test:

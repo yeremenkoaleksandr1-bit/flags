@@ -1,4 +1,4 @@
-import 'package:armar/armar.dart';
+import 'package:state_manager/state_manager.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/features/audio/audio.provider.dart';
 import 'package:flags/features/audio/sound_data.dart';
@@ -17,10 +17,10 @@ import 'package:flutter/material.dart';
 import 'package:qlevar_router/qlevar_router.dart';
 import 'package:showcaseview/showcaseview.dart';
 
-class ContinentsPickerScreen extends ArGetScreen<IContinentsPickerPresenter> {
+class ContinentsPickerScreen extends GetScreen<IContinentsPickerPresenter> {
   ContinentsPickerScreen({
     super.key,
-    required super.presenter,
+    required super.controller,
   }) : super(tag: "single");
 
   final GlobalKey oContinentButton = GlobalKey();
@@ -56,7 +56,7 @@ class ContinentsPickerScreen extends ArGetScreen<IContinentsPickerPresenter> {
   }
 
   @override
-  Widget build(BuildContext context, IContinentsPickerPresenter presenter) {
+  Widget build(BuildContext context, IContinentsPickerPresenter controller) {
     final moneyLayer = UiMoneyLayer.find();
 
     return FShowcaseWidget(
@@ -70,7 +70,7 @@ class ContinentsPickerScreen extends ArGetScreen<IContinentsPickerPresenter> {
             onPageUnfocused: moneyLayer.hide,
             startSlideDirection: GamePageSlideDirection.middle,
             endSlideDirection: GamePageSlideDirection.middle,
-            child: presenter.obx(
+            child: controller.obx(
               (state) => SafeArea(
                 child: Stack(
                   children: [
@@ -99,13 +99,13 @@ class ContinentsPickerScreen extends ArGetScreen<IContinentsPickerPresenter> {
                           ),
                           child: ContinentsSlider(
                             continents: state!.continents,
-                            onPressed: presenter.onContinentSelected,
+                            onPressed: controller.onContinentSelected,
                           ),
                         ),
                       ),
                     ),
                     FastModePlayTimerView(
-                      onTapPlayFastMode: presenter.onPlayFastMode,
+                      onTapPlayFastMode: controller.onPlayFastMode,
                       showcaseKey: oFastModeButton,
                     ),
                     const Align(

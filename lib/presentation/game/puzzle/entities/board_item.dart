@@ -1,10 +1,10 @@
-import 'package:armar/armar.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
+import 'package:flags/shared/services/disposable.dart';
 import 'package:flutter/material.dart';
 
-class BoardItem<T extends ProcessGameObject> {
+class BoardItem<T extends ProcessGameObject> implements IDisposable {
   final T object;
-  final RxValue<bool> active;
+  final ValueNotifier<bool> active;
 
   final Widget Function(Widget instance)? build;
 
@@ -13,7 +13,7 @@ class BoardItem<T extends ProcessGameObject> {
   BoardItem({
     required this.object,
     this.build,
-  }) : active = RxValue(true);
+  }) : active = ValueNotifier(true);
 
   BoardItem copyWith({
     T? object,
@@ -32,4 +32,9 @@ class BoardItem<T extends ProcessGameObject> {
 
   @override
   int get hashCode => object.hashCode;
+
+  @override
+  void dispose() {
+    active.dispose();
+  }
 }
