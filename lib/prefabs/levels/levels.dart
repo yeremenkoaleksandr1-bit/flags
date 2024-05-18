@@ -1,6 +1,7 @@
-import '../../domain/domain.dart';
-import '../../domain/entities/game/game.dart';
-import 'levels.dart';
+import 'package:flags/domain/domain.dart';
+import 'package:flags/domain/entities/game/game_levels/game_level.dart';
+import 'package:flags/domain/entities/game/game_levels/game_levels.dart';
+import 'package:flags/prefabs/levels/levels.dart';
 
 export 'africa_continent.dart';
 export 'asia_continent.dart';
@@ -19,6 +20,11 @@ class FactoryGameContinent {
     ContinentType.southAmerica: SouthAmericaContinent(),
     ContinentType.oceania: OceaniaContinent(),
   };
+
+  static final List<GameLevel> allLevels = continents.values
+      .map((e) => e.levels)
+      .expand((element) => element)
+      .toList();
 
   GameLevels create(ContinentType continent) {
     return continents[continent]!.clone();

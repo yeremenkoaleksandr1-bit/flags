@@ -36,6 +36,7 @@ class _RenderBoxExposedState extends State<RenderBoxExposed> {
       widget.exposer.isExposed = true;
       widget.exposer.renderBox.value =
           _globalKey.currentContext!.findRenderObject()! as RenderBox;
+      widget.exposer.renderBox.notifyListeners();
     });
 
     return KeyedSubtree(

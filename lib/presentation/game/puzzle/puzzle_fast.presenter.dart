@@ -145,7 +145,7 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
     FlutterEngine.schedulePostFrameCallback((timeStamp) async {
       _randomContinent = [...ContinentType.values].random;
 
-      final randomLevel = levels.random;
+      final randomLevel = FactoryGameContinent.allLevels.random;
 
       resetLevelState();
 

@@ -18,6 +18,8 @@ import 'package:flags/features/audio/audio.provider.dart';
 import 'package:flags/features/audio/sound_data.dart';
 import 'package:flags/features/onboarding/onboarding.service.dart';
 import 'package:flags/features/vibration/vibration.provider.dart';
+import 'package:flags/logger.dart';
+import 'package:flags/prefabs/levels/levels.dart';
 import 'package:flags/presentation/app/app.presenter.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
 import 'package:flags/presentation/game/puzzle/entities/colored_part.game_object.dart';
@@ -364,11 +366,13 @@ class PuzzleCommonModePresenterImpl extends GetxController
     final parts = await generateBoardParts();
 
     state.boardObjects.clear();
-    state.boardObjects.addAll(parts);
 
     await Future.delayed(
-      const Duration(milliseconds: 500),
+      const Duration(milliseconds: 150),
     );
+
+    state.boardObjects.addAll(parts);
+
     tryShowShowcases();
   }
 
@@ -636,15 +640,17 @@ class PuzzleCommonModePresenterImpl extends GetxController
       };
 
   Future<List<BoardItem<ProcessGameObject>>> generateBoardParts() async {
+    final levels = FactoryGameContinent.allLevels;
+
     final generator = switch (state.difficult.value) {
-      GameDifficult.superEasy => PuzzleSuperEasyGenerator(levels: levels),
-      GameDifficult.easy => PuzzleEasyGenerator(levels: levels),
-      GameDifficult.medium => PuzzleMediumGenerator(levels: levels),
-      GameDifficult.hard => PuzzleHardGenerator(levels: levels),
-      GameDifficult.extraHard => PuzzleExtraHardGenerator(levels: levels),
+      GameDifficult.superEasy => PuzzleSuperEasyGenerator.new,
+      GameDifficult.easy => PuzzleEasyGenerator.new,
+      GameDifficult.medium => PuzzleMediumGenerator.new,
+      GameDifficult.hard => PuzzleHardGenerator.new,
+      GameDifficult.extraHard => PuzzleExtraHardGenerator.new,
     };
 
-    final generatedObjects = await generator.generate(
+    final generatedObjects = await generator(levels: levels).generate(
       state.level.value.flag,
       Random(gameSeed),
     );

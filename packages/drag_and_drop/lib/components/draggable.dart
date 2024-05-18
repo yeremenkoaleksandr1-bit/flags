@@ -52,7 +52,6 @@ typedef SDragAnchorStrategy = Offset Function(
 
 typedef SFeedbackBuilder = Widget Function(
   BuildContext context,
-  AnimationController controller,
   RenderBox renderBox,
 );
 
@@ -88,8 +87,6 @@ class SDraggable<T extends Object> extends StatefulWidget {
     this.onDragCanceled,
     required this.feedbackBuilder,
     this.childWhenDragging,
-    this.animationDuration = const Duration(milliseconds: 150),
-    this.animationReverseDuration = const Duration(milliseconds: 150),
   });
 
   final T? data;
@@ -128,9 +125,6 @@ class SDraggable<T extends Object> extends StatefulWidget {
   final HitTestBehavior hitTestBehavior;
 
   final AllowedButtonsFilter? allowedButtonsFilter;
-
-  final Duration animationDuration;
-  final Duration animationReverseDuration;
 
   @protected
   MultiDragGestureRecognizer createRecognizer(
@@ -239,12 +233,8 @@ class SDraggableState<T extends Object> extends State<SDraggable<T>> {
           widget.onDraggableCanceled!(velocity, offset);
         }
       },
-      animationDuration: widget.animationDuration,
-      animationReverseDuration: widget.animationReverseDuration,
     );
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      widget.onDragStarted?.call(dragStartPoint);
-    });
+    widget.onDragStarted?.call(dragStartPoint);
     return avatar;
   }
 
@@ -255,6 +245,7 @@ class SDraggableState<T extends Object> extends State<SDraggable<T>> {
         _activeCount < widget.maxSimultaneousDrags!;
     final bool showChild =
         _activeCount == 0 || widget.childWhenDragging == null;
+
     return Listener(
       behavior: widget.hitTestBehavior,
       onPointerDown: canDrag ? _routePointer : null,

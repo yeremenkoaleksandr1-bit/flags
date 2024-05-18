@@ -57,6 +57,7 @@ dependencies:
   reactive_forms: ^17.0.1
   multi_value_listenable_builder: ^0.0.2
   memoize: ^3.0.0
+  logger: ^2.3.0
 
 dev_dependencies:
   flutter_test:

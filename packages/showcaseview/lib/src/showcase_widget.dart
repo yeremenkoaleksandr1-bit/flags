@@ -100,9 +100,8 @@ class ShowCaseWidget extends StatefulWidget {
 }
 
 class ShowCaseWidgetState<T extends ShowCaseWidget> extends State<T> {
-  ValueNotifierList<GlobalKey> ids = ValueNotifierList();
-  final ValueNotifier<int?> activeWidgetId = ValueNotifier(null);
-
+  List<GlobalKey>? ids;
+  int? activeWidgetId;
   RenderBox? rootRenderObject;
   Size? rootWidgetSize;
   Key? anchoredOverlayKey;
@@ -125,8 +124,7 @@ class ShowCaseWidgetState<T extends ShowCaseWidget> extends State<T> {
 
   bool get enableShowcase => widget.enableShowcase;
 
-  bool get isShowCaseCompleted =>
-      ids.isNotEmpty && activeWidgetId.value == null;
+  bool get isShowCaseCompleted => ids == null && activeWidgetId == null;
 
   /// Returns value of [ShowCaseWidget.blurValue]
   double get blurValue => widget.blurValue;
@@ -135,14 +133,6 @@ class ShowCaseWidgetState<T extends ShowCaseWidget> extends State<T> {
   void initState() {
     super.initState();
     initRootWidget();
-  }
-
-  @override
-  void dispose() {
-    ids.dispose();
-    activeWidgetId.dispose();
-
-    super.dispose();
   }
 
   void initRootWidget() {
@@ -167,100 +157,88 @@ class ShowCaseWidgetState<T extends ShowCaseWidget> extends State<T> {
       );
     }
     if (!mounted) return;
-    ids.dispose();
-    ids = ValueNotifierList(widgetIds);
-    activeWidgetId.value = 0;
-    _onStart();
+    setState(() {
+      ids = widgetIds;
+      activeWidgetId = 0;
+      _onStart();
+    });
   }
 
   /// Completes showcase of given key and starts next one
   /// otherwise will finish the entire showcase view
   void completed(GlobalKey? key) {
-    if (ids.isNotEmpty && ids[activeWidgetId.value!] == key && mounted) {
-      _onComplete();
-      activeWidgetId.value = activeWidgetId.value! + 1;
-      _onStart();
+    if (ids != null && ids![activeWidgetId!] == key && mounted) {
+      setState(() {
+        _onComplete();
+        activeWidgetId = activeWidgetId! + 1;
+        _onStart();
 
-      if (activeWidgetId.value! >= ids.length) {
-        _cleanupAfterSteps();
-        widget.onFinish?.call();
-      }
+        if (activeWidgetId! >= ids!.length) {
+          _cleanupAfterSteps();
+          widget.onFinish?.call();
+        }
+      });
     }
   }
 
   /// Completes current active showcase and starts next one
   /// otherwise will finish the entire showcase view
   void next() {
-    if (ids.isNotEmpty && mounted) {
-      _onComplete();
-      activeWidgetId.value = activeWidgetId.value! + 1;
-      _onStart();
+    if (ids != null && mounted) {
+      setState(() {
+        _onComplete();
+        activeWidgetId = activeWidgetId! + 1;
+        _onStart();
 
-      if (activeWidgetId.value! >= ids.length) {
-        _cleanupAfterSteps();
-        widget.onFinish?.call();
-      }
+        if (activeWidgetId! >= ids!.length) {
+          _cleanupAfterSteps();
+          widget.onFinish?.call();
+        }
+      });
     }
   }
 
   /// Completes current active showcase and starts previous one
   /// otherwise will finish the entire showcase view
   void previous() {
-    if (ids.isNotEmpty && ((activeWidgetId.value ?? 0) - 1) >= 0 && mounted) {
-      _onComplete();
-      activeWidgetId.value = activeWidgetId.value! - 1;
-      _onStart();
-      if (activeWidgetId.value! >= ids.length) {
-        _cleanupAfterSteps();
-        widget.onFinish?.call();
-      }
+    if (ids != null && ((activeWidgetId ?? 0) - 1) >= 0 && mounted) {
+      setState(() {
+        _onComplete();
+        activeWidgetId = activeWidgetId! - 1;
+        _onStart();
+        if (activeWidgetId! >= ids!.length) {
+          _cleanupAfterSteps();
+          widget.onFinish?.call();
+        }
+      });
     }
   }
 
   /// Dismiss entire showcase view
   void dismiss() {
-    if (mounted) {
-      _cleanupAfterSteps();
-    }
+    if (mounted) setState(_cleanupAfterSteps);
   }
 
   void _onStart() {
-    if (activeWidgetId.value! < ids.length) {
-      widget.onStart?.call(activeWidgetId.value, ids[activeWidgetId.value!]);
+    if (activeWidgetId! < ids!.length) {
+      widget.onStart?.call(activeWidgetId, ids![activeWidgetId!]);
     }
   }
 
   void _onComplete() {
-    widget.onComplete?.call(activeWidgetId.value, ids[activeWidgetId.value!]);
+    widget.onComplete?.call(activeWidgetId, ids![activeWidgetId!]);
   }
 
   void _cleanupAfterSteps() {
-    ids.clear();
-    activeWidgetId.value = null;
+    ids = null;
+    activeWidgetId = null;
   }
 
   @override
   Widget build(BuildContext context) {
-    final child = widget.builder(context);
-
-    return ValueListenableBuilder(
-      valueListenable: ids,
-      builder: (
-        BuildContext context,
-        List<GlobalKey<State<StatefulWidget>>> value,
-        Widget? child,
-      ) {
-        final idsV = ids.value;
-
-        final activeWidget = activeWidgetId.value;
-
-        return _InheritedShowCaseView(
-          activeWidgetIds:
-              activeWidget != null ? idsV.elementAt(activeWidget) : null,
-          child: child!,
-        );
-      },
-      child: child,
+    return _InheritedShowCaseView(
+      activeWidgetIds: ids?.elementAt(activeWidgetId!),
+      child: widget.builder(context),
     );
   }
 }

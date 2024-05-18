@@ -25,6 +25,7 @@ class BelarusFlag extends GameFlag {
                 size.y - bounds.height,
               ),
               color: const Color(0xFF007C30),
+              previousMustBePlaced: const ['1'],
             ),
             EmblemPart.fromType<BelarusEmblem>(
               position: Vector2(1, 0),

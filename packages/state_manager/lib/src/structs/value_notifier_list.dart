@@ -48,6 +48,12 @@ class ValueNotifierList<T> extends ValueNotifier<List<T>>
   }
 
   @override
+  void addAll(Iterable<T> iterable) {
+    value.addAll(iterable);
+    notifyListeners();
+  }
+
+  @override
   bool remove(Object? element) {
     final value = this.value.remove(element);
     notifyListeners();

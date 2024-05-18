@@ -24,8 +24,6 @@ class SLongPressDraggable<T extends Object> extends SDraggable<T> {
     super.ignoringFeedbackPointer,
     this.delay = kLongPressTimeout,
     super.allowedButtonsFilter,
-    super.animationDuration = const Duration(milliseconds: 150),
-    super.animationReverseDuration = const Duration(milliseconds: 150),
   });
 
   final bool hapticFeedbackOnStart;

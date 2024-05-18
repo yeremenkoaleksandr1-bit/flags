@@ -1,10 +1,10 @@
-import 'package:drag_and_drop/drag_and_drop.dart';
 import 'package:flags/ui/debug_paint.dart';
 import 'package:flags/uikit/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import '../uikit/drag_and_drop/provider.dart';
 import 'app_builder.dart';
 
 class App extends StatefulWidget {
@@ -26,11 +26,15 @@ class _AppState extends State<App> {
         GlobalCupertinoLocalizations.delegate,
       ],
       builder: (context, _) {
-        return DebugPaintProvider(
+        return DragAndDropProvider(
           builder: (BuildContext context) {
-            return EasyLoading.init()(
-              context,
-              AppScreen(),
+            return DebugPaintProvider(
+              builder: (BuildContext context) {
+                return EasyLoading.init()(
+                  context,
+                  AppScreen(),
+                );
+              },
             );
           },
         );

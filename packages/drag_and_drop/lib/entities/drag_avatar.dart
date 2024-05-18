@@ -30,23 +30,14 @@ class SDragAvatar<T extends Object> extends Drag {
     required this.ignoringFeedbackSemantics,
     required this.ignoringFeedbackPointer,
     required this.viewId,
-    required this.animationDuration,
-    required this.animationReverseDuration,
   }) : _position = initialPosition {
     _entry = OverlayEntry(builder: _build);
     overlayState.insert(_entry!);
     updateDrag(initialPosition);
-    _animationController = AnimationController(
-      duration: animationDuration,
-      reverseDuration: animationReverseDuration,
-      vsync: overlayState,
-    );
 
     if (widgetKey is GlobalKey) {
       widgetOffset = WidgetFinder.of(widgetKey as GlobalKey).topLeft;
     }
-
-    _animationController.forward();
   }
 
   final T? data;
@@ -71,10 +62,6 @@ class SDragAvatar<T extends Object> extends Drag {
   final bool ignoringFeedbackPointer;
 
   final int viewId;
-
-  late AnimationController _animationController;
-  final Duration animationDuration;
-  final Duration animationReverseDuration;
 
   SDragTargetAreaState<Object>? _activeTarget;
 
@@ -232,7 +219,6 @@ class SDragAvatar<T extends Object> extends Drag {
 
     if (!wasAccepted) {
       onDragCanceled?.call();
-      await animateToInitialPosition();
     }
 
     onDragEnd?.call(
@@ -246,16 +232,6 @@ class SDragAvatar<T extends Object> extends Drag {
     _entry!.remove();
     _entry!.dispose();
     _entry = null;
-
-    _animationController.dispose();
-  }
-
-  Future<void> animateToInitialPosition() async {
-    _animationController.addListener(() {
-      _entry!.markNeedsBuild();
-    });
-
-    await _animationController.reverse();
   }
 
   Widget _build(BuildContext context) {
@@ -271,7 +247,6 @@ class SDragAvatar<T extends Object> extends Drag {
           ignoring: ignoringFeedbackPointer,
           child: feedbackBuilder(
             context,
-            _animationController,
             box,
           ),
         ),

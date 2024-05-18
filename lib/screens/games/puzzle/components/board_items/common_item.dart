@@ -164,25 +164,25 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
                 ),
               );
 
-              DebugPainter.paint((canvas, size) {
-                canvas.drawPoints(
-                  PointMode.points,
-                  [
-                    feedBackRect.topLeft,
-                    feedBackRect.topRight,
-                    feedBackRect.topCenter,
-                    feedBackRect.bottomLeft,
-                    feedBackRect.bottomCenter,
-                    feedBackRect.bottomRight,
-                    feedBackRect.centerLeft,
-                    feedBackRect.centerRight,
-                  ].map((e) => globalPosition + e).toList(),
-                  Paint()
-                    ..color = Colors.red
-                    ..strokeWidth = 4
-                    ..strokeCap = StrokeCap.round,
-                );
-              });
+              // DebugPainter.paint((canvas, size) {
+              //   canvas.drawPoints(
+              //     PointMode.points,
+              //     [
+              //       feedBackRect.topLeft,
+              //       feedBackRect.topRight,
+              //       feedBackRect.topCenter,
+              //       feedBackRect.bottomLeft,
+              //       feedBackRect.bottomCenter,
+              //       feedBackRect.bottomRight,
+              //       feedBackRect.centerLeft,
+              //       feedBackRect.centerRight,
+              //     ].map((e) => globalPosition + e).toList(),
+              //     Paint()
+              //       ..color = Colors.red
+              //       ..strokeWidth = 4
+              //       ..strokeCap = StrokeCap.round,
+              //   );
+              // });
             },
             onDragEnd: (SDraggableDetails details) {
               widget.onDragEnd?.call(object, details);
@@ -197,11 +197,11 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
             ) {
               return position;
             },
-            feedbackBuilder: (context, animation, renderBox) {
+            feedbackBuilder: (context, renderBox) {
               return AnimatedBuilder(
-                animation: animation,
+                animation: _controller,
                 builder: (BuildContext context, Widget? child) {
-                  final value = animation.value;
+                  final value = _controller.value;
 
                   final renderBox = _key.currentContext!.renderBox!;
 
@@ -224,7 +224,7 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
                     ) {
                       position.lerp(
                         value.toVector2(),
-                        animation.value,
+                        _controller.value,
                       );
 
                       return Transform(
@@ -243,6 +243,7 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
                         child: child,
                       );
                     },
+                    child: child,
                   );
                 },
                 child: Transform(

@@ -25,7 +25,9 @@ mixin OverlayStateMixin<T extends StatefulWidget> on State<T> {
 
   void _insertOverlay(Rect rect) {
     _entry = OverlayEntry(
+      maintainState: true,
       builder: (context) => Positioned(
+        key: UniqueKey(),
         top: rect.top,
         left: rect.left,
         width: rect.width,

@@ -145,11 +145,11 @@ class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
   }
 
   @override
-  Widget build(BuildContext context, T presenter) {
-    return presenter.obx(
+  Widget build(BuildContext context, T controller) {
+    return controller.obx(
       (state) {
         return FShowcaseWidget(
-          showcaseKey: presenter.showcase.key,
+          showcaseKey: controller.showcase.key,
           builder: (BuildContext context) {
             return ValueListenableBuilder(
               valueListenable: state!.level,
@@ -162,20 +162,20 @@ class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
                   children: [
                     buildHeader(
                       context,
-                      presenter,
+                      controller,
                       level,
                     ),
                     DeferredPointerHandler(
                       child: buildBody(
                         context,
-                        presenter,
+                        controller,
                         level,
                       ),
                     ),
                     EmblemConfirmationWidget(
-                      state: presenter.emblemConfirmationView,
-                      onConfirm: presenter.tryPlaceFocussedEmblem,
-                      onDecline: presenter.tryRemoveFocussedEmblem,
+                      state: controller.emblemConfirmationView,
+                      onConfirm: controller.tryPlaceFocussedEmblem,
+                      onDecline: controller.tryRemoveFocussedEmblem,
                     ),
                   ],
                 );
