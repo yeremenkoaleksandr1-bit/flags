@@ -8,7 +8,9 @@ class BoardItem<T extends ProcessGameObject> implements IDisposable {
 
   final Widget Function(Widget instance)? build;
 
-  void setActive(bool value) => active.value = value;
+  void setActive(bool value) {
+    active.value = value;
+  }
 
   BoardItem({
     required this.object,
@@ -27,14 +29,18 @@ class BoardItem<T extends ProcessGameObject> implements IDisposable {
   }
 
   @override
-  bool operator ==(Object other) =>
-      other is BoardItem && object == other.object;
-
-  @override
-  int get hashCode => object.hashCode;
-
-  @override
   void dispose() {
     active.dispose();
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BoardItem &&
+          runtimeType == other.runtimeType &&
+          object == other.object &&
+          active == other.active;
+
+  @override
+  int get hashCode => object.hashCode ^ active.hashCode;
 }

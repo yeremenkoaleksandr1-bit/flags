@@ -7,7 +7,6 @@ import 'package:flags/domain/game_objects/flag/flag.dart';
 import 'package:flags/features/audio/audio.provider.dart';
 import 'package:flags/features/audio/sound_data.dart';
 import 'package:flags/screens/games/puzzle/components/board_items/base.dart';
-import 'package:flags/ui/debug_paint.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';

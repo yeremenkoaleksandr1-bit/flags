@@ -18,7 +18,6 @@ import 'package:flags/features/audio/audio.provider.dart';
 import 'package:flags/features/audio/sound_data.dart';
 import 'package:flags/features/onboarding/onboarding.service.dart';
 import 'package:flags/features/vibration/vibration.provider.dart';
-import 'package:flags/logger.dart';
 import 'package:flags/prefabs/levels/levels.dart';
 import 'package:flags/presentation/app/app.presenter.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
@@ -52,12 +51,15 @@ import 'package:flags/shared/services/disposable.dart';
 import 'package:flags/uikit/game_widgets/game_widgets.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
 import 'package:flame/components.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:qlevar_router/qlevar_router.dart';
 import 'package:state_manager/state_manager.dart';
 
 abstract interface class IPuzzleCommonModePresenter<S extends PuzzleGameState>
+    extends Listenable
     with StateMixin<S>, ProcessedObjectFocusHandler
     implements IDisposable {
   PuzzleGameShowcase get showcase;
@@ -251,21 +253,24 @@ class PuzzleCommonModePresenterImpl extends GetxController
   }
 
   Future<void> placeObject(ProcessGameObject object) async {
-    await audioController.playSfx(GameSfx.correctlyObjectPlacing);
-    state.placedObjects.add(object);
+    var sceneObject = state.boardObjects.firstWhereOrNull((e) {
+      return e.object.key == object.key;
+    });
 
     if (object is EmblemPart) {
-      state.boardObjects.firstWhere((e) {
+      sceneObject = state.boardObjects.firstWhereOrNull((e) {
         return e.object.uniqueName == object.uniqueName;
-      }).setActive(false);
-    } else {
-      state.boardObjects.firstWhere((e) {
-        return e.object.key == object.key;
-      }).setActive(false);
+      });
     }
+
+    sceneObject?.setActive(false);
+
+    state.placedObjects.add(object);
 
     unfocusObject();
     tryCompleteLevel();
+
+    await audioController.playSfx(GameSfx.correctlyObjectPlacing);
   }
 
   void tryCompleteLevel() {
@@ -461,6 +466,11 @@ class PuzzleCommonModePresenterImpl extends GetxController
   }
 
   void resetLevelState() {
+    for (final element in state.boardObjects.value) {
+      element.dispose();
+    }
+    state.boardObjects.clear();
+
     emblemConfirmationView.hide();
     focusedObject.value = null;
     heartTriesState.refresh();
@@ -484,6 +494,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
     );
 
     FlutterEngine.schedulePostFrameCallback((timeStamp) async {
+      resetLevelState();
       final seed = Random().nextInt(int32MaxValue);
 
       levelsService.saveLevel(
@@ -499,8 +510,6 @@ class PuzzleCommonModePresenterImpl extends GetxController
       final parts = await generateBoardParts();
 
       state.boardObjects.addAll(parts);
-
-      resetLevelState();
     });
   }
 
@@ -662,7 +671,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
     ];
 
     if (this is! IPuzzleFastModePresenter) {
-      if (!showcase.isCompleted("puzzle.common_object")) {
+      if (showcase.isCompleted("puzzle.common_object")) {
         final flagPartIndex = parts.indexWhere(
           (e) => state.level.value.flag.objects.whereType<PathGameObject>().any(
                 (element) => e.object.uniqueName == element.uniqueName,

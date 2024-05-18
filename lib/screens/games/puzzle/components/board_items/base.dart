@@ -36,11 +36,6 @@ abstract class BoardItemWidgetState<T extends BoardItemWidget>
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   @protected
   Widget build(BuildContext context) {
     Widget child = LayoutBuilder(

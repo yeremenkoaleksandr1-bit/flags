@@ -1,14 +1,12 @@
 import 'dart:math';
 
 import 'package:defer_pointer/defer_pointer.dart';
-import 'package:flags/core/extensions/extensions.dart';
 import 'package:flags/presentation/game/puzzle/onboarding/emblem/emblem_object.showcase_step_2.dart';
+import 'package:flags/screens/games/puzzle/components/emblem_size_picker.dart';
 import 'package:flags/screens/games/puzzle/scene_components/emblem.dart';
 import 'package:flags/screens/games/puzzle/views/boards/base.dart';
 import 'package:flags/uikit/components/buttons/colors/green_button.dart';
 import 'package:flags/uikit/layout_components/gap/gap.dart';
-import 'package:flags/uikit/theme/palette.dart';
-import 'package:flame/extensions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -24,33 +22,8 @@ class EmblemEditingBoard extends ProcessObjectEditingBoard {
 
 class _EmblemEditingBoardState extends ProcessObjectEditingBoardState<
     EmblemEditingBoard, EmblemSceneObjectState> {
-  final ValueNotifier<double> _scale = ValueNotifier(0.0);
-
   late final ValueListenable<dynamic> _focusedObject =
       widget.controller.focusedObject;
-
-  @override
-  void initState() {
-    _focusedObject.addListener(_listen);
-
-    super.initState();
-  }
-
-  void _listen() {
-    final value = _focusedObject.value;
-
-    if (value is EmblemSceneObjectState) {
-      _scale.value = value.gameObject.scales
-          .indexWhere(
-            (e) => e.roundDouble(1) == value.scaleRx.value.roundDouble(1),
-          )
-          .toDouble();
-
-      if (_scale.value == -1) {
-        _scale.value = 0;
-      }
-    }
-  }
 
   void rotate(bool direction) {
     late final object = _focusedObject.value! as EmblemSceneObjectState;
@@ -79,67 +52,63 @@ class _EmblemEditingBoardState extends ProcessObjectEditingBoardState<
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SliderTheme(
-              data: SliderThemeData(
-                activeTrackColor: ThemePalette.black,
-                inactiveTrackColor: ThemePalette.peach.darken(0.2),
-                trackHeight: 12.0,
-                thumbColor: ThemePalette.black,
-                thumbShape:
-                    const RoundSliderThumbShape(enabledThumbRadius: 12.0),
-                overlayColor: ThemePalette.white,
-              ),
-              child: ValueListenableBuilder(
-                valueListenable: _focusedObject,
-                builder: (
-                  BuildContext context,
-                  value,
-                  Widget? child,
-                ) {
-                  if (_focusedObject.value is! EmblemSceneObjectState) {
-                    return const SizedBox.shrink();
-                  }
+            ValueListenableBuilder(
+              valueListenable: _focusedObject,
+              builder: (
+                BuildContext context,
+                value,
+                Widget? child,
+              ) {
+                if (_focusedObject.value is! EmblemSceneObjectState) {
+                  return const SizedBox.shrink();
+                }
 
-                  late final object =
-                      _focusedObject.value as EmblemSceneObjectState?;
+                late final object =
+                    _focusedObject.value as EmblemSceneObjectState;
 
-                  return Slider(
-                    value: _scale.value,
-                    divisions: 3,
-                    max: 3,
-                    onChanged: (v) {
-                      object?.scaleRx.value =
-                          object.gameObject.scales[v.toInt()];
-
-                      _scale.value = v;
-                    },
-                  );
-                },
-              ),
+                return EmblemSizePicker(
+                  scales: object.gameObject.scales,
+                  initialValue: object.gameObject.scale,
+                  onChanged: (double value) {
+                    object.scaleRx.value = value;
+                  },
+                );
+              },
             ),
-            Gap.v12,
+            const Spacer(),
             Row(
               children: [
-                const Spacer(),
-                FGreenButton(
-                  onPressed: () => rotate(false),
-                  child: const Icon(
-                    Icons.rotate_90_degrees_ccw_sharp,
-                    size: 64,
-                    color: Colors.white,
+                Expanded(
+                  child: FGreenButton(
+                    onPressed: () => rotate(false),
+                    child: const AspectRatio(
+                      aspectRatio: 1,
+                      child: Icon(
+                        Icons.rotate_90_degrees_ccw_sharp,
+                        size: 64,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
                 Gap.h24,
-                FGreenButton(
-                  onPressed: () => rotate(true),
-                  child: const Icon(
-                    Icons.rotate_90_degrees_cw_outlined,
-                    size: 64,
-                    color: Colors.white,
+                Expanded(
+                  child: FGreenButton(
+                    onPressed: () => rotate(true),
+                    child: const AspectRatio(
+                      aspectRatio: 1,
+                      child: Icon(
+                        Icons.rotate_90_degrees_cw_outlined,
+                        size: 64,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
-                const Spacer(),
               ],
+            ),
+            const Spacer(
+              flex: 2,
             ),
           ],
         ),
