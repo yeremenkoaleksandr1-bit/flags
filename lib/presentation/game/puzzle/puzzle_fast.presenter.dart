@@ -17,8 +17,8 @@ import 'package:flags/presentation/app/app.presenter.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
 import 'package:flags/screens/games/puzzle/overlays/start_game.dart';
 import 'package:flags/uikit/assets/components/money.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:qlevar_router/qlevar_router.dart';
 import 'package:state_manager/state_manager.dart';
 
@@ -186,6 +186,8 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
   }
 
   Future<void> prepareFastModeLevel([bool isRestart = false]) async {
+    Completer moneyAddCompleter = Completer();
+
     await PreparingFastModeInitializationGame(
       preparingTimer: preparingTimer,
       onReady: () async {
@@ -193,6 +195,7 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
 
         if (!isRestart) {
           final uiMoneyLayer = UiMoneyLayer.find();
+          bool isCloseMoney = false;
           preparingTimer.value = -1;
           await uiMoneyLayer.show();
 
@@ -200,21 +203,36 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
 
           final moneys = calcWinnerMoney(state.difficult.value);
 
-          final entry = OverlayEntry(
+          late OverlayEntry entry;
+
+          entry = OverlayEntry(
             builder: (context) {
-              return Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      height: 52,
-                      child: UIMoney(
-                        key: moneyKey,
-                      ),
+              return GestureDetector(
+                onTap: () async {
+                  if (!moneyAddCompleter.isCompleted) {
+                    await uiMoneyLayer.hide();
+                    entry.remove();
+                    isCloseMoney = true;
+                    moneyAddCompleter.complete();
+                  }
+                },
+                child: Material(
+                  color: Colors.transparent,
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          height: 52,
+                          child: UIMoney(
+                            key: moneyKey,
+                          ),
+                        ),
+                        Gap.h12,
+                        FText("+$moneys"),
+                      ],
                     ),
-                    Gap.h12,
-                    FText("+$moneys"),
-                  ],
+                  ),
                 ),
               );
             },
@@ -222,32 +240,35 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
 
           Overlay.of(QR.context!).insert(entry);
 
-          await Future.delayed(
-            const Duration(milliseconds: 500),
-          );
-
           IAppPresenter.I.gameState.addMoney(
             calcWinnerMoney(state.difficult.value),
           );
 
-          final rect = moneyKey.currentContext!.renderBox!.rect;
+          await Future.delayed(100.milliseconds);
 
-          await uiMoneyLayer.addMoneys(
-            rect.center,
-            moneys.clamp(
-              1,
-              25,
-            ),
-          );
-          await Future.delayed(
-            const Duration(milliseconds: 1000),
-          );
-          await uiMoneyLayer.hide();
-          entry.remove();
-          await Future.delayed(
-            const Duration(milliseconds: 250),
-          );
+          if (!isCloseMoney) {
+            final rect = moneyKey.currentContext!.renderBox!.rect;
+
+            uiMoneyLayer
+                .addMoneys(
+              rect.center,
+              moneys.clamp(
+                1,
+                25,
+              ),
+            )
+                .then((value) async {
+              await uiMoneyLayer.hide();
+              entry.remove();
+              isCloseMoney = true;
+
+              if (!moneyAddCompleter.isCompleted) {
+                moneyAddCompleter.complete();
+              }
+            });
+          }
         }
+        await moneyAddCompleter.future;
 
         final initialTime = getInitialTime([...GameDifficult.values].random);
         timerRx.value = initialTime;

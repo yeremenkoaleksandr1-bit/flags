@@ -1,8 +1,7 @@
 import 'package:flags/uikit/assets/assets.dart';
 import 'package:flags/uikit/layout_components/sprite_widget.dart';
+import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../../uikit/uikit.dart';
 
 class AddedMoneyView extends StatelessWidget {
   const AddedMoneyView({
