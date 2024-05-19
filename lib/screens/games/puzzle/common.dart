@@ -8,6 +8,8 @@ import 'package:flags/screens/games/puzzle/components/emblemb_contirmation_overl
 import 'package:flags/screens/games/puzzle/components/menu_button.dart';
 import 'package:flags/screens/games/puzzle/components/skip_level_button.dart';
 import 'package:flags/screens/games/puzzle/views/board.dart';
+import 'package:flags/screens/games/puzzle/views/boards/colored_path_editing_board.dart';
+import 'package:flags/screens/games/puzzle/views/boards/emblem_editing_board.dart';
 import 'package:flags/screens/games/puzzle/views/current_level_index.dart';
 import 'package:flags/screens/games/puzzle/views/flag_area.dart';
 import 'package:flags/screens/games/puzzle/views/level_title.dart';
@@ -18,9 +20,6 @@ import 'package:flags/uikit/layout_components/showcase/showcase.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:state_manager/state_manager.dart';
-
-import 'views/boards/colored_path_editing_board.dart';
-import 'views/boards/emblem_editing_board.dart';
 
 class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
     extends GameProcessScreen<T> {

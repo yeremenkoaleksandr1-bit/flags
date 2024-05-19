@@ -159,9 +159,9 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
             delay: const Duration(milliseconds: 1),
             onDragStarted: (dragStartPoint) {
               final showcase = widget.controller.showcase;
-              if (!showcase.isCompleted("puzzle.common_object")) {
+              if (!showcase.isCompleted("puzzle_common_object")) {
                 showcase.showcaseState.next();
-                showcase.complete("puzzle.common_object");
+                showcase.complete("puzzle_common_object");
               } else if (!showcase.isCompleted("puzzle_emblem_object")) {
                 showcase.showcaseState.next();
               }

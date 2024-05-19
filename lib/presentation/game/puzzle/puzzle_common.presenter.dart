@@ -1,4 +1,4 @@
-// ignore_for_file: invalid_use_of_protected_member
+// ignore_for_file: invalid_use_of_protected_member, avoid_void_async
 
 import 'dart:math';
 
@@ -168,27 +168,6 @@ class PuzzleCommonModePresenterImpl extends GetxController
     super.onInit();
 
     await initialization();
-    tryShowShowcases();
-  }
-
-  void tryShowShowcases() {
-    if (this is IPuzzleFastModePresenter) {
-      return;
-    }
-    showcase.show(
-      [showcase.showcaseCommonObject],
-      "puzzle.common_object",
-    );
-
-    showcase.show(
-      [showcase.emblemObjectStep1],
-      "puzzle_emblem_object",
-    );
-
-    showcase.show(
-      [showcase.coloredObjectStep1],
-      "puzzle_colored_object",
-    );
   }
 
   Future<void> preInitialization() async {
@@ -377,8 +356,6 @@ class PuzzleCommonModePresenterImpl extends GetxController
     );
 
     state.boardObjects.addAll(parts);
-
-    tryShowShowcases();
   }
 
   @override
@@ -671,7 +648,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
     ];
 
     if (this is! IPuzzleFastModePresenter) {
-      if (showcase.isCompleted("puzzle.common_object")) {
+      if (!showcase.isCompleted("puzzle_common_object")) {
         final flagPartIndex = parts.indexWhere(
           (e) => state.level.value.flag.objects.whereType<PathGameObject>().any(
                 (element) => e.object.uniqueName == element.uniqueName,
@@ -686,6 +663,12 @@ class PuzzleCommonModePresenterImpl extends GetxController
             build: (instance) => PuzzleCommonObjectShowcase(
               showcaseKey: showcase.showcaseCommonObject,
               flagExposer: flagExposer,
+              onReady: () {
+                showcase.show(
+                  [showcase.showcaseCommonObject],
+                  "puzzle_common_object",
+                );
+              },
               child: instance,
             ),
           );
@@ -707,6 +690,12 @@ class PuzzleCommonModePresenterImpl extends GetxController
             build: (instance) => PuzzleEmblemObjectStep1Showcase(
               showcaseKey: showcase.emblemObjectStep1,
               flagExposer: flagExposer,
+              onReady: () {
+                showcase.show(
+                  [showcase.emblemObjectStep1],
+                  "puzzle_emblem_object",
+                );
+              },
               child: instance,
             ),
           );
@@ -727,6 +716,12 @@ class PuzzleCommonModePresenterImpl extends GetxController
               showcaseKey: showcase.coloredObjectStep1,
               onTap: () {
                 showcase.complete("puzzle_colored_object");
+              },
+              onReady: () {
+                showcase.show(
+                  [showcase.coloredObjectStep1],
+                  "puzzle_colored_object",
+                );
               },
               child: instance,
             ),

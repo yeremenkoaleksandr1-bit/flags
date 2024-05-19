@@ -12,6 +12,10 @@ abstract interface class IOnboardingService {
 class OnboardingServiceImpl implements IOnboardingService {
   final Box<bool> box = Hive.box(name: "onboarding");
 
+  // OnboardingServiceImpl() {
+  //   box.clear();
+  // }
+
   @override
   bool isOnboarded(String tag) {
     return box.containsKey(tag);

@@ -14,6 +14,7 @@ class PuzzleColoredObjectStep1Showcase extends StatefulWidget {
     required this.showcaseKey,
     required this.child,
     required this.onTap,
+    required this.onReady,
   });
 
   final GlobalKey showcaseKey;
@@ -22,6 +23,8 @@ class PuzzleColoredObjectStep1Showcase extends StatefulWidget {
 
   final VoidCallback onTap;
 
+  final void Function() onReady;
+
   @override
   State<PuzzleColoredObjectStep1Showcase> createState() =>
       _PuzzleColoredObjectStep1ShowcaseState();
@@ -29,8 +32,17 @@ class PuzzleColoredObjectStep1Showcase extends StatefulWidget {
 
 class _PuzzleColoredObjectStep1ShowcaseState
     extends State<PuzzleColoredObjectStep1Showcase> {
+  bool onReady = false;
+
   @override
   Widget build(BuildContext context) {
+    if (!onReady) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        widget.onReady();
+      });
+      onReady = true;
+    }
+
     final mqs = context.mediaQuerySize;
 
     return FShowcase(

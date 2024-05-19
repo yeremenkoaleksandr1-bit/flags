@@ -14,6 +14,7 @@ class PuzzleCommonObjectShowcase extends StatefulWidget {
     required this.showcaseKey,
     required this.child,
     required this.flagExposer,
+    required this.onReady,
   });
 
   final GlobalKey showcaseKey;
@@ -21,6 +22,8 @@ class PuzzleCommonObjectShowcase extends StatefulWidget {
   final RenderBoxExposer flagExposer;
 
   final Widget child;
+
+  final void Function() onReady;
 
   @override
   State<PuzzleCommonObjectShowcase> createState() =>
@@ -31,6 +34,7 @@ class _PuzzleCommonObjectShowcaseState extends State<PuzzleCommonObjectShowcase>
     with SingleTickerProviderStateMixin {
   late final AnimationController controller;
 
+  bool onReady = false;
   BezierCurve? lineCurve = null;
 
   @override
@@ -41,6 +45,10 @@ class _PuzzleCommonObjectShowcaseState extends State<PuzzleCommonObjectShowcase>
         milliseconds: 1800,
       ),
     );
+
+    FlutterEngine.widgetPostFrameCallback((timeStamp) {
+      controller.repeat();
+    });
 
     super.initState();
   }
@@ -53,6 +61,13 @@ class _PuzzleCommonObjectShowcaseState extends State<PuzzleCommonObjectShowcase>
 
   @override
   Widget build(BuildContext context) {
+    if (!onReady) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        widget.onReady();
+      });
+      onReady = true;
+    }
+
     return FShowcase(
       showcaseKey: widget.showcaseKey,
       tooltip: (bounds) {

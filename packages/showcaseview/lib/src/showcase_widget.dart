@@ -156,6 +156,7 @@ class ShowCaseWidgetState<T extends ShowCaseWidget> extends State<T> {
         "`enableShowcase` parameter to false from ShowCaseWidget",
       );
     }
+
     if (!mounted) return;
     setState(() {
       ids = widgetIds;

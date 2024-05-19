@@ -14,6 +14,7 @@ class PuzzleEmblemObjectStep1Showcase extends StatefulWidget {
     required this.showcaseKey,
     required this.child,
     required this.flagExposer,
+    required this.onReady,
   });
 
   final GlobalKey showcaseKey;
@@ -22,6 +23,8 @@ class PuzzleEmblemObjectStep1Showcase extends StatefulWidget {
 
   final Widget child;
 
+  final void Function() onReady;
+
   @override
   State<PuzzleEmblemObjectStep1Showcase> createState() =>
       _PuzzleEmblemObjectStep1ShowcaseState();
@@ -29,8 +32,15 @@ class PuzzleEmblemObjectStep1Showcase extends StatefulWidget {
 
 class _PuzzleEmblemObjectStep1ShowcaseState
     extends State<PuzzleEmblemObjectStep1Showcase> {
+  bool onReady = false;
   @override
   Widget build(BuildContext context) {
+    if (!onReady) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        widget.onReady();
+      });
+      onReady = true;
+    }
     final mqs = context.mediaQuerySize;
 
     return FShowcase(

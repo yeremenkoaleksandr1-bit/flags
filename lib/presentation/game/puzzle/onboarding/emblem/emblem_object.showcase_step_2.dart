@@ -70,8 +70,8 @@ class _PuzzleEmblemObjectStep2ShowcaseState
                   ),
                 ),
                 Positioned(
-                  top: bounds.top + 128,
-                  left: bounds.left + bounds.width / 2 - 128,
+                  bottom: 64,
+                  left: 32,
                   height: 84,
                   width: 64,
                   child: Center(
@@ -91,8 +91,8 @@ class _PuzzleEmblemObjectStep2ShowcaseState
                   ),
                 ),
                 Positioned(
-                  top: bounds.top + 128 + 64,
-                  left: bounds.left + bounds.width / 2 - 128 + 24,
+                  bottom: 64,
+                  left: bounds.left + bounds.width / 2 - 128 + 48,
                   height: 84,
                   width: mqs.width / 2,
                   child: Center(

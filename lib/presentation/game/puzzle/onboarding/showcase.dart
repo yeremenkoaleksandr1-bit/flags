@@ -1,5 +1,6 @@
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/features/onboarding/onboarding.service.dart';
+import 'package:flags/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:showcaseview/showcaseview.dart';
 
@@ -25,9 +26,7 @@ class PuzzleGameShowcase {
       return;
     }
 
-    FlutterEngine.widgetPostFrameCallback((timeStamp) {
-      showcaseState.startShowCase(currentShowcases);
-    });
+    showcaseState.startShowCase(currentShowcases);
   }
 
   ShowCaseWidgetState<ShowCaseWidget> get showcaseState =>
