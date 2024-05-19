@@ -31,14 +31,18 @@ class PuzzleObjectPlacingHandler {
     final isPreviousPlaced = object.previousMustBePlaced?.every(
           (e) {
             final objects = placedObjects.map((e) => e.uniqueName);
+            final objectsByName = placedObjects.map((e) => e.name);
 
-            final mustBePlacedLen =
-                flag.objects.where((o) => o.uniqueName == e).length;
+            final mustBePlacedLen = flag.objects
+                .where((o) => o.uniqueName == e || o.name == e)
+                .length;
 
-            final placedObjectsLen =
-                placedObjects.where((o) => o.uniqueName == e).length;
+            final placedObjectsLen = placedObjects
+                .where((o) => o.uniqueName == e || o.name == e)
+                .length;
 
-            return objects.contains(e) && placedObjectsLen == mustBePlacedLen;
+            return (objects.contains(e) || objectsByName.contains(e)) &&
+                placedObjectsLen == mustBePlacedLen;
           },
         ) ??
         true;

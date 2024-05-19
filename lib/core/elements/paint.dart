@@ -62,24 +62,21 @@ class SPaint {
       );
 
   @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
-    final SPaint typedOther = other as SPaint;
-    return typedOther.blendMode == blendMode &&
-        typedOther.color == color &&
-        typedOther.invertColors == invertColors &&
-        typedOther.isAntiAlias == isAntiAlias &&
-        typedOther.strokeCap == strokeCap &&
-        typedOther.strokeJoin == strokeJoin &&
-        typedOther.strokeMiterLimit == strokeMiterLimit &&
-        typedOther.strokeWidth == strokeWidth &&
-        typedOther.style == style;
-  }
+  bool operator ==(Object other) =>
+      other is SPaint &&
+      runtimeType == other.runtimeType &&
+      blendMode == other.blendMode &&
+      color == other.color &&
+      invertColors == other.invertColors &&
+      isAntiAlias == other.isAntiAlias &&
+      strokeCap == other.strokeCap &&
+      strokeJoin == other.strokeJoin &&
+      strokeMiterLimit == other.strokeMiterLimit &&
+      strokeWidth == other.strokeWidth &&
+      style == other.style;
 
   @override
   int get hashCode =>
-      runtimeType.hashCode ^
       blendMode.hashCode ^
       color.hashCode ^
       invertColors.hashCode ^

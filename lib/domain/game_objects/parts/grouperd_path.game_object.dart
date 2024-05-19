@@ -1,11 +1,10 @@
 import 'package:flags/core/utils/utils.dart';
+import 'package:flags/domain/game_objects/base/process.game_object.dart';
+import 'package:flags/domain/game_objects/game_objects.dart';
+import 'package:flags/domain/game_objects/parts/path_part.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:memoize/memoize.dart';
-
-import '../base/process.game_object.dart';
-import '../game_objects.dart';
-import 'path_part.dart';
 
 class GroupedPathsPart extends ProcessGameObject {
   GroupedPathsPart({

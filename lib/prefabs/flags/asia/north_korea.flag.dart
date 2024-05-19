@@ -57,7 +57,7 @@ class NorthKoreaFlag extends GameFlag {
                 position: Vector2(0, 53.33),
               ),
               GroupedPathsPart(
-                name: 'flag_uk',
+                name: 'north_korea_star',
                 previousMustBePlaced: const ['3'],
                 position: Vector2(28.44, 17.78),
                 size: Vector2(28.44, 28.44),

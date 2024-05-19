@@ -45,4 +45,21 @@ class ColoredPart extends PathGameObject {
       colors: colors ?? this.colors,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      super == other &&
+          other is ColoredPart &&
+          runtimeType == other.runtimeType &&
+          colors == other.colors &&
+          path.color == other.path.color;
+
+  @override
+  int get hashCode => super.hashCode ^ colors.hashCode ^ path.color.hashCode;
+
+  @override
+  String toString() {
+    return 'ColoredPart{colors: $colors}';
+  }
 }

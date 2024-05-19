@@ -1,5 +1,6 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
+import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
 import 'package:flags/presentation/game/puzzle/entities/colored_part.game_object.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_fast.presenter.dart';
 import 'package:flags/screens/games/puzzle/components/board_items/base.dart';
@@ -56,8 +57,12 @@ class BoardColoredPartWidgetState
   }
 
   @override
-  Widget buildWidget(BuildContext context, BoxConstraints constraints) {
-    final object = model.object as ColoredPart;
+  Widget buildWidget(
+    BuildContext context,
+    BoxConstraints constraints,
+    BoardItem item,
+  ) {
+    final object = item.object as ColoredPart;
 
     return CompositedTransformTarget(
       link: _link,
@@ -74,7 +79,6 @@ class BoardColoredPartWidgetState
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: RowSuper(
-                    mainAxisSize: MainAxisSize.min,
                     innerDistance: 2,
                     children: [
                       ...object.colors.map(
@@ -83,14 +87,14 @@ class BoardColoredPartWidgetState
                             color: e,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(4),
-                              side: const BorderSide(color: ThemePalette.black),
+                              side: const BorderSide(),
                             ),
                           ),
                           child: const SizedBox.square(
                             dimension: 24,
                           ),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ).animate().boxShadow(
@@ -104,7 +108,7 @@ class BoardColoredPartWidgetState
           gestures: {
             TapGestureRecognizer:
                 GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
-              () => TapGestureRecognizer(),
+              TapGestureRecognizer.new,
               (i) => i.onTap = onTap,
             ),
             LongPressGestureRecognizer: GestureRecognizerFactoryWithHandlers<
@@ -122,7 +126,11 @@ class BoardColoredPartWidgetState
               clipBehavior: Clip.none,
               children: [
                 Positioned.fill(
-                  child: super.buildWidget(context, constraints),
+                  child: super.buildWidget(
+                    context,
+                    constraints,
+                    item,
+                  ),
                 ),
                 const Positioned(
                   bottom: -8,

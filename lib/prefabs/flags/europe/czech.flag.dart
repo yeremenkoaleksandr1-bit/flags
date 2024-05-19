@@ -30,6 +30,7 @@ class CzechFlag extends GameFlag {
             ),
             PathGameObject(
               name: "3",
+              previousMustBePlaced: const ['1', '2'],
               path: SPath(
                 rect: size.toRect(),
                 paint: SPaint(

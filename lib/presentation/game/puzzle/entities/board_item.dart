@@ -23,6 +23,7 @@ class BoardItem<T extends ProcessGameObject> implements IDisposable {
     final instance = BoardItem(
       object: object ?? this.object,
     );
+
     instance.active.value = active.value;
 
     return instance;
@@ -35,12 +36,11 @@ class BoardItem<T extends ProcessGameObject> implements IDisposable {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
       other is BoardItem &&
-          runtimeType == other.runtimeType &&
-          object == other.object &&
-          active == other.active;
+      runtimeType == other.runtimeType &&
+      object == other.object &&
+      active.value == other.active.value;
 
   @override
-  int get hashCode => object.hashCode ^ active.hashCode;
+  int get hashCode => object.hashCode ^ active.value.hashCode;
 }

@@ -6,6 +6,7 @@ import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
 import 'package:flags/features/audio/audio.provider.dart';
 import 'package:flags/features/audio/sound_data.dart';
+import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
 import 'package:flags/screens/games/puzzle/components/board_items/base.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
 import 'package:flame/extensions.dart';
@@ -65,7 +66,11 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
     super.initState();
   }
 
-  Widget buildChild(BuildContext context, BoxConstraints constraints) {
+  Widget buildChild(
+    BuildContext context,
+    BoxConstraints constraints,
+    BoardItem item,
+  ) {
     final object = model.object;
 
     final transform = Matrix4.identity()
@@ -87,11 +92,19 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
     return Transform(
       alignment: Alignment.center,
       transform: finalTransform,
-      child: super.buildWidget(context, constraints),
+      child: super.buildWidget(context, constraints, item),
     );
   }
 
   final ValueNotifier<Offset> _feedbackPosition = ValueNotifier(Offset.zero);
+
+  @override
+  void didUpdateWidget(covariant T oldWidget) {
+    if (oldWidget.item != widget.item) {
+      modelRx.value = widget.item;
+    }
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   void dispose() {
@@ -100,8 +113,12 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
   }
 
   @override
-  Widget buildWidget(BuildContext context, BoxConstraints constraints) {
-    final object = model.object;
+  Widget buildWidget(
+    BuildContext context,
+    BoxConstraints constraints,
+    BoardItem item,
+  ) {
+    final object = item.object;
 
     final areaSize = presenter.flagExposer.renderBox.value?.size;
 
@@ -248,15 +265,28 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
                 child: Transform(
                   alignment: Alignment.center,
                   transform: Matrix4.identity()..rotateZ(object.rotation),
-                  child: super.buildWidget(context, constraints),
+                  child: super.buildWidget(
+                    context,
+                    constraints,
+                    item,
+                  ),
                 ),
               );
             },
             data: widget.item.object,
             childWhenDragging: const SizedBox.expand(),
-            child: ConstrainedBox(
-              constraints: constraints,
-              child: buildChild(context, constraints),
+            child: Builder(
+              key: ValueKey(item.hashCode),
+              builder: (context) {
+                return ConstrainedBox(
+                  constraints: constraints,
+                  child: buildChild(
+                    context,
+                    constraints,
+                    item,
+                  ),
+                );
+              },
             ),
           );
         },

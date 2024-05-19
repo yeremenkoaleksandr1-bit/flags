@@ -3,8 +3,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
-import 'package:state_manager/state_manager.dart';
 import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/core/extensions/num.dart';
 import 'package:flags/core/features/features.dart';
@@ -20,7 +18,9 @@ import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
 import 'package:flags/screens/games/puzzle/overlays/start_game.dart';
 import 'package:flags/uikit/assets/components/money.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:qlevar_router/qlevar_router.dart';
+import 'package:state_manager/state_manager.dart';
 
 import '../../../uikit/uikit.dart';
 import 'onboarding/showcase_fastmode.dart';
@@ -36,7 +36,11 @@ abstract interface class IPuzzleFastModePresenter
 
 class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
     implements IPuzzleFastModePresenter {
-  PuzzleFastModePresenterImpl(super.context, {required super.params});
+  PuzzleFastModePresenterImpl(
+    super.context,
+    super.vsync, {
+    required super.params,
+  });
 
   @override
   final PuzzleGameFastModeShowcase showcaseFm = PuzzleGameFastModeShowcase();

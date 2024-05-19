@@ -165,9 +165,27 @@ class PathGameObject extends ProcessGameObject {
   }
 
   @override
-  bool operator ==(Object other) =>
-      other is PathGameObject && other.uniqueName == uniqueName;
+  bool operator ==(Object other) {
+    return other is PathGameObject &&
+        runtimeType == other.runtimeType &&
+        key == other.key &&
+        name == other.name &&
+        uniqueName == other.uniqueName &&
+        position == other.position &&
+        scale == other.scale &&
+        size == other.size &&
+        rotation == other.rotation &&
+        path == other.path;
+  }
 
   @override
-  int get hashCode => uniqueName.hashCode;
+  int get hashCode =>
+      key.hashCode ^
+      name.hashCode ^
+      uniqueName.hashCode ^
+      position.hashCode ^
+      scale.hashCode ^
+      size.hashCode ^
+      rotation.hashCode ^
+      path.hashCode;
 }

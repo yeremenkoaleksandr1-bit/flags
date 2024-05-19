@@ -6,8 +6,8 @@ import 'package:drag_and_drop/drag_and_drop.dart';
 import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
+import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
-import 'package:flags/logger.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
 import 'package:flags/presentation/game/puzzle/entities/colored_part.game_object.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
@@ -140,87 +140,83 @@ class PartsBoardState extends State<PartsBoard> {
 
   @override
   Widget build(BuildContext context) {
-    final child = FCard(
-      child: Column(
-        children: [
-          Listener(
-            onPointerDown: _onPointerStart,
-            onPointerMove: _onPointerMode,
-            onPointerUp: _onPointerEnd,
-            child: Material(
-              color: Colors.transparent,
-              child: ValueListenableBuilder(
-                valueListenable: isFullScreen,
-                builder: (
-                  BuildContext context,
-                  bool value,
-                  Widget? child,
-                ) {
-                  return Padding(
-                    padding: Pad(
-                      all: 8,
-                      bottom: 8,
-                      top: value ? _mediaQueryPaddingTop + 8 : 0,
-                    ),
-                    child: const Center(
-                      child: Material(
-                        color: ThemePalette.black,
-                        shape: StadiumBorder(),
-                        child: SizedBox(
-                          height: 4,
-                          width: 64,
+    final child = ValueListenableBuilder(
+      valueListenable: activeDragging,
+      builder: (
+        BuildContext context,
+        bool value,
+        Widget? child,
+      ) {
+        return IgnorePointer(
+          ignoring: !value,
+          child: child,
+        );
+      },
+      child: FCard(
+        child: Column(
+          children: [
+            Listener(
+              onPointerDown: _onPointerStart,
+              onPointerMove: _onPointerMode,
+              onPointerUp: _onPointerEnd,
+              child: Material(
+                color: Colors.transparent,
+                child: ValueListenableBuilder(
+                  valueListenable: isFullScreen,
+                  builder: (
+                    BuildContext context,
+                    bool value,
+                    Widget? child,
+                  ) {
+                    return Padding(
+                      padding: Pad(
+                        all: 8,
+                        bottom: 8,
+                        top: value ? _mediaQueryPaddingTop + 8 : 0,
+                      ),
+                      child: const Center(
+                        child: Material(
+                          color: ThemePalette.black,
+                          shape: StadiumBorder(),
+                          child: SizedBox(
+                            height: 4,
+                            width: 64,
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: ValueListenableBuilder(
-              valueListenable: widget.controller.state.boardObjects,
-              builder: (
-                BuildContext context,
-                List<BoardItem<ProcessGameObject>> value,
-                Widget? child,
-              ) {
-                final boardItems = GridView.count(
-                  crossAxisCount: 4,
-                  mainAxisSpacing: 2,
-                  crossAxisSpacing: 2,
-                  children: [
-                    ...value.mapIndexed((i, e) {
-                      return RepaintBoundary.wrap(
-                        FCard(
+            Expanded(
+              child: ValueListenableBuilder(
+                valueListenable: widget.controller.state.boardObjects,
+                builder: (
+                  BuildContext context,
+                  List<BoardItem<ProcessGameObject>> value,
+                  Widget? child,
+                ) {
+                  return GridView.count(
+                    crossAxisCount: 4,
+                    mainAxisSpacing: 2,
+                    crossAxisSpacing: 2,
+                    children: [
+                      ...value.mapIndexed((i, e) {
+                        return FCard(
                           child: Material(
                             color: Colors.transparent,
                             child: buildBoardCommonItemView(e),
                           ),
-                        ),
-                        i,
-                      );
-                    }),
-                  ],
-                );
-
-                return ValueListenableBuilder(
-                  valueListenable: activeDragging,
-                  builder: (
-                    BuildContext context,
-                    value,
-                    Widget? child,
-                  ) {
-                    return IgnorePointer(
-                      ignoring: !value,
-                      child: boardItems,
-                    );
-                  },
-                );
-              },
+                        );
+                      }),
+                    ],
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
 
@@ -258,7 +254,7 @@ class PartsBoardState extends State<PartsBoard> {
     );
   }
 
-  BoardItemWidget buildBoardCommonItemView(BoardItem e) {
+  Widget buildBoardCommonItemView(BoardItem e) {
     if (e.object is ColoredPart) {
       return BoardColoredPartWidget(
         controller: widget.controller,
@@ -271,7 +267,13 @@ class PartsBoardState extends State<PartsBoard> {
       flag: widget.flag,
       onDragUpdate: widget.onDragUpdate,
       onDragStarted: (ProcessGameObject object) {
-        activeDragging.value = false;
+        print("- ${object.runtimeType}");
+        print("- ${object is! EmblemPart}");
+        print("-- ${object is! ColoredPart}");
+        // if (object is EmblemPart && object is ColoredPart) {
+        //   activeDragging.value = false;
+        // }
+
         widget.onDragStarted?.call(object);
         if (isFullScreen.value) {
           closeFullScreen();

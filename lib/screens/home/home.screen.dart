@@ -1,4 +1,3 @@
-import 'package:state_manager/state_manager.dart';
 import 'package:flags/features/audio/audio.provider.dart';
 import 'package:flags/features/audio/sound_data.dart';
 import 'package:flags/features/onboarding/onbloarding.controller.dart';
@@ -17,6 +16,7 @@ import 'package:flags/uikit/layout_components/sprite_widget.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
 import 'package:qlevar_router/qlevar_router.dart';
+import 'package:state_manager/state_manager.dart';
 
 class HomeScreen extends GetScreen<IHomePresenter> {
   HomeScreen({
@@ -47,7 +47,9 @@ class HomeScreen extends GetScreen<IHomePresenter> {
 
   @override
   void onReady(BuildContext context) {
-    _onboardingController.show(showCaseWidgetKey.currentContext!);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _onboardingController.show(showCaseWidgetKey.currentContext!);
+    });
   }
 
   @override

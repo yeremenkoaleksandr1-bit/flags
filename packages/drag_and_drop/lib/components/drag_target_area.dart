@@ -12,7 +12,7 @@ class SDragTargetArea<T extends Object> extends StatefulWidget {
     this.onAcceptWithDetails,
     this.onLeave,
     this.onMove,
-    this.hitTestBehavior = HitTestBehavior.translucent,
+    this.hitTestBehavior = HitTestBehavior.opaque,
   });
 
   final SDragTargetBuilder<T> builder;

@@ -43,9 +43,6 @@ class _PuzzleCommonObjectShowcaseState extends State<PuzzleCommonObjectShowcase>
     );
 
     super.initState();
-    FlutterEngine.widgetPostFrameCallback((timeStamp) {
-      controller.repeat();
-    });
   }
 
   @override

@@ -57,8 +57,15 @@ class PuzzlePartsGenerator {
           .flag;
 
       final randomPart = randomFlag.fabrics.random(random);
-
       if (randomPart is PathGameObject) {
+        if (randomPart is GroupedPathsPart) {
+          if (parts.any((element) => element.name == randomPart.name)) {
+            usedFlags.add(randomFlag.name);
+            i--;
+            continue;
+          }
+        }
+
         final isSimilarToOriginal = parts.whereType<PathGameObject>().any(
               (e) =>
                   e.path.points.length == randomPart.path.points.length &&

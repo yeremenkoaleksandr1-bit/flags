@@ -60,7 +60,6 @@ class AppPresenterImpl extends GetxController
 
   @override
   Future<void> onInit() async {
-    await GameShaders.init();
     final Completer<dynamic> endSplashAnimationCompleter = Completer();
 
     AnimationController? splashAnimator;

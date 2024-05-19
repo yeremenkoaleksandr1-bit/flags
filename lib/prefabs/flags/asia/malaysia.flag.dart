@@ -86,7 +86,7 @@ class MalaysiaFlag extends GameFlag {
                 position: Vector2(12.58, 4.57),
                 size: Vector2(38.57, 27.43),
                 previousMustBePlaced: const ['4'],
-              )
+              ),
             ];
           },
         );

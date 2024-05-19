@@ -82,14 +82,13 @@ class SPath implements IDrawable {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
       super == other &&
-          other is SPath &&
-          runtimeType == other.runtimeType &&
-          _path == other._path &&
-          rect == other.rect &&
-          paint == other.paint &&
-          points == other.points;
+      other is SPath &&
+      runtimeType == other.runtimeType &&
+      _path == other._path &&
+      rect == other.rect &&
+      paint == other.paint &&
+      points == other.points;
 
   @override
   int get hashCode =>

@@ -1,6 +1,6 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
-import 'package:flags/domain/game_objects/parts/path_part.dart';
+import 'package:flags/domain/game_objects/game_objects.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
 import 'package:flags/presentation/game/puzzle/entities/colored_part.game_object.dart';
 import 'package:flags/presentation/game/puzzle/onboarding/colored_part/colored_object.showcase_step_2.dart';
@@ -11,7 +11,6 @@ import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
 import 'package:flutter/material.dart';
-import 'package:multi_value_listenable_builder/multi_value_listenable_builder.dart';
 
 class ColoredPathEditingBoard extends ProcessObjectEditingBoard {
   const ColoredPathEditingBoard({
@@ -46,6 +45,7 @@ class ColoredPathEditingBoardState
   @override
   void dispose() {
     colorRx.dispose();
+
     super.dispose();
   }
 
@@ -82,36 +82,38 @@ class ColoredPathEditingBoardState
                   ),
                   Gap.v24,
                   Expanded(
-                    child: MultiValueListenableBuilder(
-                      valueListenables: [
-                        colorRx,
-                        widget.controller.state.level
-                      ],
+                    child: ValueListenableBuilder(
+                      valueListenable: widget.controller.state.level,
                       builder: (
                         BuildContext context,
-                        List<dynamic> values,
+                        GameLevel level,
                         Widget? child,
                       ) {
-                        final Color? color = values[0];
-                        final GameLevel level = values[1];
+                        return ValueListenableBuilder(
+                          valueListenable: colorRx,
+                          builder: (
+                            BuildContext context,
+                            Color? value,
+                            Widget? child,
+                          ) {
+                            var object = gameObject.object as PathGameObject;
 
-                        var object = gameObject.object as PathGameObject;
+                            object = object.copyWith(
+                              path: object.path.copyWith(
+                                paint: object.path.paint.copyWith(
+                                  color: value ?? Colors.grey,
+                                ),
+                              ),
+                            );
 
-                        object = object.copyWith(
-                          path: object.path.copyWith(
-                            paint: object.path.paint.copyWith(
-                              color: color ?? Colors.grey,
-                            ),
-                          ),
-                        );
-
-                        return BoardCommonItemWidget(
-                          key: ValueKey(color),
-                          controller: widget.controller,
-                          item: gameObject.copyWith(
-                            object: object,
-                          ),
-                          flag: level.flag,
+                            return BoardCommonItemWidget(
+                              controller: widget.controller,
+                              item: gameObject.copyWith(
+                                object: object,
+                              ),
+                              flag: level.flag,
+                            );
+                          },
                         );
                       },
                     ),

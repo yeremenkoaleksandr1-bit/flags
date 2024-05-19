@@ -2,7 +2,9 @@ import 'package:flags/shared/services/disposable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:state_manager/state_manager.dart';
 
-mixin ProcessedObjectFocusHandler implements IDisposable {
+import '../../../../logger.dart';
+
+mixin ProcessedObjectFocusHandler {
   final ValueNotifier<dynamic> _object = ValueNotifier(null);
 
   ValueNotifier<dynamic> get focusedObject => _object;
@@ -23,8 +25,7 @@ mixin ProcessedObjectFocusHandler implements IDisposable {
 
   void onObjectFocusAdded(Object object);
 
-  @override
-  void dispose() {
+  void disposeProcessedObjectFocusHandler() {
     _object.dispose();
   }
 }

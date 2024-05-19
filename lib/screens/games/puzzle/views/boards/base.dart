@@ -100,10 +100,12 @@ abstract class ProcessObjectEditingBoardState<
           right: 0,
           top: top,
           height: mq.size.height - rect.bottom,
-          child: FCard(
-            child: buildWidget(
-              context,
-              _currentObject.value,
+          child: RepaintBoundary(
+            child: FCard(
+              child: buildWidget(
+                context,
+                _currentObject.value,
+              ),
             ),
           ),
         );

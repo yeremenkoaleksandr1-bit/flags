@@ -1,3 +1,4 @@
+import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/uikit/assets/components/button.dart';
 import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
 import 'package:flags/uikit/theme/palette.dart';

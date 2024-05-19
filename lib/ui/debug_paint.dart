@@ -17,6 +17,8 @@ class DebugPaintProvider extends StatefulWidget {
 }
 
 abstract class DebugPainter {
+  static bool _initialized = false;
+
   static late final DebugPainter _instance;
 
   static void paint(void Function(Canvas canvas, Size size) callback) {
@@ -35,7 +37,11 @@ class _DebugPaintProviderState extends State<DebugPaintProvider>
 
   @override
   void initState() {
-    DebugPainter._instance = this;
+    if (!DebugPainter._initialized) {
+      DebugPainter._instance = this;
+      DebugPainter._initialized = true;
+    }
+
     super.initState();
   }
 

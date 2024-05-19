@@ -3,11 +3,10 @@ import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
-import 'package:flags/shared/services/disposable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:state_manager/state_manager.dart';
 
-class PuzzleGameState implements IDisposable {
+class PuzzleGameState {
   final ValueNotifier<GameLevel> level;
   final ValueNotifier<GameDifficult> difficult;
   final ValueNotifierList<BoardItem> boardObjects;
@@ -28,10 +27,18 @@ class PuzzleGameState implements IDisposable {
         boardObjects = ValueNotifierList(boardObjects),
         placedObjects = ValueNotifierList();
 
-  @override
-  void dispose() {
+  void disposeState() {
     level.dispose();
     difficult.dispose();
+
+    for (final e in boardObjects) {
+      e.dispose();
+    }
+
+    for (final e in placedObjects) {
+      e.dispose();
+    }
+
     boardObjects.dispose();
     placedObjects.dispose();
   }
@@ -49,8 +56,8 @@ class PuzzleFastModeState extends PuzzleGameState {
   });
 
   @override
-  void dispose() {
+  void disposeState() {
     timerRx.dispose();
-    super.dispose();
+    super.disposeState();
   }
 }

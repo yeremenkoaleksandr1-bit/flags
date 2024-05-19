@@ -68,7 +68,9 @@ class GetScreenState<T> extends State<GetScreen<T>> with RouteAware {
   void dispose() {
     widget.onClose();
     GetScreen.routeObserver.unsubscribe(this);
+
     Get.delete<T>(tag: _tag);
+
     super.dispose();
   }
 

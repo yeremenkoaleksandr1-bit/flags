@@ -88,11 +88,10 @@ abstract interface class IPuzzleCommonModePresenter<S extends PuzzleGameState>
 }
 
 class PuzzleCommonModePresenterImpl extends GetxController
-    with
-        StateMixin<PuzzleGameState>,
-        GetSingleTickerProviderStateMixin,
-        ProcessedObjectFocusHandler
+    with StateMixin<PuzzleGameState>, ProcessedObjectFocusHandler
     implements IPuzzleCommonModePresenter<PuzzleGameState> {
+  final TickerProvider vsync;
+
   // SHOWCASE
 
   final IOnboardingService onboardingService = IOnboardingService.I;
@@ -115,7 +114,8 @@ class PuzzleCommonModePresenterImpl extends GetxController
   final GamesFactoryPageParams params;
 
   PuzzleCommonModePresenterImpl(
-    this.context, {
+    this.context,
+    this.vsync, {
     required this.params,
   })  : emblemConfirmationView = EmblemConfirmationWidgetState(),
         boardController = PartsBoardState(),
@@ -127,7 +127,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
 
   @override
   late final AnimationController shakeAnimation = AnimationController(
-    vsync: this,
+    vsync: vsync,
     duration: const Duration(milliseconds: 100),
   );
 
@@ -187,7 +187,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
 
     showcase.show(
       [showcase.coloredObjectStep1],
-      "puzzle_colored_object_1",
+      "puzzle_colored_object",
     );
   }
 
@@ -230,14 +230,14 @@ class PuzzleCommonModePresenterImpl extends GetxController
   }
 
   @override
-  void dispose() {
-    flagExposer.renderBox.removeListener(onFlagBuilt);
-    super.dispose();
-  }
-
-  @override
   void onClose() {
     shakeAnimation.dispose();
+
+    flagExposer.renderBox.removeListener(onFlagBuilt);
+
+    state.disposeState();
+
+    disposeProcessedObjectFocusHandler();
   }
 
   Future<void> initialization() async {
@@ -270,7 +270,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
     unfocusObject();
     tryCompleteLevel();
 
-    await audioController.playSfx(GameSfx.correctlyObjectPlacing);
+    audioController.playSfx(GameSfx.correctlyObjectPlacing);
   }
 
   void tryCompleteLevel() {
@@ -517,9 +517,9 @@ class PuzzleCommonModePresenterImpl extends GetxController
 
   @override
   void onObjectFocusAdded(Object object) {
-    FlutterEngine.widgetPostFrameCallback((timeStamp) {
-      boardController.toggleDraggingStatus(false);
-    });
+    // FlutterEngine.widgetPostFrameCallback((timeStamp) {
+    //   boardController.toggleDraggingStatus(false);
+    // });
   }
 
   @override
@@ -713,7 +713,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
         }
       }
 
-      if (!showcase.isCompleted("puzzle_colored_object_1")) {
+      if (!showcase.isCompleted("puzzle_colored_object")) {
         final flagPartIndex = parts.indexWhere(
           (e) => e.object is ColoredPart,
         );
@@ -726,7 +726,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
             build: (instance) => PuzzleColoredObjectStep1Showcase(
               showcaseKey: showcase.coloredObjectStep1,
               onTap: () {
-                showcase.complete("puzzle_colored_object_1");
+                showcase.complete("puzzle_colored_object");
               },
               child: instance,
             ),

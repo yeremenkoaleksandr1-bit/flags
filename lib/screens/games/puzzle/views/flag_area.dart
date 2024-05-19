@@ -69,7 +69,7 @@ class _GameFlagAreaState extends State<GameFlagArea> {
         return PuzzleSceneItemsFactory.build(
           e,
           onEmblem: (o) => EmblemSceneObject(o, widget.controller),
-          onDefault: (o) => GameObjectWidget(o),
+          onDefault: GameObjectWidget.new,
         );
       },
     );

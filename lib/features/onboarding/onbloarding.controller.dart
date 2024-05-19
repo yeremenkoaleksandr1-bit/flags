@@ -19,9 +19,7 @@ class OnboardingController {
     if (!canShow) {
       return;
     }
-    FlutterEngine.schedulePostFrameCallback((timeStamp) {
-      ShowCaseWidget.of(context).startShowCase(widgetsKeys);
-    });
+    ShowCaseWidget.of(context).startShowCase(widgetsKeys);
   }
 
   void hide() {}

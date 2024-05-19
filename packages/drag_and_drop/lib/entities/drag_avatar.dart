@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:drag_and_drop/components/drag_target_area.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:widget_finder/widget_finder.dart';
@@ -236,19 +238,24 @@ class SDragAvatar<T extends Object> extends Drag {
 
   Widget _build(BuildContext context) {
     final RenderBox box = overlayState.context.findRenderObject() as RenderBox;
-    final Offset overlayTopLeft = box.localToGlobal(Offset.zero);
 
     return Positioned(
       top: 0,
       left: 0,
+      bottom: 0,
+      right: 0,
       child: ExcludeSemantics(
         excluding: ignoringFeedbackSemantics,
-        child: IgnorePointer(
-          ignoring: ignoringFeedbackPointer,
-          child: feedbackBuilder(
-            context,
-            box,
-          ),
+        child: Stack(
+          children: [
+            IgnorePointer(
+              ignoring: false,
+              child: feedbackBuilder(
+                context,
+                box,
+              ),
+            ),
+          ],
         ),
       ),
     );

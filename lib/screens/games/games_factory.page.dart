@@ -1,15 +1,14 @@
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
+import 'package:flags/presentation/app/app.presenter.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_fast.presenter.dart';
 import 'package:flags/screens/games/base/game_process_screen.dart';
 import 'package:flags/screens/games/puzzle/common.dart';
 import 'package:flags/screens/games/puzzle/fastmode.dart';
-import 'package:flags/uikit/layout_components/overlayment/overlayment.provider.dart';
+import 'package:flags/ui/game_scaffold.dart';
 import 'package:flutter/material.dart';
-
-import '../../presentation/app/app.presenter.dart';
-import '../../ui/game_scaffold.dart';
+import 'package:flutter/rendering.dart';
 
 class GamesFactoryPageParams {
   final GameLevel level;
@@ -40,7 +39,8 @@ class GamesFactoryPage extends StatefulWidget {
   State<GamesFactoryPage> createState() => _GamesFactoryPageState();
 }
 
-class _GamesFactoryPageState extends State<GamesFactoryPage> {
+class _GamesFactoryPageState extends State<GamesFactoryPage>
+    with TickerProviderStateMixin {
   late GameProcessScreen screen;
 
   bool _isReady = false;
@@ -52,12 +52,18 @@ class _GamesFactoryPageState extends State<GamesFactoryPage> {
     screen = switch (params.gameMode) {
       GameProcessType.puzzle => switch (params.gamesType) {
           GameStyleType.common => PuzzleCommonMode(
-              controller: (_) =>
-                  PuzzleCommonModePresenterImpl(context, params: params),
+              controller: (_) => PuzzleCommonModePresenterImpl(
+                context,
+                this,
+                params: params,
+              ),
             ),
           GameStyleType.fast => PuzzleFastMode(
-              controller: (_) =>
-                  PuzzleFastModePresenterImpl(context, params: params),
+              controller: (_) => PuzzleFastModePresenterImpl(
+                context,
+                this,
+                params: params,
+              ),
             ),
         },
     };

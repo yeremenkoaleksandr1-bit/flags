@@ -368,14 +368,14 @@ extension Inst on GetInterface {
       );
       return false;
     }
-    final i = builder.dependency;
+    final instance = builder.dependency;
 
-    if (i is GetxServiceMixin && !force) {
+    if (instance is GetxServiceMixin && !force) {
       return false;
     }
 
-    if (i is GetLifeCycleMixin) {
-      i.onDelete();
+    if (instance is GetLifeCycleMixin) {
+      instance.onDelete();
       Get.log('"$newKey" onDelete() called');
     }
 

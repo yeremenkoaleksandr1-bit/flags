@@ -17,51 +17,70 @@ abstract class BoardItemWidget extends StatefulWidget {
 
 abstract class BoardItemWidgetState<T extends BoardItemWidget>
     extends State<T> {
-  final GlobalKey _widgetKey = GlobalKey();
+  late final ValueNotifier<BoardItem> modelRx = ValueNotifier(widget.item);
 
-  BoardItem get model => widget.item;
+  BoardItem get model => modelRx.value;
 
   IPuzzleCommonModePresenter get presenter => widget.controller;
 
   ProcessGameObject get renderedObject => model.object;
 
-  Widget buildWidget(BuildContext context, BoxConstraints constraints) {
+  Widget buildWidget(
+    BuildContext context,
+    BoxConstraints constraints,
+    BoardItem item,
+  ) {
     return Material(
       color: Colors.transparent,
       child: GameObjectPaint(
-        key: _widgetKey,
         gameObject: renderedObject,
       ),
     );
   }
 
   @override
+  void dispose() {
+    modelRx.value;
+    super.dispose();
+  }
+
+  @override
   @protected
   Widget build(BuildContext context) {
-    Widget child = LayoutBuilder(
-      builder: buildWidget,
-    );
+    return ValueListenableBuilder(
+      valueListenable: modelRx,
+      builder: (
+        BuildContext context,
+        BoardItem<ProcessGameObject> value,
+        Widget? child,
+      ) {
+        Widget child = LayoutBuilder(
+          builder: (context, constraints) => buildWidget(
+            context,
+            constraints,
+            value,
+          ),
+        );
 
-    if (model.build != null) {
-      child = model.build!.call(child);
-    }
+        if (model.build != null) {
+          child = model.build!.call(child);
+        }
 
-    return RepaintBoundary(
-      child: ValueListenableBuilder(
-        valueListenable: model.active,
-        builder: (
-          BuildContext context,
-          bool value,
-          Widget? child,
-        ) {
-          if (!value) {
-            return const SizedBox.shrink();
-          }
+        return ValueListenableBuilder(
+          valueListenable: model.active,
+          builder: (
+            BuildContext context,
+            bool value,
+            Widget? _,
+          ) {
+            if (!value) {
+              return const SizedBox.shrink();
+            }
 
-          return child!;
-        },
-        child: child,
-      ),
+            return child;
+          },
+        );
+      },
     );
   }
 }

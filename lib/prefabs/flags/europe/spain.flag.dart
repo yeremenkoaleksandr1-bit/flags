@@ -6,8 +6,8 @@ class SpainFlag extends GameFlag {
           name: "Spain",
           proportion: 2 / 3,
           objects: (size) {
-            double totalFlex = 4;
-            double unitHeight = size.y / totalFlex;
+            final double totalFlex = 4;
+            final double unitHeight = size.y / totalFlex;
 
             return [
               PathGameObject(
@@ -32,7 +32,7 @@ class SpainFlag extends GameFlag {
                 ),
               ),
               PathGameObject(
-                name: "3",
+                name: "1",
                 position: Vector2(0, unitHeight * 3),
                 path: SPath.rect(
                   rect: Vector2(size.x, unitHeight).toRect(),
