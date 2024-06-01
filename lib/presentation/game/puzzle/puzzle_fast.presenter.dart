@@ -186,7 +186,7 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
   }
 
   Future<void> prepareFastModeLevel([bool isRestart = false]) async {
-    Completer moneyAddCompleter = Completer();
+    final Completer moneyAddCompleter = Completer();
 
     await PreparingFastModeInitializationGame(
       preparingTimer: preparingTimer,
@@ -267,7 +267,10 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
               }
             });
           }
+        } else {
+          moneyAddCompleter.complete();
         }
+
         await moneyAddCompleter.future;
 
         final initialTime = getInitialTime([...GameDifficult.values].random);
@@ -301,6 +304,7 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
   @override
   Future<void> onRestart() async {
     await super.onRestart();
+
     await prepareFastModeLevel(true);
   }
 
