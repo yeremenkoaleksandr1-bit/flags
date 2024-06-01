@@ -46,7 +46,7 @@ class KenyaFlag extends GameFlag {
             EmblemPart.fromType<KenyaEmblem>(
               position: Vector2(34.76, 9.07),
               size: Vector2(26.48, 42.6),
-              previousMustBePlaced: const ['1', '2', '3', '4'],
+              previousMustBePlaced: const ['1', '2_1', '2_2', '3', '4'],
             ),
           ],
         );

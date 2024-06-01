@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flags/core/extensions/extensions.dart';
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
+import 'package:flags/domain/entities/path/path.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/emblems/emblems.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
@@ -24,10 +25,10 @@ class PuzzlePartsGenerator {
 
   final List<GameLevel> levels;
 
-  Future<List<ProcessGameObject>> generate(GameFlag flag, Random random) async {
-    final parts = await generateParts(flag, random);
-    final emblems = await generateEmblem(flag, random);
+  List<ProcessGameObject> generate(GameFlag flag, Random random) {
+    final parts = generateParts(flag, random);
 
+    final emblems = generateEmblem(flag, random);
     final all = [...parts, ...emblems];
 
     all.shuffle(random);
@@ -35,32 +36,32 @@ class PuzzlePartsGenerator {
     return all;
   }
 
-  Future<List<ProcessGameObject>> generateParts(
+  List<ProcessGameObject> generateParts(
     GameFlag flag,
     Random random,
-  ) async {
+  ) {
     final flagFabrics = flag.fabrics;
-
     final List<ProcessGameObject> parts = [
-      ...flagFabrics.map(
-        (e) => e.copyWith(),
-      ),
+      ...flagFabrics.map((e) => e.copyWith()),
     ];
 
     final List<String> usedFlags = [flag.name];
+    final availableLevels =
+        levels.where((e) => !usedFlags.contains(e.flag.name)).toList();
 
     for (var i = 0; i < quantityParts - flagFabrics.length; i++) {
-      final randomFlag = levels
-          .where((e) => !usedFlags.contains(e.flag.name))
-          .toList()
-          .random(random)
-          .flag;
+      if (availableLevels.isEmpty) {
+        break;
+      }
 
+      final randomFlag = availableLevels.random(random).flag;
       final randomPart = randomFlag.fabrics.random(random);
+
       if (randomPart is PathGameObject) {
         if (randomPart is GroupedPathsPart) {
           if (parts.any((element) => element.name == randomPart.name)) {
             usedFlags.add(randomFlag.name);
+            availableLevels.removeWhere((e) => e.flag.name == randomFlag.name);
             i--;
             continue;
           }
@@ -68,8 +69,7 @@ class PuzzlePartsGenerator {
 
         final isSimilarToOriginal = parts.whereType<PathGameObject>().any(
               (e) =>
-                  e.path.points.length == randomPart.path.points.length &&
-                  e.path.rect.size == randomPart.path.rect.size &&
+                  e.path.isSimilarByPoints(randomPart.path) &&
                   ColorUtils.calculateColorSimilarity(
                         e.color.value,
                         randomPart.color.value,
@@ -89,36 +89,33 @@ class PuzzlePartsGenerator {
       );
 
       usedFlags.add(randomFlag.name);
+      availableLevels.removeWhere((e) => e.flag.name == randomFlag.name);
     }
 
     return parts;
   }
 
-  Future<List<EmblemPart>> generateEmblem(GameFlag flag, Random random) async {
+  List<EmblemPart> generateEmblem(GameFlag flag, Random random) {
     final flagEmblems = flag.emblems;
 
+    print(flagEmblems);
     final List<String> usedFlags = [flag.name];
-
     final List<EmblemPart> parts = [
-      ...flagEmblems.map(
-        (e) => e.copyWith(),
-      ),
+      ...flagEmblems.map((e) => e.copyWith()),
     ];
 
-    for (var i = 0; i < quantityEmblem - flagEmblems.length; i++) {
-      final fLevels = levels
-          .where(
-            (e) =>
-                !usedFlags.contains(e.flag.name) && e.flag.emblems.isNotEmpty,
-          )
-          .toList();
+    final availableLevels = levels
+        .where(
+          (e) => !usedFlags.contains(e.flag.name) && e.flag.emblems.isNotEmpty,
+        )
+        .toList();
 
-      if (fLevels.isEmpty) {
+    for (var i = 0; i < quantityEmblem - flagEmblems.length; i++) {
+      if (availableLevels.isEmpty) {
         break;
       }
 
-      final randomFlag = fLevels.random(random).flag;
-
+      final randomFlag = availableLevels.random(random).flag;
       final randomPart = randomFlag.emblems.random(random);
 
       parts.add(
@@ -129,53 +126,43 @@ class PuzzlePartsGenerator {
       );
 
       usedFlags.add(randomFlag.name);
+      availableLevels.removeWhere((e) => e.flag.name == randomFlag.name);
     }
 
     final angles = RotationConstants.assistAngles.toList();
     const scalesLen = 4;
 
-    return [
-      ...parts.map(
-        (e) {
-          final correctIndex = random.nextInt(scalesLen);
-          var angle = angles.random(random).remainder(pi * 2);
-          if (angle < 0) {
-            angle += pi * 2;
-          }
+    return parts.map((e) {
+      final correctIndex = random.nextInt(scalesLen);
+      var angle = angles.random(random).remainder(pi * 2);
+      if (angle < 0) {
+        angle += pi * 2;
+      }
 
-          final randomIndex = random.nextIntRange(0, scalesLen);
+      final randomIndex = random.nextIntRange(0, scalesLen);
+      final scales = generateScales(correctIndex, scalesLen, 0.2);
+      final randomScale = scales[randomIndex];
+      final scale =
+          (randomScale >= 1 ? randomScale : randomScale - 0.2 * randomIndex);
 
-          final scales = generateScales(correctIndex, scalesLen, 0.2);
-
-          final randomScale = scales[randomIndex];
-
-          final scale = (randomScale >= 1
-              ? randomScale
-              : randomScale - 0.2 * randomIndex);
-
-          return ScalableEmblemPart.fromEmblem(
-            e.copyWith(
-              rotation: angle,
-              scale: scale,
-            ),
-            scales: scales,
-          );
-        },
-      ),
-    ];
+      return ScalableEmblemPart.fromEmblem(
+        e.copyWith(rotation: angle, scale: scale),
+        scales: scales,
+      );
+    }).toList();
   }
 
-  List<double> generateScales(int correctIndex, int len, double inclement) {
+  List<double> generateScales(int correctIndex, int len, double increment) {
     return List.generate(
       len,
-      (index) => (1 + (index - correctIndex) * inclement).roundDouble(1),
+      (index) => (1 + (index - correctIndex) * increment).roundDouble(1),
     );
   }
 
   static const List<int> allFlagColors = [
     0xffFFFFFF,
     0xff000000,
-    //red
+    // red
     0xffCC0033,
     0xffCD3333,
     0xffCD3333,
@@ -187,15 +174,15 @@ class PuzzlePartsGenerator {
     0xff9A0034,
     0xff981E1D,
     0xff663234,
-    //orange
+    // orange
     0xffFF9801,
     0xffFE6700,
     0xffCD6601,
-    //yellow
+    // yellow
     0xffFFCD00,
     0xffFDDC05,
     0xffFDF042,
-    //green
+    // green
     0xff229E46,
     0xff019968,
     0xff01694E,
@@ -206,7 +193,7 @@ class PuzzlePartsGenerator {
     0xff346633,
     0xff3F9A01,
     0xff017E3C,
-    //blue
+    // blue
     0xff013797,
     0xff003265,
     0xff01008C,

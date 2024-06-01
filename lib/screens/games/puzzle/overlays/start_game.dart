@@ -55,7 +55,7 @@ class _PreparingFastModeInitializationGameState
       children: [
         Positioned.fill(
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
             child: ColoredBox(
               color: ThemePalette.black.withOpacity(0.8),
             ),

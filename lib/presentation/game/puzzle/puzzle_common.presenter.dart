@@ -342,6 +342,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
   }
 
   Future<void> openNextLevel(NextLevelData data) async {
+    gameSeed = Random().nextInt(int32MaxValue);
     resetLevelState();
 
     state.difficult.value = data.section!.difficulty;

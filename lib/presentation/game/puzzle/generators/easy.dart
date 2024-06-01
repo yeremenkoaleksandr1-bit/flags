@@ -19,22 +19,20 @@ class PuzzleEasyGenerator extends PuzzleSuperEasyGenerator {
   });
 
   @override
-  Future<List<ProcessGameObject>> generateParts(
+  List<ProcessGameObject> generateParts(
     GameFlag flag,
     Random random,
-  ) async {
-    const maxRandomColorsQuantity = 4;
+  ) {
+    const maxRandomColorsQuantity = 5;
 
-    final superParts = (await super.generateParts(flag, random)).toList();
+    final superParts = super.generateParts(flag, random).toList();
 
     final flagObjects = flag.objects.whereType<PathGameObject>();
 
     final List<PathGameObject> parts = [];
 
     for (var i = 0; i < quantityColoredPart; i++) {
-      final List<int> usedColors = [];
       final allColors = [...PuzzlePartsGenerator.allFlagColors];
-
       final superPart =
           superParts.whereType<PathGameObject>().toList().random(random);
 
@@ -43,40 +41,26 @@ class PuzzleEasyGenerator extends PuzzleSuperEasyGenerator {
       final isFlagPart =
           flagObjects.any((e) => e.uniqueName == superPart.uniqueName);
 
-      int loopCount = maxRandomColorsQuantity;
       final List<Color> colors = [];
 
       if (isFlagPart) {
         colors.add(superPart.color);
-      } else {
-        loopCount = maxRandomColorsQuantity + 1;
       }
 
-      for (var j = 0; j < loopCount; j++) {
+      while (colors.length < maxRandomColorsQuantity) {
         final colorInt = allColors.elementAt(
           random.nextInt(allColors.length),
         );
 
-        //allColors.remove(colorInt);
-
-        if (colors.any(
-              (e) =>
-                  e.value == colorInt ||
-                  ColorUtils.calculateColorSimilarity(e.value, colorInt) < 30,
-            ) ||
-            flagObjects.any(
-              (e) =>
-                  e.color.value == colorInt ||
-                  ColorUtils.calculateColorSimilarity(e.color.value, colorInt) <
-                      30,
-            )) {
-          j--;
-          continue;
+        if (!colors.any(
+          (e) =>
+              e.value == colorInt ||
+              ColorUtils.calculateColorSimilarity(e.value, colorInt) < 30,
+        )) {
+          final color = Color(colorInt);
+          colors.add(color);
+          allColors.remove(colorInt);
         }
-
-        final color = Color(colorInt);
-
-        colors.add(color);
       }
 
       colors.shuffle(random);
@@ -92,6 +76,7 @@ class PuzzleEasyGenerator extends PuzzleSuperEasyGenerator {
           scale: superPart.scale,
           rotation: superPart.rotation,
           colors: colors,
+          previousMustBePlaced: superPart.previousMustBePlaced,
         ),
       );
     }
