@@ -199,4 +199,46 @@ extension SPatchExt on SPath {
 
     return Rect.fromLTRB(xValues.min, yValues.min, xValues.max, yValues.max);
   }
+
+  bool isSimilarBySides(SPath other) {
+    return (rect.width.aspectRatioTo(other.rect.width) == 1.0 &&
+            rect.height.aspectRatioTo(other.rect.height) == 1.0) ||
+        (rect.width.aspectRatioTo(other.rect.height) == 1.0 &&
+            rect.height.aspectRatioTo(other.rect.width) == 1.0);
+  }
+}
+
+double _distance(SPoint p1, SPoint p2) {
+  final dx = p2.x - p1.x;
+  final dy = p2.y - p1.y;
+  return sqrt(dx * dx + dy * dy);
+}
+
+extension SPathEquals on SPath {
+  bool isSimilarByPoints(SPath other) {
+    if (points.length != other.points.length) {
+      return false;
+    }
+
+    for (int i = 0; i < points.length; i++) {
+      final distance1 = _distance(points[i], points[(i + 1) % points.length]);
+      final distance2 = _distance(
+          other.points[i], other.points[(i + 1) % other.points.length]);
+      if (!distance1.approxEquals(distance2)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+}
+
+extension DoubleAspectRatio on double {
+  bool approxEquals(double other, {double tolerance = 0.01}) {
+    return (this - other).abs() <= tolerance;
+  }
+
+  double aspectRatioTo(double other) {
+    return (this == 0.0 || other == 0.0) ? 0.0 : (this / other).abs();
+  }
 }
