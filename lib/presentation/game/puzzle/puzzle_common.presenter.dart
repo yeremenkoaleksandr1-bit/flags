@@ -637,7 +637,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
       GameDifficult.extraHard => PuzzleExtraHardGenerator.new,
     };
 
-    final generatedObjects = await generator(levels: levels).generate(
+    final generatedObjects = generator(levels: levels).generate(
       state.level.value.flag,
       Random(gameSeed),
     );

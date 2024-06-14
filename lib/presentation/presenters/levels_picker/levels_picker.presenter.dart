@@ -1,3 +1,4 @@
+import 'package:flags/logger.dart';
 import 'package:state_manager/state_manager.dart';
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
@@ -52,21 +53,23 @@ class LevelsPickerPresenterImpl extends GetxController
   GameLevels get levels => state.levels;
 
   @override
-  void onInit() async {
+  Future<void> onInit() async {
     final levelService = ILevelsService.I;
 
     final levels = FactoryGameContinent().create(params.continentType);
 
     var previousLevelCompleted = true;
 
-    for (var level in levels.levels) {
-      if (previousLevelCompleted) {
-        final levelData = levelService.getLevelData(
-          levelId: level.id,
-          continent: params.continentType,
-          gameMode: params.gameProcessType,
-        );
+    for (final level in levels.levels) {
+      final levelData = levelService.getLevelData(
+        levelId: level.id,
+        continent: params.continentType,
+        gameMode: params.gameProcessType,
+      );
 
+      print(level.completed);
+
+      if (previousLevelCompleted) {
         if (levelData != null) {
           level.opened = true;
           level.completed = levelData.completed;

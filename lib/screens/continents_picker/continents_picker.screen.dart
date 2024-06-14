@@ -55,9 +55,11 @@ class ContinentsPickerScreen extends GetScreen<IContinentsPickerPresenter> {
 
   @override
   void onReady(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _onboardingController.show(showCaseWidgetKey.currentContext!);
-    });
+    try {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _onboardingController.show(showCaseWidgetKey.currentContext!);
+      });
+    } catch (e) {}
   }
 
   @override

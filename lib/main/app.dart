@@ -47,8 +47,6 @@ class FlagsWidgetsApp extends WidgetsApp {
   FlagsWidgetsApp({
     super.key,
     super.actions,
-    super.checkerboardOffscreenLayers,
-    super.checkerboardRasterCacheImages,
     super.debugShowCheckedModeBanner = false,
     super.locale,
     super.localeListResolutionCallback,

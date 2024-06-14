@@ -1,12 +1,11 @@
-import 'package:state_manager/state_manager.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/presentation/presenters/levels_picker/levels_picker.presenter.dart';
+import 'package:flags/screens/levels_picker/components/levels_section.dart';
 import 'package:flags/uikit/layout_components/containers/card.dart';
 import 'package:flutter/widgets.dart';
-
-import '../components/levels_section.dart';
+import 'package:state_manager/state_manager.dart';
 
 class ContinentLevelsView extends GetConsumer<ILevelsPickerPresenter> {
   const ContinentLevelsView({
