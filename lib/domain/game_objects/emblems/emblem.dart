@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flags/core/extensions/image.dart';
+import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
 import 'package:flags/uikit/assets/images/ui_image_assets.dart';
 import 'package:flutter/widgets.dart';
 

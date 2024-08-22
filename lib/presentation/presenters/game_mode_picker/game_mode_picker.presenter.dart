@@ -11,7 +11,7 @@ abstract interface class IGameModePickerPresenter {
   void onGameModePicked(GameProcessType mode);
 }
 
-class GameModePickerPresenterImpl extends GetxController
+class GameModePickerPresenterImpl extends GetController
     implements IGameModePickerPresenter {
   @override
   void onGameModePicked(GameProcessType mode) {

@@ -7,6 +7,7 @@ class FGreenButton extends FButton {
     super.key,
     required super.onPressed,
     required super.child,
+    super.padding,
   }) : super(
           color: ThemePalette.green,
         );

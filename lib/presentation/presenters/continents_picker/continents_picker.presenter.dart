@@ -18,7 +18,7 @@ abstract interface class IContinentsPickerPresenter
   void onPlayFastMode();
 }
 
-class ContinentsPickerPresenterImpl extends GetxController
+class ContinentsPickerPresenterImpl extends GetController
     with StateMixin<ContinentsPickerState>
     implements IContinentsPickerPresenter {
   final ContinentPickerRouteParams routeParams;

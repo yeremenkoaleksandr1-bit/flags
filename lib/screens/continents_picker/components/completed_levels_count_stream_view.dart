@@ -39,7 +39,6 @@ class _CompletedLevelsCountStreamBuilderState
       stream: stream,
       initialData: initialValue,
       builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-        print(snapshot.data);
         return widget.builder(snapshot.data!);
       },
     );

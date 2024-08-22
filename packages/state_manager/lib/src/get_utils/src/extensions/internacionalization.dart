@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import '../../../get_core/get_core.dart';
+import 'package:state_manager/src/get_core/get_core.dart';
 
 class _IntlHost {
   Locale? locale;
@@ -13,8 +13,10 @@ class _IntlHost {
 extension FirstWhereExt<T> on List<T> {
   /// The first element satisfying [test], or `null` if there are none.
   T? firstWhereOrNull(bool Function(T element) test) {
-    for (var element in this) {
-      if (test(element)) return element;
+    for (final element in this) {
+      if (test(element)) {
+        return element;
+      }
     }
     return null;
   }
@@ -57,7 +59,8 @@ extension Trans on String {
   // whether the key is also present.
   bool get _fullLocaleAndKey {
     return Get.translations.containsKey(
-            "${Get.locale!.languageCode}_${Get.locale!.countryCode}") &&
+          "${Get.locale!.languageCode}_${Get.locale!.countryCode}",
+        ) &&
         Get.translations[
                 "${Get.locale!.languageCode}_${Get.locale!.countryCode}"]!
             .containsKey(this);
@@ -85,7 +88,9 @@ extension Trans on String {
     // print(Get.translations.containsKey(Get.locale!.languageCode));
     // print(Get.translations.keys);
     // Returns the key if locale is null.
-    if (Get.locale?.languageCode == null) return this;
+    if (Get.locale?.languageCode == null) {
+      return this;
+    }
 
     if (_fullLocaleAndKey) {
       return Get.translations[
@@ -118,7 +123,7 @@ extension Trans on String {
     var key = tr;
     if (args.isNotEmpty) {
       for (final arg in args) {
-        key = key.replaceFirst(RegExp(r'%s'), arg.toString());
+        key = key.replaceFirst(RegExp('%s'), arg);
       }
     }
     return key;
@@ -138,8 +143,11 @@ extension Trans on String {
     return trans;
   }
 
-  String trPluralParams(
-      [String? pluralKey, int? i, Map<String, String> params = const {}]) {
+  String trPluralParams([
+    String? pluralKey,
+    int? i,
+    Map<String, String> params = const {},
+  ]) {
     return i == 1 ? trParams(params) : pluralKey!.trParams(params);
   }
 }

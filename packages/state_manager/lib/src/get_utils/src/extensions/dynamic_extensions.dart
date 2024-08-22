@@ -1,4 +1,4 @@
-import '../get_utils/get_utils.dart';
+import 'package:state_manager/src/get_utils/src/get_utils/get_utils.dart';
 
 extension GetDynamicUtils on dynamic {
   bool? get isBlank => GetUtils.isBlank(this);

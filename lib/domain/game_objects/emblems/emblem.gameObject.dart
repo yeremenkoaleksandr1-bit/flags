@@ -20,9 +20,11 @@ class EmblemPart extends FlippableGameObject {
     super.flippedVertical,
     super.uniqueName,
     super.previousMustBePlaced,
-  }) : super(name: name ?? emblem.name);
+    Vector2? initialEmblemSize,
+  })  : initialEmblemSize = initialEmblemSize ?? Vector2.zero(),
+        super(name: name ?? emblem.name);
 
-  late Vector2 initialEmblemSize = Vector2.zero();
+  Vector2 initialEmblemSize;
 
   final Emblem emblem;
 
@@ -32,7 +34,7 @@ class EmblemPart extends FlippableGameObject {
 
     return copyWith(
       emblem: emblem,
-      size: (emblem.image.size),
+      size: emblem.image.size,
     );
   }
 
@@ -69,7 +71,6 @@ class EmblemPart extends FlippableGameObject {
 
   @override
   void draw(ui.Canvas canvas, ui.Size size) {
-    canvas.translate(position.x, position.y);
     canvas.scale(
       this.size.x / _scaledSize.x,
       this.size.y / _scaledSize.y,

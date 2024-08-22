@@ -2,6 +2,7 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
+import 'package:flags/presentation/game/puzzle/state/puzzle_game.state.dart';
 import 'package:flags/screens/games/base/game_process_screen.dart';
 import 'package:flags/screens/games/components/heart_tries/heart_tries.dart';
 import 'package:flags/screens/games/puzzle/components/emblemb_contirmation_overlay_entry.dart';
@@ -146,8 +147,9 @@ class PuzzleCommonMode<T extends IPuzzleCommonModePresenter>
 
   @override
   Widget build(BuildContext context, T controller) {
-    return controller.obx(
-      (state) {
+    return StateMixinBuilder(
+      stateMixin: controller,
+      builder: (PuzzleGameState state) {
         return FShowcaseWidget(
           showcaseKey: controller.showcase.key,
           builder: (BuildContext context) {

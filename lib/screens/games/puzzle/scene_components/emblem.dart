@@ -7,7 +7,7 @@ import 'package:flags/uikit/game_widgets/objects/draggable_object.dart';
 import 'package:flutter/widgets.dart';
 
 class EmblemSceneObject extends DraggableGameObjectWidget<DraggableEmblemPart> {
-  const EmblemSceneObject(
+  EmblemSceneObject(
     super.gameObject,
     this.presenter, {
     super.key,

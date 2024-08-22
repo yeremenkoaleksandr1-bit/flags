@@ -12,9 +12,9 @@ abstract class FlippableGameObject extends ProcessGameObject {
     super.size,
     super.rotation,
     super.uniqueName,
+    super.previousMustBePlaced,
     this.flippedVertical = false,
     this.flippedHorizontal = false,
-    super.previousMustBePlaced,
   });
 
   final bool flippedHorizontal;
@@ -36,14 +36,20 @@ abstract class FlippableGameObject extends ProcessGameObject {
 
   @override
   void draw(Canvas canvas, Size size) {
-    canvas.translate(position.x, position.y);
+    canvas.translate(
+      position.x + this.size.x / 2,
+      position.y + this.size.y / 2,
+    );
+
     canvas.rotate(rotation);
     canvas.scale(scale);
+
     canvas.scale(
       (flippedHorizontal ? -1 : 1),
       (flippedVertical ? -1 : 1),
     );
-    canvas.translate(-position.x, -position.y);
+
+    canvas.translate(-this.size.x / 2, -this.size.y / 2);
   }
 
   FlippableGameObject flipHorizontal() {

@@ -67,7 +67,7 @@ mixin ListNotifierSingleMixin on Listenable {
     //     _microtaskVersion = _version;
     final list = _updaters?.toList() ?? [];
 
-    for (var element in list) {
+    for (final element in list) {
       element();
     }
     //   });

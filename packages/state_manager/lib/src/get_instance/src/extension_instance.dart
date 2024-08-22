@@ -8,10 +8,12 @@ import 'lifecycle.dart';
 class InstanceInfo {
   final bool? isPermanent;
   final bool? isSingleton;
+
   bool get isCreate => !isSingleton!;
   final bool isRegistered;
   final bool isPrepared;
   final bool? isInit;
+
   const InstanceInfo({
     required this.isPermanent,
     required this.isSingleton,
@@ -72,10 +74,11 @@ extension Inst on GetInterface {
     bool permanent = false,
   }) {
     _insert(
-        isSingleton: true,
-        name: tag,
-        permanent: permanent,
-        builder: (() => dependency));
+      isSingleton: true,
+      name: tag,
+      permanent: permanent,
+      builder: () => dependency,
+    );
     return find<S>(tag: tag);
   }
 
@@ -91,7 +94,7 @@ extension Inst on GetInterface {
   /// the Instance if the Instance has been removed with `Get.delete()`.
   /// Therefore, future calls to `Get.find()` will return the same Instance.
   ///
-  /// If you need to make use of GetxController's life-cycle
+  /// If you need to make use of GetController's life-cycle
   /// (`onInit(), onStart(), onClose()`) [fenix] is a great choice to mix with
   /// `GetBuilder()` and `GetX()` widgets, and/or `GetMaterialApp` Navigation.
   ///
@@ -299,7 +302,7 @@ extension Inst on GetInterface {
   /// - [tag] optional, if you use a [tag] to register the Instance.
   void replace<P>(P child, {String? tag}) {
     final info = getInstanceInfo<P>(tag: tag);
-    final permanent = (info.isPermanent ?? false);
+    final permanent = info.isPermanent ?? false;
     delete<P>(tag: tag, force: permanent);
     put(child, tag: tag, permanent: permanent);
   }
@@ -311,10 +314,13 @@ extension Inst on GetInterface {
   ///
   ///  Note: if fenix is not provided it will be set to true if
   /// the parent instance was permanent
-  void lazyReplace<P>(InstanceBuilderCallback<P> builder,
-      {String? tag, bool? fenix}) {
+  void lazyReplace<P>(
+    InstanceBuilderCallback<P> builder, {
+    String? tag,
+    bool? fenix,
+  }) {
     final info = getInstanceInfo<P>(tag: tag);
-    final permanent = (info.isPermanent ?? false);
+    final permanent = info.isPermanent ?? false;
     delete<P>(tag: tag, force: permanent);
     lazyPut(builder, tag: tag, fenix: fenix ?? permanent);
   }
@@ -351,7 +357,9 @@ extension Inst on GetInterface {
 
     final dep = _singl[newKey];
 
-    if (dep == null) return false;
+    if (dep == null) {
+      return false;
+    }
 
     final _InstanceBuilderFactory builder;
     if (dep.isDirty) {
@@ -368,14 +376,14 @@ extension Inst on GetInterface {
       );
       return false;
     }
-    final instance = builder.dependency;
+    final i = builder.dependency;
 
-    if (instance is GetxServiceMixin && !force) {
+    if (i is GetxServiceMixin && !force) {
       return false;
     }
 
-    if (instance is GetLifeCycleMixin) {
-      instance.onDelete();
+    if (i is GetLifeCycleMixin) {
+      i.onDelete();
       Get.log('"$newKey" onDelete() called');
     }
 
@@ -431,7 +439,9 @@ extension Inst on GetInterface {
     final newKey = key ?? _getKey(S, tag);
 
     final builder = _getDependency<S>(tag: tag, key: newKey);
-    if (builder == null) return;
+    if (builder == null) {
+      return;
+    }
 
     if (builder.permanent && !force) {
       Get.log(

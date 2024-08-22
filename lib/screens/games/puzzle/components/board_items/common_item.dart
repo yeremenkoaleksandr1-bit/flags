@@ -158,13 +158,15 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
             maxSimultaneousDrags: 1,
             delay: const Duration(milliseconds: 1),
             onDragStarted: (dragStartPoint) {
-              final showcase = widget.controller.showcase;
-              if (!showcase.isCompleted("puzzle_common_object")) {
-                showcase.showcaseState.next();
-                showcase.complete("puzzle_common_object");
-              } else if (!showcase.isCompleted("puzzle_emblem_object")) {
-                showcase.showcaseState.next();
-              }
+              try {
+                final showcase = widget.controller.showcase;
+                if (!showcase.isCompleted("puzzle_common_object")) {
+                  showcase.showcaseState.next();
+                  showcase.complete("puzzle_common_object");
+                } else if (!showcase.isCompleted("puzzle_emblem_object")) {
+                  showcase.showcaseState.next();
+                }
+              } catch (e) {}
 
               _feedbackPosition.value = dragStartPoint;
               _controller.forward(from: 0);

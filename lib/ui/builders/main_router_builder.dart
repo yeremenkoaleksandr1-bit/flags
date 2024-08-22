@@ -1,3 +1,4 @@
+import 'package:flags/logger.dart';
 import 'package:flags/presentation/navigator/router.dart';
 import 'package:flags/uikit/text/f_text.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,8 @@ class DoubleTapBackButtonDispatcher extends RootBackButtonDispatcher {
 
   @override
   Future<bool> didPopRoute() async {
-    if (QR.history.length > 2) {
+    logger.i(QR.history.length);
+    if (QR.history.length > 1) {
       return super.didPopRoute();
     } else {
       final DateTime now = DateTime.now();

@@ -55,11 +55,15 @@ class PuzzlePartsGenerator {
       }
 
       final randomFlag = availableLevels.random(random).flag;
-      final randomPart = randomFlag.fabrics.random(random);
+      var randomPart = randomFlag.fabrics.random(random);
 
       if (randomPart is PathGameObject) {
+        PathGameObject part = randomPart;
         if (randomPart is GroupedPathsPart) {
-          if (parts.any((element) => element.name == randomPart.name)) {
+          if (parts.any((element) {
+            return element.name == randomPart.name ||
+                element.uniqueName == randomPart.uniqueName;
+          })) {
             usedFlags.add(randomFlag.name);
             availableLevels.removeWhere((e) => e.flag.name == randomFlag.name);
             i--;
@@ -69,16 +73,34 @@ class PuzzlePartsGenerator {
 
         final isSimilarToOriginal = parts.whereType<PathGameObject>().any(
               (e) =>
-                  e.path.isSimilarByPoints(randomPart.path) &&
-                  ColorUtils.calculateColorSimilarity(
-                        e.color.value,
-                        randomPart.color.value,
-                      ) <
-                      30,
+                  e.path.isSimilarByPoints(part.path) &&
+                  validateColor(
+                    e.path.color.value,
+                    part.path.color.value,
+                  ),
             );
+
+        final validColors = [
+          ...allFlagColors.where(
+            (e) => parts.whereType<PathGameObject>().any(
+                  (p) => validateColor(p.path.color.value, e),
+                ),
+          ),
+        ];
+
         if (isSimilarToOriginal) {
-          randomPart.path.paint.color = Color(allFlagColors.random(random));
+          part = part.copyWith(
+            path: part.path.copyWith(
+              paint: part.path.paint.copyWith(
+                color: Color(
+                  validColors.random(random),
+                ),
+              ),
+            ),
+          );
         }
+
+        randomPart = part;
       }
 
       parts.add(
@@ -95,10 +117,13 @@ class PuzzlePartsGenerator {
     return parts;
   }
 
+  bool validateColor(int a, int b) {
+    return ColorUtils.calculateColorSimilarity(a, b) < 80;
+  }
+
   List<EmblemPart> generateEmblem(GameFlag flag, Random random) {
     final flagEmblems = flag.emblems;
 
-    print(flagEmblems);
     final List<String> usedFlags = [flag.name];
     final List<EmblemPart> parts = [
       ...flagEmblems.map((e) => e.copyWith()),
@@ -211,4 +236,74 @@ class PuzzlePartsGenerator {
     0xff015EA4,
     0xff0146AE,
   ];
+}
+
+List<double> rgbToHsl(int r, int g, int b) {
+  final double rPrime = r / 255.0;
+  final double gPrime = g / 255.0;
+  final double bPrime = b / 255.0;
+
+  final double cMax = max(rPrime, max(gPrime, bPrime));
+  final double cMin = min(rPrime, min(gPrime, bPrime));
+  final double delta = cMax - cMin;
+
+  double h = 0.0;
+  if (delta != 0) {
+    if (cMax == rPrime) {
+      h = ((gPrime - bPrime) / delta) % 6;
+    } else if (cMax == gPrime) {
+      h = ((bPrime - rPrime) / delta) + 2;
+    } else {
+      h = ((rPrime - gPrime) / delta) + 4;
+    }
+  }
+  h = (h * 60) % 360;
+  if (h < 0) {
+    h += 360;
+  }
+
+  final double l = (cMax + cMin) / 2.0;
+
+  double s = 0.0;
+  if (delta != 0) {
+    s = delta / (1 - (2 * l - 1).abs());
+  }
+
+  return [h, s * 100, l * 100];
+}
+
+double hslDistance(List<double> hsl1, List<double> hsl2) {
+  final double h1 = hsl1[0];
+  final double s1 = hsl1[1];
+  final double l1 = hsl1[2];
+
+  final double h2 = hsl2[0];
+  final double s2 = hsl2[1];
+  final double l2 = hsl2[2];
+
+  final double dh = min((h1 - h2).abs(), 360 - (h1 - h2).abs()) / 180.0;
+  final double ds = (s1 - s2).abs() / 100.0;
+  final double dl = (l1 - l2).abs() / 100.0;
+
+  return sqrt(dh * dh + ds * ds + dl * dl);
+}
+
+bool areColorsSimilar(
+    int color1, int color2, double threshold, double brightnessThreshold) {
+  final int r1 = (color1 >> 16) & 0xFF;
+  final int g1 = (color1 >> 8) & 0xFF;
+  final int b1 = color1 & 0xFF;
+
+  final int r2 = (color2 >> 16) & 0xFF;
+  final int g2 = (color2 >> 8) & 0xFF;
+  final int b2 = color2 & 0xFF;
+
+  final List<double> hsl1 = rgbToHsl(r1, g1, b1);
+  final List<double> hsl2 = rgbToHsl(r2, g2, b2);
+
+  final double distance = hslDistance(hsl1, hsl2);
+
+  final double brightnessDifference = (hsl1[2] - hsl2[2]).abs();
+
+  return distance < threshold;
 }

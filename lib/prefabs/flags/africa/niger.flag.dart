@@ -6,8 +6,8 @@ class NigerFlag extends GameFlag {
           name: "Niger",
           proportion: 6 / 7,
           objects: (size) {
-            double totalFlex = 3;
-            double unitHeight = size.y / totalFlex;
+            final double totalFlex = 3;
+            final double unitHeight = size.y / totalFlex;
             return [
               PathGameObject(
                 name: '1',

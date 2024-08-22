@@ -1,11 +1,9 @@
 import 'package:fast_extensions/fast_extensions.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 extension ContextExt on BuildContext {
   RenderBox? get renderBox => findRenderObject() as RenderBox?;
 
-  /// The same of [MediaQuery.of(context).size]
   Size get mediaQuerySize => MediaQuery.of(this).size;
 
   /// The same of [MediaQuery.of(context).size.height]
@@ -58,7 +56,7 @@ extension ContextExt on BuildContext {
   }
 
   /// Check if dark mode theme is enable
-  bool get isDarkMode => (theme.brightness == Brightness.dark);
+  bool get isDarkMode => theme.brightness == Brightness.dark;
 
   /// give access to Theme.of(context).iconTheme.color
   Color? get iconColor => theme.iconTheme.color;
@@ -91,7 +89,7 @@ extension ContextExt on BuildContext {
   double get mediaQueryShortestSide => mediaQuerySize.shortestSide;
 
   /// True if width be larger than 800
-  bool get showNavbar => (width > 800);
+  bool get showNavbar => width > 800;
 
   /// True if the width is smaller than 600p
   bool get isPhoneOrLess => width <= 600;
@@ -100,7 +98,7 @@ extension ContextExt on BuildContext {
   bool get isPhoneOrWider => width >= 600;
 
   /// True if the shortestSide is smaller than 600p
-  bool get isPhone => (mediaQueryShortestSide < 600);
+  bool get isPhone => mediaQueryShortestSide < 600;
 
   /// True if the width is smaller than 600p
   bool get isSmallTabletOrLess => width <= 600;
@@ -109,10 +107,10 @@ extension ContextExt on BuildContext {
   bool get isSmallTabletOrWider => width >= 600;
 
   /// True if the shortestSide is largest than 600p
-  bool get isSmallTablet => (mediaQueryShortestSide >= 600);
+  bool get isSmallTablet => mediaQueryShortestSide >= 600;
 
   /// True if the shortestSide is largest than 720p
-  bool get isLargeTablet => (mediaQueryShortestSide >= 720);
+  bool get isLargeTablet => mediaQueryShortestSide >= 720;
 
   /// True if the width is smaller than 720p
   bool get isLargeTabletOrLess => width <= 720;

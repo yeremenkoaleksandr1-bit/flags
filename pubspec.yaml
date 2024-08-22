@@ -6,7 +6,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.2.5 <4.0.0'
+  sdk: '3.6.0-146.0.dev'
 
 dependencies:
   flutter:
@@ -25,7 +25,7 @@ dependencies:
   qlevar_router: ^1.10.1
   defer_pointer: ^0.0.2
   gesture_x_detector: ^1.1.1
-  flame: ^1.14.0
+  flame: ^1.18.0
   flutter_svg: ^2.0.9
   touchable: ^1.0.2
   particle_field: ^1.0.0
@@ -59,6 +59,8 @@ dependencies:
   memoize: ^3.0.0
   logger: ^2.3.0
   searchable_listview: ^2.14.0
+  flutter_bloc: ^8.1.6
+  equatable: ^2.0.5
 
 dev_dependencies:
   flutter_test:

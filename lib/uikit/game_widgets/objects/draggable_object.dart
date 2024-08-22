@@ -13,7 +13,7 @@ typedef DraggableMovableDataCallback = void Function(
 
 class DraggableGameObjectWidget<G extends GameObject>
     extends GameObjectWidget<G> {
-  const DraggableGameObjectWidget(
+  DraggableGameObjectWidget(
     super.gameObject, {
     super.key,
     this.onRenderBoxChanged,

@@ -5,7 +5,7 @@ import '../../../get.dart';
 import 'list_notifier.dart';
 
 // ignore: prefer_mixin
-abstract class GetxController extends ListNotifier with GetLifeCycleMixin {
+abstract class GetController extends ListNotifier with GetLifeCycleMixin {
   /// Rebuilds `GetBuilder` each time you call `update()`;
   /// Can take a List of [ids], that will only update the matching
   /// `GetBuilder( id: )`,
@@ -48,12 +48,16 @@ mixin ScrollMixin on GetLifeCycleMixin {
 
   Future<void> _checkIfCanLoadMore() async {
     if (scroll.position.pixels == 0) {
-      if (!_canFetchTop) return;
+      if (!_canFetchTop) {
+        return;
+      }
       _canFetchTop = false;
       await onTopScroll();
       _canFetchTop = true;
     } else {
-      if (!_canFetchBottom) return;
+      if (!_canFetchBottom) {
+        return;
+      }
       _canFetchBottom = false;
       await onEndScroll();
       _canFetchBottom = true;
@@ -75,7 +79,7 @@ mixin ScrollMixin on GetLifeCycleMixin {
 abstract class RxController with GetLifeCycleMixin {}
 
 /// A recommended way to use Getx with Future fetching
-abstract class StateController<T> extends GetxController with StateMixin<T> {}
+abstract class StateController<T> extends GetController with StateMixin<T> {}
 
 /// A controller with super lifecycles (including native lifecycles)
 /// and StateMixins
@@ -83,7 +87,7 @@ abstract class SuperController<T> extends FullLifeCycleController
     with FullLifeCycleMixin, StateMixin<T> {}
 
 /// A controller with super lifecycles (including native lifecycles)
-abstract class FullLifeCycleController extends GetxController
+abstract class FullLifeCycleController extends GetController
     with
         // ignore: prefer_mixin
         WidgetsBindingObserver {}
@@ -109,19 +113,14 @@ mixin FullLifeCycleMixin on FullLifeCycleController {
     switch (state) {
       case AppLifecycleState.resumed:
         onResumed();
-        break;
       case AppLifecycleState.inactive:
         onInactive();
-        break;
       case AppLifecycleState.paused:
         onPaused();
-        break;
       case AppLifecycleState.detached:
         onDetached();
-        break;
       case AppLifecycleState.hidden:
         onHidden();
-        break;
     }
   }
 

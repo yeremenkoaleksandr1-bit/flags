@@ -42,7 +42,7 @@ class HomeScreen extends GetScreen<IHomePresenter> {
   }
 
   void openMyFlagsPage() {
-    QR.toName(Routes.myFlags);
+    QR.toName(Routes.myFlagsGallery);
   }
 
   @override

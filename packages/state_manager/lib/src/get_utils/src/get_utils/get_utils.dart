@@ -5,9 +5,9 @@ import '../../../get_core/get_core.dart';
 /// standard dart types.dart that contains it.
 ///
 /// This is here to for the 'DRY'
-bool? _isEmpty(dynamic value) {
+bool? _isEmpty(value) {
   if (value is String) {
-    return value.toString().trim().isEmpty;
+    return value.trim().isEmpty;
   }
   if (value is Iterable || value is Map) {
     return value.isEmpty as bool?;
@@ -20,7 +20,7 @@ bool? _isEmpty(dynamic value) {
 /// standard dart types.dart that contains it.
 ///
 /// This is here to for the 'DRY'
-bool _hasLength(dynamic value) {
+bool _hasLength(value) {
   return value is Iterable || value is String || value is Map;
 }
 
@@ -34,7 +34,7 @@ bool _hasLength(dynamic value) {
 /// Note 2: **this may return null!**
 ///
 /// Note 3: null [value] returns null.
-int? _obtainDynamicLength(dynamic value) {
+int? _obtainDynamicLength(value) {
   if (value == null) {
     // ignore: avoid_returning_null
     return null;
@@ -60,7 +60,7 @@ class GetUtils {
   GetUtils._();
 
   /// Checks if data is null.
-  static bool isNull(dynamic value) => value == null;
+  static bool isNull(value) => value == null;
 
   /// In dart2js (in flutter v1.17) a var by default is undefined.
   /// *Use this only if you are in version <- 1.17*.
@@ -68,10 +68,10 @@ class GetUtils {
   /// "value":value==null?null:value; someVar.nil will force the null type
   /// if the var is null or undefined.
   /// `nil` taken from ObjC just to have a shorter sintax.
-  static dynamic nil(dynamic s) => s;
+  static dynamic nil(s) => s;
 
   /// Checks if data is null or blank (empty or only contains whitespace).
-  static bool? isNullOrBlank(dynamic value) {
+  static bool? isNullOrBlank(value) {
     if (isNull(value)) {
       return true;
     }
@@ -82,7 +82,7 @@ class GetUtils {
   }
 
   /// Checks if data is null or blank (empty or only contains whitespace).
-  static bool? isBlank(dynamic value) {
+  static bool? isBlank(value) {
     return _isEmpty(value);
   }
 
@@ -111,12 +111,12 @@ class GetUtils {
       return false;
     }
 
-    return (value == 'true' || value == 'false');
+    return value == 'true' || value == 'false';
   }
 
   /// Checks if string is an video file.
   static bool isVideo(String filePath) {
-    var ext = filePath.toLowerCase();
+    final ext = filePath.toLowerCase();
 
     return ext.endsWith(".mp4") ||
         ext.endsWith(".avi") ||
@@ -205,16 +205,22 @@ class GetUtils {
       hasMatch(s, r'^[a-zA-Z0-9][a-zA-Z0-9_.]+[a-zA-Z0-9]$');
 
   /// Checks if string is URL.
-  static bool isURL(String s) => hasMatch(s,
-      r"^((((H|h)(T|t)|(F|f))(T|t)(P|p)((S|s)?))\://)?(www.|[a-zA-Z0-9].)[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,7}(\:[0-9]{1,5})*(/($|[a-zA-Z0-9\.\,\;\?\'\\\+&amp;%\$#\=~_\-]+))*$");
+  static bool isURL(String s) => hasMatch(
+        s,
+        r"^((((H|h)(T|t)|(F|f))(T|t)(P|p)((S|s)?))\://)?(www.|[a-zA-Z0-9].)[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,7}(\:[0-9]{1,5})*(/($|[a-zA-Z0-9\.\,\;\?\'\\\+&amp;%\$#\=~_\-]+))*$",
+      );
 
   /// Checks if string is email.
-  static bool isEmail(String s) => hasMatch(s,
-      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
+  static bool isEmail(String s) => hasMatch(
+        s,
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
+      );
 
   /// Checks if string is phone number.
   static bool isPhoneNumber(String s) {
-    if (s.length > 16 || s.length < 9) return false;
+    if (s.length > 16 || s.length < 9) {
+      return false;
+    }
     return hasMatch(s, r'^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$');
   }
 
@@ -234,8 +240,10 @@ class GetUtils {
       hasMatch(s, r'([A-Fa-f0-9]{2}\:){31}[A-Fa-f0-9]{2}|[A-Fa-f0-9]{64}');
 
   /// Checks if string is SSN (Social Security Number).
-  static bool isSSN(String s) => hasMatch(s,
-      r'^(?!0{3}|6{3}|9[0-9]{2})[0-9]{3}-?(?!0{2})[0-9]{2}-?(?!0{4})[0-9]{4}$');
+  static bool isSSN(String s) => hasMatch(
+        s,
+        r'^(?!0{3}|6{3}|9[0-9]{2})[0-9]{3}-?(?!0{2})[0-9]{2}-?(?!0{4})[0-9]{4}$',
+      );
 
   /// Checks if string is binary.
   static bool isBinary(String s) => hasMatch(s, r'^[0-1]+$');
@@ -245,8 +253,10 @@ class GetUtils {
       hasMatch(s, r'^(?:(?:^|\.)(?:2(?:5[0-5]|[0-4]\d)|1?\d?\d)){4}$');
 
   /// Checks if string is IPv6.
-  static bool isIPv6(String s) => hasMatch(s,
-      r'^((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))$');
+  static bool isIPv6(String s) => hasMatch(
+        s,
+        r'^((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))$',
+      );
 
   /// Checks if string is hexadecimal.
   /// Example: HexColor => #12F
@@ -271,7 +281,7 @@ class GetUtils {
 
   /// Checks if all data have same value.
   /// Example: 111111 -> true, wwwww -> true, 1,1,1,1 -> true
-  static bool isOneAKind(dynamic value) {
+  static bool isOneAKind(value) {
     if ((value is String || value is List) && !isNullOrBlank(value)!) {
       final first = value[0];
       final len = value.length as num;
@@ -306,11 +316,13 @@ class GetUtils {
       hasMatch(s, r'^(?!^0+$)[a-zA-Z0-9]{6,9}$');
 
   /// Checks if string is Currency.
-  static bool isCurrency(String s) => hasMatch(s,
-      r'^(S?\$|\₩|Rp|\¥|\€|\₹|\₽|fr|R\$|R)?[ ]?[-]?([0-9]{1,3}[,.]([0-9]{3}[,.])*[0-9]{3}|[0-9]+)([,.][0-9]{1,2})?( ?(USD?|AUD|NZD|CAD|CHF|GBP|CNY|EUR|JPY|IDR|MXN|NOK|KRW|TRY|INR|RUB|BRL|ZAR|SGD|MYR))?$');
+  static bool isCurrency(String s) => hasMatch(
+        s,
+        r'^(S?\$|\₩|Rp|\¥|\€|\₹|\₽|fr|R\$|R)?[ ]?[-]?([0-9]{1,3}[,.]([0-9]{3}[,.])*[0-9]{3}|[0-9]+)([,.][0-9]{1,2})?( ?(USD?|AUD|NZD|CAD|CHF|GBP|CNY|EUR|JPY|IDR|MXN|NOK|KRW|TRY|INR|RUB|BRL|ZAR|SGD|MYR))?$',
+      );
 
   /// Checks if length of data is GREATER than maxLength.
-  static bool isLengthGreaterThan(dynamic value, int maxLength) {
+  static bool isLengthGreaterThan(value, int maxLength) {
     final length = _obtainDynamicLength(value);
 
     if (length == null) {
@@ -321,7 +333,7 @@ class GetUtils {
   }
 
   /// Checks if length of data is GREATER OR EQUAL to maxLength.
-  static bool isLengthGreaterOrEqual(dynamic value, int maxLength) {
+  static bool isLengthGreaterOrEqual(value, int maxLength) {
     final length = _obtainDynamicLength(value);
 
     if (length == null) {
@@ -332,7 +344,7 @@ class GetUtils {
   }
 
   /// Checks if length of data is LESS than maxLength.
-  static bool isLengthLessThan(dynamic value, int maxLength) {
+  static bool isLengthLessThan(value, int maxLength) {
     final length = _obtainDynamicLength(value);
     if (length == null) {
       return false;
@@ -342,7 +354,7 @@ class GetUtils {
   }
 
   /// Checks if length of data is LESS OR EQUAL to maxLength.
-  static bool isLengthLessOrEqual(dynamic value, int maxLength) {
+  static bool isLengthLessOrEqual(value, int maxLength) {
     final length = _obtainDynamicLength(value);
 
     if (length == null) {
@@ -353,7 +365,7 @@ class GetUtils {
   }
 
   /// Checks if length of data is EQUAL to maxLength.
-  static bool isLengthEqualTo(dynamic value, int otherLength) {
+  static bool isLengthEqualTo(value, int otherLength) {
     final length = _obtainDynamicLength(value);
 
     if (length == null) {
@@ -364,7 +376,7 @@ class GetUtils {
   }
 
   /// Checks if length of data is BETWEEN minLength to maxLength.
-  static bool isLengthBetween(dynamic value, int minLength, int maxLength) {
+  static bool isLengthBetween(value, int minLength, int maxLength) {
     if (isNull(value)) {
       return false;
     }
@@ -500,16 +512,24 @@ class GetUtils {
   /// Capitalize each word inside string
   /// Example: your name => Your Name, your name => Your name
   static String? capitalize(String value) {
-    if (isNull(value)) return null;
-    if (isBlank(value)!) return value;
+    if (isNull(value)) {
+      return null;
+    }
+    if (isBlank(value)!) {
+      return value;
+    }
     return value.split(' ').map(capitalizeFirst).join(' ');
   }
 
   /// Uppercase first letter inside string and let the others lowercase
   /// Example: your name => Your name
   static String? capitalizeFirst(String s) {
-    if (isNull(s)) return null;
-    if (isBlank(s)!) return s;
+    if (isNull(s)) {
+      return null;
+    }
+    if (isBlank(s)!) {
+      return s;
+    }
     return s[0].toUpperCase() + s.substring(1).toLowerCase();
   }
 
@@ -540,19 +560,20 @@ class GetUtils {
   /// credits to "ReCase" package.
   static final RegExp _upperAlphaRegex = RegExp(r'[A-Z]');
   static final _symbolSet = {' ', '.', '/', '_', '\\', '-'};
+
   static List<String> _groupIntoWords(String text) {
-    var sb = StringBuffer();
-    var words = <String>[];
-    var isAllCaps = text.toUpperCase() == text;
+    final sb = StringBuffer();
+    final words = <String>[];
+    final isAllCaps = text.toUpperCase() == text;
 
     for (var i = 0; i < text.length; i++) {
-      var char = text[i];
-      var nextChar = i + 1 == text.length ? null : text[i + 1];
+      final char = text[i];
+      final nextChar = i + 1 == text.length ? null : text[i + 1];
       if (_symbolSet.contains(char)) {
         continue;
       }
       sb.write(char);
-      var isEndOfWord = nextChar == null ||
+      final isEndOfWord = nextChar == null ||
           (_upperAlphaRegex.hasMatch(nextChar) && !isAllCaps) ||
           _symbolSet.contains(nextChar);
       if (isEndOfWord) {
@@ -599,8 +620,8 @@ class GetUtils {
   /// Example: getx will make it easy  => Getx Will Make It Easy
   /// Example 2 : this is an example text => This Is An Example Text
   static String capitalizeAllWordsFirstLetter(String s) {
-    String lowerCasedString = s.toLowerCase();
-    String stringWithoutExtraSpaces = lowerCasedString.trim();
+    final String lowerCasedString = s.toLowerCase();
+    final String stringWithoutExtraSpaces = lowerCasedString.trim();
 
     if (stringWithoutExtraSpaces.isEmpty) {
       return "";
@@ -609,11 +630,13 @@ class GetUtils {
       return stringWithoutExtraSpaces.toUpperCase();
     }
 
-    List<String> stringWordsList = stringWithoutExtraSpaces.split(" ");
-    List<String> capitalizedWordsFirstLetter = stringWordsList
+    final List<String> stringWordsList = stringWithoutExtraSpaces.split(" ");
+    final List<String> capitalizedWordsFirstLetter = stringWordsList
         .map(
           (word) {
-            if (word.trim().isEmpty) return "";
+            if (word.trim().isEmpty) {
+              return "";
+            }
             return word.trim();
           },
         )
@@ -629,7 +652,7 @@ class GetUtils {
           },
         )
         .toList();
-    String finalResult = capitalizedWordsFirstLetter.join(" ");
+    final String finalResult = capitalizedWordsFirstLetter.join(" ");
     return finalResult;
   }
 
@@ -647,7 +670,7 @@ class GetUtils {
 
   static void printFunction(
     String prefix,
-    dynamic value,
+    value,
     String info, {
     bool isError = false,
   }) {

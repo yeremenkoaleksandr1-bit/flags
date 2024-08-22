@@ -5,6 +5,7 @@ import 'package:flags/features/layers/money_layer/money_layer.dart';
 import 'package:flags/features/onboarding/onbloarding.controller.dart';
 import 'package:flags/presentation/app/app.presenter.dart';
 import 'package:flags/presentation/presentation.dart';
+import 'package:flags/presentation/presenters/continents_picker/state/continents_picker.state.dart';
 import 'package:flags/screens/continents_picker/views/continent_view.dart';
 import 'package:flags/screens/continents_picker/views/fast_mode_timer.view.dart';
 import 'package:flags/ui/game_scaffold.dart';
@@ -77,54 +78,57 @@ class ContinentsPickerScreen extends GetScreen<IContinentsPickerPresenter> {
             onPageUnfocused: moneyLayer.hide,
             startSlideDirection: GamePageSlideDirection.middle,
             endSlideDirection: GamePageSlideDirection.middle,
-            child: controller.obx(
-              (state) => SafeArea(
-                child: Stack(
-                  children: [
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 250,
-                      child: Center(
-                        child: FShowcase(
-                          showcaseKey: oContinentButton,
-                          targetPadding: const Pad(all: -12),
-                          tooltipPosition: TooltipPosition.bottom,
-                          targetShapeBorder: const CircleBorder(),
-                          tooltip: (bounds) => Positioned(
-                            top: bounds.top - 12,
-                            left: 0,
-                            right: 0,
-                            child: Center(
-                              child: FText(
-                                'Complete flags\nand earn money',
-                                textAlign: TextAlign.center,
-                                textStyle: const TextStyle(height: 1),
+            child: StateMixinBuilder(
+              stateMixin: controller,
+              builder: (ContinentsPickerState state) {
+                return SafeArea(
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 250,
+                        child: Center(
+                          child: FShowcase(
+                            showcaseKey: oContinentButton,
+                            targetPadding: const Pad(all: -12),
+                            tooltipPosition: TooltipPosition.bottom,
+                            targetShapeBorder: const CircleBorder(),
+                            tooltip: (bounds) => Positioned(
+                              top: bounds.top - 12,
+                              left: 0,
+                              right: 0,
+                              child: Center(
+                                child: FText(
+                                  'Complete flags\nand earn money',
+                                  textAlign: TextAlign.center,
+                                  textStyle: const TextStyle(height: 1),
+                                ),
                               ),
                             ),
-                          ),
-                          child: ContinentsSlider(
-                            continents: state!.continents,
-                            onPressed: controller.onContinentSelected,
+                            child: ContinentsSlider(
+                              continents: state!.continents,
+                              onPressed: controller.onContinentSelected,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    FastModePlayTimerView(
-                      onTapPlayFastMode: controller.onPlayFastMode,
-                      showcaseKey: oFastModeButton,
-                    ),
-                    const Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: Pad(bottom: ThemeIndents.s12),
-                        child: FBackButton(),
+                      FastModePlayTimerView(
+                        onTapPlayFastMode: controller.onPlayFastMode,
+                        showcaseKey: oFastModeButton,
                       ),
-                    ),
-                  ],
-                ),
-              ),
+                      const Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: Pad(bottom: ThemeIndents.s12),
+                          child: FBackButton(),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         );

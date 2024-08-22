@@ -1,8 +1,11 @@
+import 'package:flags/features/game_state/game_state_cubit.dart';
 import 'package:flags/ui/debug_paint.dart';
 import 'package:flags/uikit/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:state_manager/state_manager.dart';
 
 import '../uikit/drag_and_drop/provider.dart';
 import 'app_builder.dart';
@@ -17,28 +20,37 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
-    return FlagsWidgetsApp(
-      title: "FlagsUp",
-      theme: AppTheme.themeData,
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => GameStateCubit(),
+        ),
       ],
-      builder: (context, _) {
-        return DragAndDropProvider(
-          builder: (BuildContext context) {
-            return DebugPaintProvider(
+      child: StateMixinThemeProvider(
+        child: FlagsWidgetsApp(
+          title: "FlagsUp",
+          theme: AppTheme.themeData,
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          builder: (context, _) {
+            return DragAndDropProvider(
               builder: (BuildContext context) {
-                return EasyLoading.init()(
-                  context,
-                  AppScreen(),
+                return DebugPaintProvider(
+                  builder: (BuildContext context) {
+                    return EasyLoading.init()(
+                      context,
+                      AppScreen(),
+                    );
+                  },
                 );
               },
             );
           },
-        );
-      },
+        ),
+      ),
     );
   }
 }

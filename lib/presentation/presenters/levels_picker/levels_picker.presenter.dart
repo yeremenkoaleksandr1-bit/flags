@@ -1,5 +1,3 @@
-import 'package:flags/logger.dart';
-import 'package:state_manager/state_manager.dart';
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/domain/services/levels/levels.service.dart';
@@ -8,6 +6,7 @@ import 'package:flags/presentation/navigator/routes.dart';
 import 'package:flags/presentation/presenters/levels_picker/state/levels_page.state.dart';
 import 'package:flags/screens/games/games_factory.page.dart';
 import 'package:qlevar_router/qlevar_router.dart';
+import 'package:state_manager/state_manager.dart';
 
 import '../../../domain/entities/game/game.dart';
 import 'route_params.dart';
@@ -40,7 +39,7 @@ abstract interface class ILevelsPickerPresenter
   );
 }
 
-class LevelsPickerPresenterImpl extends GetxController
+class LevelsPickerPresenterImpl extends GetController
     with StateMixin<LevelsPickerState>
     implements ILevelsPickerPresenter {
   final LevelsPickerRouteParams params;
@@ -58,6 +57,10 @@ class LevelsPickerPresenterImpl extends GetxController
 
     final levels = FactoryGameContinent().create(params.continentType);
 
+    for (final e in levels.levels) {
+      e.opened = false;
+    }
+
     var previousLevelCompleted = true;
 
     for (final level in levels.levels) {
@@ -66,8 +69,6 @@ class LevelsPickerPresenterImpl extends GetxController
         continent: params.continentType,
         gameMode: params.gameProcessType,
       );
-
-      print(level.completed);
 
       if (previousLevelCompleted) {
         if (levelData != null) {
@@ -100,7 +101,9 @@ class LevelsPickerPresenterImpl extends GetxController
     GameDifficult difficult,
     GameStyleType gameStyleType,
   ) async {
-    if (!level.opened) return;
+    if (!level.opened) {
+      return;
+    }
 
     QR.toName(
       Routes.gameProcessFactory,
@@ -120,7 +123,7 @@ class LevelsPickerPresenterImpl extends GetxController
   NextLevelData getNextLevelFromCurrent(GameLevel currentLevel) {
     final allLevels = levels.levels;
 
-    int currentIndex = allLevels.indexOf(currentLevel);
+    final int currentIndex = allLevels.indexOf(currentLevel);
 
     if (currentIndex != -1 && currentIndex < allLevels.length - 1) {
       final nextLevel = allLevels[currentIndex + 1];

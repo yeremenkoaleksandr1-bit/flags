@@ -5,6 +5,8 @@ abstract class ThemePalette {
 
   static const Color white = Color(0xffffffff);
   static const Color black = Color(0xff000000);
+  static const Color brown = Color(0xff7C6756);
+  static const Color brownLight = Color(0xff997f6a);
   static const Color gray = Color(0xffbfbfbf);
   static const Color transparent = Color(0x00000000);
 

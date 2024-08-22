@@ -2,7 +2,6 @@
 
 import 'dart:async';
 
-import 'package:state_manager/state_manager.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/domain/adapters.dart';
 import 'package:flags/domain/preferences/preferences.dart';
@@ -13,13 +12,14 @@ import 'package:flags/main/components/splash.dart';
 import 'package:flags/presentation/app/state/app.state.dart';
 import 'package:flags/presentation/navigator/router.dart';
 import 'package:flags/resources/resources.dart';
+import 'package:flags/ui/game_scaffold.dart';
 import 'package:flags/uikit/assets/assets.dart';
-import 'package:flags/uikit/shaders/shaders.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:qlevar_router/qlevar_router.dart';
+import 'package:state_manager/state_manager.dart';
 
 abstract interface class IAppPresenter with StateMixin<IAppState> {
   static IAppPresenter get I => Get.find<IAppPresenter>(tag: "app");
@@ -37,7 +37,7 @@ abstract interface class IAppPresenter with StateMixin<IAppState> {
   AppRouter get router;
 }
 
-class AppPresenterImpl extends GetxController
+class AppPresenterImpl extends GetController
     with StateMixin<IAppState>, GetSingleTickerProviderStateMixin
     implements IAppPresenter {
   @override
@@ -89,7 +89,7 @@ class AppPresenterImpl extends GetxController
     });
 
     change(
-      GetStatus.success(
+      SuccessStatus(
         InitializingAppState(),
       ),
     );
@@ -110,16 +110,23 @@ class AppPresenterImpl extends GetxController
     levelsService = await LevelsServiceImpl().initialize();
     emblemsService = await EmblemsServiceImpl().initialize();
 
-    router = AppRouter();
+    router = AppRouter(
+      observers: [
+        AppRouter.routeObserver,
+        GetScreen.routeObserver,
+        GamePageBuilder.routeObserver,
+        HeroController(),
+      ],
+    );
 
     Get.put<IOnboardingService>(OnboardingServiceImpl(), permanent: true);
 
     super.onInit();
 
     FlutterEngine.schedulePostFrameCallback((timeStamp) {
-      QR.replaceAll("/app").whenComplete(() async {
+      QR.replaceAll("/home").whenComplete(() async {
         change(
-          GetStatus.success(
+          SuccessStatus(
             AppState(
               resources: resources,
             ),

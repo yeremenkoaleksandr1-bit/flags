@@ -7,7 +7,10 @@ import 'package:multi_value_listenable_builder/multi_value_listenable_builder.da
 import 'game_objects_rendering.dart';
 
 class GameObjectWidget<G extends GameObject> extends StatefulWidget {
-  const GameObjectWidget(this.gameObject, {super.key});
+  GameObjectWidget(this.gameObject, {GlobalKey? key})
+      : super(
+          key: key ?? GlobalKey(),
+        );
 
   final G gameObject;
 
@@ -33,6 +36,22 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
   ValueNotifier<double> get rotationRx => widget.gameObject.rotationRx;
 
   ValueNotifier<double> get scaleRx => widget.gameObject.scaleRx;
+
+  double get rotation => rotationRx.value;
+
+  set rotation(double value) => rotationRx.value = value;
+
+  double get scale => scaleRx.value;
+
+  set scale(double value) => scaleRx.value = value;
+
+  Vector2 get position => positionRx.value;
+
+  set position(Vector2 value) => positionRx.value = value;
+
+  Vector2 get size => sizeRx.value;
+
+  set size(Vector2 value) => sizeRx.value = value;
 
   Widget buildWidget(BuildContext context) {
     return GameObjectPaint(
@@ -64,6 +83,8 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
   }) =>
       Matrix4.identity()..scale(scale);
 
+  Alignment get rotateAlignment => Alignment.center;
+
   @override
   Widget build(BuildContext context) {
     final child = buildWidget(context);
@@ -87,7 +108,7 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
         return Positioned.fromRect(
           rect: rect,
           child: Transform.rotate(
-            alignment: Alignment.center,
+            alignment: rotateAlignment,
             angle: rotation,
             child: SizedBox.expand(
               child: RepaintBoundary(

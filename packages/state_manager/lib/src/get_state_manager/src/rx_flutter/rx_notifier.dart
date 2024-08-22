@@ -1,26 +1,13 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:state_manager/src/get.dart';
 
-extension _Empty on Object {
-  bool _isEmpty() {
-    final val = this;
-    // if (val == null) return true;
-    var result = false;
-    if (val is Iterable) {
-      result = val.isEmpty;
-    } else if (val is String) {
-      result = val.trim().isEmpty;
-    } else if (val is Map) {
-      result = val.isEmpty;
-    }
-    return result;
-  }
-}
-
 abstract interface class IStateMixin<T> {
   GetStatus<T> get status;
+
+  ValueListenable<GetStatus<T>> get statusListener;
 
   T get value;
 
@@ -29,7 +16,10 @@ abstract interface class IStateMixin<T> {
 
 mixin StateMixin<T> implements IStateMixin<T> {
   T? _value;
-  ValueNotifier<GetStatus<T>> statusRx = ValueNotifier(GetStatus.loading());
+  ValueNotifier<GetStatus<T>> statusRx = ValueNotifier(const LoadingStatus());
+
+  @override
+  ValueListenable<GetStatus<T>> get statusListener => statusRx;
 
   @override
   GetStatus<T> get status {
@@ -78,63 +68,22 @@ mixin StateMixin<T> implements IStateMixin<T> {
     compute().then(
       (newValue) {
         if ((newValue == null || newValue._isEmpty()) && useEmpty) {
-          status = GetStatus<T>.loading();
+          status = LoadingStatus();
         } else {
-          status = GetStatus<T>.success(newValue);
+          status = SuccessStatus(newValue);
         }
 
         statusRx.notifyListeners();
       },
       onError: (err) {
-        status = GetStatus.error(errorMessage ?? err.toString());
+        status = ErrorStatus(errorMessage ?? err.toString());
         statusRx.notifyListeners();
       },
     );
   }
 
-  void dispose() {
+  void disposeState() {
     statusRx.dispose();
-  }
-}
-
-extension StateExt<T> on StateMixin<T> {
-  Widget obx(
-    NotifierBuilder<T?> widget, {
-    Widget Function(String? error)? onError,
-    Widget? onLoading,
-    Widget? onEmpty,
-    WidgetBuilder? onCustom,
-  }) {
-    return Builder(
-      builder: (context) {
-        return ValueListenableBuilder(
-          valueListenable: statusRx,
-          builder: (
-            BuildContext context,
-            GetStatus<T> status,
-            Widget? child,
-          ) {
-            if (status.isLoading) {
-              return onLoading ??
-                  const Center(child: CircularProgressIndicator());
-            } else if (status.isError) {
-              return onError != null
-                  ? onError(status.errorMessage)
-                  : Center(
-                      child: Text('A error occurred: ${status.errorMessage}'),
-                    );
-            } else if (status.isEmpty) {
-              return onEmpty ?? nil;
-            } else if (status.isSuccess) {
-              return widget(value);
-            } else if (status.isCustom) {
-              return onCustom?.call(context) ?? nil;
-            }
-            return widget(value);
-          },
-        );
-      },
-    );
   }
 }
 
@@ -142,28 +91,18 @@ typedef NotifierBuilder<T> = Widget Function(T state);
 
 abstract class GetStatus<T> with Equality {
   const GetStatus();
-
-  factory GetStatus.loading() => LoadingStatus<T>();
-
-  factory GetStatus.error(String message) => ErrorStatus<T, String>(message);
-
-  factory GetStatus.empty() => EmptyStatus<T>();
-
-  factory GetStatus.success(T data) => SuccessStatus<T>(data);
-
-  factory GetStatus.custom() => CustomStatus<T>();
 }
 
 class CustomStatus<T> extends GetStatus<T> {
   @override
-  List get props => [];
+  List<dynamic> get props => [];
 }
 
 class LoadingStatus<T> extends GetStatus<T> {
   const LoadingStatus();
 
   @override
-  List get props => [];
+  List<T> get props => [];
 }
 
 class SuccessStatus<T> extends GetStatus<T> {
@@ -172,7 +111,7 @@ class SuccessStatus<T> extends GetStatus<T> {
   const SuccessStatus(this.data);
 
   @override
-  List get props => [data];
+  List<T> get props => [data];
 }
 
 class ErrorStatus<T, S> extends GetStatus<T> {
@@ -188,7 +127,7 @@ class EmptyStatus<T> extends GetStatus<T> {
   const EmptyStatus();
 
   @override
-  List get props => [];
+  List<T> get props => [];
 }
 
 extension StatusDataExt<T> on GetStatus<T> {
@@ -220,5 +159,21 @@ extension StatusDataExt<T> on GetStatus<T> {
       return success.data;
     }
     return null;
+  }
+}
+
+extension _Empty on Object {
+  bool _isEmpty() {
+    final val = this;
+    // if (val == null) return true;
+    var result = false;
+    if (val is Iterable) {
+      result = val.isEmpty;
+    } else if (val is String) {
+      result = val.trim().isEmpty;
+    } else if (val is Map) {
+      result = val.isEmpty;
+    }
+    return result;
   }
 }

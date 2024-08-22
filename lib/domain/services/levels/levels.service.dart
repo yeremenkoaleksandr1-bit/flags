@@ -1,6 +1,8 @@
 import 'package:flags/domain/domain.dart';
+import 'package:flags/logger.dart';
 import 'package:flags/prefabs/levels/levels.dart';
 import 'package:hive/hive.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:state_manager/state_manager.dart';
 
 abstract interface class ILevelsService {
@@ -110,9 +112,8 @@ class LevelsServiceImpl implements ILevelsService {
     final streamController = _box.watch();
     final keyPrefix = "${gameMode.index}_${continent.index}_";
 
-    final keys = _box.keys.where((element) => element.contains(keyPrefix));
-
     return streamController.map<int>((event) {
+      final keys = _box.keys.where((element) => element.contains(keyPrefix));
       return _box.getAll(keys).where((e) => e?.completed == true).length;
     });
   }

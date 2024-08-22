@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+
 import '../../../get.dart';
 import 'get_widget_cache.dart';
 
@@ -7,7 +8,7 @@ import 'get_widget_cache.dart';
 ///
 /// Sample:
 /// ```
-/// class AwesomeController extends GetxController {
+/// class AwesomeController extends GetController {
 ///   final String title = 'My Awesome View';
 /// }
 ///
@@ -46,12 +47,12 @@ abstract class GetView<T> extends StatelessWidget {
 /// GetWidget will have your own controller, and will be call events as `onInit`
 /// and `onClose` when the controller get in/get out on memory.
 abstract class GetWidget<S extends GetLifeCycleMixin> extends GetWidgetCache {
-  const GetWidget({Key? key}) : super(key: key);
+  const GetWidget({super.key});
 
   @protected
   final String? tag = null;
 
-  S get controller => GetWidget._cache[this] as S;
+  S get controller => GetWidget._cache[this]! as S;
 
   // static final _cache = <GetWidget, GetLifeCycleBase>{};
 
@@ -68,6 +69,7 @@ class _GetCache<S extends GetLifeCycleMixin> extends WidgetCache<GetWidget<S>> {
   S? _controller;
   bool _isCreator = false;
   InstanceInfo? info;
+
   @override
   void onInit() {
     info = Get.getInstanceInfo<S>(tag: widget!.tag);

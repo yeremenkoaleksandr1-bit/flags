@@ -30,7 +30,7 @@ class SPath implements IDrawable {
     }
   }
 
-  Rect get bounds => memo0(getBounds)();
+  Rect get bounds => getBounds();
 
   Color get color => paint.color;
 

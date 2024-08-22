@@ -70,6 +70,12 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
   ValueNotifier<int> get timerStream => timerRx;
 
   @override
+  Future<void> onInit() {
+    winStreak.resetStreak();
+    return super.onInit();
+  }
+
+  @override
   Future<void> preInitialization() async {
     gameSeed = Random().nextInt(int32MaxValue);
 
@@ -299,6 +305,12 @@ class PuzzleFastModePresenterImpl extends PuzzleCommonModePresenterImpl
     winStreak.resetStreak();
     periodicTimer.pause();
     await super.onGameOver();
+  }
+
+  @override
+  void onGameExit() {
+    winStreak.resetStreak();
+    super.onGameExit();
   }
 
   @override

@@ -1,27 +1,31 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:state_manager/src/get_core/get_core.dart';
+import 'package:state_manager/src/get_instance/src/extension_instance.dart';
+import 'package:state_manager/src/get_instance/src/lifecycle.dart';
+import 'package:state_manager/src/get_state_manager/src/simple/list_notifier.dart';
 
-import '../../../get_core/get_core.dart';
-import '../../../get_instance/src/extension_instance.dart';
-import '../../../get_instance/src/lifecycle.dart';
-import '../simple/list_notifier.dart';
+typedef GetControllerBuilder<T extends GetLifeCycleMixin> = Widget Function(
+  T controller,
+);
 
-typedef GetXControllerBuilder<T extends GetLifeCycleMixin> = Widget Function(
-    T controller);
-
-class GetX<T extends GetLifeCycleMixin> extends StatefulWidget {
-  final GetXControllerBuilder<T> builder;
+class GetWidgetBuilder<T extends GetLifeCycleMixin> extends StatefulWidget {
+  final GetControllerBuilder<T> builder;
   final bool global;
   final bool autoRemove;
   final bool assignId;
-  final void Function(GetXState<T> state)? initState,
-      dispose,
-      didChangeDependencies;
-  final void Function(GetX oldWidget, GetXState<T> state)? didUpdateWidget;
+
+  final void Function(GetWidgetBuilderState<T> state)? initState;
+  final void Function(GetWidgetBuilderState<T> state)? dispose;
+  final void Function(GetWidgetBuilderState<T> state)? didChangeDependencies;
+
+  final void Function(
+          GetWidgetBuilder oldWidget, GetWidgetBuilderState<T> state)?
+      didUpdateWidget;
   final T? init;
   final String? tag;
 
-  const GetX({
+  const GetWidgetBuilder({
     super.key,
     this.tag,
     required this.builder,
@@ -29,12 +33,12 @@ class GetX<T extends GetLifeCycleMixin> extends StatefulWidget {
     this.autoRemove = true,
     this.initState,
     this.assignId = false,
-    //  this.stream,
+//  this.stream,
     this.dispose,
     this.didChangeDependencies,
     this.didUpdateWidget,
     this.init,
-    // this.streamController
+// this.streamController
   });
 
   @override
@@ -49,20 +53,21 @@ class GetX<T extends GetLifeCycleMixin> extends StatefulWidget {
       )
       ..add(DiagnosticsProperty<String>('tag', tag))
       ..add(
-          ObjectFlagProperty<GetXControllerBuilder<T>>.has('builder', builder));
+          ObjectFlagProperty<GetControllerBuilder<T>>.has('builder', builder));
   }
 
   @override
-  GetXState<T> createState() => GetXState<T>();
+  GetWidgetBuilderState<T> createState() => GetWidgetBuilderState<T>();
 }
 
-class GetXState<T extends GetLifeCycleMixin> extends State<GetX<T>> {
+class GetWidgetBuilderState<T extends GetLifeCycleMixin>
+    extends State<GetWidgetBuilder<T>> {
   T? controller;
   bool? _isCreator = false;
 
   @override
   void initState() {
-    // var isPrepared = Get.isPrepared<T>(tag: widget.tag);
+// var isPrepared = Get.isPrepared<T>(tag: widget.tag);
     final isRegistered = Get.isRegistered<T>(tag: widget.tag);
 
     if (widget.global) {
@@ -96,8 +101,8 @@ class GetXState<T extends GetLifeCycleMixin> extends State<GetX<T>> {
   }
 
   @override
-  void didUpdateWidget(GetX oldWidget) {
-    super.didUpdateWidget(oldWidget as GetX<T>);
+  void didUpdateWidget(GetWidgetBuilder oldWidget) {
+    super.didUpdateWidget(oldWidget as GetWidgetBuilder<T>);
     widget.didUpdateWidget?.call(oldWidget, this);
   }
 
@@ -131,8 +136,9 @@ class GetXState<T extends GetLifeCycleMixin> extends State<GetX<T>> {
 
   @override
   Widget build(BuildContext context) => Notifier.instance.append(
-      NotifyData(disposers: disposers, updater: _update),
-      () => widget.builder(controller!));
+        NotifyData(disposers: disposers, updater: _update),
+        () => widget.builder(controller!),
+      );
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

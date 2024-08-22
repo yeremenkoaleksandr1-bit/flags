@@ -32,6 +32,7 @@ class PapuaNewGuineaFlag extends GameFlag {
               areaSize: size,
               position: (bounds) => Vector2(7.89, 19.63),
               color: const Color(0xffFFFFFF),
+              previousMustBePlaced: const ['1'],
             ),
           ],
         );

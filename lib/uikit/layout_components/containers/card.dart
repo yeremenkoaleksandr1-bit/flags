@@ -2,10 +2,8 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/uikit/theme/borders.dart';
 import 'package:flags/uikit/theme/indents.dart';
 import 'package:flags/uikit/theme/palette.dart';
-import 'package:flame/extensions.dart';
+import 'package:flame/palette.dart';
 import 'package:flutter/material.dart';
-
-import '../assets/boxes/nine_card.dart';
 
 class FCard extends StatelessWidget {
   const FCard({
@@ -22,8 +20,16 @@ class FCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NineCardView(
+    return Material(
       color: color,
+      shape: RoundedRectangleBorder(
+        borderRadius: ThemeBorders.r8,
+        side: BorderSide(
+          color: color.darken(0.3),
+          width: 2,
+          strokeAlign: -0.98,
+        ),
+      ),
       child: Box(
         padding: padding,
         child: child,

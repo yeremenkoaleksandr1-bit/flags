@@ -87,7 +87,7 @@ abstract interface class IPuzzleCommonModePresenter<S extends PuzzleGameState>
   void skipLevel();
 }
 
-class PuzzleCommonModePresenterImpl extends GetxController
+class PuzzleCommonModePresenterImpl extends GetController
     with StateMixin<PuzzleGameState>, ProcessedObjectFocusHandler
     implements IPuzzleCommonModePresenter<PuzzleGameState> {
   final TickerProvider vsync;
@@ -205,6 +205,7 @@ class PuzzleCommonModePresenterImpl extends GetxController
       }
     }
 
+    //gameSeed = 946879961;
     flagExposer.renderBox.addListener(onFlagBuilt);
   }
 

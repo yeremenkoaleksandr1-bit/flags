@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import '../../../get_core/src/get_interface.dart';
+import 'package:state_manager/src/get_core/src/get_interface.dart';
 
 extension LoopEventsExt on GetInterface {
   Future<T> toEnd<T>(FutureOr<T> Function() computation) async {

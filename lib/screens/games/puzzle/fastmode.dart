@@ -6,6 +6,7 @@ import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/presentation/game/puzzle/onboarding/fast_mode/fastmode.showcase_step_1.dart';
 import 'package:flags/presentation/game/puzzle/onboarding/fast_mode/fastmode.showcase_step_2.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_fast.presenter.dart';
+import 'package:flags/presentation/game/puzzle/state/puzzle_game.state.dart';
 import 'package:flags/presentation/presenters/levels_picker/levels_picker.presenter.dart';
 import 'package:flags/screens/games/base/game_process_screen.dart';
 import 'package:flags/screens/games/components/heart_tries/heart_tries.dart';
@@ -84,8 +85,9 @@ class PuzzleFastMode extends PuzzleCommonMode<IPuzzleFastModePresenter> {
 
   @override
   Widget build(BuildContext context, IPuzzleFastModePresenter presenter) {
-    return presenter.obx(
-      (state) {
+    return StateMixinBuilder(
+      stateMixin: presenter,
+      builder: (PuzzleGameState state) {
         return FShowcaseWidget(
           showcaseKey: presenter.showcaseFm.key,
           builder: (BuildContext context) {

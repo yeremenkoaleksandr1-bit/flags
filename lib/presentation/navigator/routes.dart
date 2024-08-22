@@ -13,6 +13,6 @@ abstract class Routes {
   static const String gameProcessFactory = "GameProcessFactory";
 
   // editor
-  static const String myFlags = "MyFlags";
-  static const String editor = "Editor";
+  static const String myFlagsGallery = "MyFlags";
+  static const String editFlag = "Editor";
 }

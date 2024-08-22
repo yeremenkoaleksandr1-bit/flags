@@ -8,11 +8,11 @@ import '../../../get_instance/src/lifecycle.dart';
 import '../../get_state_manager.dart';
 
 /// Used like `SingleTickerProviderMixin` but only with Get Controllers.
-/// Simplifies AnimationController creation inside GetxController.
+/// Simplifies AnimationController creation inside GetController.
 ///
 /// Example:
 ///```
-///class SplashController extends GetxController with
+///class SplashController extends GetController with
 ///    GetSingleTickerProviderStateMixin {
 ///  AnimationController controller;
 ///
@@ -27,7 +27,7 @@ import '../../get_state_manager.dart';
 ///  }
 ///  ...
 /// ```
-mixin GetSingleTickerProviderStateMixin on GetxController
+mixin GetSingleTickerProviderStateMixin on GetController
     implements TickerProvider {
   Ticker? _ticker;
 
@@ -84,11 +84,11 @@ mixin GetSingleTickerProviderStateMixin on GetxController
 }
 
 /// Used like `TickerProviderMixin` but only with Get Controllers.
-/// Simplifies multiple AnimationController creation inside GetxController.
+/// Simplifies multiple AnimationController creation inside GetController.
 ///
 /// Example:
 ///```
-///class SplashController extends GetxController with
+///class SplashController extends GetController with
 ///    GetTickerProviderStateMixin {
 ///  AnimationController first_controller;
 ///  AnimationController second_controller;
@@ -108,7 +108,7 @@ mixin GetSingleTickerProviderStateMixin on GetxController
 ///  }
 ///  ...
 /// ```
-mixin GetTickerProviderStateMixin on GetxController implements TickerProvider {
+mixin GetTickerProviderStateMixin on GetController implements TickerProvider {
   Set<Ticker>? _tickers;
 
   @override
@@ -180,11 +180,11 @@ class _WidgetTicker extends Ticker {
 @Deprecated('use GetSingleTickerProviderStateMixin')
 
 /// Used like `SingleTickerProviderMixin` but only with Get Controllers.
-/// Simplifies AnimationController creation inside GetxController.
+/// Simplifies AnimationController creation inside GetController.
 ///
 /// Example:
 ///```
-///class SplashController extends GetxController with
+///class SplashController extends GetController with
 ///    SingleGetTickerProviderMixin {
 ///  AnimationController _ac;
 ///

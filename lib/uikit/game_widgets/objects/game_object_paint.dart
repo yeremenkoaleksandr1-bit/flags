@@ -25,16 +25,16 @@ class _GameObjectPaintState extends State<GameObjectPaint> {
       fit: BoxFit.contain,
       child: CustomPaint(
         size: _object.size.toSize(),
-        painter: _Painter(_object),
+        painter: GameObjectPainter(_object),
       ),
     );
   }
 }
 
-class _Painter extends CustomPainter {
+class GameObjectPainter extends CustomPainter {
   final GameObject gameObject;
 
-  _Painter(this.gameObject);
+  GameObjectPainter(this.gameObject);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -42,8 +42,7 @@ class _Painter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _Painter oldDelegate) {
-    return false;
+  bool shouldRepaint(covariant GameObjectPainter oldDelegate) {
     return gameObject != oldDelegate.gameObject;
   }
 }

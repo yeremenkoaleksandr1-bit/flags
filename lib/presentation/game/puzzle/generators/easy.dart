@@ -55,7 +55,7 @@ class PuzzleEasyGenerator extends PuzzleSuperEasyGenerator {
         if (!colors.any(
           (e) =>
               e.value == colorInt ||
-              ColorUtils.calculateColorSimilarity(e.value, colorInt) < 30,
+              ColorUtils.calculateColorSimilarity(e.value, colorInt) < 40,
         )) {
           final color = Color(colorInt);
           colors.add(color);

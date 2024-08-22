@@ -2,8 +2,8 @@ import 'dart:math';
 
 extension DoubleExt on double {
   double toPrecision(int fractionDigits) {
-    var mod = pow(10, fractionDigits.toDouble()).toDouble();
-    return ((this * mod).round().toDouble() / mod);
+    final double mod = pow(10, fractionDigits.toDouble()).toDouble();
+    return (this * mod).round().toDouble() / mod;
   }
 
   Duration get milliseconds => Duration(microseconds: (this * 1000).round());

@@ -50,12 +50,12 @@ abstract class GetScreen<T> extends StatefulWidget {
 class GetScreenState<T> extends State<GetScreen<T>> with RouteAware {
   late final String _tag = (widget.tag ?? UniqueKey()).toString();
 
-  late final T presenter;
+  late final T controller;
 
   @override
   void initState() {
     widget.onPreInit(context);
-    presenter = Get.put<T>(widget.controller(context), tag: _tag);
+    controller = Get.put<T>(widget.controller(context), tag: _tag);
     super.initState();
     widget.onInit(context);
 
@@ -68,9 +68,7 @@ class GetScreenState<T> extends State<GetScreen<T>> with RouteAware {
   void dispose() {
     widget.onClose();
     GetScreen.routeObserver.unsubscribe(this);
-
-    Get.delete<T>(tag: _tag);
-
+    Get.delete<T>(tag: _tag, force: true);
     super.dispose();
   }
 
@@ -111,7 +109,7 @@ class GetScreenState<T> extends State<GetScreen<T>> with RouteAware {
   }
 
   @override
-  Widget build(BuildContext context) => widget.build(context, presenter);
+  Widget build(BuildContext context) => widget.build(context, controller);
 }
 
 abstract class GetConsumer<T> extends StatefulWidget {
@@ -126,7 +124,7 @@ abstract class GetConsumer<T> extends StatefulWidget {
 }
 
 class _GetConsumerState<T> extends State<GetConsumer<T>> {
-  late final _presenter = GetScreen.of<T>(context).presenter;
+  late final _presenter = GetScreen.of<T>(context).controller;
 
   @override
   Widget build(BuildContext context) {

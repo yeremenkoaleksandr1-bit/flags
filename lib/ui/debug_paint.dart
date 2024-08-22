@@ -1,6 +1,9 @@
 // ignore_for_file: invalid_use_of_protected_member
 
+import 'dart:ui';
+
 import 'package:flags/core/flutter_engine.dart';
+import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:state_manager/state_manager.dart';
 
@@ -25,6 +28,24 @@ abstract class DebugPainter {
     FlutterEngine.widgetPostFrameCallback((timeStamp) {
       _instance.paintFunc(callback);
     });
+  }
+
+  static void drawVectors(
+    List<Vector2> vectors, {
+    PointMode pointMode = PointMode.lines,
+    Paint? paint,
+  }) {
+    DebugPainter.paint(
+      (canvas, size) {
+        canvas.drawPoints(
+          pointMode,
+          [...vectors.map((e) => e.toOffset())],
+          paint ?? Paint()
+            ..color = Colors.red
+            ..strokeWidth = 4,
+        );
+      },
+    );
   }
 
   void paintFunc(void Function(Canvas canvas, Size size) callback);
@@ -67,6 +88,7 @@ class _DebugPaintProviderState extends State<DebugPaintProvider>
                   Widget? child,
                 ) {
                   return CustomPaint(
+                    willChange: true,
                     foregroundPainter: _Painter(
                       value,
                       onPaintCompleted: _queue.clear,
@@ -83,6 +105,7 @@ class _DebugPaintProviderState extends State<DebugPaintProvider>
 
   @override
   void paintFunc(void Function(Canvas canvas, Size size) callback) {
+    WidgetsBinding.instance.drawFrame();
     _queue.add(callback);
   }
 }
@@ -108,6 +131,7 @@ class _Painter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _Painter oldDelegate) {
+    return true;
     return oldDelegate.queue != queue && queue.isNotEmpty;
   }
 }

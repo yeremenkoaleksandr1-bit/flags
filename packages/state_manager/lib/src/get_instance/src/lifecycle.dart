@@ -47,7 +47,9 @@ mixin GetLifeCycleMixin {
   @nonVirtual
   void onStart() {
     // _checkIfAlreadyConfigured();
-    if (_initialized) return;
+    if (_initialized) {
+      return;
+    }
     onInit();
     _initialized = true;
   }
@@ -61,7 +63,9 @@ mixin GetLifeCycleMixin {
   @mustCallSuper
   @nonVirtual
   void onDelete() {
-    if (_isClosed) return;
+    if (_isClosed) {
+      return;
+    }
     _isClosed = true;
     onClose();
   }
@@ -75,10 +79,10 @@ mixin GetLifeCycleMixin {
 //   }
 }
 
-/// Allow track difference between GetxServices and GetxControllers
+/// Allow track difference between GetxServices and GetControllers
 mixin GetxServiceMixin {}
 
-/// Unlike GetxController, which serves to control events on each of its pages,
+/// Unlike GetController, which serves to control events on each of its pages,
 /// GetxService is not automatically disposed (nor can be removed with
 /// Get.delete()).
 /// It is ideal for situations where, once started, that service will
