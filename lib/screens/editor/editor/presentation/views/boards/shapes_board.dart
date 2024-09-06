@@ -1,117 +1,104 @@
-import 'package:state_manager/state_manager.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
-import 'package:flags/domain/editor/shapes/shapes.dart';
+import 'package:flags/domain/editor/shapes/shape.dart';
 import 'package:flags/domain/game_objects/game_objects.dart';
-import 'package:flags/features/layers/layer.view.dart';
-import 'package:flags/screens/editor/editor/presentation/controllers/editor.controller.dart';
+import 'package:flags/screens/editor/editor/presentation/bloc/flag_editor_cubit.dart';
+import 'package:flags/screens/editor/editor/presentation/cubits/boards/shapes/shapes_board_cubit.dart';
+import 'package:flags/screens/editor/editor/presentation/cubits/scene_objects/scene_objects_cubit.dart';
+import 'package:flags/screens/editor/editor/presentation/views/boards/base_board.dart';
 import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
-import 'package:flags/uikit/layout_components/containers/card.dart';
 import 'package:flags/uikit/painters/drawable_painter.dart';
+import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class EditorShapesBoard extends UiLayer {
-  const EditorShapesBoard({super.key})
+import '../../../../../../uikit/layout_components/containers/containers.dart';
+
+class ShapesBoard extends EditorBaseBoard {
+  ShapesBoard({super.key})
       : super(
-          tag: "editor_shapes",
-          initialShown: false,
+          buildWhen: (p, c) {
+            return p.isOpenedShapesBoard != c.isOpenedShapesBoard;
+          },
         );
 
-  static IEditorShapesController find() => Get.find(tag: "editor_shapes");
-
   @override
-  State<StatefulWidget> createState() => EditorShapesState();
-}
-
-abstract interface class IEditorShapesController implements IUiLayer {}
-
-class EditorShapesState
-    extends UiLayerState<EditorShapesBoard, IEditorShapesController>
-    implements IEditorShapesController {
-  late final IEditorPresenter presenter =
-      GetScreen.of<IEditorPresenter>(context).controller;
-
-  final ScrollController scrollController = ScrollController();
-
-  @override
-  void onShow() {
-    scrollController.animateTo(
-      0,
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeIn,
-    );
+  bool getState(FlagEditorState state) {
+    return state.isOpenedShapesBoard;
   }
 
   @override
-  void dispose() {
-    scrollController.dispose();
-    super.dispose();
+  void onBackgroundTapped(IFlagEditorCubit bloc) {
+    bloc.toggleShapesBoardOpen(false);
   }
 
-  Future<void> onShapeChose(SShape shape) async {
-    await hide();
-    await presenter.addObjectToScene(
-      PathGameObject(
-        name: UniqueKey().toString(),
-        path: shape,
+  @override
+  Positioned buildWidget(BuildContext context, BoxConstraints constraints) {
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      top: constraints.biggest.height / 2,
+      child: Material(
+        type: MaterialType.card,
+        color: Colors.transparent,
+        child: build(context),
       ),
     );
   }
 
-  @override
-  Widget buildChild(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: GestureDetector(
-            onTap: hide,
-            child: const Material(
-              color: Colors.black45,
-            ),
-          ),
+  Widget build(BuildContext context) {
+    final editorBloc = context.read<IFlagEditorCubit>();
+    final sceneObjectsBloc = context.read<EditorSceneObjectsCubit>();
+    final cubit = context.read<ShapesBoardCubit>();
+
+    void onSelected(SShape value) {
+      editorBloc.toggleShapesBoardOpen(false);
+      sceneObjectsBloc.addGameObject(
+        PathGameObject(
+          name: UniqueKey().toString(),
+          path: value,
         ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: FractionallySizedBox(
-            heightFactor: 0.4,
-            child: FCard(
-              child: GridView.count(
-                controller: scrollController,
-                crossAxisCount: 2,
-                mainAxisSpacing: 2,
-                crossAxisSpacing: 2,
-                children: [
-                  ...presenter.shapes.entries.map(
-                    (e) => ScaledGestureDetector(
-                      onTap: () => onShapeChose(e.value),
-                      child: FCard(
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const Pad(all: 12),
-                                child: FittedBox(
-                                  fit: BoxFit.fitWidth,
-                                  child: SizedBox.fromSize(
-                                    size: e.value.rect.size,
-                                    child: DrawablePaint(
-                                      drawable: e.value,
-                                    ),
-                                  ),
+      );
+    }
+
+    return FCard(
+      child: BlocBuilder<ShapesBoardCubit, ShapesBoardState>(
+        builder: (context, state) {
+          return GridView.count(
+            crossAxisCount: 2,
+            mainAxisSpacing: 2,
+            crossAxisSpacing: 2,
+            children: [
+              ...state.items.entries.map(
+                (e) => ScaledGestureDetector(
+                  onTap: () => onSelected(e.value),
+                  child: FCard(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const Pad(all: 12),
+                            child: FittedBox(
+                              fit: BoxFit.fitWidth,
+                              child: SizedBox.fromSize(
+                                size: e.value.rect.size,
+                                child: DrawablePaint(
+                                  drawable: e.value,
                                 ),
                               ),
                             ),
-                            Text(e.key),
-                          ],
+                          ),
                         ),
-                      ),
+                        Text(e.key),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ),
-      ],
+            ],
+          );
+        },
+      ),
     );
   }
 }

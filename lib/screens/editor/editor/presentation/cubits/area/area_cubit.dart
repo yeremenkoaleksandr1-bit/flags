@@ -17,7 +17,6 @@ class EditorAreaCubit extends Cubit<EditorAreaState> {
         );
 
   void setAreaRect(Rect rect) {
-    logger.i(rect);
     emit(
       state.copyWith(rect: rect),
     );

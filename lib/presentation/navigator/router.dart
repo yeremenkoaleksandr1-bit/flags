@@ -6,7 +6,7 @@ import 'package:flags/presentation/presenters/game_mode_picker/game_mode_picker.
 import 'package:flags/presentation/presenters/levels_picker/levels_picker.presenter.dart';
 import 'package:flags/presentation/presenters/levels_picker/route_params.dart';
 import 'package:flags/screens/continents_picker/continents_picker.screen.dart';
-import 'package:flags/screens/editor/editor/presentation/bloc/flag_editor_bloc.dart';
+import 'package:flags/screens/editor/editor/presentation/bloc/flag_editor_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/screen/editor.screen.dart';
 import 'package:flags/screens/editor/my_flags/presentation/bloc/my_flags_cubit.dart';
 import 'package:flags/screens/editor/my_flags/presentation/my_flags.screen.dart';
@@ -99,8 +99,8 @@ class AppRouter extends QRouterDelegate {
                   name: Routes.editFlag,
                   builder: () {
                     final data = QR.params['data']!.value! as EditorFlagData;
-                    return BlocProvider(
-                      create: (context) => FlagEditorBloc(data),
+                    return BlocProvider<IFlagEditorCubit>(
+                      create: (context) => FlagEditorCubit(data),
                       child: const EditorScreen(),
                     );
                   },

@@ -1,9 +1,11 @@
 import 'package:flags/domain/game_objects/game_objects.dart';
+import 'package:flags/screens/editor/editor/presentation/bloc/flag_editor_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/controllers/editor.controller.dart';
 import 'package:flags/screens/editor/editor/presentation/object_handles/editor_draggable.dart';
 import 'package:flags/uikit/game_widgets/objects/draggable_object.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:state_manager/state_manager.dart';
 
 class EditorObjectHandleGameObject extends GameObject {
@@ -57,12 +59,11 @@ class EditorObjectHandlerWidget
 
 class EditorObjectHandleGameObjectState<T extends EditorObjectHandlerWidget>
     extends DraggableGameObjectWidgetState<EditorObjectHandleGameObject, T> {
-  late final IEditorPresenter presenter =
-      GetScreen.of<IEditorPresenter>(context).controller;
+  late final bloc = context.read<IFlagEditorCubit>();
 
   @override
   void initState() {
-    presenter.state.selectedObject.addListener(_listenGameObjectSelection);
+    bloc.selectedObject.addListener(_listenGameObjectSelection);
     super.initState();
   }
 
@@ -96,7 +97,7 @@ class EditorObjectHandleGameObjectState<T extends EditorObjectHandlerWidget>
   EditorDraggableWidget? _lastSelected;
 
   void _listenGameObjectSelection() {
-    final value = presenter.state.selectedObject.value;
+    final value = bloc.selectedObject.value;
 
     if (value != null) {
       positionRx.value = value.gameObject.position;

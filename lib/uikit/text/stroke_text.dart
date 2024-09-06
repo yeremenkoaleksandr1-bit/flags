@@ -30,6 +30,8 @@ class StrokeText extends StatelessWidget {
           style: TextStyle(
             foreground: Paint()
               ..style = PaintingStyle.stroke
+              ..strokeCap = StrokeCap.round
+              ..strokeJoin = StrokeJoin.round
               ..strokeWidth = strokeWidth
               ..color = strokeColor,
           ).merge(textStyle),

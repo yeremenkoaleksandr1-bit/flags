@@ -1,8 +1,50 @@
-part of 'flag_editor_bloc.dart';
+part of 'flag_editor_cubit.dart';
 
-@immutable
-sealed class FlagEditorState {}
+final class FlagEditorState extends Equatable {
+  final bool isOpenedStylesBoard;
+  final bool isOpenedShapesBoard;
+  final bool isOpenedEmblemsBoard;
+  final bool isOpenedCustomPaintBoard;
 
-final class FlagEditorLoadingState extends FlagEditorState {}
+  final FlagStyle selectedStyle;
 
-final class FlagEditorReadyState extends FlagEditorState {}
+  final List<EditorDraggableWidget> sceneObjects;
+
+  const FlagEditorState({
+    this.isOpenedStylesBoard = false,
+    this.isOpenedShapesBoard = false,
+    this.isOpenedEmblemsBoard = false,
+    this.isOpenedCustomPaintBoard = false,
+    required this.selectedStyle,
+    required this.sceneObjects,
+  });
+
+  @override
+  List<Object?> get props => [
+        isOpenedStylesBoard,
+        isOpenedShapesBoard,
+        isOpenedEmblemsBoard,
+        isOpenedCustomPaintBoard,
+        selectedStyle,
+        sceneObjects,
+      ];
+
+  FlagEditorState copyWith({
+    bool? isOpenedStylesBoard,
+    bool? isOpenedShapesBoard,
+    bool? isOpenedEmblemsBoard,
+    bool? isOpenedCustomPaintBoard,
+    FlagStyle? selectedStyle,
+    List<EditorDraggableWidget>? sceneObjects,
+  }) {
+    return FlagEditorState(
+      isOpenedStylesBoard: isOpenedStylesBoard ?? this.isOpenedStylesBoard,
+      isOpenedShapesBoard: isOpenedShapesBoard ?? this.isOpenedShapesBoard,
+      isOpenedEmblemsBoard: isOpenedEmblemsBoard ?? this.isOpenedEmblemsBoard,
+      isOpenedCustomPaintBoard:
+          isOpenedCustomPaintBoard ?? this.isOpenedCustomPaintBoard,
+      selectedStyle: selectedStyle ?? this.selectedStyle,
+      sceneObjects: sceneObjects ?? this.sceneObjects,
+    );
+  }
+}

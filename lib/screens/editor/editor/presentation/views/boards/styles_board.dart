@@ -1,100 +1,85 @@
-import 'package:state_manager/state_manager.dart';
-import 'package:flags/features/layers/layer.view.dart';
-import 'package:flags/screens/editor/editor/presentation/controllers/editor.controller.dart';
+import 'package:flags/screens/editor/editor/presentation/bloc/flag_editor_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/components/flag_style.dart';
+import 'package:flags/screens/editor/editor/presentation/cubits/boards/styles/styles_board_cubit.dart';
+import 'package:flags/screens/editor/editor/presentation/cubits/flag_background_style/flag_background_style_cubit.dart';
+import 'package:flags/screens/editor/editor/presentation/views/boards/base_board.dart';
 import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
-import 'package:flags/uikit/layout_components/containers/card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class EditorStylesBoard extends UiLayer {
-  const EditorStylesBoard({super.key})
+import '../../../../../../uikit/layout_components/containers/containers.dart';
+
+class StylesBoard extends EditorBaseBoard {
+  StylesBoard({super.key})
       : super(
-          tag: "editor_styles",
-          initialShown: false,
+          buildWhen: (p, c) {
+            return p.isOpenedStylesBoard != c.isOpenedStylesBoard;
+          },
         );
 
-  static IEditorStylesController find() => Get.find(tag: "editor_styles");
+  @override
+  bool getState(FlagEditorState state) {
+    return state.isOpenedStylesBoard;
+  }
 
   @override
-  State<StatefulWidget> createState() => EditorStylesState();
-}
-
-abstract interface class IEditorStylesController implements IUiLayer {}
-
-class EditorStylesState
-    extends UiLayerState<EditorStylesBoard, IEditorStylesController>
-    implements IEditorStylesController {
-  late final IEditorPresenter presenter =
-      GetScreen.of<IEditorPresenter>(context).controller;
-
-  final ScrollController scrollController = ScrollController();
-
-  @override
-  void onShow() {
-    scrollController.animateTo(
-      0,
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeIn,
+  Positioned buildWidget(BuildContext context, BoxConstraints constraints) {
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      top: constraints.biggest.height / 2,
+      child: Material(
+        type: MaterialType.card,
+        color: Colors.transparent,
+        child: build(context),
+      ),
     );
   }
 
   @override
-  void dispose() {
-    scrollController.dispose();
-    super.dispose();
+  void onBackgroundTapped(IFlagEditorCubit bloc) {
+    bloc.toggleStylesBoardOpen(false);
   }
 
-  @override
-  Widget buildChild(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: GestureDetector(
-            onTap: hide,
-            child: const Material(
-              color: Colors.black45,
-            ),
-          ),
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: FractionallySizedBox(
-            heightFactor: 0.4,
-            child: FCard(
-              child: GridView.count(
-                controller: scrollController,
-                crossAxisCount: 2,
-                mainAxisSpacing: 2,
-                crossAxisSpacing: 2,
-                children: [
-                  ...presenter.backgroundStyles.entries.map(
-                    (e) => ScaledGestureDetector(
-                      onTap: () => presenter.selectBackgroundStyle(e.value),
-                      child: FCard(
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: Center(
-                                child: AspectRatio(
-                                  aspectRatio: presenter.flag.proportion,
-                                  child: FlagStyleView(
-                                    style: e.value,
-                                  ),
-                                ),
+  Widget build(BuildContext context) {
+    final editorBloc = context.read<IFlagEditorCubit>();
+    final backgroundStyleCubit = context.read<EditorFlagBackgroundStyleCubit>();
+
+    return FCard(
+      child: BlocBuilder<StylesBoardCubit, StylesBoardState>(
+        builder: (context, state) {
+          return GridView.count(
+            crossAxisCount: 2,
+            mainAxisSpacing: 2,
+            crossAxisSpacing: 2,
+            children: [
+              ...state.items.entries.map(
+                (e) => ScaledGestureDetector(
+                  onTap: () => backgroundStyleCubit.changeStyle(e.value),
+                  child: FCard(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: AspectRatio(
+                              aspectRatio: editorBloc.initialFlag.proportion,
+                              child: FlagStyleView(
+                                style: e.value,
                               ),
                             ),
-                            Text(e.key),
-                          ],
+                          ),
                         ),
-                      ),
+                        Text(e.key),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ),
-      ],
+            ],
+          );
+        },
+      ),
     );
   }
 }

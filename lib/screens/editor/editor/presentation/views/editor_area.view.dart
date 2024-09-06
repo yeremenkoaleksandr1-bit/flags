@@ -1,15 +1,14 @@
 import 'package:defer_pointer/defer_pointer.dart';
 import 'package:drag_and_drop/extensions/render_box.dart';
-import 'package:flags/screens/editor/editor/presentation/bloc/flag_editor_bloc.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/area/area_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/scene_objects/scene_objects_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/views/area/background_style_view.dart';
-import 'package:flags/screens/editor/editor/presentation/views/layers/edit_selected_item/edit_selected_item_layer.dart';
 import 'package:flags/uikit/game_widgets/objects/game_objects_rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../bloc/flag_editor_cubit.dart';
 import '../cubits/selected_object/selected_object_cubit.dart';
 
 class EditorAreaView extends StatelessWidget {
@@ -17,7 +16,7 @@ class EditorAreaView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.read<FlagEditorBloc>();
+    final bloc = context.read<IFlagEditorCubit>();
     final sceneObjectsCubit = context.read<EditorSceneObjectsCubit>();
     final selectedObjectCubit = context.read<EditorSelectedObjectCubit>();
 

@@ -1,5 +1,8 @@
 import 'package:defer_pointer/defer_pointer.dart';
-import 'package:flags/screens/editor/editor/presentation/bloc/flag_editor_bloc.dart';
+import 'package:flags/screens/editor/editor/presentation/bloc/flag_editor_cubit.dart';
+import 'package:flags/screens/editor/editor/presentation/cubits/boards/emblems/emblems_board_cubit.dart';
+import 'package:flags/screens/editor/editor/presentation/cubits/boards/shapes/shapes_board_cubit.dart';
+import 'package:flags/screens/editor/editor/presentation/cubits/boards/styles/styles_board_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/scene_objects/scene_objects_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/selected_object/selected_object_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/screen/editor_screen.view.dart';
@@ -17,7 +20,7 @@ class EditorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.read<FlagEditorBloc>();
+    final bloc = context.read<IFlagEditorCubit>();
 
     return MultiBlocProvider(
       providers: [
@@ -37,12 +40,19 @@ class EditorScreen extends StatelessWidget {
         BlocProvider(
           create: (_) => EditorAreaCubit(),
         ),
+        BlocProvider(
+          create: (_) => StylesBoardCubit(bloc.initialFlag.rect),
+        ),
+        BlocProvider(
+          create: (_) => ShapesBoardCubit(),
+        ),
+        BlocProvider(
+          create: (_) => EmblemsBoardCubit(),
+        ),
       ],
       child: DeferredPointerHandler(
         child: GamePageBuilder(
-          onPageFocussed: () {
-            bloc.add(FlagEditorInitializeEvent());
-          },
+          onPageFocussed: () {},
           startSlideDirection: GamePageSlideDirection.bottom,
           endSlideDirection: GamePageSlideDirection.bottom,
           child: const EditorScreenView(),
