@@ -1,9 +1,12 @@
+import 'package:flags/domain/game_objects/base/game_object.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/area/area_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/selected_object/selected_object_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/object_handles/editor_draggable.dart';
+import 'package:flags/uikit/components/listenable_builder/listenable_builder.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:memoize/memoize.dart';
 
 import 'edit_selected_item_actions.dart';
 
@@ -30,6 +33,20 @@ class _EditorEditSelectedItemLayerState
     return BlocBuilder<EditorAreaCubit, EditorAreaState>(
       bloc: areaCubit,
       builder: (BuildContext context, area) {
+        final sizeFunc = memo2(
+          (Vector2 v, double fraction) => Size(
+            v.x * fraction,
+            v.y * fraction,
+          ),
+        );
+
+        final offsetFunc = memo2(
+          (Vector2 v, double fraction) => Offset(
+            area.rect.left + v.x * fraction,
+            area.rect.top + v.y * fraction,
+          ),
+        );
+
         return AbsorbPointer(
           child:
               BlocBuilder<EditorSelectedObjectCubit, EditorSelectedObjectState>(
@@ -46,61 +63,35 @@ class _EditorEditSelectedItemLayerState
                 final link = (object.key! as GlobalKey).currentState!
                     as EditorDraggableWidgetState;
 
-                return ValueListenableBuilder(
-                  valueListenable: link.sizeRx,
+                return FListenableBuilder(
+                  listenable: link.gameObject,
                   builder: (
                     BuildContext context,
-                    Vector2 value,
+                    GameObject value,
                     Widget? child,
                   ) {
-                    final size = Size(
-                      value.x * fraction,
-                      value.y * fraction,
-                    );
-                    return SizedBox(
-                      width: size.width + 16 * 2,
-                      height: size.height + 16 * 2,
-                      child: child,
-                    );
-                  },
-                  child: ValueListenableBuilder(
-                    valueListenable: link.positionRx,
-                    builder: (
-                      BuildContext context,
-                      Vector2 value,
-                      Widget? child,
-                    ) {
-                      final offset = Offset(
-                        area.rect.left + value.x * fraction,
-                        area.rect.top + value.y * fraction,
-                      );
+                    final size = sizeFunc(value.size, fraction);
+                    final offset = offsetFunc(value.position, fraction);
 
-                      return Transform.translate(
-                        offset: offset,
-                        child: child,
-                      );
-                    },
-                    child: ValueListenableBuilder(
-                      valueListenable: link.rotationRx,
-                      builder: (
-                        BuildContext context,
-                        double value,
-                        Widget? child,
-                      ) {
-                        return Transform.rotate(
-                          alignment: Alignment.topLeft,
-                          angle: value,
-                          child: child,
-                        );
-                      },
+                    return SizedBox(
+                      width: size.width + 32,
+                      height: size.height + 32,
                       child: Transform.translate(
-                        offset: const Offset(-16, -16),
-                        child: EditSelectedItemActions(
-                          fraction: fraction,
-                          link: link,
-                          areaRect: area.rect,
+                        offset: offset,
+                        child: Transform.rotate(
+                          alignment: Alignment.topLeft,
+                          angle: value.rotation,
+                          child: child,
                         ),
                       ),
+                    );
+                  },
+                  child: Transform.translate(
+                    offset: const Offset(-16, -16),
+                    child: EditSelectedItemActions(
+                      fraction: fraction,
+                      link: link,
+                      areaRect: area.rect,
                     ),
                   ),
                 );

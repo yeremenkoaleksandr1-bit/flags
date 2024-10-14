@@ -109,20 +109,16 @@ class PathGameObject extends ProcessGameObject {
 
   @override
   void draw(Canvas canvas, Size size, [double fraction = 1]) {
-    super.draw(canvas, size);
-
-    canvas.translate(
-      position.x,
-      position.y,
-    );
-
-    path.draw(canvas, size);
+    drawPart(canvas, size);
   }
 
   void drawPart(Canvas canvas, Size size) {
     super.draw(canvas, size);
 
-    canvas.scale(_fraction(size));
+    canvas.scale(
+      size.width / path.bounds.width,
+      size.height / path.bounds.height,
+    );
 
     path.draw(canvas, size);
   }

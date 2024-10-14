@@ -1,11 +1,13 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/screens/editor/editor/presentation/bloc/flag_editor_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/views/appbar.dart';
+import 'package:flags/screens/editor/editor/presentation/views/boards/custom_painter.board.dart';
 import 'package:flags/screens/editor/editor/presentation/views/boards/emblems_board.dart';
 import 'package:flags/screens/editor/editor/presentation/views/boards/shapes_board.dart';
 import 'package:flags/screens/editor/editor/presentation/views/boards/styles_board.dart';
 import 'package:flags/screens/editor/editor/presentation/views/bottom_buttons.dart';
 import 'package:flags/screens/editor/editor/presentation/views/layers/edit_selected_item/edit_selected_item_layer.dart';
+import 'package:flags/screens/editor/editor/presentation/widgets/actions/builder.dart';
 import 'package:flags/uikit/components/safe_area/safe_area.dart';
 import 'package:flags/uikit/layout_components/layout_components.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +16,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../views/editor_area.view.dart';
 import '../widgets/flag_style_color_changer.dart';
 
-class EditorScreenView extends StatelessWidget {
+final class EditorScreenView extends StatelessWidget {
   const EditorScreenView({super.key});
 
   @override
@@ -43,12 +45,13 @@ class EditorScreenView extends StatelessWidget {
         StylesBoard(),
         ShapesBoard(),
         EmblemsBoard(),
+        CustomPainterBoard(),
       ],
     );
   }
 }
 
-class _Content extends StatelessWidget {
+final class _Content extends StatelessWidget {
   const _Content({
     super.key,
   });
@@ -73,12 +76,16 @@ class _Content extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          EditorAreaView(),
-                          Gap.v4,
+                          Spacer(),
                           Align(
-                            alignment: Alignment.topLeft,
+                            alignment: Alignment.topRight,
                             child: FlagStyleColorChanger(),
                           ),
+                          Gap.v4,
+                          EditorAreaView(),
+                          Gap.v4,
+                          EditorSelectedObjectActionsBuilder(),
+                          Spacer(),
                         ],
                       ),
                     ),

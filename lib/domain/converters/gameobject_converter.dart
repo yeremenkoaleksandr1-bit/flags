@@ -1,10 +1,14 @@
 import 'dart:convert';
 
+import 'package:flags/domain/converters/game_objects/drawn_object_converter.dart';
 import 'package:flags/domain/converters/game_objects/emblem_converter.dart';
+import 'package:flags/domain/converters/game_objects/shape_converter.dart';
 import 'package:flags/domain/converters/json_converter.dart';
 import 'package:flags/domain/entities/path/path.dart';
 import 'package:flags/domain/game_objects/base/game_object.dart';
 import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
+import 'package:flags/domain/game_objects/game_objects.dart';
+import 'package:flags/domain/game_objects/shape/shape_object.dart';
 import 'package:flags/logger.dart';
 
 import 'objects/app_structs.dart';
@@ -33,12 +37,18 @@ abstract class GameObjectConverter<T extends GameObject>
 
   static IJsonConverter<dynamic, dynamic> Function()? _parseConverter(o) {
     if (o is EmblemPart) {
-      logger.f(o);
       return EmblemConverter.new;
     }
 
     if (o is SPath) {
       return SPathSerializer.new;
+    }
+
+    if (o is ShapeGameObject) {
+      return ShapeGameObjectConverter.new;
+    }
+    if (o is DrawnGameObject) {
+      return DrawnObjectConverter.new;
     }
 
     return null;
@@ -52,6 +62,14 @@ abstract class GameObjectConverter<T extends GameObject>
 
     if (o == "SPath") {
       return SPathSerializer.new;
+    }
+
+    if (o == "ShapeGameObject") {
+      return ShapeGameObjectConverter.new;
+    }
+
+    if (o == "DrawnGameObject") {
+      return DrawnObjectConverter.new;
     }
 
     return null;

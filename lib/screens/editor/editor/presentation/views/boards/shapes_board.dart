@@ -1,6 +1,10 @@
+import 'dart:math';
+
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/domain/editor/shapes/shape.dart';
+import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
 import 'package:flags/domain/game_objects/game_objects.dart';
+import 'package:flags/domain/game_objects/shape/shape_object.dart';
 import 'package:flags/screens/editor/editor/presentation/bloc/flag_editor_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/boards/shapes/shapes_board_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/scene_objects/scene_objects_cubit.dart';
@@ -8,6 +12,7 @@ import 'package:flags/screens/editor/editor/presentation/views/boards/base_board
 import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
 import 'package:flags/uikit/painters/drawable_painter.dart';
 import 'package:flame/components.dart';
+import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -52,11 +57,16 @@ class ShapesBoard extends EditorBaseBoard {
     final cubit = context.read<ShapesBoardCubit>();
 
     void onSelected(SShape value) {
+      final size = value.rect.size / 12;
+
+      final effectiveSize = value.rect.size / max(size.width, size.height);
+
       editorBloc.toggleShapesBoardOpen(false);
       sceneObjectsBloc.addGameObject(
-        PathGameObject(
+        ShapeGameObject(
           name: UniqueKey().toString(),
           path: value,
+          size: Vector2.all(16),
         ),
       );
     }

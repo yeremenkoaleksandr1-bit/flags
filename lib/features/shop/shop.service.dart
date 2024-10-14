@@ -11,12 +11,12 @@ class ShopServiceImpl implements IShopService {
   final Box<bool> box = Hive.box<bool>(name: boxKey);
 
   @override
-  bool isBought(String emblemName) {
-    return box.containsKey(emblemName);
+  bool isBought(String item) {
+    return box.containsKey(item);
   }
 
   @override
-  void saveItem(String emblemName) {
-    box.put(emblemName, true);
+  void saveItem(String item) {
+    box.put(item, true);
   }
 }

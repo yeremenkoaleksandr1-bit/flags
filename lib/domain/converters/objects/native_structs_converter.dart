@@ -10,7 +10,7 @@ class RectSerializer implements IJsonConverter<Rect, Map<String, dynamic>> {
         json["l"],
         json["t"],
         json["w"],
-        json["H"],
+        json["h"],
       );
 
   @override

@@ -17,7 +17,7 @@ class EditorAppBarView extends StatelessWidget {
     return Row(
       children: [
         FBackButton(
-          onPressed: () {},
+          onPressed: () => bloc.onClose(context),
         ),
         Gap.h24,
         Expanded(

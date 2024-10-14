@@ -38,7 +38,7 @@ class DraggableGameObjectWidgetState<G extends GameObject,
     extends GameObjectWidgetState<G, T> {
   final RenderBoxExposer exposer = RenderBoxExposer();
 
-  late Vector2 _startPosition = Vector2.zero();
+  late Vector2 startPosition = Vector2.zero();
 
   @override
   Rect transformRect({
@@ -95,22 +95,22 @@ class DraggableGameObjectWidgetState<G extends GameObject,
   void onMoveStart(DragStartDetails event, BoxConstraints constraints) {
     final localPosition =
         areaRenderBox.globalToLocal(event.globalPosition).toVector2();
-    _startPosition = localPosition - positionRx.value;
+    startPosition = localPosition - gameObject.position;
     widget.onMoveStart?.call(this, localPosition);
   }
 
-  @mustCallSuper
   void onMoveUpdate(DragUpdateDetails event, BoxConstraints constraints) {
     final localPosition =
         areaRenderBox.globalToLocal(event.globalPosition).toVector2();
-    final newPosition = localPosition - _startPosition;
-    positionRx.value = newPosition;
+    final newPosition = localPosition - startPosition;
+
+    gameObject.position = newPosition;
     widget.onMoveUpdate?.call(this, newPosition);
   }
 
   @mustCallSuper
   void onMoveEnd(DragEndDetails event, BoxConstraints constraints) {
-    widget.onMoveEnd?.call(this, positionRx.value);
+    widget.onMoveEnd?.call(this, gameObject.position);
   }
 
   Widget buildDraggableWidget(BuildContext context) {

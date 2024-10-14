@@ -16,6 +16,8 @@ class EditorAreaCubit extends Cubit<EditorAreaState> {
           ),
         );
 
+  double get fraction => state.rect.width / 64;
+
   void setAreaRect(Rect rect) {
     emit(
       state.copyWith(rect: rect),

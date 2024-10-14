@@ -1,11 +1,13 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flags/domain/game_objects/game_objects.dart';
+import 'package:flags/screens/editor/editor/presentation/cubits/scene_objects/actions/actions.dart';
 import 'package:flags/screens/editor/editor/presentation/object_handles/editor_draggable.dart';
 
 part 'scene_objects_state.dart';
 
-final class EditorSceneObjectsCubit extends Cubit<EditorSceneObjectsState> {
+final class EditorSceneObjectsCubit extends Cubit<EditorSceneObjectsState>
+    with SceneObjectsActionsMixin {
   EditorSceneObjectsCubit({
     required List<GameObject> initialObjects,
   }) : super(

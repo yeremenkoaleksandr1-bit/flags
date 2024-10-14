@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flags/domain/editor/styles/clear_style.dart';
 import 'package:flags/domain/editor/styles/style.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
@@ -5,7 +6,7 @@ import 'package:flags/domain/game_objects/game_objects.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
-class EditorFlagData {
+class EditorFlagData extends Equatable {
   final String name;
 
   final double proportion;
@@ -60,4 +61,12 @@ class EditorFlagData {
 
     return data;
   }
+
+  @override
+  List<Object?> get props => [
+        name,
+        objects,
+        backgroundStyle,
+        proportion,
+      ];
 }

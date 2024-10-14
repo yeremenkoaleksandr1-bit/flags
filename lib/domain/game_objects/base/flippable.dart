@@ -1,4 +1,4 @@
-import 'package:flame/game.dart';
+import 'package:flame/extensions.dart';
 import 'package:flutter/rendering.dart';
 
 import 'process.game_object.dart';
@@ -13,13 +13,32 @@ abstract class FlippableGameObject extends ProcessGameObject {
     super.rotation,
     super.uniqueName,
     super.previousMustBePlaced,
-    this.flippedVertical = false,
-    this.flippedHorizontal = false,
-  });
+    bool flippedVertical = false,
+    bool flippedHorizontal = false,
+  })  : _flippedHorizontal = flippedHorizontal,
+        _flippedVertical = flippedVertical;
 
-  final bool flippedHorizontal;
+  bool _flippedHorizontal;
+  bool _flippedVertical;
 
-  final bool flippedVertical;
+  // Getters for flipped properties
+  bool get flippedHorizontal => _flippedHorizontal;
+
+  bool get flippedVertical => _flippedVertical;
+
+  set flippedHorizontal(bool value) {
+    if (_flippedHorizontal != value) {
+      _flippedHorizontal = value;
+      notifyListeners();
+    }
+  }
+
+  set flippedVertical(bool value) {
+    if (_flippedVertical != value) {
+      _flippedVertical = value;
+      notifyListeners();
+    }
+  }
 
   @override
   FlippableGameObject copyWith({
@@ -53,11 +72,20 @@ abstract class FlippableGameObject extends ProcessGameObject {
   }
 
   FlippableGameObject flipHorizontal() {
-    return copyWith(flippedHorizontal: !flippedHorizontal);
+    flippedHorizontal = !flippedHorizontal;
+    final Matrix4 flipMatrix = Matrix4.identity()
+      ..rotateZ(rotation); // Translate back
+
+    position =
+        MatrixUtils.transformPoint(flipMatrix, position.toOffset()).toVector2();
+
+    rotation = -rotation;
+    return this;
   }
 
   FlippableGameObject flipVertical() {
-    return copyWith(flippedVertical: !flippedVertical);
+    flippedVertical = !flippedVertical;
+    return this;
   }
 
   @override
@@ -76,7 +104,9 @@ abstract class FlippableGameObject extends ProcessGameObject {
 
   @override
   bool operator ==(Object other) {
-    if (other is! FlippableGameObject) return false;
+    if (other is! FlippableGameObject) {
+      return false;
+    }
 
     return super == other &&
         flippedVertical == other.flippedVertical &&

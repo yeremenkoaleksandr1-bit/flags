@@ -46,7 +46,9 @@ class EditorBottomButtonsView extends StatelessWidget {
         ),
         Expanded(
           child: FGreenButton(
-            onPressed: () {},
+            onPressed: () {
+              bloc.toggleCustomPaintBoardOpen(true);
+            },
             child: const AspectRatio(
               aspectRatio: 1,
               child: Center(child: Text("custom")),

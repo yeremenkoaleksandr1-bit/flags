@@ -1,10 +1,13 @@
 import 'dart:math';
 
-import 'package:community_material_icon/community_material_icon.dart';
+import 'package:flags/domain/game_objects/base/game_object.dart';
+import 'package:flags/screens/editor/editor/presentation/cubits/area/area_cubit.dart';
+import 'package:flags/screens/editor/editor/presentation/cubits/magnet_area/magnet_area_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/object_handles/editor_draggable.dart';
 import 'package:flags/screens/editor/editor/presentation/object_handles/handle_button.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EditSelectedItemActions extends StatefulWidget {
   const EditSelectedItemActions({
@@ -24,7 +27,10 @@ class EditSelectedItemActions extends StatefulWidget {
 }
 
 class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
-  EditorDraggableWidgetState get object => widget.link;
+  late final MagnetAreaCubit magnetCubit = context.read<MagnetAreaCubit>();
+  late final EditorAreaCubit areaCubit = context.read<EditorAreaCubit>();
+
+  GameObject get object => widget.link.gameObject;
 
   double get fraction => widget.fraction;
 
@@ -36,7 +42,7 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
   double initialRotation = 0;
 
   void onDragStart(DragStartDetails event) {
-    initialRotatedPosition = object.paintBounds.topLeft.toVector2();
+    initialRotatedPosition = widget.link.paintBounds.topLeft.toVector2();
     startTapPos = event.globalPosition.toVector2();
 
     initialPosition = object.position.clone();
@@ -102,7 +108,7 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
   Vector2 initialRotatedPosition = Vector2.zero();
 
   void onRotationStart(DragStartDetails event) {
-    initialRotatedPosition = object.paintBounds.topLeft.toVector2();
+    initialRotatedPosition = widget.link.paintBounds.center.toVector2();
 
     startTapPos = event.globalPosition.toVector2();
 
@@ -114,25 +120,45 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
     final currentTap = event.globalPosition.toVector2();
     final center = initialRotatedPosition;
 
-    final angleDelta = calculateAngle(center, startTapPos) -
-        calculateAngle(center, currentTap);
+    final currentAngle = calculateAngle(center, currentTap);
+    final startAngle = calculateAngle(center, startTapPos);
 
-    final double angle = initialRotation - angleDelta;
+    double angleDelta = currentAngle - startAngle;
+
+    if (angleDelta < -pi) {
+      angleDelta += 2 * pi;
+    } else if (angleDelta > pi) {
+      angleDelta -= 2 * pi;
+    }
+
+    double newRotation = (initialRotation + angleDelta).remainder(2 * pi);
+    if (newRotation < 0) {
+      newRotation += 2 * pi;
+    }
+
+    final snapInterval = (magnetCubit.state.active ? 45.0 : 1) * (pi / 180.0);
+
+    final double snappedAngle =
+        (newRotation / snapInterval).round() * snapInterval;
+
+    if (magnetCubit.state.active) {
+      if (snappedAngle != object.rotation) {
+        //TODO: something
+      }
+    }
+
+    object.rotation = snappedAngle;
 
     final offset = object.size / 2;
 
-    final rotatedOffset = (offset.clone()..rotate(angle)) -
+    final rotatedOffset = (offset.clone()..rotate(snappedAngle)) -
         (offset.clone()..rotate(initialRotation));
-
-    object.rotation = angle;
 
     object.position = initialPosition - rotatedOffset;
   }
 
-  double calculateAngle(Vector2 initialPosition, Vector2 currentPosition) {
-    final Vector2 delta = currentPosition - initialPosition;
-
-    return atan2(delta.y, delta.x);
+  double calculateAngle(Vector2 center, Vector2 point) {
+    return atan2(point.y - center.y, point.x - center.x);
   }
 
   Vector2 _rotateVector(Vector2 vector, double angle) {

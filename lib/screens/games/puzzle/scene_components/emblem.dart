@@ -59,7 +59,7 @@ class EmblemSceneObjectState extends DraggableGameObjectWidgetState<
           return;
         }
 
-        final scale = scaleConverter(scaleRx.value);
+        final scale = scaleConverter(gameObject.scale);
         final rect = context.globalPaintBounds ?? Rect.zero;
 
         presenter.emblemConfirmationView.setPosition(

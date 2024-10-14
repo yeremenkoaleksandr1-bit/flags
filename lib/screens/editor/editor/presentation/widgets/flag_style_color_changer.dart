@@ -36,7 +36,10 @@ class FlagStyleColorChanger extends StatelessWidget {
               ...state.style.colors.indexed.map((e) {
                 return GestureDetector(
                   onTap: () => onChangeColor(e.$1, e.$2),
-                  child: _ColorView(e.$2),
+                  child: ColorCircleView(
+                    e.$2,
+                    dimension: 32,
+                  ),
                 );
               }),
             ],
@@ -47,13 +50,16 @@ class FlagStyleColorChanger extends StatelessWidget {
   }
 }
 
-class _ColorView extends StatelessWidget {
-  const _ColorView(
+class ColorCircleView extends StatelessWidget {
+  const ColorCircleView(
     this.color, {
     super.key,
+    required this.dimension,
   });
 
   final Color color;
+
+  final double dimension;
 
   @override
   Widget build(BuildContext context) {
@@ -65,8 +71,8 @@ class _ColorView extends StatelessWidget {
           width: 2,
         ),
       ),
-      child: const SizedBox.square(
-        dimension: 32,
+      child: SizedBox.square(
+        dimension: dimension,
       ),
     );
   }

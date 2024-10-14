@@ -1,6 +1,9 @@
-import 'package:add_to_cart_animation/globalkeyext.dart';
+import 'dart:math';
+
 import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/domain/game_objects/base/game_object.dart';
+import 'package:flags/screens/editor/editor/presentation/cubits/area/area_cubit.dart';
+import 'package:flags/screens/editor/editor/presentation/cubits/magnet_area/magnet_area_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/selected_object/selected_object_cubit.dart';
 import 'package:flags/uikit/game_widgets/objects/draggable_object.dart';
 import 'package:flags/uikit/game_widgets/objects/game_object_paint.dart';
@@ -20,14 +23,17 @@ class EditorDraggableWidget extends DraggableGameObjectWidget<GameObject> {
 
 class EditorDraggableWidgetState
     extends DraggableGameObjectWidgetState<GameObject, EditorDraggableWidget> {
-  final GlobalKey _paintedObjectKey = GlobalKey();
+  late final MagnetAreaCubit magnetCubit = context.read<MagnetAreaCubit>();
+  late final EditorAreaCubit areaCubit = context.read<EditorAreaCubit>();
+
+  final GlobalKey paintedObjectKey = GlobalKey();
 
   late final selectedObjectCubit = context.read<EditorSelectedObjectCubit>();
 
   @override
   Alignment get rotateAlignment => Alignment.topLeft;
 
-  Rect get paintBounds => context.globalPaintBounds!;
+  Rect get paintBounds => paintedObjectKey.currentContext!.globalPaintBounds!;
 
   @override
   Rect transformRect({
@@ -66,23 +72,102 @@ class EditorDraggableWidgetState
 
   void onDragStart(DragStartDetails event) {
     startOffset = event.localPosition;
-    initialPosition = positionRx.value;
-    initialSize = sizeRx.value;
+    initialPosition = gameObject.position;
+    initialSize = gameObject.size;
   }
 
   void onUpdateTopLeft(DragUpdateDetails event) {
     final delta = (event.localPosition - startOffset).toVector2();
 
-    sizeRx.value = initialSize - delta;
-    positionRx.value = initialPosition + delta;
+    gameObject.size = initialSize - delta;
+    gameObject.position = initialPosition + delta;
+  }
+
+  bool hasSnapping = false;
+
+  @override
+  void onMoveEnd(DragEndDetails event, BoxConstraints constraints) {
+    magnetCubit.setActiveHorizontalPosition(false);
+    magnetCubit.setActiveVerticalPosition(false);
+    hasSnapping = false;
+
+    super.onMoveEnd(event, constraints);
+  }
+
+  @override
+  void onMoveUpdate(DragUpdateDetails event, BoxConstraints constraints) {
+    hasSnapping = false;
+    final localPosition =
+        areaRenderBox.globalToLocal(event.globalPosition).toVector2();
+
+    var newPosition = localPosition - startPosition;
+
+    final objectCenter = newPosition + gameObject.size / 2;
+
+    final rotatedOffset =
+        calculateRotatedOffset(gameObject.size, gameObject.rotation);
+
+    final np = objectCenter - (gameObject.size / 2) + rotatedOffset;
+    final areaSize = areaCubit.state.rect.size / areaCubit.fraction;
+
+    final isSnapVertical = (np.x - areaSize.width / 2).abs() < 5;
+    final isSnapHorizontal = (np.y - areaSize.height / 2).abs() < 5;
+
+    if (isSnapVertical) {
+      hasSnapping = true;
+
+      newPosition = Vector2(
+        areaSize.width / 2 - gameObject.size.x / 2,
+        newPosition.y,
+      );
+      magnetCubit.setActiveVerticalPosition(true);
+    }
+
+    if (isSnapHorizontal) {
+      hasSnapping = true;
+
+      newPosition = Vector2(
+        newPosition.x,
+        areaSize.height / 2 - gameObject.size.y / 2,
+      );
+      magnetCubit.setActiveHorizontalPosition(true);
+    }
+
+    gameObject.position = newPosition;
+  }
+
+  Vector2 calculateRotatedOffset(Vector2 size, double rotation) {
+    final radians =
+        rotation * (pi / 180); // Convert degrees to radians if needed
+
+    // Offset based on the rotation and size of the object
+    final offsetX = size.x / 2 * cos(radians) - size.y / 2 * sin(radians);
+    final offsetY = size.x / 2 * sin(radians) + size.y / 2 * cos(radians);
+
+    return Vector2(offsetX, offsetY);
+  }
+
+  @override
+  Widget buildWidget(BuildContext context) {
+    return KeyedSubtree(
+      key: paintedObjectKey,
+      child: super.buildWidget(context),
+    );
   }
 
   @override
   Widget buildDraggableWidget(BuildContext context) {
     return CustomPaint(
-      key: _paintedObjectKey,
       size: gameObject.size.toSize(),
       painter: GameObjectPainter(gameObject),
     );
   }
+}
+
+Vector2 getCenter(Vector2 topLeft, Vector2 bottomRight) {
+  // Calculate the center point
+  final centerX = (topLeft.x + bottomRight.x) / 2;
+  final centerY = (topLeft.y + bottomRight.y) / 2;
+
+  return Vector2(centerX, centerY);
 }

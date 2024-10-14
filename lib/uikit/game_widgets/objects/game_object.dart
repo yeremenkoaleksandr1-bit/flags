@@ -1,8 +1,8 @@
 import 'package:flags/domain/game_objects/base/game_object.dart';
+import 'package:flags/uikit/components/listenable_builder/listenable_builder.dart';
 import 'package:flags/uikit/game_widgets/game_widgets.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/widgets.dart';
-import 'package:multi_value_listenable_builder/multi_value_listenable_builder.dart';
 
 import 'game_objects_rendering.dart';
 
@@ -23,39 +23,15 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
   late GameObjectsRenderingState renderingArea =
       GameObjectsRendering.of(context);
 
-  G get gameObject => widget.gameObject;
+  late G gameObject = widget.gameObject;
 
   RenderBox get areaRenderBox => renderingArea.exposer.renderBox.value!;
 
-  double get fitValue => areaRenderBox.size.width / widget.gameObject.size.x;
-
-  ValueNotifier<Vector2> get positionRx => widget.gameObject.positionRx;
-
-  ValueNotifier<Vector2> get sizeRx => widget.gameObject.sizeRx;
-
-  ValueNotifier<double> get rotationRx => widget.gameObject.rotationRx;
-
-  ValueNotifier<double> get scaleRx => widget.gameObject.scaleRx;
-
-  double get rotation => rotationRx.value;
-
-  set rotation(double value) => rotationRx.value = value;
-
-  double get scale => scaleRx.value;
-
-  set scale(double value) => scaleRx.value = value;
-
-  Vector2 get position => positionRx.value;
-
-  set position(Vector2 value) => positionRx.value = value;
-
-  Vector2 get size => sizeRx.value;
-
-  set size(Vector2 value) => sizeRx.value = value;
+  double get fitValue => areaRenderBox.size.width / gameObject.size.x;
 
   Widget buildWidget(BuildContext context) {
     return GameObjectPaint(
-      gameObject: widget.gameObject,
+      gameObject: gameObject,
     );
   }
 
@@ -89,14 +65,18 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
   Widget build(BuildContext context) {
     final child = buildWidget(context);
 
-    return MultiValueListenableBuilder(
-      valueListenables: [positionRx, scaleRx, sizeRx, rotationRx],
-      builder: (BuildContext context, List<dynamic> values, Widget? child) {
-        final position = positionConverter(values[0]);
-        final scale = scaleConverter(values[1]);
+    return FListenableBuilder(
+      listenable: gameObject,
+      builder: (
+        BuildContext context,
+        GameObject object,
+        Widget? child,
+      ) {
+        final position = positionConverter(object.position);
+        final scale = scaleConverter(object.scale);
 
-        final size = sizeConverter(values[2]);
-        final rotation = rotationConverter(values[3]);
+        final size = sizeConverter(object.size);
+        final rotation = rotationConverter(object.rotation);
 
         final rect = transformRect(
           position: position,

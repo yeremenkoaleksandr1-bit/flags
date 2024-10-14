@@ -46,15 +46,15 @@ class _Painter extends CustomPainter {
 
     final t = fs.height / originalSize.height;
     for (final object in flag.objects) {
-      canvas.save();
-
+      canvas.saveLayer(Offset.zero & size, Paint());
       canvas.translate(
         object.position.x,
         object.position.y,
       );
 
-      object.draw(canvas, size);
+      canvas.rotate(object.rotation);
 
+      object.draw(canvas, size);
       canvas.restore();
     }
   }

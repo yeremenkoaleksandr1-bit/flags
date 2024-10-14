@@ -3,12 +3,6 @@ import 'dart:ui';
 
 class Calculator {
   static double fraction(Size original, Size object) {
-    // if (original.width >= original.height) {
-    //   return original.width / object.width;
-    // } else {
-    //   return original.height / object.height;
-    // }
-
     return min(original.width / object.width, original.height / object.height);
   }
 

@@ -5,30 +5,17 @@ import 'package:flags/shared/services/disposable.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
-abstract class GameObject implements IDrawable, IDisposable {
+abstract class GameObject
+    with ChangeNotifier
+    implements IDrawable, IDisposable {
   Key key;
-
   String name;
-
   String? uniqueName;
 
-  final ValueNotifier<Vector2> positionRx;
-
-  Vector2 get position => positionRx.value;
-
-  final ValueNotifier<double> scaleRx;
-
-  double get scale => scaleRx.value;
-
-  final ValueNotifier<Vector2> sizeRx;
-
-  Vector2 get size => sizeRx.value;
-
-  final ValueNotifier<double> rotationRx;
-
-  double get rotation => rotationRx.value;
-
-  Rect get rect => position & size;
+  Vector2 _position;
+  double _scale;
+  Vector2 _size;
+  double _rotation;
 
   GameObject({
     Key? key,
@@ -40,18 +27,49 @@ abstract class GameObject implements IDrawable, IDisposable {
     double rotation = 0,
   })  : key = key ?? UniqueKey(),
         uniqueName = uniqueName ?? name,
-        positionRx = ValueNotifier(position ?? Vector2.zero()),
-        sizeRx = ValueNotifier(size ?? Vector2.all(64)),
-        scaleRx = ValueNotifier(scale),
-        rotationRx = ValueNotifier(rotation);
+        _position = position ?? Vector2.zero(),
+        _size = size ?? Vector2.all(64),
+        _scale = scale,
+        _rotation = rotation;
 
-  @override
-  void dispose() {
-    positionRx.dispose();
-    sizeRx.dispose();
-    scaleRx.dispose();
-    rotationRx.dispose();
+  // Getters
+  Vector2 get position => _position;
+
+  double get scale => _scale;
+
+  Vector2 get size => _size;
+
+  double get rotation => _rotation;
+
+  set position(Vector2 newPosition) {
+    if (_position != newPosition) {
+      _position = newPosition;
+      notifyListeners();
+    }
   }
+
+  set scale(double newScale) {
+    if (_scale != newScale) {
+      _scale = newScale;
+      notifyListeners();
+    }
+  }
+
+  set size(Vector2 newSize) {
+    if (_size != newSize) {
+      _size = newSize;
+      notifyListeners();
+    }
+  }
+
+  set rotation(double newRotation) {
+    if (_rotation != newRotation) {
+      _rotation = newRotation;
+      notifyListeners();
+    }
+  }
+
+  Rect get rect => _position & _size;
 
   @protected
   Future<void> init();
@@ -73,26 +91,25 @@ abstract class GameObject implements IDrawable, IDisposable {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
       other is GameObject &&
-          runtimeType == other.runtimeType &&
-          key == other.key &&
-          name == other.name &&
-          uniqueName == other.uniqueName &&
-          position == other.position &&
-          scale == other.scale &&
-          size == other.size &&
-          rotation == other.rotation;
+      runtimeType == other.runtimeType &&
+      key == other.key &&
+      name == other.name &&
+      uniqueName == other.uniqueName &&
+      _position == other._position &&
+      _scale == other._scale &&
+      _size == other._size &&
+      _rotation == other._rotation;
 
   @override
   int get hashCode =>
       key.hashCode ^
       name.hashCode ^
       uniqueName.hashCode ^
-      position.hashCode ^
-      scale.hashCode ^
-      size.hashCode ^
-      rotation.hashCode;
+      _position.hashCode ^
+      _scale.hashCode ^
+      _size.hashCode ^
+      _rotation.hashCode;
 }
 
 extension GameObjectX on GameObject {

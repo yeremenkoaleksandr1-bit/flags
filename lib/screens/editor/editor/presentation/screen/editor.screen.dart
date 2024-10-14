@@ -1,8 +1,10 @@
 import 'package:defer_pointer/defer_pointer.dart';
+import 'package:flags/features/shop/shop.provider.dart';
 import 'package:flags/screens/editor/editor/presentation/bloc/flag_editor_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/boards/emblems/emblems_board_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/boards/shapes/shapes_board_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/boards/styles/styles_board_cubit.dart';
+import 'package:flags/screens/editor/editor/presentation/cubits/magnet_area/magnet_area_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/scene_objects/scene_objects_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/selected_object/selected_object_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/screen/editor_screen.view.dart';
@@ -15,7 +17,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubits/area/area_cubit.dart';
 import '../cubits/flag_background_style/flag_background_style_cubit.dart';
 
-class EditorScreen extends StatelessWidget {
+final class EditorScreen extends StatelessWidget {
   const EditorScreen({super.key});
 
   @override
@@ -37,6 +39,7 @@ class EditorScreen extends StatelessWidget {
         BlocProvider(
           create: (_) => EditorSelectedObjectCubit(),
         ),
+        //boards
         BlocProvider(
           create: (_) => EditorAreaCubit(),
         ),
@@ -47,7 +50,10 @@ class EditorScreen extends StatelessWidget {
           create: (_) => ShapesBoardCubit(),
         ),
         BlocProvider(
-          create: (_) => EmblemsBoardCubit(),
+          create: (_) => MagnetAreaCubit(),
+        ),
+        BlocProvider(
+          create: (_) => EmblemsBoardCubit(ShopProvider.of(context)),
         ),
       ],
       child: DeferredPointerHandler(

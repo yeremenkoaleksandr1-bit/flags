@@ -1,17 +1,27 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flags/core/extensions/extensions.dart';
+import 'package:flags/core/utils/calculator.dart';
 import 'package:flags/domain/game_objects/emblems/emblems.dart';
+import 'package:flags/domain/game_objects/game_objects.dart';
 import 'package:flags/screens/editor/editor/presentation/bloc/flag_editor_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/boards/emblems/emblems_board_cubit.dart';
-import 'package:flags/screens/editor/editor/presentation/cubits/boards/shapes/shapes_board_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/scene_objects/scene_objects_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/views/boards/base_board.dart';
+import 'package:flags/screens/editor/editor/presentation/widgets/factories/emblem_item_factory.dart';
+import 'package:flags/uikit/components/buttons/buttons.dart';
 import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
 import 'package:flags/uikit/painters/drawable_painter.dart';
+import 'package:flags/uikit/text/text.dart';
 import 'package:flame/extensions.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../../../../../uikit/layout_components/containers/containers.dart';
 
@@ -52,7 +62,6 @@ class EmblemsBoard extends EditorBaseBoard {
     final editorBloc = context.read<IFlagEditorCubit>();
 
     final sceneObjectsBloc = context.read<EditorSceneObjectsCubit>();
-    final cubit = context.read<ShapesBoardCubit>();
 
     Future<void> onSelect(Emblem value) async {
       final size = value.image.size / 12;
@@ -72,151 +81,118 @@ class EmblemsBoard extends EditorBaseBoard {
       );
     }
 
+    Future<void> uploadImageToBoard() async {
+      final FilePickerResult? result =
+          await FilePicker.platform.pickFiles(type: FileType.image);
+
+      if (result != null) {
+        EasyLoading.show();
+        final path = result.paths.first;
+        final file = File(path!);
+        final fileName = file.path.split('/').last;
+        final hashedFileName = shortHash(file.path + file.hashCode.toString());
+
+        final image = Image.file(file).image;
+        final uiImage = await image.image;
+
+        final size = Vector2(
+          uiImage.width.toDouble(),
+          uiImage.height.toDouble(),
+        );
+
+        final String localPatch =
+            (await getApplicationDocumentsDirectory()).path;
+
+        final File copiedImage = await file.copy('$localPatch/$hashedFileName');
+
+        final fraction = Calculator.fraction(
+          const Size.square(16),
+          size.toSize(),
+        );
+
+        final ImageGameObject imageGameObject = await ImageGameObject(
+          imagePath: copiedImage.path,
+          name: hashedFileName,
+          size: size * fraction,
+        ).init();
+
+        sceneObjectsBloc.addGameObject(
+          imageGameObject,
+        );
+        EasyLoading.dismiss();
+      }
+    }
+
     return FCard(
       child: BlocBuilder<EmblemsBoardCubit, EmblemsBoardState>(
         builder: (context, state) {
-          return GridView.count(
-            crossAxisCount: 3,
-            mainAxisSpacing: 2,
-            crossAxisSpacing: 2,
-            children: [
-              ...state.items.map(
-                (e) => ScaledGestureDetector(
-                  onTap: () => onSelect(e),
-                  child: FCard(
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const Pad(all: 2),
-                            child: FittedBox(
-                              fit: BoxFit.fitWidth,
-                              child: DrawablePaint(
-                                drawable: e,
-                                size: e.image.size.toSize(),
+          return SafeArea(
+            bottom: true,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: GridView.count(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 2,
+                    crossAxisSpacing: 2,
+                    children: [
+                      ...state.items.map(
+                        (e) {
+                          return EmblemItemFactory(
+                            item: e,
+                          );
+                          return ScaledGestureDetector(
+                            onTap: () => onSelect(e.emblem),
+                            child: FCard(
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const Pad(all: 2),
+                                      child: FittedBox(
+                                        fit: BoxFit.fitWidth,
+                                        child: DrawablePaint(
+                                          drawable: e.emblem,
+                                          size: e.emblem.image.size.toSize(),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      e.emblem.name,
+                                      maxLines: 1,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                        ),
-                        FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            e.name,
-                            maxLines: 1,
-                          ),
-                        ),
-                      ],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(),
+                FYellowButton(
+                  onPressed: uploadImageToBoard,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
+                      child: FText(
+                        "upload image",
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),
     );
   }
 }
-//
-// import 'dart:math';
-//
-//
-// import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
-// import 'package:flags/domain/game_objects/emblems/emblem.dart';
-// import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
-// import 'package:flags/features/layers/layer.view.dart';
-// import 'package:flags/screens/editor/editor/presentation/controllers/editor.controller.dart';
-// import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
-// import 'package:flags/uikit/layout_components/containers/card.dart';
-// import 'package:flags/uikit/painters/drawable_painter.dart';
-// import 'package:flame/extensions.dart';
-// import 'package:flutter/material.dart';
-// import 'package:state_manager/state_manager.dart';
-//
-// class EditorEmblemsBoard extends UiLayer {
-//   const EditorEmblemsBoard({super.key})
-//       : super(
-//           tag: "editor_emblems",
-//           initialShown: false,
-//         );
-//
-//   @override
-//   State<StatefulWidget> createState() => EditorEmblemsState();
-// }
-//
-// abstract interface class IEditorEmblemsController implements IUiLayer {}
-//
-// class EditorEmblemsState
-//     extends UiLayerState<EditorEmblemsBoard, IEditorEmblemsController>
-//     implements IEditorEmblemsController {
-//   late final IEditorPresenter presenter =
-//       GetScreen.of<IEditorPresenter>(context).controller;
-//
-//   final ScrollController scrollController = ScrollController();
-//
-//   late final emblems = presenter.emblems
-//     ..sort(
-//       (a, b) => a.name.toLowerCase().compareTo(
-//             b.name.toLowerCase(),
-//           ),
-//     );
-//
-//   @override
-//   void onShow() {
-//     scrollController.animateTo(
-//       0,
-//       duration: const Duration(milliseconds: 250),
-//       curve: Curves.easeIn,
-//     );
-//   }
-//
-//   @override
-//   void dispose() {
-//     scrollController.dispose();
-//     super.dispose();
-//   }
-//
-//   Future<void> onSelect(Emblem value) async {
-//     await hide();
-//
-//     final size = value.image.size / 128;
-//
-//     final effectiveSize = value.image.size / max(size.x, size.y);
-//
-//     final part = EmblemPart(
-//       name: UniqueKey().toString(),
-//       emblem: value,
-//       initialEmblemSize: value.image.size,
-//       size: effectiveSize,
-//     );
-//
-//     await presenter.addObjectToScene(
-//       part,
-//     );
-//   }
-//
-//   @override
-//   Widget buildChild(BuildContext context) {
-//     return Stack(
-//       children: [
-//         Positioned.fill(
-//           child: GestureDetector(
-//             onTap: hide,
-//             child: const Material(
-//               color: Colors.black45,
-//             ),
-//           ),
-//         ),
-//         Align(
-//           alignment: Alignment.bottomCenter,
-//           child: FractionallySizedBox(
-//             heightFactor: 0.5,
-//             child: FCard(
-//               child: ,
-//             ),
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-// }

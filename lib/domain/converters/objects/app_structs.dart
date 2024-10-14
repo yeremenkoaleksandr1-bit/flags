@@ -6,13 +6,14 @@ import 'package:flags/domain/converters/objects/native_structs_converter.dart';
 import 'package:flags/domain/editor/styles/style.dart';
 import 'package:flags/domain/entities/path/path.dart';
 import 'package:flags/domain/entities/points/points.dart';
+import 'package:flags/domain/game_objects/shape/shape_object.dart';
 
 class SPointSerializer implements IJsonConverter<SPoint, List<dynamic>> {
   const SPointSerializer();
 
   @override
   SPoint fromJson(List<dynamic> j) {
-    final List<double> p = j[1];
+    final List<dynamic> p = j[1];
     return switch (j[0] as String) {
       "close" => SClosePoint(),
       "cubit" => SCubitPoint(p[0], p[1], p[2], p[3], p[4], p[5]),
@@ -69,6 +70,8 @@ class SPaintSerializer implements IJsonConverter<SPaint, Map<String, dynamic>> {
 }
 
 class SPathSerializer implements IJsonConverter<SPath, Map<String, dynamic>> {
+  const SPathSerializer();
+
   @override
   SPath fromJson(Map<String, dynamic> j) => SPath(
         rect: const RectSerializer().fromJson(j["rect"]),

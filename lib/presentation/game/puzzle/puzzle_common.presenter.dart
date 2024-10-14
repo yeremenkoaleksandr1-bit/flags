@@ -518,10 +518,9 @@ class PuzzleCommonModePresenterImpl extends GetController
     if (focussedObject != null) {
       final object = focussedObject.toEmblemPart();
 
-      object.positionRx.value = sceneObject!.positionRx.value;
-      object.rotationRx.value = sceneObject.rotationRx.value;
-      object.scaleRx.value =
-          sceneObject.scaleConverter(sceneObject.scaleRx.value);
+      object.position = sceneObject!.gameObject.position;
+      object.rotation = sceneObject.gameObject.rotation;
+      object.scale = sceneObject.scaleConverter(sceneObject.gameObject.scale);
 
       final flagObject = state.level.value.flag.objects.firstWhereOrNull(
         (e) => e.uniqueName == object.uniqueName,

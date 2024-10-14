@@ -28,13 +28,14 @@ class _EmblemEditingBoardState extends ProcessObjectEditingBoardState<
   void rotate(bool direction) {
     late final object = _focusedObject.value! as EmblemSceneObjectState;
 
-    var rotation = (object.rotationRx.value + (pi / 4) * (direction ? 1 : -1))
-        .remainder(pi * 2);
+    var rotation =
+        (object.gameObject.rotation + (pi / 4) * (direction ? 1 : -1))
+            .remainder(pi * 2);
     if (rotation < 0) {
       rotation += pi * 2;
     }
 
-    object.rotationRx.value = rotation;
+    object.gameObject.rotation = rotation;
   }
 
   @override
@@ -70,7 +71,7 @@ class _EmblemEditingBoardState extends ProcessObjectEditingBoardState<
                   scales: object.gameObject.scales,
                   initialValue: object.gameObject.scale,
                   onChanged: (double value) {
-                    object.scaleRx.value = value;
+                    object.gameObject.scale = value;
                   },
                 );
               },

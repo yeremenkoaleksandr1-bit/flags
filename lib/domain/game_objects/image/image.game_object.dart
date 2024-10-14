@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flags/core/extensions/image.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/widgets.dart';
@@ -5,11 +7,14 @@ import 'package:flutter/widgets.dart';
 import '../base/flippable.dart';
 
 class ImageGameObject extends FlippableGameObject {
-  final UIImage image;
+  final String imagePath;
+
+  late Image _imageFile;
+  late UIImage _image;
 
   ImageGameObject({
     super.key,
-    required this.image,
+    required this.imagePath,
     required super.name,
     super.position,
     super.scale,
@@ -21,9 +26,9 @@ class ImageGameObject extends FlippableGameObject {
 
   @override
   Future<ImageGameObject> init() async {
-    return copyWith(
-      size: image.size / 64,
-    );
+    _imageFile = Image.file(File(imagePath));
+    _image = await _imageFile.image.image;
+    return this;
   }
 
   @override
@@ -45,7 +50,7 @@ class ImageGameObject extends FlippableGameObject {
       scale: scale ?? this.scale,
       size: size ?? this.size,
       rotation: rotation ?? this.rotation,
-      image: image,
+      imagePath: imagePath,
       flippedHorizontal: flippedHorizontal ?? this.flippedHorizontal,
       flippedVertical: flippedVertical ?? this.flippedVertical,
     );
@@ -53,35 +58,24 @@ class ImageGameObject extends FlippableGameObject {
 
   final _emptyPaint = Paint();
 
-  late final _scaledSize = image.size / 64;
+  late final _scaledSize = _image.size / 64;
 
   @override
   void draw(Canvas canvas, Size size) {
     // super.draw(canvas, size);
-    canvas.translate(position.x, position.y);
-    canvas.rotate(rotation);
-    canvas.scale(scale);
-
-    canvas.scale(
-      (flippedHorizontal ? -1 : 1),
-      (flippedVertical ? -1 : 1),
-    );
-
-    canvas.translate(-position.x, -position.y);
-
-    canvas.translate(
-        position.x - this.size.x / 2, position.y - this.size.y / 2);
 
     canvas.scale(
       (this.size.x / 64) / _scaledSize.x,
       (this.size.y / 64) / _scaledSize.y,
     );
 
-    canvas.drawImage(image, Offset.zero, _emptyPaint);
-  }
+    canvas.drawImage(_image, Offset.zero, _emptyPaint);
 
-  @override
-  String getName() => name;
+    canvas.scale(
+      (flippedHorizontal ? -1 : 1),
+      (flippedVertical ? -1 : 1),
+    );
+  }
 
   @override
   List<String>? get previousMustBePlaced => [];
