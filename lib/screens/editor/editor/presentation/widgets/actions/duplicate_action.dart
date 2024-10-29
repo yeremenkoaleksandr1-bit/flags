@@ -10,7 +10,11 @@ final class DuplicateObjectAction extends EditorActionButton {
   const DuplicateObjectAction(super.object, {super.key});
 
   @override
-  void onPressed(BuildContext context, EditorSceneObjectsCubit bloc) {
+  void onPressed(
+    BuildContext context,
+    EditorSceneObjectsCubit bloc,
+    EditorActionButtonState state,
+  ) {
     final newObject = bloc.duplicate(gameObject);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {

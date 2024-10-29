@@ -1,7 +1,9 @@
 import 'package:flags/screens/editor/editor/presentation/cubits/boards/emblems/emblem_item.dart';
 import 'package:flags/screens/editor/editor/presentation/widgets/emblem_items/emblem_item_view.dart';
+import 'package:flags/screens/editor/editor/presentation/widgets/emblem_items/opened_emblem_view.dart';
 import 'package:flutter/material.dart';
 
+import '../emblem_items/buyable_emblem_view.dart';
 import '../emblem_items/closed_emblem_view.dart';
 
 class EmblemItemFactory extends StatefulWidget {
@@ -21,8 +23,9 @@ class _EmblemItemFactoryState extends State<EmblemItemFactory> {
   Widget build(BuildContext context) {
     return switch (widget.item) {
       ClosedEmblemItem() => ClosedEmblemItemView.new,
-      OpenedEmblemItem() => EmblemItemView.new,
-      BuyableEmblemItem() => EmblemItemView.new,
+      OpenedEmblemItem() => OpenedEmblemItemView.new,
+      BuyableEmblemItem() => BuyableEmblemItemView.new,
+      GameEmblemItem() => ClosedEmblemItemView.new,
     }(widget.item);
   }
 }

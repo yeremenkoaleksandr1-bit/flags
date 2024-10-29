@@ -13,7 +13,11 @@ abstract class EditorActionButton extends StatefulWidget {
 
   GameObject get gameObject => object.gameObject;
 
-  void onPressed(BuildContext context, EditorSceneObjectsCubit bloc);
+  void onPressed(
+    BuildContext context,
+    EditorSceneObjectsCubit bloc,
+    EditorActionButtonState state,
+  );
 
   Widget buildView(BuildContext context, EditorSceneObjectsCubit bloc);
 
@@ -22,17 +26,17 @@ abstract class EditorActionButton extends StatefulWidget {
   }
 
   @override
-  State<EditorActionButton> createState() => _EditorActionButtonState();
+  State<EditorActionButton> createState() => EditorActionButtonState();
 }
 
-class _EditorActionButtonState extends State<EditorActionButton> {
+class EditorActionButtonState extends State<EditorActionButton> {
   late final bloc = context.read<EditorSceneObjectsCubit>();
 
   @override
   Widget build(BuildContext context) {
     return FButton(
       color: widget.buildButtonColor(context),
-      onPressed: () => widget.onPressed(context, bloc),
+      onPressed: () => widget.onPressed(context, bloc, this),
       child: SizedBox.square(
         dimension: 24,
         child: widget.buildView(context, bloc),

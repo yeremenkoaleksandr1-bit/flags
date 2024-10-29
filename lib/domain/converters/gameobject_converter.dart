@@ -5,12 +5,11 @@ import 'package:flags/domain/converters/game_objects/emblem_converter.dart';
 import 'package:flags/domain/converters/game_objects/shape_converter.dart';
 import 'package:flags/domain/converters/json_converter.dart';
 import 'package:flags/domain/entities/path/path.dart';
-import 'package:flags/domain/game_objects/base/game_object.dart';
 import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
 import 'package:flags/domain/game_objects/game_objects.dart';
 import 'package:flags/domain/game_objects/shape/shape_object.dart';
-import 'package:flags/logger.dart';
 
+import 'game_objects/image_converter.dart';
 import 'objects/app_structs.dart';
 
 abstract class GameObjectConverter<T extends GameObject>
@@ -21,6 +20,8 @@ abstract class GameObjectConverter<T extends GameObject>
   Map<String, dynamic> toJson(T model) {
     final baseData = <String, dynamic>{
       "_t": model.runtimeType.toString(),
+      "n": model.name,
+      "un": model.uniqueName,
       "px": model.position.x,
       "py": model.position.y,
       "sc": model.scale,
@@ -35,45 +36,25 @@ abstract class GameObjectConverter<T extends GameObject>
   @override
   T fromJson(Map<String, dynamic> json);
 
-  static IJsonConverter<dynamic, dynamic> Function()? _parseConverter(o) {
-    if (o is EmblemPart) {
-      return EmblemConverter.new;
-    }
+  static IJsonConverter<dynamic, dynamic> Function()? _parseConverter(o) =>
+      switch (o) {
+        (EmblemPart _) => EmblemConverter.new,
+        (SPath _) => SPathSerializer.new,
+        (ShapeGameObject _) => ShapeGameObjectConverter.new,
+        (DrawnGameObject _) => DrawnObjectConverter.new,
+        (ImageGameObject _) => ImageGameObjectConverter.new,
+        _ => null,
+      };
 
-    if (o is SPath) {
-      return SPathSerializer.new;
-    }
-
-    if (o is ShapeGameObject) {
-      return ShapeGameObjectConverter.new;
-    }
-    if (o is DrawnGameObject) {
-      return DrawnObjectConverter.new;
-    }
-
-    return null;
-  }
-
-  static IJsonConverter<dynamic, dynamic> Function()? _parseDeserealizer(o) {
-    logger.f(o);
-    if (o == "EmblemPart") {
-      return EmblemConverter.new;
-    }
-
-    if (o == "SPath") {
-      return SPathSerializer.new;
-    }
-
-    if (o == "ShapeGameObject") {
-      return ShapeGameObjectConverter.new;
-    }
-
-    if (o == "DrawnGameObject") {
-      return DrawnObjectConverter.new;
-    }
-
-    return null;
-  }
+  static IJsonConverter<dynamic, dynamic> Function()? _parseDeserealizer(o) =>
+      switch (o) {
+        "EmblemPart" => EmblemConverter.new,
+        "SPath" => SPathSerializer.new,
+        "ShapeGameObject" => ShapeGameObjectConverter.new,
+        "DrawnGameObject" => DrawnObjectConverter.new,
+        "ImageGameObject" => ImageGameObjectConverter.new,
+        _ => null,
+      };
 
   static String serialize(dynamic o) {
     final data = _parseConverter(o)?.call().toJson(o) ?? {};

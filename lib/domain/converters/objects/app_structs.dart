@@ -92,18 +92,3 @@ class SPathSerializer implements IJsonConverter<SPath, Map<String, dynamic>> {
         ],
       };
 }
-
-class FlagStyleSerializer
-    implements IJsonConverter<FlagStyle, Map<String, dynamic>> {
-  @override
-  FlagStyle fromJson(Map<String, dynamic> j) {
-    // TODO: implement fromJson
-    throw UnimplementedError();
-  }
-
-  @override
-  Map<String, dynamic> toJson(FlagStyle m) {
-    // TODO: implement toJson
-    throw UnimplementedError();
-  }
-}

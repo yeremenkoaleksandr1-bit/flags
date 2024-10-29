@@ -1,3 +1,4 @@
+import 'package:flags/domain/game_objects/base/flippable.dart';
 import 'package:flags/domain/game_objects/base/game_object.dart';
 import 'package:flags/uikit/components/listenable_builder/listenable_builder.dart';
 import 'package:flags/uikit/game_widgets/game_widgets.dart';

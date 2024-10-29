@@ -8,7 +8,11 @@ final class LayerUpAction extends EditorActionButton {
   const LayerUpAction(super.object, {super.key});
 
   @override
-  void onPressed(BuildContext context, EditorSceneObjectsCubit bloc) {
+  void onPressed(
+    BuildContext context,
+    EditorSceneObjectsCubit bloc,
+    EditorActionButtonState state,
+  ) {
     bloc.layerUp(gameObject);
   }
 

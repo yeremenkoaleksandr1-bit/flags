@@ -4,6 +4,7 @@ import 'package:flags/features/onboarding/onbloarding.controller.dart';
 import 'package:flags/presentation/app/app.presenter.dart';
 import 'package:flags/presentation/navigator/routes.dart';
 import 'package:flags/presentation/presentation.dart';
+import 'package:flags/screens/editor/my_flags/presentation/my_flags.screen.dart';
 import 'package:flags/ui/game_scaffold.dart';
 import 'package:flags/uikit/assets/assets.dart';
 import 'package:flags/uikit/components/buttons/actions/sound_mute.button.dart';

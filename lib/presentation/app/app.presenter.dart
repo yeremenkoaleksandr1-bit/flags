@@ -11,6 +11,7 @@ import 'package:flags/features/onboarding/onboarding.service.dart';
 import 'package:flags/main/components/splash.dart';
 import 'package:flags/presentation/app/state/app.state.dart';
 import 'package:flags/presentation/navigator/router.dart';
+import 'package:flags/presentation/navigator/routes.dart';
 import 'package:flags/resources/resources.dart';
 import 'package:flags/ui/game_scaffold.dart';
 import 'package:flags/uikit/assets/assets.dart';
@@ -114,8 +115,8 @@ class AppPresenterImpl extends GetController
       observers: [
         AppRouter.routeObserver,
         GetScreen.routeObserver,
-        GamePageBuilder.routeObserver,
         HeroController(),
+        GamePageBuilder.routeObserver,
       ],
     );
 
@@ -124,7 +125,7 @@ class AppPresenterImpl extends GetController
     super.onInit();
 
     FlutterEngine.schedulePostFrameCallback((timeStamp) {
-      QR.replaceAll("/home").whenComplete(() async {
+      QR.replaceAllWithName(Routes.home).whenComplete(() async {
         change(
           SuccessStatus(
             AppState(

@@ -34,7 +34,6 @@ class EditorFlagBackgroundStyleCubit
   }
 
   void changeColor(int index, Color value) {
-    logger.i(value);
     emit(
       EditorFlagBackgroundStyleState(
         style: state.style.changeColor(index, value),

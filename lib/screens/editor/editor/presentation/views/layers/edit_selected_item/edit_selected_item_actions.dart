@@ -157,10 +157,6 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
     object.position = initialPosition - rotatedOffset;
   }
 
-  double calculateAngle(Vector2 center, Vector2 point) {
-    return atan2(point.y - center.y, point.x - center.x);
-  }
-
   Vector2 _rotateVector(Vector2 vector, double angle) {
     final cosAngle = cos(angle);
     final sinAngle = sin(angle);
@@ -174,6 +170,7 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
   Widget build(BuildContext context) {
     return Stack(
       clipBehavior: Clip.none,
+      fit: StackFit.passthrough,
       children: [
         DecoratedBox(
           decoration: BoxDecoration(
@@ -186,6 +183,7 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
             ) {
               return Stack(
                 clipBehavior: Clip.none,
+                fit: StackFit.expand,
                 children: [
                   Positioned(
                     bottom: -9 - 24 - 24,
@@ -286,4 +284,8 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
       ],
     );
   }
+}
+
+double calculateAngle(Vector2 center, Vector2 point) {
+  return atan2(point.y - center.y, point.x - center.x);
 }

@@ -59,7 +59,9 @@ class _EditorEditSelectedItemLayerState
 
               final fraction = area.rect.size.width / 64;
 
-              if (object != null) {
+              if (object != null &&
+                  object.key != null &&
+                  (object.key! as GlobalKey).currentState != null) {
                 final link = (object.key! as GlobalKey).currentState!
                     as EditorDraggableWidgetState;
 

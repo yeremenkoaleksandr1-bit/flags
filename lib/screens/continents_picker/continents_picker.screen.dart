@@ -3,7 +3,6 @@ import 'package:flags/features/audio/audio.provider.dart';
 import 'package:flags/features/audio/sound_data.dart';
 import 'package:flags/features/layers/money_layer/money_layer.dart';
 import 'package:flags/features/onboarding/onbloarding.controller.dart';
-import 'package:flags/presentation/app/app.presenter.dart';
 import 'package:flags/presentation/presentation.dart';
 import 'package:flags/presentation/presenters/continents_picker/state/continents_picker.state.dart';
 import 'package:flags/screens/continents_picker/views/continent_view.dart';
@@ -15,11 +14,8 @@ import 'package:flags/uikit/layout_components/showcase/showcase.dart';
 import 'package:flags/uikit/layout_components/showcase/showcase_item.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
-import 'package:qlevar_router/qlevar_router.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'package:state_manager/state_manager.dart';
-
-import 'debug/show_all_levels.dart';
 
 class ContinentsPickerScreen extends GetScreen<IContinentsPickerPresenter> {
   ContinentsPickerScreen({
@@ -49,9 +45,9 @@ class ContinentsPickerScreen extends GetScreen<IContinentsPickerPresenter> {
 
   @override
   void onClose() {
-    final audio = AudioProvider.of(QR.context!);
-
-    audio.playBgm(GameMusics.main);
+    // final audio = AudioProvider.of();
+    //
+    // audio.playBgm(GameMusics.main);
   }
 
   @override

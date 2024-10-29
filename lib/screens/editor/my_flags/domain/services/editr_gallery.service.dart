@@ -12,6 +12,8 @@ abstract interface class IEditorGalleryService implements IDisposable {
   Future<void> saveFlag(EditorFlagData flag);
 
   Future<void> insertFlag(EditorFlagData flag);
+
+  Future<void> removeFlag(EditorFlagData flag);
 }
 
 class EditorGalleryServiceImpl implements IEditorGalleryService {
@@ -45,5 +47,11 @@ class EditorGalleryServiceImpl implements IEditorGalleryService {
   Future<void> insertFlag(EditorFlagData flag) async {
     flags.insert(flags.length, flag);
     await saveFlag(flag);
+  }
+
+  @override
+  Future<void> removeFlag(EditorFlagData flag) async {
+    flags.remove(flag);
+    box.delete(flag.name);
   }
 }

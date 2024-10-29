@@ -1,7 +1,7 @@
 part of 'emblems_board_cubit.dart';
 
 final class EmblemsBoardState extends Equatable {
-  final List<ClosedEmblemItem> items;
+  final List<EmblemItem> items;
 
   const EmblemsBoardState({
     required this.items,

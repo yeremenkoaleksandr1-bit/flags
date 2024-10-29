@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flags/features/shop/shop.service.dart';
 import 'package:flags/presentation/app/app.presenter.dart';
+import 'package:flags/resources/resources.dart';
 import 'package:flutter/widgets.dart';
 
 import 'shop.item.dart';
@@ -46,6 +47,12 @@ class _ShopProviderState extends State<ShopProvider>
     ShopItem(tag: 'continent_3', price: 1000),
     ShopItem(tag: 'continent_4', price: 1000),
     ShopItem(tag: 'continent_5', price: 1000),
+    ...Resources.i.emblemsResources.emblems.map(
+      (e) => ShopItem(
+        tag: "emblem_${e.name}",
+        price: 1000,
+      ),
+    ),
   ];
 
   @override

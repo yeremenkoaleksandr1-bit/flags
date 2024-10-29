@@ -102,45 +102,45 @@ class EditorDraggableWidgetState
 
     var newPosition = localPosition - startPosition;
 
-    final objectCenter = newPosition + gameObject.size / 2;
+    if (magnetCubit.state.active) {
+      final objectCenter = newPosition + gameObject.size / 2;
+      final areaSize = areaCubit.state.rect.size / areaCubit.fraction;
 
-    final rotatedOffset =
-        calculateRotatedOffset(gameObject.size, gameObject.rotation);
+      final offset = gameObject.size / 2;
 
-    final np = objectCenter - (gameObject.size / 2) + rotatedOffset;
-    final areaSize = areaCubit.state.rect.size / areaCubit.fraction;
+      final rotatedOffset = (offset.clone()..rotate(0)) -
+          (offset.clone()..rotate(gameObject.rotation));
 
-    final isSnapVertical = (np.x - areaSize.width / 2).abs() < 5;
-    final isSnapHorizontal = (np.y - areaSize.height / 2).abs() < 5;
+      final isSnapVertical =
+          (objectCenter.x - areaSize.width / 2 - rotatedOffset.x).abs() < 5;
+      final isSnapHorizontal =
+          (objectCenter.y - areaSize.height / 2 - rotatedOffset.y).abs() < 5;
 
-    if (isSnapVertical) {
-      hasSnapping = true;
+      if (isSnapVertical) {
+        hasSnapping = true;
+        newPosition = Vector2(
+          areaSize.width / 2 - gameObject.size.x / 2 + rotatedOffset.x,
+          newPosition.y,
+        );
+        magnetCubit.setActiveVerticalPosition(true);
+      }
 
-      newPosition = Vector2(
-        areaSize.width / 2 - gameObject.size.x / 2,
-        newPosition.y,
-      );
-      magnetCubit.setActiveVerticalPosition(true);
-    }
-
-    if (isSnapHorizontal) {
-      hasSnapping = true;
-
-      newPosition = Vector2(
-        newPosition.x,
-        areaSize.height / 2 - gameObject.size.y / 2,
-      );
-      magnetCubit.setActiveHorizontalPosition(true);
+      if (isSnapHorizontal) {
+        hasSnapping = true;
+        newPosition = Vector2(
+          newPosition.x,
+          areaSize.height / 2 - gameObject.size.y / 2 + rotatedOffset.y,
+        );
+        magnetCubit.setActiveHorizontalPosition(true);
+      }
     }
 
     gameObject.position = newPosition;
   }
 
   Vector2 calculateRotatedOffset(Vector2 size, double rotation) {
-    final radians =
-        rotation * (pi / 180); // Convert degrees to radians if needed
+    final radians = rotation * (pi / 180);
 
-    // Offset based on the rotation and size of the object
     final offsetX = size.x / 2 * cos(radians) - size.y / 2 * sin(radians);
     final offsetY = size.x / 2 * sin(radians) + size.y / 2 * cos(radians);
 
@@ -165,7 +165,6 @@ class EditorDraggableWidgetState
 }
 
 Vector2 getCenter(Vector2 topLeft, Vector2 bottomRight) {
-  // Calculate the center point
   final centerX = (topLeft.x + bottomRight.x) / 2;
   final centerY = (topLeft.y + bottomRight.y) / 2;
 

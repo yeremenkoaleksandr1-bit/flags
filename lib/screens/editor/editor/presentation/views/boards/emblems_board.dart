@@ -59,27 +59,7 @@ class EmblemsBoard extends EditorBaseBoard {
   }
 
   Widget build(BuildContext context) {
-    final editorBloc = context.read<IFlagEditorCubit>();
-
     final sceneObjectsBloc = context.read<EditorSceneObjectsCubit>();
-
-    Future<void> onSelect(Emblem value) async {
-      final size = value.image.size / 12;
-
-      final effectiveSize = value.image.size / max(size.x, size.y);
-
-      final part = EmblemPart(
-        name: UniqueKey().toString(),
-        emblem: value,
-        initialEmblemSize: value.image.size,
-        size: effectiveSize,
-      );
-
-      editorBloc.toggleEmblemsBoardOpen(false);
-      sceneObjectsBloc.addGameObject(
-        part,
-      );
-    }
 
     Future<void> uploadImageToBoard() async {
       final FilePickerResult? result =
@@ -89,8 +69,10 @@ class EmblemsBoard extends EditorBaseBoard {
         EasyLoading.show();
         final path = result.paths.first;
         final file = File(path!);
-        final fileName = file.path.split('/').last;
-        final hashedFileName = shortHash(file.path + file.hashCode.toString());
+
+        final hashedFileName = shortHash(file.path) +
+            shortHash(file.hashCode.toString()) +
+            shortHash(Random());
 
         final image = Image.file(file).image;
         final uiImage = await image.image;
@@ -141,34 +123,6 @@ class EmblemsBoard extends EditorBaseBoard {
                         (e) {
                           return EmblemItemFactory(
                             item: e,
-                          );
-                          return ScaledGestureDetector(
-                            onTap: () => onSelect(e.emblem),
-                            child: FCard(
-                              child: Column(
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const Pad(all: 2),
-                                      child: FittedBox(
-                                        fit: BoxFit.fitWidth,
-                                        child: DrawablePaint(
-                                          drawable: e.emblem,
-                                          size: e.emblem.image.size.toSize(),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: Text(
-                                      e.emblem.name,
-                                      maxLines: 1,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
                           );
                         },
                       ),

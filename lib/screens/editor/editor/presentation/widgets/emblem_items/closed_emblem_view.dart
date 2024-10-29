@@ -1,4 +1,5 @@
 import 'package:flags/screens/editor/editor/presentation/widgets/emblem_items/emblem_item_view.dart';
+import 'package:flags/uikit/text/f_text.dart';
 import 'package:flutter/material.dart';
 
 class ClosedEmblemItemView extends EmblemItemView {
@@ -9,9 +10,14 @@ class ClosedEmblemItemView extends EmblemItemView {
     return Stack(
       children: [
         Positioned.fill(
-          child: ColorFiltered(
-            colorFilter: greyscale,
+          child: Opacity(
+            opacity: 0.5,
             child: super.build(context),
+          ),
+        ),
+        Positioned.fill(
+          child: Center(
+            child: FText("Closed"),
           ),
         ),
       ],

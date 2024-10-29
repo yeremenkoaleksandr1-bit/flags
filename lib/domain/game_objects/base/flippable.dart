@@ -63,23 +63,12 @@ abstract class FlippableGameObject extends ProcessGameObject {
     canvas.rotate(rotation);
     canvas.scale(scale);
 
-    canvas.scale(
-      (flippedHorizontal ? -1 : 1),
-      (flippedVertical ? -1 : 1),
-    );
-
     canvas.translate(-this.size.x / 2, -this.size.y / 2);
   }
 
   FlippableGameObject flipHorizontal() {
     flippedHorizontal = !flippedHorizontal;
-    final Matrix4 flipMatrix = Matrix4.identity()
-      ..rotateZ(rotation); // Translate back
 
-    position =
-        MatrixUtils.transformPoint(flipMatrix, position.toOffset()).toVector2();
-
-    rotation = -rotation;
     return this;
   }
 

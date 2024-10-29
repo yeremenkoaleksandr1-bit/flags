@@ -1,5 +1,6 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/screens/editor/editor/presentation/bloc/flag_editor_cubit.dart';
+import 'package:flags/screens/editor/editor/presentation/dialogs/successfull_image_saved_dialog.dart';
 import 'package:flags/screens/editor/editor/presentation/views/appbar.dart';
 import 'package:flags/screens/editor/editor/presentation/views/boards/custom_painter.board.dart';
 import 'package:flags/screens/editor/editor/presentation/views/boards/emblems_board.dart';
@@ -8,10 +9,14 @@ import 'package:flags/screens/editor/editor/presentation/views/boards/styles_boa
 import 'package:flags/screens/editor/editor/presentation/views/bottom_buttons.dart';
 import 'package:flags/screens/editor/editor/presentation/views/layers/edit_selected_item/edit_selected_item_layer.dart';
 import 'package:flags/screens/editor/editor/presentation/widgets/actions/builder.dart';
+import 'package:flags/uikit/components/buttons/button.dart';
 import 'package:flags/uikit/components/safe_area/safe_area.dart';
 import 'package:flags/uikit/layout_components/layout_components.dart';
+import 'package:flags/uikit/theme/theme.dart';
+import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import '../views/editor_area.view.dart';
 import '../widgets/flag_style_color_changer.dart';
@@ -21,18 +26,42 @@ final class EditorScreenView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = context.read<IFlagEditorCubit>();
+
     return Stack(
       children: [
-        const Positioned.fill(
+        Positioned.fill(
           child: GameSafeArea(
             child: Column(
               children: [
-                Padding(
+                const Padding(
                   padding: Pad(horizontal: 8),
                   child: EditorAppBarView(),
                 ),
+                Padding(
+                  padding: const Pad(horizontal: 8),
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: FButton(
+                      color: ThemePalette.yellowButton,
+                      onPressed: () async {
+                        await EasyLoading.show();
+                        try {
+                          await cubit.exportImage();
+                          const SuccessfullImageSavedDialog().showModal();
+                        } catch (e) {}
+
+                        await EasyLoading.dismiss();
+                      },
+                      child: Icon(
+                        Icons.save,
+                        color: ThemePalette.brown.darken(0.5),
+                      ),
+                    ),
+                  ),
+                ),
                 Gap.v12,
-                Expanded(
+                const Expanded(
                   child: _Content(),
                 ),
               ],

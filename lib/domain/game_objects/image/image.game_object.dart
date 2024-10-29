@@ -10,10 +10,11 @@ class ImageGameObject extends FlippableGameObject {
   final String imagePath;
 
   late Image _imageFile;
-  late UIImage _image;
+  late UIImage? _image = null;
 
   ImageGameObject({
     super.key,
+    super.uniqueName,
     required this.imagePath,
     required super.name,
     super.position,
@@ -22,7 +23,9 @@ class ImageGameObject extends FlippableGameObject {
     super.rotation,
     super.flippedHorizontal,
     super.flippedVertical,
-  });
+  }) {
+    print(imagePath);
+  }
 
   @override
   Future<ImageGameObject> init() async {
@@ -46,6 +49,7 @@ class ImageGameObject extends FlippableGameObject {
     return ImageGameObject(
       key: key ?? this.key,
       name: name ?? this.name,
+      uniqueName: uniqueName ?? this.uniqueName,
       position: position ?? this.position,
       scale: scale ?? this.scale,
       size: size ?? this.size,
@@ -58,23 +62,18 @@ class ImageGameObject extends FlippableGameObject {
 
   final _emptyPaint = Paint();
 
-  late final _scaledSize = _image.size / 64;
-
   @override
   void draw(Canvas canvas, Size size) {
-    // super.draw(canvas, size);
+    if (_image != null) {
+      late final scaledSize = _image!.size / 64;
 
-    canvas.scale(
-      (this.size.x / 64) / _scaledSize.x,
-      (this.size.y / 64) / _scaledSize.y,
-    );
+      canvas.scale(
+        (this.size.x / 64) / scaledSize.x,
+        (this.size.y / 64) / scaledSize.y,
+      );
 
-    canvas.drawImage(_image, Offset.zero, _emptyPaint);
-
-    canvas.scale(
-      (flippedHorizontal ? -1 : 1),
-      (flippedVertical ? -1 : 1),
-    );
+      canvas.drawImage(_image!, Offset.zero, _emptyPaint);
+    }
   }
 
   @override

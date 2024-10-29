@@ -853,10 +853,10 @@ packages:
     dependency: "direct main"
     description:
       name: qlevar_router
-      sha256: d867842c4e0f6859a279995b0b59262378494c1e4597b14b513bf89d0fec8344
+      sha256: "43e3fd38d683c921b992e886d939a94732c8265953712ac6aed66a173b5fa156"
       url: "https://pub.dev"
     source: hosted
-    version: "1.11.2"
+    version: "1.12.0"
   reactive_forms:
     dependency: "direct main"
     description:

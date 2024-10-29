@@ -1,7 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flags/domain/game_objects/emblems/emblem.dart';
+import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
+import 'package:flags/domain/services/game/emblems.service.dart';
 import 'package:flags/features/shop/shop.provider.dart';
+import 'package:flags/prefabs/levels/levels.dart';
 import 'package:flags/screens/editor/editor/presentation/controllers/factories/boards/emblems_factory.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/boards/emblems/emblem_item.dart';
 
@@ -12,38 +14,109 @@ class EmblemsBoardCubit extends Cubit<EmblemsBoardState> {
 
   EmblemsBoardCubit(this.shop)
       : super(
-          EmblemsBoardState(
-            items: [
-              ...EmblemsFactory.create().map(
-                (e) => ClosedEmblemItem(emblem: e),
-              ),
-            ],
+          const EmblemsBoardState(
+            items: [],
           ),
-        );
+        ) {
+    _prepare();
+  }
 
-  void sortEmblems(List<Emblem> emblems, List<String> openedEmblems) {
-    emblems.sort((emblem1, emblem2) {
-      final isCustomEmblem1 = !state.items.contains(emblem1.name);
-      final isCustomEmblem2 = !state.items.contains(emblem2.name);
-      final isBought1 = shop.isBought(emblem1.name);
-      final isBought2 = shop.isBought(emblem2.name);
+  void _prepare() {
+    final emblems = EmblemsFactory.create().toList();
 
-      final opened1 = openedEmblems.contains(emblem1.name);
-      final opened2 = openedEmblems.contains(emblem2.name);
+    final closedEmblemsItems = emblems
+        .where(
+          (e) => !IEmblemsService.I.isOpened(e.name),
+        )
+        .toList();
 
-      if (opened1 != opened2) {
-        return opened1 ? -1 : 1;
+    final openedEmblems = emblems
+        .where(
+          (e) =>
+              IEmblemsService.I.isOpened(e.name) ||
+              shop.isBought("emblem_${e.name}"),
+        )
+        .map(
+          (e) => OpenedEmblemItem(
+            emblem: e,
+          ),
+        )
+        .toList();
+
+    final gameEmblemItems = FactoryGameContinent.continents.values
+        .expand((e) => e.levels.map((e) => e.flag))
+        .expand((e) => e.objects.whereType<EmblemPart>())
+        .map((e) => e.name.toLowerCase());
+
+    final gameEmblems = closedEmblemsItems
+        .where(
+          (e) {
+            final value = gameEmblemItems.contains(
+              e.name.toLowerCase(),
+            );
+
+            return value;
+          },
+        )
+        .map(
+          (e) => GameEmblemItem(emblem: e),
+        )
+        .toList();
+
+    final closedEmblems = closedEmblemsItems
+        .map(
+          (e) => BuyableEmblemItem(
+            price: shop.getPrice("emblem_${e.name}"),
+            emblem: e,
+          ),
+        )
+        .toList();
+
+    emit(
+      EmblemsBoardState(
+        items: [
+          ...openedEmblems
+            ..sort(
+              (a, b) => a.emblem.name.toLowerCase().compareTo(
+                    b.emblem.name.toLowerCase(),
+                  ),
+            ),
+          ...gameEmblems
+            ..sort(
+              (a, b) => a.emblem.name.toLowerCase().compareTo(
+                    b.emblem.name.toLowerCase(),
+                  ),
+            ),
+          ...closedEmblems
+            ..sort(
+              (a, b) => a.emblem.name.toLowerCase().compareTo(
+                    b.emblem.name.toLowerCase(),
+                  ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  void buyEmblem(EmblemItem item) {
+    final tagItem = "emblem_${item.emblem.name}";
+
+    if (shop.canBuy(tagItem)) {
+      shop.buiItem(tagItem);
+
+      final objects = [...state.items];
+
+      final index = objects.indexOf(item);
+
+      if (index != -1) {
+        objects[index] = OpenedEmblemItem(emblem: item.emblem);
       }
 
-      if (isCustomEmblem1 != isCustomEmblem2) {
-        return isCustomEmblem1 ? -1 : 1;
-      }
-
-      if (isBought1 != isBought2) {
-        return isBought1 ? -1 : 1;
-      }
-
-      return emblem1.name.compareTo(emblem2.name);
-    });
+      emit(
+        EmblemsBoardState(
+          items: objects,
+        ),
+      );
+    }
   }
 }

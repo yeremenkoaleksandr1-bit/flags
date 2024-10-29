@@ -27,53 +27,56 @@ class EditorAreaView extends StatelessWidget {
     return Stack(
       fit: StackFit.passthrough,
       children: [
-        FittedBox(
-          child: Builder(
-            builder: (context) {
-              SchedulerBinding.instance.addPostFrameCallback(
-                (_) {
-                  final areaBound = context.globalPaintBounds;
-                  if (areaBound != null) {
-                    areaCubit.setAreaRect(areaBound);
-                  }
-                },
-              );
-              return SizedBox(
-                width: 64,
-                child: AspectRatio(
-                  aspectRatio: bloc.initialFlag.proportion,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      const Positioned.fill(
-                        child: EditorBackgroundStyleView(),
-                      ),
-                      Positioned.fill(
-                        child: GestureDetector(
-                          onTap: () => selectedObjectCubit.selectObject(null),
-                          child: const Material(
-                            color: Colors.transparent,
+        RepaintBoundary(
+          key: FlagEditorCubit.flagAreaKey,
+          child: FittedBox(
+            child: Builder(
+              builder: (context) {
+                SchedulerBinding.instance.addPostFrameCallback(
+                  (_) {
+                    final areaBound = context.globalPaintBounds;
+                    if (areaBound != null) {
+                      areaCubit.setAreaRect(areaBound);
+                    }
+                  },
+                );
+                return SizedBox(
+                  width: 64,
+                  child: AspectRatio(
+                    aspectRatio: bloc.initialFlag.proportion,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        const Positioned.fill(
+                          child: EditorBackgroundStyleView(),
+                        ),
+                        Positioned.fill(
+                          child: GestureDetector(
+                            onTap: () => selectedObjectCubit.selectObject(null),
+                            child: const Material(
+                              color: Colors.transparent,
+                            ),
                           ),
                         ),
-                      ),
-                      Positioned.fill(
-                        child: DeferredPointerHandler(
-                          child: BlocBuilder(
-                            bloc: sceneObjectsCubit,
-                            builder: (
-                              BuildContext context,
-                              EditorSceneObjectsState state,
-                            ) {
-                              return GameObjectsRendering(state.objects);
-                            },
+                        Positioned.fill(
+                          child: DeferredPointerHandler(
+                            child: BlocBuilder(
+                              bloc: sceneObjectsCubit,
+                              builder: (
+                                BuildContext context,
+                                EditorSceneObjectsState state,
+                              ) {
+                                return GameObjectsRendering(state.objects);
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
         Positioned.fill(

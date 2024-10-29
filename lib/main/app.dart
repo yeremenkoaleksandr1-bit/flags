@@ -1,5 +1,6 @@
 import 'package:flags/features/game_state/game_state_cubit.dart';
 import 'package:flags/ui/debug_paint.dart';
+import 'package:flags/ui/game_scaffold.dart';
 import 'package:flags/uikit/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -72,7 +73,11 @@ class FlagsWidgetsApp extends WidgetsApp {
     super.showPerformanceOverlay,
     super.showSemanticsDebugger,
     required ThemeData theme,
+    super.navigatorKey,
+    super.navigatorObservers,
     super.title,
+    super.onGenerateRoute,
+    super.onUnknownRoute,
     required TransitionBuilder builder,
     super.color = Colors.blueAccent,
   }) : super(

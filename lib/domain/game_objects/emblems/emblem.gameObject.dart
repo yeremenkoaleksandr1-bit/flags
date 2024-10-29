@@ -71,10 +71,21 @@ class EmblemPart extends FlippableGameObject {
 
   @override
   void draw(ui.Canvas canvas, ui.Size size) {
+    canvas.translate(
+      this.size.x * (flippedHorizontal ? 1 : 0),
+      this.size.y * (flippedVertical ? 1 : 0),
+    );
+
+    canvas.scale(
+      (flippedHorizontal ? -1 : 1),
+      (flippedVertical ? -1 : 1),
+    );
+
     canvas.scale(
       this.size.x / _scaledSize.x,
       this.size.y / _scaledSize.y,
     );
+
     emblem.draw(canvas, size);
   }
 
@@ -109,11 +120,10 @@ class EmblemPart extends FlippableGameObject {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
       super == other &&
-          other is EmblemPart &&
-          runtimeType == other.runtimeType &&
-          emblem == other.emblem;
+      other is EmblemPart &&
+      runtimeType == other.runtimeType &&
+      emblem == other.emblem;
 
   @override
   int get hashCode => super.hashCode ^ emblem.hashCode;

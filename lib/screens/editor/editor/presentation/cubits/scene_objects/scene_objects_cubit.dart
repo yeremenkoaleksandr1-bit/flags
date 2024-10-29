@@ -16,6 +16,27 @@ final class EditorSceneObjectsCubit extends Cubit<EditorSceneObjectsState>
           ]),
         );
 
+  EditorDraggableWidget? updateGameObject(GameObject object) {
+    final objects = [...state.objects];
+    final index =
+        objects.indexWhere((e) => object.uniqueName == e.gameObject.uniqueName);
+
+    if (index != -1) {
+      final newObject = EditorDraggableWidget(object);
+
+      objects.removeAt(index);
+      objects.insert(index, newObject);
+      emit(
+        state.copyWith(
+          objects: objects,
+        ),
+      );
+
+      return newObject;
+    }
+    return null;
+  }
+
   void addGameObject(GameObject object) {
     emit(
       state.copyWith(

@@ -8,7 +8,11 @@ final class LayerDownAction extends EditorActionButton {
   const LayerDownAction(super.object, {super.key});
 
   @override
-  void onPressed(BuildContext context, EditorSceneObjectsCubit bloc) {
+  void onPressed(
+    BuildContext context,
+    EditorSceneObjectsCubit bloc,
+    EditorActionButtonState state,
+  ) {
     bloc.layerDown(gameObject);
   }
 

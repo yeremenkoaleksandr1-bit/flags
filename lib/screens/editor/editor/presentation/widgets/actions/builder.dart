@@ -1,5 +1,6 @@
 import 'package:flags/domain/game_objects/base/flippable.dart';
 import 'package:flags/domain/game_objects/game_objects.dart';
+import 'package:flags/domain/game_objects/shape/shape_object.dart';
 import 'package:flags/logger.dart';
 import 'package:flags/screens/editor/editor/presentation/bloc/flag_editor_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/scene_objects/scene_objects_cubit.dart';
@@ -32,7 +33,8 @@ class EditorSelectedObjectActionsBuilder extends StatelessWidget {
           children: [
             const ToggleMagnetAction(),
             if (object != null) ...[
-              DuplicateObjectAction(object),
+              if (object.gameObject is! ImageGameObject)
+                DuplicateObjectAction(object),
               LayerUpAction(object),
               LayerDownAction(object),
               if (object.gameObject is FlippableGameObject) ...[
@@ -40,7 +42,7 @@ class EditorSelectedObjectActionsBuilder extends StatelessWidget {
                 FlipHorizontalAction(object),
               ],
               if (object.gameObject is ImageGameObject) ...[],
-              if (object.gameObject is PathGameObject) ...[
+              if (object.gameObject is ShapeGameObject) ...[
                 ChangeColorAction(object),
               ],
               RemoveObjectAction(object),

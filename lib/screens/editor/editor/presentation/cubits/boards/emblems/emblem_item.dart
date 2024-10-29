@@ -27,8 +27,14 @@ final class OpenedEmblemItem extends EmblemItem {
 final class BuyableEmblemItem extends EmblemItem {
   final int price;
 
-  const BuyableEmblemItem(
-    this.price, {
+  const BuyableEmblemItem({
+    required super.emblem,
+    required this.price,
+  });
+}
+
+final class GameEmblemItem extends EmblemItem {
+  const GameEmblemItem({
     required super.emblem,
   });
 }

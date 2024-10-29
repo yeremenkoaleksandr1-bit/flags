@@ -1,6 +1,7 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/domain/editor/editor_flag.dart';
 import 'package:flags/screens/editor/my_flags/presentation/bloc/my_flags_cubit.dart';
+import 'package:flags/screens/editor/my_flags/presentation/dialogs/actions.dialog.dart';
 import 'package:flags/shared/bloc/builder/state_builder.dart';
 import 'package:flags/uikit/components/buttons/buttons.dart';
 import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
@@ -42,6 +43,18 @@ class _FlagsListViewState extends State<FlagsListView> {
                     ...state.map(
                       (e) => ScaledGestureDetector(
                         onTap: () => bloc.openFlagInEditor(e),
+                        onLongPress: () {
+                          showDialogSuper(
+                            context: context,
+                            useSafeArea: false,
+                            builder: (BuildContext context) {
+                              return ActionsFlagDialog(
+                                flag: e,
+                                cubit: bloc,
+                              );
+                            },
+                          );
+                        },
                         child: EditorFlagPreview(
                           flag: e,
                         ),

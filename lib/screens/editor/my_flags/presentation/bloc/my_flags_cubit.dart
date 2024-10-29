@@ -25,6 +25,14 @@ final class MyFlagsCubit extends StatedCubit<List<EditorFlagData>> {
     super.onInit();
   }
 
+  Future<void> removeFlag(EditorFlagData flag) async {
+    await editorGalleryService.removeFlag(flag);
+
+    change(
+      SuccessState(editorGalleryService.flags),
+    );
+  }
+
   Future<void> createFlag() async {
     final data = await const CreateFlagDialog().showModal<CreateFlagData>();
 

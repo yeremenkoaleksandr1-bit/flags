@@ -11,6 +11,7 @@ enum GamePageSlideDirection {
 }
 
 class GamePageBuilder extends StatefulWidget {
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
   static final RouteObserver<ModalRoute<void>> routeObserver =
       RouteObserver<ModalRoute<void>>();
 
@@ -39,10 +40,7 @@ class GamePageBuilder extends StatefulWidget {
 }
 
 class _GamePageBuilderState extends State<GamePageBuilder>
-    with
-        RouteAware,
-        SingleTickerProviderStateMixin,
-        AutomaticKeepAliveClientMixin {
+    with RouteAware, SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
   @override
@@ -62,12 +60,13 @@ class _GamePageBuilderState extends State<GamePageBuilder>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    GamePageBuilder.routeObserver.subscribe(
-      this,
-      ModalRoute.of(context)!,
-    );
 
-    if (ModalRoute.of(context)!.isCurrent) {
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      GamePageBuilder.routeObserver.subscribe(this, route);
+    }
+
+    if (route!.isCurrent) {
       FlutterEngine.widgetPostFrameCallback((timeStamp) {
         _controller.reverse(from: 1).whenCompleteOrCancel(() {
           widget.onPageFocussed?.call();
@@ -87,8 +86,6 @@ class _GamePageBuilderState extends State<GamePageBuilder>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-
     final startSlideDirection = widget.startSlideDirection;
     final endSlideDirection = widget.endSlideDirection;
     double translationX = 0;
@@ -165,29 +162,25 @@ class _GamePageBuilderState extends State<GamePageBuilder>
   }
 
   @override
-  void didPop() {
-    FlutterEngine.schedulePostFrameCallback((timeStamp) async {
-      await Future.delayed(const Duration());
-      _controller.forward(from: 0).whenComplete(() {
-        widget.onPageUnfocused?.call();
-      });
+  Future<void> didPop() async {
+    await _controller.forward(from: 0).whenComplete(() {
+      widget.onPageUnfocused?.call();
     });
     super.didPop();
   }
 
   @override
-  void didPopNext() {
-    FlutterEngine.schedulePostFrameCallback((timeStamp) async {
+  Future<void> didPopNext() async {
+    FlutterEngine.widgetPostFrameCallback((timeStamp) async {
       await Future.delayed(const Duration());
-      _controller.reverse(from: 1);
+      await _controller.reverse(from: 1);
+      super.didPopNext();
     });
-
-    super.didPopNext();
   }
 
   @override
   void didPushNext() {
-    FlutterEngine.schedulePostFrameCallback((timeStamp) async {
+    FlutterEngine.widgetPostFrameCallback((timeStamp) async {
       await Future.delayed(const Duration());
       _controller.forward(from: 0);
       widget.onPageUnfocused?.call();
@@ -195,7 +188,4 @@ class _GamePageBuilderState extends State<GamePageBuilder>
 
     super.didPushNext();
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

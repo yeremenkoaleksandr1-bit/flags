@@ -11,7 +11,11 @@ final class RemoveObjectAction extends EditorActionButton {
   const RemoveObjectAction(super.object, {super.key});
 
   @override
-  void onPressed(BuildContext context, EditorSceneObjectsCubit bloc) {
+  void onPressed(
+    BuildContext context,
+    EditorSceneObjectsCubit bloc,
+    EditorActionButtonState state,
+  ) {
     final selectCubit = context.read<EditorSelectedObjectCubit>();
     bloc.removeObject(gameObject);
     selectCubit.selectObject(null);

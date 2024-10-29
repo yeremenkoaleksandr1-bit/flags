@@ -1,6 +1,8 @@
+import 'dart:io';
+
 import 'package:flags/core/extensions/list.dart';
 import 'package:flags/domain/game_objects/base/flippable.dart';
-import 'package:flags/domain/game_objects/base/game_object.dart';
+import 'package:flags/domain/game_objects/game_objects.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/scene_objects/scene_objects_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/object_handles/editor_draggable.dart';
 import 'package:flutter/cupertino.dart';
@@ -38,11 +40,36 @@ mixin SceneObjectsActionsMixin on Cubit<EditorSceneObjectsState> {
   }
 
   void flipHorizontal(FlippableGameObject object) {
-    object.flipHorizontal();
-    print(object.flippedHorizontal);
+    final index = _getIndex(object);
+
+    if (index != -1) {
+      _updateState(
+        (objects) {
+          final newObjects = [...objects];
+          newObjects[index] = EditorDraggableWidget(
+            object.flipHorizontal(),
+          );
+          return newObjects;
+        },
+      );
+    }
   }
 
-  void flipVertical(FlippableGameObject object) {}
+  void flipVertical(FlippableGameObject object) {
+    final index = _getIndex(object);
+
+    if (index != -1) {
+      _updateState(
+        (objects) {
+          final newObjects = [...objects];
+          newObjects[index] = EditorDraggableWidget(
+            object.flipVertical(),
+          );
+          return newObjects;
+        },
+      );
+    }
+  }
 
   void layerUp(GameObject object) {
     final index = _getIndex(object);
@@ -73,6 +100,12 @@ mixin SceneObjectsActionsMixin on Cubit<EditorSceneObjectsState> {
   }
 
   void removeObject(GameObject object) {
+    if (object is ImageGameObject) {
+      try {
+        File(object.imagePath).deleteSync();
+      } catch (e) {}
+    }
+
     _updateState(
       (objects) => [...objects]..removeWhere(
           (e) => e.gameObject == object,
