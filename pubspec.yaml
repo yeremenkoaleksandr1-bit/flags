@@ -6,7 +6,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '3.5.3'
+  sdk: '3.5.4'
 
 dependencies:
   flutter:
@@ -36,7 +36,7 @@ dependencies:
   flutter_animator: ^3.2.2
   animate_do: ^3.1.2
   hive: ^4.0.0-dev.2
-  isar_flutter_libs: ^4.0.0-dev.13
+  isar_flutter_libs: ^4.0.0-dev.14
   path_provider: ^2.1.2
   dart_numerics: ^0.0.6
   dough: ^2.0.0
@@ -48,8 +48,7 @@ dependencies:
   flutter_shaders: ^0.1.2
   color_filter_extension: ^0.0.2
   image: ^4.1.7
-  flutter_vibrate: ^1.3.0
-  vibration: ^1.8.4
+  vibration: ^2.0.1
   community_material_icon: ^5.9.55
   showcaseview:
     path: packages/showcaseview
@@ -62,7 +61,10 @@ dependencies:
   flutter_bloc: ^8.1.6
   equatable: ^2.0.5
   flutter_colorpicker: ^1.1.0
-  image_gallery_saver: ^2.0.3
+  image_gallery_saver:
+    git:
+      url: https://github.com/knottx/image_gallery_saver.git
+      ref: knottx-latest
   file_picker: ^8.1.2
 
 dev_dependencies:
