@@ -17,6 +17,8 @@ abstract class GameObject
   Vector2 _size;
   double _rotation;
 
+  late final Vector2 originalSize;
+
   GameObject({
     Key? key,
     required this.name,
@@ -30,7 +32,9 @@ abstract class GameObject
         _position = position ?? Vector2.zero(),
         _size = size ?? Vector2.all(64),
         _scale = scale,
-        _rotation = rotation;
+        _rotation = rotation {
+    originalSize = _size;
+  }
 
   // Getters
   Vector2 get position => _position;

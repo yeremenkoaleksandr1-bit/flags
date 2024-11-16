@@ -1,5 +1,6 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/screens/editor/editor/presentation/bloc/flag_editor_cubit.dart';
+import 'package:flags/screens/editor/editor/presentation/cubits/selected_object/selected_object_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/dialogs/successfull_image_saved_dialog.dart';
 import 'package:flags/screens/editor/editor/presentation/views/appbar.dart';
 import 'package:flags/screens/editor/editor/presentation/views/boards/custom_painter.board.dart';
@@ -17,6 +18,7 @@ import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:touchable/touchable.dart';
 
 import '../views/editor_area.view.dart';
 import '../widgets/flag_style_color_changer.dart';
@@ -27,9 +29,16 @@ final class EditorScreenView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<IFlagEditorCubit>();
+    final selectionCubit = context.read<EditorSelectedObjectCubit>();
 
     return Stack(
       children: [
+        Positioned.fill(
+          child: GestureDetector(
+            onTap: () => selectionCubit.selectObject(null),
+            child: const Material(color: Colors.transparent,),
+          ),
+        ),
         Positioned.fill(
           child: GameSafeArea(
             child: Column(

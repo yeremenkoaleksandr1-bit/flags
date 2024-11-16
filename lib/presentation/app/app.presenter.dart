@@ -113,10 +113,12 @@ class AppPresenterImpl extends GetController
 
     router = AppRouter(
       observers: [
-        AppRouter.routeObserver,
-        GetScreen.routeObserver,
+        ConsolidatedObserver([
+          AppRouter.routeObserver,
+          GamePageBuilder.routeObserver,
+          GetScreen.routeObserver,
+        ]),
         HeroController(),
-        GamePageBuilder.routeObserver,
       ],
     );
 
@@ -147,5 +149,33 @@ class AppPresenterImpl extends GetController
   void dispose() {
     gameState.dispose();
     super.dispose();
+  }
+}
+
+
+class ConsolidatedObserver extends NavigatorObserver {
+  final List<NavigatorObserver> observers;
+
+  ConsolidatedObserver(this.observers);
+
+  @override
+  void didPush(Route route, Route? previousRoute) {
+    for (final observer in observers) {
+      observer.didPush(route, previousRoute);
+    }
+  }
+
+  @override
+  void didPop(Route route, Route? previousRoute) {
+    for (final observer in observers) {
+      observer.didPop(route, previousRoute);
+    }
+  }
+
+  @override
+  void didReplace({Route? newRoute, Route? oldRoute}) {
+    for (final observer in observers) {
+      observer.didReplace(newRoute: newRoute, oldRoute: oldRoute);
+    }
   }
 }

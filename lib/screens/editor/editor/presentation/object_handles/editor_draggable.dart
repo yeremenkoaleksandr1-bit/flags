@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:drag_and_drop/extensions/render_box.dart';
@@ -44,7 +45,10 @@ class EditorDraggableWidgetState
   }) {
     return MatrixUtils.transformRect(
       Matrix4.identity()
-        ..translate(position.x, position.y)
+        ..translate(
+          position.x,
+          position.y,
+        )
         ..scale(scale),
       Vector2.zero() & size,
     );
@@ -162,11 +166,4 @@ class EditorDraggableWidgetState
       painter: GameObjectPainter(gameObject),
     );
   }
-}
-
-Vector2 getCenter(Vector2 topLeft, Vector2 bottomRight) {
-  final centerX = (topLeft.x + bottomRight.x) / 2;
-  final centerY = (topLeft.y + bottomRight.y) / 2;
-
-  return Vector2(centerX, centerY);
 }

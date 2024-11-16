@@ -50,7 +50,7 @@ class _ShopProviderState extends State<ShopProvider>
     ...Resources.i.emblemsResources.emblems.map(
       (e) => ShopItem(
         tag: "emblem_${e.name}",
-        price: 1000,
+        price: 0,
       ),
     ),
   ];
@@ -76,6 +76,6 @@ class _ShopProviderState extends State<ShopProvider>
 
   @override
   bool canBuy(String tag) {
-    return gameState.data.money - getPrice(tag) > 0;
+    return gameState.data.money - getPrice(tag) >= 0;
   }
 }

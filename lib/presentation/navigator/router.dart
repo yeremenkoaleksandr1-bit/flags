@@ -14,6 +14,7 @@ import 'package:flags/screens/game_mode_picker/game_mode_picker.screen.dart';
 import 'package:flags/screens/games/games_factory.page.dart';
 import 'package:flags/screens/home/home.screen.dart';
 import 'package:flags/screens/levels_picker/levels_picker.screen.dart';
+import 'package:flags/ui/game_scaffold.dart';
 import 'package:flags/uikit/layout_components/overlayment/overlayment.provider.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -83,16 +84,15 @@ class AppRouter extends QRouterDelegate {
                 );
               },
             ),
+
             QRoute.withChild(
+              observers: [GamePageBuilder.routeObserver],
               path: '/editor',
               children: [
                 QRoute(
                   path: '/gallery',
                   name: Routes.myFlagsGallery,
-                  builder: () => BlocProvider(
-                    create: (BuildContext context) => MyFlagsCubit(),
-                    child: const MyFlagsScreen(),
-                  ),
+                  builder: () => const MyFlagsScreen(),
                 ),
                 QRoute(
                   path: '/flag',
@@ -117,6 +117,7 @@ class AppRouter extends QRouterDelegate {
         ) {
     //  QR.settings.globalMiddlewares.add(_easyLoadingMiddleware);
     //  QR.settings.logger = logger.t;
+
     QR.settings.pagesType = const QCustomPage(
       transitionDuration: Duration(milliseconds: 500),
       reverseTransitionDuration: Duration(milliseconds: 500),

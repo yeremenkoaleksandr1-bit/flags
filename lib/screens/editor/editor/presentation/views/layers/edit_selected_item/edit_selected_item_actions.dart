@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flags/domain/game_objects/base/game_object.dart';
@@ -7,6 +8,7 @@ import 'package:flags/screens/editor/editor/presentation/object_handles/editor_d
 import 'package:flags/screens/editor/editor/presentation/object_handles/handle_button.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EditSelectedItemActions extends StatefulWidget {
@@ -41,6 +43,11 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
   Vector2 initialSize = Vector2.zero();
   double initialRotation = 0;
 
+  bool isProportionalResizing = true;
+  Timer? longPressTimer;
+  Offset lastDragPosition = Offset.zero;
+  final double movementThreshold = 5.0;
+
   void onDragStart(DragStartDetails event) {
     initialRotatedPosition = widget.link.paintBounds.topLeft.toVector2();
     startTapPos = event.globalPosition.toVector2();
@@ -48,29 +55,122 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
     initialPosition = object.position.clone();
     initialSize = object.size.clone();
     initialRotation = object.rotation;
+
+    isProportionalResizing = true;
+    lastDragPosition = event.globalPosition;
+
+    longPressTimer = Timer(const Duration(milliseconds: 500), () {
+      isProportionalResizing = false;
+
+      HapticFeedback.lightImpact();
+    });
   }
 
+  late final double aspectRatio = object.originalSize.x / object.originalSize.y;
+
+  void onDragEnd(DragEndDetails event) {
+    longPressTimer?.cancel();
+  }
+
+  //Todo: do refactoring
   void onResize(DragUpdateDetails event, Vector2 pivot) {
-    final angle = initialRotation;
-    final Vector2 dragPos = event.globalPosition.toVector2();
+    if ((lastDragPosition - event.globalPosition).distance != 0) {
+      longPressTimer?.cancel();
 
-    final Vector2 delta = (dragPos - startTapPos) / fraction;
+      final angle = initialRotation;
+      final Vector2 dragPos = event.globalPosition.toVector2();
+      final Vector2 delta = (dragPos - startTapPos) / fraction;
+      final Vector2 rotatedDelta = _rotateVector(delta, -angle);
 
-    final rotatedDelta = _rotateVector(delta, -angle);
-    final Vector2 newSize = initialSize + (rotatedDelta..multiply(pivot));
+      Vector2 newSize = initialSize + (rotatedDelta..multiply(pivot));
 
-    object.size = newSize;
+      newSize = Vector2(
+        max(newSize.x, 1),
+        max(newSize.y, 1),
+      );
 
-    final invertedPivot = Vector2(
-      pivot.x == -1 ? 1 : (pivot.x == 1 ? 0 : pivot.x),
-      pivot.y == -1 ? 1 : (pivot.y == 1 ? 0 : pivot.y),
-    );
+      if (isProportionalResizing) {
+        if (pivot.x == 1 && pivot.y == 1) {
+          newSize = Vector2(
+            newSize.x,
+            newSize.x / aspectRatio,
+          );
+        }
 
-    final effectiveDelta = (pivot.y == -1 || pivot.x == -1)
-        ? _rotateVector(rotatedDelta..multiply(invertedPivot), angle)
-        : Vector2.zero();
+        if (pivot.x == 1 && pivot.y == 0) {
+          newSize = Vector2(
+            newSize.x,
+            newSize.x / aspectRatio,
+          );
+        }
 
-    object.position = initialPosition - effectiveDelta;
+        if (pivot.x == 1 && pivot.y == -1) {
+          newSize = Vector2(
+            newSize.y * aspectRatio,
+            newSize.y,
+          );
+        }
+
+        if (pivot.x == 0 && pivot.y == 1) {
+          newSize = Vector2(
+            newSize.y,
+            newSize.y / aspectRatio,
+          );
+        }
+
+        if (pivot.x == 0 && pivot.y == -1) {
+          newSize = Vector2(
+            newSize.y * aspectRatio,
+            newSize.y,
+          );
+        }
+
+        if (pivot.x == -1 && pivot.y == 1) {
+          newSize = Vector2(
+            newSize.x * aspectRatio,
+            newSize.x,
+          );
+        }
+
+        if (pivot.x == -1 && pivot.y == 0) {
+          newSize = Vector2(
+            newSize.x * aspectRatio,
+            newSize.x,
+          );
+        }
+
+        if (pivot.x == -1 && pivot.y == -1) {
+          newSize = Vector2(
+            newSize.x,
+            newSize.x / aspectRatio,
+          );
+        }
+      }
+
+      object.size = newSize;
+
+      final Vector2 invertedPivot = Vector2(
+        pivot.x == -1 ? 1 : (pivot.x == 1 ? 0 : pivot.x),
+        pivot.y == -1 ? 1 : (pivot.y == 1 ? 0 : pivot.y),
+      );
+
+      if (newSize.x > 1 && newSize.y > 1) {
+        if (pivot.x == -1 && pivot.y == -1) {
+          object.position = initialPosition -
+              _rotateVector(
+                Vector2(rotatedDelta.x, rotatedDelta.x)
+                  ..multiply(invertedPivot),
+                angle,
+              );
+        } else {
+          final Vector2 effectiveDelta = (pivot.y == -1 || pivot.x == -1)
+              ? _rotateVector(rotatedDelta..multiply(invertedPivot), angle)
+              : Vector2.zero();
+
+          object.position = initialPosition - effectiveDelta;
+        }
+      }
+    }
   }
 
   void onUpdateTopLeft(DragUpdateDetails event) {
@@ -192,7 +292,7 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
                       onDragUpdate: onUpdateRotation,
                       onDragStart: onRotationStart,
                       borderRadiusCircular: 24,
-                      onDragEnd: (DragEndDetails event) {},
+                      onDragEnd: onDragEnd,
                       child: const SizedBox.shrink(),
                     ),
                   ),
@@ -202,7 +302,7 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
                     child: EOHandleButton(
                       onDragUpdate: onUpdateTopLeft,
                       onDragStart: onDragStart,
-                      onDragEnd: (DragEndDetails event) {},
+                      onDragEnd: onDragEnd,
                       child: const SizedBox.shrink(),
                     ),
                   ),
@@ -212,7 +312,7 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
                     child: EOHandleButton(
                       onDragUpdate: onUpdateTopCenter,
                       onDragStart: onDragStart,
-                      onDragEnd: (DragEndDetails event) {},
+                      onDragEnd: onDragEnd,
                       child: const SizedBox.shrink(),
                     ),
                   ),
@@ -222,7 +322,7 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
                     child: EOHandleButton(
                       onDragUpdate: onUpdateTopRight,
                       onDragStart: onDragStart,
-                      onDragEnd: (DragEndDetails event) {},
+                      onDragEnd: onDragEnd,
                       child: const SizedBox.shrink(),
                     ),
                   ),
@@ -232,7 +332,7 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
                     child: EOHandleButton(
                       onDragUpdate: onUpdateCenterRight,
                       onDragStart: onDragStart,
-                      onDragEnd: (DragEndDetails event) {},
+                      onDragEnd: onDragEnd,
                       child: const SizedBox.shrink(),
                     ),
                   ),
@@ -242,7 +342,7 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
                     child: EOHandleButton(
                       onDragUpdate: onUpdateBottomLeft,
                       onDragStart: onDragStart,
-                      onDragEnd: (DragEndDetails event) {},
+                      onDragEnd: onDragEnd,
                       child: const SizedBox.shrink(),
                     ),
                   ),
@@ -252,7 +352,7 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
                     child: EOHandleButton(
                       onDragUpdate: onUpdateBottomCenter,
                       onDragStart: onDragStart,
-                      onDragEnd: (DragEndDetails event) {},
+                      onDragEnd: onDragEnd,
                       child: const SizedBox.shrink(),
                     ),
                   ),
@@ -262,7 +362,7 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
                     child: EOHandleButton(
                       onDragUpdate: onUpdateBottomRight,
                       onDragStart: onDragStart,
-                      onDragEnd: (DragEndDetails event) {},
+                      onDragEnd: onDragEnd,
                       child: const SizedBox.shrink(),
                     ),
                   ),
@@ -272,7 +372,7 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
                     child: EOHandleButton(
                       onDragUpdate: onUpdateCenterLeft,
                       onDragStart: onDragStart,
-                      onDragEnd: (DragEndDetails event) {},
+                      onDragEnd: onDragEnd,
                       child: const SizedBox.shrink(),
                     ),
                   ),
