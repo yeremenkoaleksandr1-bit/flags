@@ -110,10 +110,9 @@ class _PuzzleModeViewState extends State<PuzzleModeView> {
                               Positioned(
                                 top: -24,
                                 left: -24,
-                                child: Transform.scale(
-                                  scale: 2,
-                                  child: DrawablePaint(drawable: itemInHand),
-                                ),
+                                width: 64,
+                                height: 64,
+                                child: DrawablePaint(drawable: itemInHand),
                               ),
                               Transform.rotate(
                                 angle: radians(-24),

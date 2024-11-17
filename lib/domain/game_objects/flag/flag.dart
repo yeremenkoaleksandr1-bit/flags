@@ -44,4 +44,21 @@ class GameFlag implements IDrawable {
   String toString() {
     return 'GameFlag{name: $name, objects: $objects, size: $size, proportion: $proportion}';
   }
+
+  GameFlag copyWith({
+    String? name,
+    List<ProcessGameObject>? objects,
+    Vector2? size,
+    double? proportion,
+  }) {
+    final object = GameFlag(
+      name: name ?? this.name,
+      proportion: proportion ?? this.proportion,
+      objects: (Vector2 size) => objects ?? this.objects,
+    );
+
+    
+
+    return object;
+  }
 }

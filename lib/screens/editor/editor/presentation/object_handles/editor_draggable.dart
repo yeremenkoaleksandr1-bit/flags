@@ -98,6 +98,10 @@ class EditorDraggableWidgetState
     super.onMoveEnd(event, constraints);
   }
 
+  final double _shiftedClamp = 5;
+
+  Size get areaSize => areaCubit.state.rect.size / areaCubit.fraction;
+
   @override
   void onMoveUpdate(DragUpdateDetails event, BoxConstraints constraints) {
     hasSnapping = false;
@@ -137,6 +141,37 @@ class EditorDraggableWidgetState
         );
         magnetCubit.setActiveHorizontalPosition(true);
       }
+    }
+    final rotatedPoints = [
+      Vector2(0, 0),
+      Vector2(gameObject.size.x, 0),
+      Vector2(gameObject.size.x, gameObject.size.y),
+      Vector2(0, gameObject.size.y),
+    ].map((point) {
+      final rotatedPoint = point.clone()
+        ..rotate(gameObject.rotation)
+        ..add(newPosition);
+      return rotatedPoint;
+    }).toList();
+
+    final objectAspectX = gameObject.size.x / gameObject.originalSize.x;
+    final objectAspectY = gameObject.size.x / gameObject.originalSize.x;
+
+    final minX = rotatedPoints.map((p) => p.x).reduce((a, b) => a < b ? a : b);
+    final maxX = rotatedPoints.map((p) => p.x).reduce((a, b) => a > b ? a : b);
+    final minY = rotatedPoints.map((p) => p.y).reduce((a, b) => a < b ? a : b);
+    final maxY = rotatedPoints.map((p) => p.y).reduce((a, b) => a > b ? a : b);
+
+    if (minX < -_shiftedClamp * objectAspectX) {
+      newPosition.x += -minX - _shiftedClamp * objectAspectX;
+    } else if (maxX > areaSize.width + _shiftedClamp * objectAspectX) {
+      newPosition.x -= maxX - areaSize.width - _shiftedClamp * objectAspectX;
+    }
+
+    if (minY < -_shiftedClamp * objectAspectY) {
+      newPosition.y += -minY - _shiftedClamp * objectAspectY;
+    } else if (maxY > areaSize.height + _shiftedClamp * objectAspectY) {
+      newPosition.y -= maxY - areaSize.height - _shiftedClamp * objectAspectY;
     }
 
     gameObject.position = newPosition;

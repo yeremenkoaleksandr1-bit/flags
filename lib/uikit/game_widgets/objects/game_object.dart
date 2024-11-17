@@ -1,9 +1,11 @@
 import 'package:flags/domain/game_objects/base/flippable.dart';
 import 'package:flags/domain/game_objects/base/game_object.dart';
+import 'package:flags/screens/editor/editor/presentation/cubits/area/area_cubit.dart';
 import 'package:flags/uikit/components/listenable_builder/listenable_builder.dart';
 import 'package:flags/uikit/game_widgets/game_widgets.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'game_objects_rendering.dart';
 
@@ -23,6 +25,8 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
     extends State<T> {
   late GameObjectsRenderingState renderingArea =
       GameObjectsRendering.of(context);
+
+  late final EditorAreaCubit areaCubit = context.read<EditorAreaCubit>();
 
   late G gameObject = widget.gameObject;
 
@@ -62,6 +66,10 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
 
   Alignment get rotateAlignment => Alignment.center;
 
+  final double _shiftedClamp = 5;
+
+  Size get areaSize => areaCubit.state.rect.size / areaCubit.fraction;
+
   @override
   Widget build(BuildContext context) {
     final child = buildWidget(context);
@@ -74,6 +82,39 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
         Widget? child,
       ) {
         final position = positionConverter(object.position);
+
+        final rotatedPoints = [
+          Vector2(0, 0),
+          Vector2(gameObject.size.x, 0),
+          Vector2(gameObject.size.x, gameObject.size.y),
+          Vector2(0, gameObject.size.y),
+        ].map((point) {
+          final rotatedPoint = point.clone()
+            ..rotate(gameObject.rotation)
+            ..add(position);
+          return rotatedPoint;
+        }).toList();
+
+        final objectAspectX = gameObject.size.x/gameObject.originalSize.x;
+        final objectAspectY = gameObject.size.x/gameObject.originalSize.x;
+
+        final minX = rotatedPoints.map((p) => p.x).reduce((a, b) => a < b ? a : b);
+        final maxX = rotatedPoints.map((p) => p.x).reduce((a, b) => a > b ? a : b);
+        final minY = rotatedPoints.map((p) => p.y).reduce((a, b) => a < b ? a : b);
+        final maxY = rotatedPoints.map((p) => p.y).reduce((a, b) => a > b ? a : b);
+
+        if (minX < -_shiftedClamp * objectAspectX) {
+          position.x += -minX - _shiftedClamp * objectAspectX;
+        } else if (maxX > areaSize.width + _shiftedClamp * objectAspectX) {
+          position.x -= maxX - areaSize.width - _shiftedClamp * objectAspectX;
+        }
+
+        if (minY < -_shiftedClamp * objectAspectY) {
+          position.y += -minY - _shiftedClamp * objectAspectY;
+        } else if (maxY > areaSize.height + _shiftedClamp * objectAspectY) {
+          position.y -= maxY - areaSize.height - _shiftedClamp * objectAspectY;
+        }
+
         final scale = scaleConverter(object.scale);
 
         final size = sizeConverter(object.size);
