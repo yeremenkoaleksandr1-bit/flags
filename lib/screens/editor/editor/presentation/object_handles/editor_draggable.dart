@@ -1,7 +1,10 @@
 import 'dart:math';
 
+import 'package:defer_pointer/defer_pointer.dart';
 import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/domain/game_objects/base/game_object.dart';
+import 'package:flags/logger.dart';
+import 'package:flags/screens/editor/editor/custom_defer_pointer/defer_pointer.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/area/area_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/magnet_area/magnet_area_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/selected_object/selected_object_cubit.dart';
@@ -10,6 +13,7 @@ import 'package:flags/uikit/game_widgets/objects/game_object_paint.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 class EditorDraggableWidget extends DraggableGameObjectWidget<GameObject> {
   EditorDraggableWidget(
@@ -79,7 +83,7 @@ class EditorDraggableWidgetState
     initialSize = gameObject.size;
   }
 
-  void onUpdateTopLeft( event) {
+  void onUpdateTopLeft(event) {
     final delta = (event.localPosition - startOffset).toVector2();
 
     gameObject.size = initialSize - delta;
@@ -96,8 +100,6 @@ class EditorDraggableWidgetState
 
     super.onMoveEnd(event, constraints);
   }
-
-  final double _shiftedClamp = -2;
 
   @override
   Size get areaSize => areaCubit.state.rect.size / areaCubit.fraction;
@@ -190,7 +192,9 @@ class EditorDraggableWidgetState
   Widget buildWidget(BuildContext context) {
     return KeyedSubtree(
       key: paintedObjectKey,
-      child: super.buildWidget(context),
+      child: EDeferPointer(
+        child: super.buildWidget(context),
+      ),
     );
   }
 

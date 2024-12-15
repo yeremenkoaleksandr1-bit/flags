@@ -40,6 +40,7 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
     );
   }
 
+
   Vector2 positionConverter(Vector2 position) => position;
 
   Vector2 sizeConverter(Vector2 size) => size;
@@ -66,9 +67,14 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
 
   Alignment get rotateAlignment => Alignment.center;
 
-  final double _shiftedClamp = 5;
 
   Size get areaSize => areaCubit.state.rect.size / areaCubit.fraction;
+
+  @override
+  void dispose() {
+    gameObject.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

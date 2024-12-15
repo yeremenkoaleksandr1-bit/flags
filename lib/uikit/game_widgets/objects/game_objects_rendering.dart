@@ -38,8 +38,14 @@ class GameObjectsRenderingState extends State<GameObjectsRendering> {
       exposer: exposer,
       child: Stack(
         fit: StackFit.passthrough,
-        clipBehavior: Clip.none,
-        children: widget.objects,
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        children: [
+          ...widget.objects.map(
+            (e) => KeyedSubtree(
+              child: e,
+            ),
+          ),
+        ],
       ),
     );
   }

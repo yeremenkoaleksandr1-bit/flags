@@ -8,6 +8,7 @@ import 'package:flame/extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 typedef DraggableMovableDataCallback = void Function(
   DraggableGameObjectWidgetState state,
@@ -124,25 +125,22 @@ class DraggableGameObjectWidgetState<G extends GameObject,
   Widget buildWidget(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        return DeferPointer(
-          child: RawGestureDetector(
-            gestures: {
-              PanGestureRecognizer:
-                  GestureRecognizerFactoryWithHandlers<PanGestureRecognizer>(
-                PanGestureRecognizer.new,
-                (i) {
-                  i.onStart = (event) => onMoveStart(event, constraints);
-                  i.onUpdate = (event) => onMoveUpdate(event, constraints);
-                  i.onEnd = (event) => onMoveEnd(event, constraints);
-                },
-              ),
-            },
-            behavior: HitTestBehavior.translucent,
-            child: buildDraggableWidget(context),
-          ),
+        return RawGestureDetector(
+          gestures: {
+            PanGestureRecognizer:
+                GestureRecognizerFactoryWithHandlers<PanGestureRecognizer>(
+              PanGestureRecognizer.new,
+              (i) {
+                i.onStart = (event) => onMoveStart(event, constraints);
+                i.onUpdate = (event) => onMoveUpdate(event, constraints);
+                i.onEnd = (event) => onMoveEnd(event, constraints);
+              },
+            ),
+          },
+          behavior: HitTestBehavior.opaque,
+          child: buildDraggableWidget(context),
         );
       },
     );
   }
 }
-

@@ -1,4 +1,3 @@
-import 'package:defer_pointer/defer_pointer.dart';
 import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/area/area_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/magnet_area/magnet_area_cubit.dart';
@@ -52,24 +51,21 @@ class EditorAreaView extends StatelessWidget {
                         ),
                         Positioned.fill(
                           child: GestureDetector(
-                            onTap: () =>
-                                selectedObjectCubit.selectObject(null),
+                            onTap: () => selectedObjectCubit.selectObject(null),
                             child: const Material(
                               color: Colors.transparent,
                             ),
                           ),
                         ),
                         Positioned.fill(
-                          child: DeferredPointerHandler(
-                            child: BlocBuilder(
-                              bloc: sceneObjectsCubit,
-                              builder: (
-                                BuildContext context,
-                                EditorSceneObjectsState state,
-                              ) {
-                                return GameObjectsRendering(state.objects);
-                              },
-                            ),
+                          child: BlocBuilder(
+                            bloc: sceneObjectsCubit,
+                            builder: (
+                              BuildContext context,
+                              EditorSceneObjectsState state,
+                            ) {
+                              return GameObjectsRendering(state.objects);
+                            },
                           ),
                         ),
                       ],

@@ -79,6 +79,8 @@ mixin SceneObjectsActionsMixin on Cubit<EditorSceneObjectsState> {
         (objects) {
           final newObjects = [...objects];
           newObjects.swap(index + 1, index);
+          newObjects[index].gameObject.key = UniqueKey();
+          newObjects[index + 1].gameObject.key = UniqueKey();
           return newObjects;
         },
       );
@@ -93,6 +95,8 @@ mixin SceneObjectsActionsMixin on Cubit<EditorSceneObjectsState> {
         (objects) {
           final newObjects = [...objects];
           newObjects.swap(index - 1, index);
+          newObjects[index].gameObject.key = UniqueKey();
+          newObjects[index - 1].gameObject.key = UniqueKey();
           return newObjects;
         },
       );

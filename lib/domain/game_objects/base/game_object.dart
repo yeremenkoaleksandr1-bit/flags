@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 abstract class GameObject
     with ChangeNotifier
     implements IDrawable, IDisposable {
-  Key key;
+  Key _key;
   String name;
   String? uniqueName;
 
@@ -27,7 +27,7 @@ abstract class GameObject
     Vector2? size,
     double scale = 1,
     double rotation = 0,
-  })  : key = key ?? UniqueKey(),
+  })  : _key = key ?? UniqueKey(),
         uniqueName = uniqueName ?? name,
         _position = position ?? Vector2.zero(),
         _size = size ?? Vector2.all(64),
@@ -36,7 +36,8 @@ abstract class GameObject
     originalSize = _size;
   }
 
-  // Getters
+  Key get key => _key;
+
   Vector2 get position => _position;
 
   double get scale => _scale;
@@ -44,6 +45,13 @@ abstract class GameObject
   Vector2 get size => _size;
 
   double get rotation => _rotation;
+
+  set key(Key newKey) {
+    if (_key != newKey) {
+      _key = newKey;
+      notifyListeners();
+    }
+  }
 
   set position(Vector2 newPosition) {
     if (_position != newPosition) {
@@ -91,13 +99,13 @@ abstract class GameObject
     double? rotation,
   });
 
-  bool isEqual(GameObject gameObject) => key == gameObject.key;
+  bool isEqual(GameObject gameObject) => _key == gameObject._key;
 
   @override
   bool operator ==(Object other) =>
       other is GameObject &&
       runtimeType == other.runtimeType &&
-      key == other.key &&
+      _key == other.key &&
       name == other.name &&
       uniqueName == other.uniqueName &&
       _position == other._position &&
@@ -107,7 +115,7 @@ abstract class GameObject
 
   @override
   int get hashCode =>
-      key.hashCode ^
+      _key.hashCode ^
       name.hashCode ^
       uniqueName.hashCode ^
       _position.hashCode ^
