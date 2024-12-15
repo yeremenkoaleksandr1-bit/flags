@@ -73,14 +73,14 @@ class EmblemSceneObjectState extends DraggableGameObjectWidgetState<
   }
 
   @override
-  void onMoveStart(DragStartDetails event, BoxConstraints constraints) {
+  void onMoveStart(event, BoxConstraints constraints) {
     presenter.onObjectFocusAdded(this);
     presenter.emblemConfirmationView.hide();
     super.onMoveStart(event, constraints);
   }
 
   @override
-  void onMoveEnd(DragEndDetails event, BoxConstraints constraints) {
+  void onMoveEnd(event, BoxConstraints constraints) {
     presenter.emblemConfirmationView.show();
     _setConfirmationButtonsPosition();
 

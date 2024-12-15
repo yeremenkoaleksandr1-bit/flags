@@ -52,7 +52,8 @@ class EditorAreaView extends StatelessWidget {
                         ),
                         Positioned.fill(
                           child: GestureDetector(
-                            onTap: () => selectedObjectCubit.selectObject(null),
+                            onTap: () =>
+                                selectedObjectCubit.selectObject(null),
                             child: const Material(
                               color: Colors.transparent,
                             ),

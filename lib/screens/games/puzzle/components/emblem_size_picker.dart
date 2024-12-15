@@ -21,18 +21,17 @@ class EmblemSizePicker extends StatefulWidget {
 }
 
 class _EmblemSizePickerState extends State<EmblemSizePicker> {
-  late final ValueNotifier<int> currentActive = ValueNotifier(
-    widget.scales.indexOf(widget.initialValue),
-  );
+  late int currentActive = widget.scales.indexOf(widget.initialValue);
 
   void onSelected(int index) {
-    currentActive.value = index;
-    widget.onChanged(widget.scales[index]);
+    setState(() {
+      currentActive = index;
+      widget.onChanged(widget.scales[index]);
+    });
   }
 
   @override
   void dispose() {
-    currentActive.dispose();
     super.dispose();
   }
 
@@ -49,29 +48,23 @@ class _EmblemSizePickerState extends State<EmblemSizePicker> {
             crossAxisSpacing: 12,
             children: [
               ...widget.scales.mapIndexed(
-                (i, e) => AspectRatio(
-                  aspectRatio: 1,
-                  child: ValueListenableBuilder(
-                    valueListenable: currentActive,
-                    builder: (
-                      BuildContext context,
-                      int value,
-                      Widget? child,
-                    ) {
-                      final color =
-                          value == i ? ThemePalette.green : ThemePalette.gray;
+                (i, e) {
+                  final color = currentActive == i
+                      ? ThemePalette.green
+                      : ThemePalette.gray;
 
-                      return FButton(
-                        color: color,
-                        onPressed: () => onSelected(i),
-                        child: FittedBox(
-                          fit: BoxFit.fitHeight,
-                          child: Text("${i + 1}"),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                  return AspectRatio(
+                    aspectRatio: 1,
+                    child: FButton(
+                      color: color,
+                      onPressed: () => onSelected(i),
+                      child: FittedBox(
+                        fit: BoxFit.fitHeight,
+                        child: Text("${i + 1}"),
+                      ),
+                    ),
+                  );
+                },
               ),
             ],
           ),

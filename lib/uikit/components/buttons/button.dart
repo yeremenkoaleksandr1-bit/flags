@@ -101,7 +101,7 @@ class CustomButtonPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
+  bool shouldRepaint(covariant CustomButtonPainter oldDelegate) {
+    return colorFilter != oldDelegate.colorFilter;
   }
 }

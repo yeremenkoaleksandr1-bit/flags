@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:drag_and_drop/extensions/render_box.dart';
@@ -65,7 +64,7 @@ class EditorDraggableWidgetState
   }
 
   @override
-  void onMoveStart(DragStartDetails event, BoxConstraints constraints) {
+  void onMoveStart(event, BoxConstraints constraints) {
     selectedObjectCubit.selectObject(widget);
     super.onMoveStart(event, constraints);
   }
@@ -80,7 +79,7 @@ class EditorDraggableWidgetState
     initialSize = gameObject.size;
   }
 
-  void onUpdateTopLeft(DragUpdateDetails event) {
+  void onUpdateTopLeft( event) {
     final delta = (event.localPosition - startOffset).toVector2();
 
     gameObject.size = initialSize - delta;
@@ -90,7 +89,7 @@ class EditorDraggableWidgetState
   bool hasSnapping = false;
 
   @override
-  void onMoveEnd(DragEndDetails event, BoxConstraints constraints) {
+  void onMoveEnd(event, BoxConstraints constraints) {
     magnetCubit.setActiveHorizontalPosition(false);
     magnetCubit.setActiveVerticalPosition(false);
     hasSnapping = false;
@@ -98,8 +97,9 @@ class EditorDraggableWidgetState
     super.onMoveEnd(event, constraints);
   }
 
-  final double _shiftedClamp = 5;
+  final double _shiftedClamp = -2;
 
+  @override
   Size get areaSize => areaCubit.state.rect.size / areaCubit.fraction;
 
   @override
@@ -154,24 +154,24 @@ class EditorDraggableWidgetState
       return rotatedPoint;
     }).toList();
 
-    final objectAspectX = gameObject.size.x / gameObject.originalSize.x;
-    final objectAspectY = gameObject.size.x / gameObject.originalSize.x;
-
     final minX = rotatedPoints.map((p) => p.x).reduce((a, b) => a < b ? a : b);
     final maxX = rotatedPoints.map((p) => p.x).reduce((a, b) => a > b ? a : b);
     final minY = rotatedPoints.map((p) => p.y).reduce((a, b) => a < b ? a : b);
     final maxY = rotatedPoints.map((p) => p.y).reduce((a, b) => a > b ? a : b);
 
-    if (minX < -_shiftedClamp * objectAspectX) {
-      newPosition.x += -minX - _shiftedClamp * objectAspectX;
-    } else if (maxX > areaSize.width + _shiftedClamp * objectAspectX) {
-      newPosition.x -= maxX - areaSize.width - _shiftedClamp * objectAspectX;
-    }
+    if (maxX < 0 ||
+        maxY < 0 ||
+        minX > areaSize.width ||
+        minY > areaSize.height) {
+      // final areaCenter = Vector2(areaSize.width / 2, areaSize.height / 2);
+      //
+      // final objectCenterOffset =
+      //     Vector2(gameObject.size.x / 2, gameObject.size.y / 2)
+      //       ..rotate(gameObject.rotation);
+      //
+      // gameObject.position = areaCenter - objectCenterOffset;
 
-    if (minY < -_shiftedClamp * objectAspectY) {
-      newPosition.y += -minY - _shiftedClamp * objectAspectY;
-    } else if (maxY > areaSize.height + _shiftedClamp * objectAspectY) {
-      newPosition.y -= maxY - areaSize.height - _shiftedClamp * objectAspectY;
+      return;
     }
 
     gameObject.position = newPosition;

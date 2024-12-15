@@ -83,38 +83,6 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
       ) {
         final position = positionConverter(object.position);
 
-        final rotatedPoints = [
-          Vector2(0, 0),
-          Vector2(gameObject.size.x, 0),
-          Vector2(gameObject.size.x, gameObject.size.y),
-          Vector2(0, gameObject.size.y),
-        ].map((point) {
-          final rotatedPoint = point.clone()
-            ..rotate(gameObject.rotation)
-            ..add(position);
-          return rotatedPoint;
-        }).toList();
-
-        final objectAspectX = gameObject.size.x/gameObject.originalSize.x;
-        final objectAspectY = gameObject.size.x/gameObject.originalSize.x;
-
-        final minX = rotatedPoints.map((p) => p.x).reduce((a, b) => a < b ? a : b);
-        final maxX = rotatedPoints.map((p) => p.x).reduce((a, b) => a > b ? a : b);
-        final minY = rotatedPoints.map((p) => p.y).reduce((a, b) => a < b ? a : b);
-        final maxY = rotatedPoints.map((p) => p.y).reduce((a, b) => a > b ? a : b);
-
-        if (minX < -_shiftedClamp * objectAspectX) {
-          position.x += -minX - _shiftedClamp * objectAspectX;
-        } else if (maxX > areaSize.width + _shiftedClamp * objectAspectX) {
-          position.x -= maxX - areaSize.width - _shiftedClamp * objectAspectX;
-        }
-
-        if (minY < -_shiftedClamp * objectAspectY) {
-          position.y += -minY - _shiftedClamp * objectAspectY;
-        } else if (maxY > areaSize.height + _shiftedClamp * objectAspectY) {
-          position.y -= maxY - areaSize.height - _shiftedClamp * objectAspectY;
-        }
-
         final scale = scaleConverter(object.scale);
 
         final size = sizeConverter(object.size);

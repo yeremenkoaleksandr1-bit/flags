@@ -38,7 +38,7 @@ class GameObjectsRenderingState extends State<GameObjectsRendering> {
       exposer: exposer,
       child: Stack(
         fit: StackFit.passthrough,
-        clipBehavior: Clip.antiAlias,
+        clipBehavior: Clip.none,
         children: widget.objects,
       ),
     );
