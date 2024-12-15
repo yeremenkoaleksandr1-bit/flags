@@ -17,6 +17,7 @@ import 'package:flags/uikit/components/safe_area/safe_area.dart';
 import 'package:flags/uikit/layout_components/layout_components.dart';
 import 'package:flags/uikit/theme/theme.dart';
 import 'package:flame/extensions.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -35,23 +36,23 @@ final class EditorScreenView extends StatelessWidget {
     return EDeferredPointerHandler(
       child: Stack(
         children: [
-          // Positioned.fill(
-          //   child: RawGestureDetector(
-          //     gestures: {
-          //       PanGestureRecognizer:
-          //           GestureRecognizerFactoryWithHandlers<PanGestureRecognizer>(
-          //         PanGestureRecognizer.new,
-          //         (i) {
-          //           i.onEnd = (e) => selectionCubit.selectObject(null);
-          //         },
-          //       ),
-          //     },
-          //     behavior: HitTestBehavior.translucent,
-          //     child: const Material(
-          //       color: Colors.transparent,
-          //     ),
-          //   ),
-          // ),
+          Positioned.fill(
+            child: RawGestureDetector(
+              gestures: {
+                PanGestureRecognizer:
+                    GestureRecognizerFactoryWithHandlers<PanGestureRecognizer>(
+                  PanGestureRecognizer.new,
+                  (i) {
+                    i.onEnd = (e) => selectionCubit.selectObject(null);
+                  },
+                ),
+              },
+              behavior: HitTestBehavior.translucent,
+              child: const Material(
+                color: Colors.transparent,
+              ),
+            ),
+          ),
           Positioned.fill(
             child: GameSafeArea(
               child: Column(

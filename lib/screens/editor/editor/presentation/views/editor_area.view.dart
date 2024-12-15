@@ -45,6 +45,7 @@ class EditorAreaView extends StatelessWidget {
                     aspectRatio: bloc.initialFlag.proportion,
                     child: Stack(
                       fit: StackFit.expand,
+                      clipBehavior: Clip.hardEdge,
                       children: [
                         const Positioned.fill(
                           child: EditorBackgroundStyleView(),
@@ -68,6 +69,8 @@ class EditorAreaView extends StatelessWidget {
                             },
                           ),
                         ),
+
+
                       ],
                     ),
                   ),

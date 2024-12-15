@@ -36,16 +36,17 @@ class GameObjectsRenderingState extends State<GameObjectsRendering> {
   Widget build(BuildContext context) {
     return RenderBoxExposed(
       exposer: exposer,
-      child: Stack(
-        fit: StackFit.passthrough,
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        children: [
-          ...widget.objects.map(
-            (e) => KeyedSubtree(
-              child: e,
+      child: ClipRRect(
+        child: Stack(
+          fit: StackFit.passthrough,
+          children: [
+            ...widget.objects.map(
+              (e) => KeyedSubtree(
+                child: e,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
