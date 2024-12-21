@@ -6,7 +6,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '3.5.4'
+  sdk: '^3.5.2'
 
 dependencies:
   flutter:
@@ -75,6 +75,9 @@ dev_dependencies:
 
   lint: ^2.3.0
   flutter_lints: ^2.0.0
+
+dependency_overrides:
+  fast_extensions : 0.3.2
 
 flutter:
   uses-material-design: true

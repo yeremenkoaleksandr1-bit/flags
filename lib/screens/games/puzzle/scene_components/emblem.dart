@@ -1,3 +1,4 @@
+import 'package:defer_pointer/defer_pointer.dart';
 import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/presentation/game/puzzle/entities/draggable_emblem_part.game_object.dart';
@@ -85,5 +86,12 @@ class EmblemSceneObjectState extends DraggableGameObjectWidgetState<
     _setConfirmationButtonsPosition();
 
     super.onMoveEnd(event, constraints);
+  }
+
+  @override
+  Widget buildWidget(BuildContext context) {
+    return DeferPointer(
+      child: super.buildWidget(context),
+    );
   }
 }

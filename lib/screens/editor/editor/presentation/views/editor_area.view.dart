@@ -69,8 +69,6 @@ class EditorAreaView extends StatelessWidget {
                             },
                           ),
                         ),
-
-
                       ],
                     ),
                   ),

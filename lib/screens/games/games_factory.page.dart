@@ -1,3 +1,4 @@
+import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/presentation/app/app.presenter.dart';
@@ -78,21 +79,23 @@ class _GamesFactoryPageState extends State<GamesFactoryPage>
 
   @override
   Widget build(BuildContext context) {
-    return GamePageBuilder(
-      startSlideDirection: GamePageSlideDirection.middle,
-      endSlideDirection: GamePageSlideDirection.bottom,
-      child: BackButtonListener(
-        onBackButtonPressed: () async {
-          return !IAppPresenter.isDebugMode;
-        },
-        child: Builder(
-          builder: (BuildContext context) {
-            if (_isReady) {
-              return screen;
-            } else {
-              return const SizedBox();
-            }
+    return DeferredPointerHandler(
+      child: GamePageBuilder(
+        startSlideDirection: GamePageSlideDirection.middle,
+        endSlideDirection: GamePageSlideDirection.bottom,
+        child: BackButtonListener(
+          onBackButtonPressed: () async {
+            return !IAppPresenter.isDebugMode;
           },
+          child: Builder(
+            builder: (BuildContext context) {
+              if (_isReady) {
+                return screen;
+              } else {
+                return const SizedBox();
+              }
+            },
+          ),
         ),
       ),
     );

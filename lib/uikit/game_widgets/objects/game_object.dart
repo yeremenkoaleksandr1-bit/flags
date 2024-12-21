@@ -72,7 +72,7 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
 
   @override
   void dispose() {
-    gameObject.dispose();
+
     super.dispose();
   }
 

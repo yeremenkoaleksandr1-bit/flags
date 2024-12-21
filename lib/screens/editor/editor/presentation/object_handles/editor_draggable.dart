@@ -189,6 +189,12 @@ class EditorDraggableWidgetState
   }
 
   @override
+  void dispose() {
+    gameObject.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget buildWidget(BuildContext context) {
     return KeyedSubtree(
       key: paintedObjectKey,
