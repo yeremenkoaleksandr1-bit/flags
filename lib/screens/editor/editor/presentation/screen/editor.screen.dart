@@ -35,7 +35,7 @@ final class EditorScreen extends StatelessWidget {
         ),
         BlocProvider(
           create: (_) => EditorSceneObjectsCubit(
-            initialObjects: bloc.initialFlag.objects,
+            editorCubit: bloc,
           ),
         ),
         BlocProvider(

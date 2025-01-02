@@ -1,18 +1,23 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flags/domain/game_objects/game_objects.dart';
+import 'package:flags/screens/editor/editor/presentation/bloc/flag_editor_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/scene_objects/actions/actions.dart';
 import 'package:flags/screens/editor/editor/presentation/object_handles/editor_draggable.dart';
+import 'package:flame/components.dart';
+import 'package:flame/extensions.dart';
 
 part 'scene_objects_state.dart';
 
 final class EditorSceneObjectsCubit extends Cubit<EditorSceneObjectsState>
     with SceneObjectsActionsMixin {
+  final IFlagEditorCubit editorCubit;
+
   EditorSceneObjectsCubit({
-    required List<GameObject> initialObjects,
+    required this.editorCubit,
   }) : super(
           EditorSceneObjectsState([
-            ...initialObjects.map(EditorDraggableWidget.new),
+            ...editorCubit.initialFlag.objects.map(EditorDraggableWidget.new),
           ]),
         );
 
@@ -38,6 +43,15 @@ final class EditorSceneObjectsCubit extends Cubit<EditorSceneObjectsState>
   }
 
   void addGameObject(GameObject object) {
+    final center = editorCubit.initialFlag.rect.center;
+
+
+    object.position = Vector2(
+      center.dx - object.size.x / 2,
+      center.dy - object.size.y / 2,
+    );
+
+
     emit(
       state.copyWith(
         objects: [

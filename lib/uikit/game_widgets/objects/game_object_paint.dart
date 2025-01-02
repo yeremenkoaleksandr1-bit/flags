@@ -1,6 +1,4 @@
 import 'package:flags/domain/game_objects/base/game_object.dart';
-import 'package:flags/logger.dart';
-import 'package:flags/uikit/components/listenable_builder/listenable_builder.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 
@@ -17,15 +15,17 @@ class GameObjectPaint extends StatefulWidget {
 }
 
 class _GameObjectPaintState extends State<GameObjectPaint> {
-  GameObject get gameObject => widget.gameObject;
+  late final GameObject _object = widget.gameObject.copyWith(
+    position: Vector2.zero(),
+  );
 
   @override
   Widget build(BuildContext context) {
     return FittedBox(
       fit: BoxFit.contain,
       child: CustomPaint(
-        size: gameObject.size.toSize(),
-        painter: GameObjectPainter(gameObject),
+        size: _object.size.toSize(),
+        painter: GameObjectPainter(_object),
       ),
     );
   }
@@ -34,9 +34,7 @@ class _GameObjectPaintState extends State<GameObjectPaint> {
 class GameObjectPainter extends CustomPainter {
   final GameObject gameObject;
 
-  const GameObjectPainter(
-    this.gameObject,
-  );
+  const GameObjectPainter(this.gameObject);
 
   @override
   void paint(Canvas canvas, Size size) {

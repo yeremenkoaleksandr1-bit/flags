@@ -20,17 +20,17 @@ class FCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: color,
-      shape: RoundedRectangleBorder(
-        borderRadius: ThemeBorders.r8,
-        side: BorderSide(
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
           color: color.darken(0.3),
           width: 2,
           strokeAlign: -0.98,
         ),
       ),
-      child: Box(
+      child: Padding(
         padding: padding,
         child: child,
       ),

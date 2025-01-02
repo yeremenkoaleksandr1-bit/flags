@@ -27,10 +27,16 @@ class DrawnGameObject extends FlippableGameObject {
 
   @override
   void draw(Canvas canvas, Size size) {
+    canvas.translate(
+      this.size.x * (flippedHorizontal ? 1 : 0),
+      this.size.y * (flippedVertical ? 1 : 0),
+    );
+
     canvas.scale(
       (flippedHorizontal ? -1 : 1),
       (flippedVertical ? -1 : 1),
     );
+
     canvas.scale(
       this.size.x / (64 * 5.6),
       this.size.y / (64 * 5.6),

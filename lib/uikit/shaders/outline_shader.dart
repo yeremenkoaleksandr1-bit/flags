@@ -48,31 +48,39 @@ class _OutlineWidgetState extends State<OutlineWidget> {
   Widget build(BuildContext context) {
     final child = widget.child;
 
+    const value = 1.0;
     return Stack(
       clipBehavior: Clip.none,
       children: [
         RepaintBoundary(
-          child: ColorFiltered(
-            colorFilter: colorMode,
-            child: ImageFiltered(
-              imageFilter: ImageFilter.erode(
-                radiusX: 4,
-                radiusY: 4,
-              ),
-              child: ColorFiltered(
-                colorFilter: colorMatrix,
-                child: ImageFiltered(
-                  imageFilter: ImageFilter.blur(
-                    sigmaX: 1,
-                    sigmaY: 1,
-                    tileMode: TileMode.decal,
-                  ),
+          child: ImageFiltered(
+            imageFilter: ImageFilter.blur(
+              sigmaX: 0.1,
+              sigmaY: 0.1,
+              tileMode: TileMode.decal,
+            ),
+            child: ColorFiltered(
+              colorFilter: colorMode,
+              child: ImageFiltered(
+                imageFilter: ImageFilter.erode(
+                  radiusX: value,
+                  radiusY: value,
+                ),
+                child: ColorFiltered(
+                  colorFilter: colorMatrix,
                   child: ImageFiltered(
-                    imageFilter: ImageFilter.dilate(
-                      radiusX: 4,
-                      radiusY: 4,
+                    imageFilter: ImageFilter.blur(
+                      sigmaX: 2,
+                      sigmaY: 2,
+                      tileMode: TileMode.decal,
                     ),
-                    child: child,
+                    child: ImageFiltered(
+                      imageFilter: ImageFilter.dilate(
+                        radiusX: value,
+                        radiusY: value,
+                      ),
+                      child: child,
+                    ),
                   ),
                 ),
               ),

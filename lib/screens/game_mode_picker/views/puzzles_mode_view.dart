@@ -3,6 +3,7 @@ import 'package:flags/domain/game_objects/flag/flag.dart';
 import 'package:flags/domain/interfaces/drawable/i_drawable.dart';
 import 'package:flags/uikit/game_widgets/flag/flag.dart';
 import 'package:flags/uikit/layout_components/assets/assets.dart';
+import 'package:flags/uikit/layout_components/containers/card.dart';
 import 'package:flags/uikit/layout_components/sprite_widget.dart';
 import 'package:flags/uikit/painters/drawable_painter.dart';
 import 'package:flags/uikit/text/f_text.dart';
@@ -84,7 +85,8 @@ class _PuzzleModeViewState extends State<PuzzleModeView> {
             alignment: Alignment.center,
             child: AspectRatio(
               aspectRatio: 1.6 / 1,
-              child: NineCardView(
+              child: FCard(
+                padding: EdgeInsets.zero,
                 color: ThemePalette.gentleYellow,
                 child: LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {

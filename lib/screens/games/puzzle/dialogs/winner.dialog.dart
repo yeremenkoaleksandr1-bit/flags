@@ -1,3 +1,4 @@
+import 'package:flags/uikit/game_widgets/flag/flag.dart';
 import 'package:state_manager/state_manager.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:drag_and_drop/extensions/render_box.dart';
@@ -95,23 +96,36 @@ class PuzzleWinnerDialog extends DialogWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
+      spacing: 24,
       children: [
-        Center(
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: FText(
-              "You are winner!",
-              textStyle: const TextStyle(
-                fontSize: 48,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: FText(
+                    "${level.flag.name} - completed!",
+                    textStyle: const TextStyle(
+                      fontSize: 48,
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: FlagView(flag: level.flag),
+            ),
+          ],
         ),
         if (showAward)
           FCard(
             color: ThemePalette.peach,
-            child: ColumnSuper(
-              innerDistance: 12,
+            child: Column(
+              spacing: 12,
               children: [
                 if (showMoneyAward)
                   AddedMoneyView(
@@ -125,33 +139,42 @@ class PuzzleWinnerDialog extends DialogWidget {
               ],
             ),
           ),
-        Gap.v24,
-        FGreenButton(
-          onPressed: onNextLevelPressed,
-          child: Center(
-            child: FText(
-              nextLevelButtonText,
-              textStyle: const TextStyle(
-                fontSize: 48,
+        Column(
+          spacing: 8,
+          children: [
+            FGreenButton(
+              onPressed: onNextLevelPressed,
+              child: Center(
+                child: FText(
+                  nextLevelButtonText,
+                  textStyle: const TextStyle(
+                    fontSize: 48,
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-        Gap.v24,
-        FRedButton(
-          onPressed: onExitPressed,
-          child: Center(
-            child: FText("Back to flags"),
-          ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FRedButton(
+                onPressed: onExitPressed,
+                child: Center(
+                  child: FText("Menu"),
+                ),
+              ),
+            ),
+          ],
         ),
         if (IAppPresenter.isDebugMode) ...[
-          Gap.v48,
-          Text("nextLevel: ${nextLevel?.flag.name}"),
-          Text("is Last Level In Continent: $isLastLevelInContinent"),
-          Text("is Current Level Completed: $isCurrentLevelCompleted"),
-          Text("is Last Level In Section: $isLastLevelInSection"),
-          Text("level Emblems: ${emblems.length}"),
-        ]
+          Column(
+            children: [
+              Text("nextLevel: ${nextLevel?.flag.name}"),
+              Text("is Last Level In Continent: $isLastLevelInContinent"),
+              Text("is Current Level Completed: $isCurrentLevelCompleted"),
+              Text("is Last Level In Section: $isLastLevelInSection"),
+              Text("level Emblems: ${emblems.length}"),
+            ],
+          ),
+        ],
       ],
     );
   }
