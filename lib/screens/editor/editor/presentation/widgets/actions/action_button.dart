@@ -1,4 +1,6 @@
 import 'package:flags/domain/game_objects/base/game_object.dart';
+import 'package:flags/screens/editor/editor/custom_defer_pointer/defer_pointer.dart';
+import 'package:flags/screens/editor/editor/layers.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/scene_objects/scene_objects_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/object_handles/editor_draggable.dart';
 import 'package:flags/uikit/components/buttons/buttons.dart';

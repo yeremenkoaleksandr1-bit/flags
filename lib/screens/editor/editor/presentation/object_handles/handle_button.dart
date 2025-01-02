@@ -1,4 +1,6 @@
 import 'package:defer_pointer/defer_pointer.dart';
+import 'package:flags/screens/editor/editor/custom_defer_pointer/defer_pointer.dart';
+import 'package:flags/screens/editor/editor/layers.dart';
 import 'package:flags/uikit/theme/palette.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +52,7 @@ class _EOHandleButtonState extends State<EOHandleButton> {
 
   @override
   Widget build(BuildContext context) {
-    return DeferPointer(
+    return EDeferPointer(
       child: RawGestureDetector(
         gestures: {
           PanGestureRecognizer:

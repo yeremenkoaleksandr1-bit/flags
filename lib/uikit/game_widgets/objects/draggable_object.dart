@@ -117,12 +117,12 @@ class DraggableGameObjectWidgetState<G extends GameObject,
     widget.onMoveEnd?.call(this, gameObject.position);
   }
 
-  Widget buildDraggableWidget(BuildContext context) {
-    return super.buildWidget(context);
+  Widget buildDraggableWidget(BuildContext context, G gameObject) {
+    return super.buildWidget(context, gameObject);
   }
 
   @override
-  Widget buildWidget(BuildContext context) {
+  Widget buildWidget(BuildContext context, G gameObject) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return RawGestureDetector(
@@ -138,7 +138,7 @@ class DraggableGameObjectWidgetState<G extends GameObject,
             ),
           },
           behavior: HitTestBehavior.opaque,
-          child: buildDraggableWidget(context),
+          child: buildDraggableWidget(context, gameObject),
         );
       },
     );

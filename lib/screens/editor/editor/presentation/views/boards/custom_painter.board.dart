@@ -1,3 +1,4 @@
+import 'package:flags/screens/editor/editor/custom_defer_pointer/defer_pointer.dart';
 import 'package:flags/screens/editor/editor/presentation/bloc/flag_editor_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/components/drawing_canvas/drawing_canvas.dart';
 import 'package:flutter/material.dart';

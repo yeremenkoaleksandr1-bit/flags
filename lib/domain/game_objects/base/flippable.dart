@@ -74,6 +74,7 @@ abstract class FlippableGameObject extends ProcessGameObject {
 
   FlippableGameObject flipVertical() {
     flippedVertical = !flippedVertical;
+
     return this;
   }
 
@@ -92,17 +93,9 @@ abstract class FlippableGameObject extends ProcessGameObject {
   }
 
   @override
-  bool operator ==(Object other) {
-    if (other is! FlippableGameObject) {
-      return false;
-    }
-
-    return super == other &&
-        flippedVertical == other.flippedVertical &&
-        flippedHorizontal == other.flippedHorizontal;
-  }
-
-  @override
-  int get hashCode =>
-      super.hashCode ^ flippedVertical.hashCode ^ flippedHorizontal.hashCode;
+  List<Object?> get props => [
+        ...super.props,
+        flippedVertical,
+        flippedHorizontal,
+      ];
 }

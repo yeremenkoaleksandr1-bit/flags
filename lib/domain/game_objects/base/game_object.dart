@@ -1,12 +1,13 @@
 // ignore_for_file: unnecessary_getters_setters
 
+import 'package:equatable/equatable.dart';
 import 'package:flags/domain/interfaces/drawable/i_drawable.dart';
 import 'package:flags/shared/services/disposable.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
 abstract class GameObject
-    with ChangeNotifier
+    with ChangeNotifier, EquatableMixin
     implements IDrawable, IDisposable {
   Key _key;
   String name;
@@ -102,26 +103,15 @@ abstract class GameObject
   bool isEqual(GameObject gameObject) => _key == gameObject._key;
 
   @override
-  bool operator ==(Object other) =>
-      other is GameObject &&
-      runtimeType == other.runtimeType &&
-      _key == other.key &&
-      name == other.name &&
-      uniqueName == other.uniqueName &&
-      _position == other._position &&
-      _scale == other._scale &&
-      _size == other._size &&
-      _rotation == other._rotation;
-
-  @override
-  int get hashCode =>
-      _key.hashCode ^
-      name.hashCode ^
-      uniqueName.hashCode ^
-      _position.hashCode ^
-      _scale.hashCode ^
-      _size.hashCode ^
-      _rotation.hashCode;
+  List<Object?> get props => [
+        key,
+        name,
+        uniqueName,
+        position,
+        scale,
+        size,
+        rotation,
+      ];
 }
 
 extension GameObjectX on GameObject {

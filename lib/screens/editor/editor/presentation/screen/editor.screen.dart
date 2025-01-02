@@ -1,5 +1,7 @@
 import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/features/shop/shop.provider.dart';
+import 'package:flags/screens/editor/editor/custom_defer_pointer/defer_pointer.dart';
+import 'package:flags/screens/editor/editor/layers.dart';
 import 'package:flags/screens/editor/editor/presentation/bloc/flag_editor_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/boards/emblems/emblems_board_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/boards/shapes/shapes_board_cubit.dart';

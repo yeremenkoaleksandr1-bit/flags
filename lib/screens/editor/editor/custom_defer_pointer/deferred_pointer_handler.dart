@@ -93,9 +93,6 @@ class _DeferredHitTargetRenderObject extends RenderProxyBox {
 
   EDeferredPointerHandlerLink? _link;
 
-  Offset? _lastTapPosition;
-  Timer? _doubleTapTimer;
-
   EDeferredPointerHandlerLink get link => _link!;
 
   set link(EDeferredPointerHandlerLink link) {

@@ -42,6 +42,9 @@ class DrawingCanvas extends StatelessWidget {
 
           void onCancel() {
             final state = cubit.state;
+            final editorCubit = context.read<IFlagEditorCubit>();
+
+            editorCubit.toggleCustomPaintBoardOpen(false);
           }
 
           return SafeArea(
@@ -128,15 +131,22 @@ class DrawingCanvas extends StatelessWidget {
                   ),
                   Gap.v12,
                   Row(
+                    spacing: 4,
                     children: [
-                      FRedButton(
-                        onPressed: onCancel,
-                        child: FText("cancel"),
+                      Expanded(
+                        flex: 2,
+                        child: FRedButton(
+                          onPressed: onCancel,
+                          child: Center(child: FText("cancel")),
+                        ),
                       ),
-                      const Spacer(),
-                      FGreenButton(
-                        onPressed: onConfirm,
-                        child: FText("confirm"),
+                   
+                      Expanded(
+                        flex: 3,
+                        child: FGreenButton(
+                          onPressed: onConfirm,
+                          child: Center(child: FText("confirm")),
+                        ),
                       ),
                     ],
                   ),

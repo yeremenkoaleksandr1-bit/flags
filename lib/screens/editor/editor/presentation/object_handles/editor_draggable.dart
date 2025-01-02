@@ -1,9 +1,7 @@
 import 'dart:math';
 
-import 'package:defer_pointer/defer_pointer.dart';
 import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/domain/game_objects/base/game_object.dart';
-import 'package:flags/logger.dart';
 import 'package:flags/screens/editor/editor/custom_defer_pointer/defer_pointer.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/area/area_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/magnet_area/magnet_area_cubit.dart';
@@ -13,7 +11,6 @@ import 'package:flags/uikit/game_widgets/objects/game_object_paint.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 class EditorDraggableWidget extends DraggableGameObjectWidget<GameObject> {
   EditorDraggableWidget(
@@ -195,17 +192,17 @@ class EditorDraggableWidgetState
   }
 
   @override
-  Widget buildWidget(BuildContext context) {
+  Widget buildWidget(BuildContext context, GameObject gameObject) {
     return KeyedSubtree(
       key: paintedObjectKey,
       child: EDeferPointer(
-        child: super.buildWidget(context),
+        child: super.buildWidget(context, gameObject),
       ),
     );
   }
 
   @override
-  Widget buildDraggableWidget(BuildContext context) {
+  Widget buildDraggableWidget(BuildContext context, GameObject gameObject) {
     return CustomPaint(
       size: gameObject.size.toSize(),
       painter: GameObjectPainter(gameObject),

@@ -123,6 +123,7 @@ class _DeferPointerRenderObject extends RenderProxyBox {
   @override
   void paint(PaintingContext context, Offset offset) {
     if (deferPaint) {
+
       return; // skip the draw if an ancestor is supposed to handle it
     }
     context.paintChild(child!, offset);

@@ -28,6 +28,10 @@ class DrawnGameObject extends FlippableGameObject {
   @override
   void draw(Canvas canvas, Size size) {
     canvas.scale(
+      (flippedHorizontal ? -1 : 1),
+      (flippedVertical ? -1 : 1),
+    );
+    canvas.scale(
       this.size.x / (64 * 5.6),
       this.size.y / (64 * 5.6),
     );
@@ -37,9 +41,12 @@ class DrawnGameObject extends FlippableGameObject {
         const Size.square(64 * 5.6),
       ),
     );
+
     for (final path in pathsHistory.paths) {
       canvas.save();
+
       path.draw(canvas, size);
+
       canvas.restore();
     }
   }
@@ -69,6 +76,12 @@ class DrawnGameObject extends FlippableGameObject {
       flippedVertical: flippedVertical ?? this.flippedVertical,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        ...super.props,
+        pathsHistory,
+      ];
 
   @override
   Future<void> init() async => this;

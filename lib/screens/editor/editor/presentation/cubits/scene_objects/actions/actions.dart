@@ -46,9 +46,11 @@ mixin SceneObjectsActionsMixin on Cubit<EditorSceneObjectsState> {
       _updateState(
         (objects) {
           final newObjects = [...objects];
-          newObjects[index] = EditorDraggableWidget(
-            object.flipHorizontal(),
-          );
+          final object = newObjects[index].gameObject as FlippableGameObject;
+
+          object.key = UniqueKey();
+          object.flipHorizontal();
+
           return newObjects;
         },
       );
@@ -62,12 +64,18 @@ mixin SceneObjectsActionsMixin on Cubit<EditorSceneObjectsState> {
       _updateState(
         (objects) {
           final newObjects = [...objects];
-          newObjects[index] = EditorDraggableWidget(
-            object.flipVertical(),
-          );
+
+          final object = newObjects[index].gameObject as FlippableGameObject;
+
+          object.key = UniqueKey();
+          object.flipVertical();
+
+
           return newObjects;
         },
       );
+
+      WidgetsBinding.instance.drawFrame();
     }
   }
 

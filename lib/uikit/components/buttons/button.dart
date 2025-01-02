@@ -54,9 +54,8 @@ class CustomButtonPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Base rectangle fill
     final fillPaint = Paint()
-      ..color = const Color(0xFFFFFFFF) // Light gray color
+      ..color = const Color(0xFFFFFFFF)
       ..style = PaintingStyle.fill
       ..colorFilter = colorFilter;
 
@@ -65,7 +64,6 @@ class CustomButtonPainter extends CustomPainter {
     final rrect = borderRadius.toRRect(rect);
     canvas.drawRRect(rrect, fillPaint);
 
-    // Stroke for the base rectangle
     final strokePaint = Paint()
       ..color = const Color(0xFFD5D5D5)
       ..style = PaintingStyle.stroke
@@ -73,7 +71,6 @@ class CustomButtonPainter extends CustomPainter {
       ..colorFilter = colorFilter;
     canvas.drawRRect(rrect.deflate(1), strokePaint);
 
-    // Inner rectangle
     const double padding = 6.0;
     final innerRect = Rect.fromLTWH(
       padding,
@@ -89,14 +86,14 @@ class CustomButtonPainter extends CustomPainter {
     final innerFillPaint = Paint()
       ..shader = LinearGradient(
         colors: [
-          const Color(0xFFEEEEEE), // Top color
-          const Color(0xFFEEEEEE).withOpacity(0.0), // Bottom transparent color
+          const Color(0xff595959),
+          const Color(0xff404040).withValues(alpha: 0.0),
         ],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
       ).createShader(innerRect)
       ..style = PaintingStyle.fill
-      ..blendMode = BlendMode.multiply;
+      ..blendMode = BlendMode.overlay;
     canvas.drawRRect(innerRrect, innerFillPaint);
   }
 

@@ -89,9 +89,9 @@ class EmblemSceneObjectState extends DraggableGameObjectWidgetState<
   }
 
   @override
-  Widget buildWidget(BuildContext context) {
+  Widget buildWidget(BuildContext context, DraggableEmblemPart gameObject) {
     return DeferPointer(
-      child: super.buildWidget(context),
+      child: super.buildWidget(context, gameObject),
     );
   }
 }

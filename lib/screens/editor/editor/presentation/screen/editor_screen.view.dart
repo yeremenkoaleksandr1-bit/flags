@@ -1,6 +1,7 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/screens/editor/editor/custom_defer_pointer/defer_pointer.dart';
+import 'package:flags/screens/editor/editor/layers.dart';
 import 'package:flags/screens/editor/editor/presentation/bloc/flag_editor_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/selected_object/selected_object_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/dialogs/successfull_image_saved_dialog.dart';
@@ -54,45 +55,52 @@ final class EditorScreenView extends StatelessWidget {
             ),
           ),
           Positioned.fill(
-            child: GameSafeArea(
-              child: Column(
+            child: EDeferredPointerHandler(
+              child: Stack(
                 children: [
-                  const Padding(
-                    padding: Pad(horizontal: 8),
-                    child: EditorAppBarView(),
-                  ),
-                  Padding(
-                    padding: const Pad(horizontal: 8),
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: FButton(
-                        color: ThemePalette.yellowButton,
-                        onPressed: () async {
-                          await EasyLoading.show();
-                          try {
-                            await cubit.exportImage();
-                            const SuccessfullImageSavedDialog().showModal();
-                          } catch (e) {}
-      
-                          await EasyLoading.dismiss();
-                        },
-                        child: Icon(
-                          Icons.save,
-                          color: ThemePalette.brown.darken(0.5),
-                        ),
+                  Positioned.fill(
+                    child: GameSafeArea(
+                      child: Column(
+                        children: [
+                          const Padding(
+                            padding: Pad(horizontal: 8),
+                            child: EditorAppBarView(),
+                          ),
+                          Padding(
+                            padding: const Pad(horizontal: 8),
+                            child: Align(
+                              alignment: Alignment.topRight,
+                              child: FButton(
+                                color: ThemePalette.yellowButton,
+                                onPressed: () async {
+                                  await EasyLoading.show();
+                                  try {
+                                    await cubit.exportImage();
+                                    const SuccessfullImageSavedDialog()
+                                        .showModal();
+                                  } catch (e) {}
+
+                                  await EasyLoading.dismiss();
+                                },
+                                child: Icon(
+                                  Icons.save,
+                                  color: ThemePalette.brown.darken(0.5),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Gap.v12,
+                          const Expanded(
+                            child: _Content(),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  Gap.v12,
-                  const Expanded(
-                    child: _Content(),
-                  ),
+                  const EditorEditSelectedItemLayer(),
                 ],
               ),
             ),
-          ),
-          const IgnorePointer(
-            child: EditorEditSelectedItemLayer(),
           ),
           StylesBoard(),
           ShapesBoard(),

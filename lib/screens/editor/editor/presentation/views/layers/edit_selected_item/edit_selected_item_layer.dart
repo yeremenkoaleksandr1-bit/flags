@@ -1,4 +1,6 @@
 import 'package:flags/domain/game_objects/base/game_object.dart';
+import 'package:flags/screens/editor/editor/custom_defer_pointer/defer_pointer.dart';
+import 'package:flags/screens/editor/editor/layers.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/area/area_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/selected_object/selected_object_cubit.dart';
 import 'package:flags/screens/editor/editor/presentation/object_handles/editor_draggable.dart';
@@ -47,61 +49,59 @@ class _EditorEditSelectedItemLayerState
           ),
         );
 
-        return AbsorbPointer(
-          child:
-              BlocBuilder<EditorSelectedObjectCubit, EditorSelectedObjectState>(
-            bloc: bloc,
-            builder: (
-              BuildContext context,
-              EditorSelectedObjectState state,
-            ) {
-              final object = state.object;
+        return BlocBuilder<EditorSelectedObjectCubit,
+            EditorSelectedObjectState>(
+          bloc: bloc,
+          builder: (
+            BuildContext context,
+            EditorSelectedObjectState state,
+          ) {
+            final object = state.object;
 
-              final fraction = area.rect.size.width / 64;
+            final fraction = area.rect.size.width / 64;
 
-              if (object != null &&
-                  object.key != null &&
-                  (object.key! as GlobalKey).currentState != null) {
-                final link = (object.key! as GlobalKey).currentState!
-                    as EditorDraggableWidgetState;
+            if (object != null &&
+                object.key != null &&
+                (object.key! as GlobalKey).currentState != null) {
+              final link = (object.key! as GlobalKey).currentState!
+                  as EditorDraggableWidgetState;
 
-                return FListenableBuilder(
-                  listenable: link.gameObject,
-                  builder: (
-                    BuildContext context,
-                    GameObject value,
-                    Widget? child,
-                  ) {
-                    final size = sizeFunc(value.size, fraction);
-                    final offset = offsetFunc(value.position, fraction);
+              return FListenableBuilder(
+                listenable: link.gameObject,
+                builder: (
+                  BuildContext context,
+                  GameObject value,
+                  Widget? child,
+                ) {
+                  final size = sizeFunc(value.size, fraction);
+                  final offset = offsetFunc(value.position, fraction);
 
-                    return SizedBox(
-                      width: size.width + 32,
-                      height: size.height + 32,
-                      child: Transform.translate(
-                        offset: offset,
-                        child: Transform.rotate(
-                          alignment: Alignment.topLeft,
-                          angle: value.rotation,
-                          child: child,
-                        ),
+                  return SizedBox(
+                    width: size.width + 32,
+                    height: size.height + 32,
+                    child: Transform.translate(
+                      offset: offset,
+                      child: Transform.rotate(
+                        alignment: Alignment.topLeft,
+                        angle: value.rotation,
+                        child: child,
                       ),
-                    );
-                  },
-                  child: Transform.translate(
-                    offset: const Offset(-16, -16),
-                    child: EditSelectedItemActions(
-                      fraction: fraction,
-                      link: link,
-                      areaRect: area.rect,
                     ),
+                  );
+                },
+                child: Transform.translate(
+                  offset: const Offset(-16, -16),
+                  child: EditSelectedItemActions(
+                    fraction: fraction,
+                    link: link,
+                    areaRect: area.rect,
                   ),
-                );
-              }
+                ),
+              );
+            }
 
-              return const SizedBox();
-            },
-          ),
+            return const SizedBox();
+          },
         );
       },
     );

@@ -1,4 +1,6 @@
 import 'package:community_material_icon/community_material_icon.dart';
+import 'package:flags/screens/editor/editor/custom_defer_pointer/defer_pointer.dart';
+import 'package:flags/screens/editor/editor/layers.dart';
 import 'package:flags/screens/editor/editor/presentation/cubits/magnet_area/magnet_area_cubit.dart';
 import 'package:flags/uikit/components/buttons/button.dart';
 import 'package:flags/uikit/theme/palette.dart';

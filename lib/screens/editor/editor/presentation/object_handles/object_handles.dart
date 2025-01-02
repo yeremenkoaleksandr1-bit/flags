@@ -99,10 +99,11 @@ class EditorObjectHandleGameObjectState<T extends EditorObjectHandlerWidget>
   }
 
   @override
-  Widget buildDraggableWidget(BuildContext context) {
+  Widget buildDraggableWidget(
+      BuildContext context, EditorObjectHandleGameObject gameObject) {
     return DecoratedBox(
       decoration: BoxDecoration(border: Border.all()),
-      child: super.buildDraggableWidget(context),
+      child: super.buildDraggableWidget(context, gameObject),
     );
   }
 }

@@ -17,6 +17,11 @@ class GameObjectWidget<G extends GameObject> extends StatefulWidget {
 
   final G gameObject;
 
+  GameObjectWidget<G> clone(
+    G object,
+  ) =>
+      GameObjectWidget(object);
+
   @override
   State<GameObjectWidget<G>> createState() => GameObjectWidgetState();
 }
@@ -34,12 +39,11 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
 
   double get fitValue => areaRenderBox.size.width / gameObject.size.x;
 
-  Widget buildWidget(BuildContext context) {
+  Widget buildWidget(BuildContext context, G gameObject) {
     return GameObjectPaint(
       gameObject: gameObject,
     );
   }
-
 
   Vector2 positionConverter(Vector2 position) => position;
 
@@ -67,26 +71,24 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
 
   Alignment get rotateAlignment => Alignment.center;
 
-
   Size get areaSize => areaCubit.state.rect.size / areaCubit.fraction;
 
   @override
   void dispose() {
-
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final child = buildWidget(context);
-
     return FListenableBuilder(
       listenable: gameObject,
       builder: (
         BuildContext context,
-        GameObject object,
+        G object,
         Widget? child,
       ) {
+        final builtChild = buildWidget(context, object);
+
         final position = positionConverter(object.position);
 
         final scale = scaleConverter(object.scale);
@@ -108,13 +110,12 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
             angle: rotation,
             child: SizedBox.expand(
               child: RepaintBoundary(
-                child: child,
+                child: builtChild,
               ),
             ),
           ),
         );
       },
-      child: child,
     );
   }
 }
