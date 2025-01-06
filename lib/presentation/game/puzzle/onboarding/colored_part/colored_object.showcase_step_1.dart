@@ -1,9 +1,7 @@
-import 'package:state_manager/state_manager.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/uikit/assets/components/hand.dart';
 import 'package:flags/uikit/layout_components/showcase/showcase_item.dart';
 import 'package:flags/uikit/text/f_text.dart';
-import 'package:flags/uikit/utils/render_box_exposed.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +41,7 @@ class _PuzzleColoredObjectStep1ShowcaseState
       onReady = true;
     }
 
-    final mqs = context.mediaQuerySize;
+    final mqs = MediaQuery.of(context).size;
 
     return FShowcase(
       showcaseKey: widget.showcaseKey,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:state_manager/state_manager.dart';
 
 import '../showcaseview.dart';
 

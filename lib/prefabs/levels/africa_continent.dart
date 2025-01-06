@@ -3,11 +3,10 @@ import '../../domain/entities/game/game.dart';
 import '../../domain/entities/game/game_levels/game_level.dart';
 import '../flags/africa.dart';
 
-class AfricaContinent extends GameLevels {
+class AfricaContinent extends GameContinentData {
   AfricaContinent()
       : super(
           name: "Africa",
-          type: ContinentType.africa,
           sections: <GameLevelsSection>[
             GameLevelsSection(
               name: "easy",

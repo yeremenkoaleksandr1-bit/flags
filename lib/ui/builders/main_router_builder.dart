@@ -1,8 +1,8 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flags/logger.dart';
 import 'package:flags/presentation/navigator/router.dart';
 import 'package:flags/uikit/text/f_text.dart';
 import 'package:flutter/material.dart';
-import 'package:qlevar_router/qlevar_router.dart';
 
 class AppRouterBuilder extends StatelessWidget {
   const AppRouterBuilder({
@@ -15,33 +15,41 @@ class AppRouterBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Router(
-      backButtonDispatcher: DoubleTapBackButtonDispatcher(
+      backButtonDispatcher: AutoRouteBackButtonDispatcher(
+        context,
+        router,
         onFirstPress: () {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: FText("double_press_exit_message"),
+              content: FText("Double press to exit"),
             ),
           );
         },
       ),
-      routeInformationParser: router.routeInformationParser,
-      routerDelegate: router,
-      restorationScopeId: router.restorationScopeId,
+      routerDelegate: AutoRouterDelegate(
+        router,
+      ),
     );
   }
 }
 
-class DoubleTapBackButtonDispatcher extends RootBackButtonDispatcher {
+class AutoRouteBackButtonDispatcher extends RootBackButtonDispatcher {
   DateTime? _lastPressTime;
 
   final void Function() onFirstPress;
 
-  DoubleTapBackButtonDispatcher({required this.onFirstPress});
+  final RootStackRouter router;
+  final BuildContext context;
+
+  AutoRouteBackButtonDispatcher(
+    this.context,
+    this.router, {
+    required this.onFirstPress,
+  });
 
   @override
   Future<bool> didPopRoute() async {
-    logger.i(QR.history.length);
-    if (QR.history.length > 1) {
+    if (router.canPop()) {
       return super.didPopRoute();
     } else {
       final DateTime now = DateTime.now();

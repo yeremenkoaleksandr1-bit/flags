@@ -6,23 +6,23 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '^3.5.2'
+  sdk: ^3.5.2
 
 dependencies:
   flutter:
     sdk: flutter
 
-  state_manager:
-    path: packages/state_manager
-
   drag_and_drop:
     path: packages/drag_and_drop
+
+  bloc_utils:
+    git:
+      url: https://github.com/dipflix/bloc_utils.git
 
   cupertino_icons: ^1.0.2
   shared_preferences: ^2.2.2
   flame_audio: ^2.10.1
   add_to_cart_animation: ^2.0.3
-  qlevar_router: ^1.12.0
   defer_pointer:
     path: packages/defer_pointer
   gesture_x_detector: ^1.1.1
@@ -36,8 +36,6 @@ dependencies:
   rx_shared_preferences: ^3.1.0
   flutter_animator: ^3.2.2
   animate_do: ^3.1.2
-  hive: ^4.0.0-dev.2
-  isar_flutter_libs: ^4.0.0-dev.14
   path_provider: ^2.1.2
   dart_numerics: ^0.0.6
   dough: ^2.0.0
@@ -68,16 +66,20 @@ dependencies:
       ref: knottx-latest
   file_picker: ^8.1.2
   pointer_interceptor: ^0.10.1+2
+  get_it: ^8.0.3
+  flutter_secure_storage: ^9.2.3
+  auto_route: ^9.2.2
+  freezed_annotation: ^2.4.4
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  build_runner: ^2.4.13
+  freezed: ^2.5.7
+  json_serializable: ^6.8.0
+  auto_route_generator: ^9.0.0
 
   lint: ^2.3.0
   flutter_lints: ^2.0.0
 
-dependency_overrides:
-  fast_extensions : 0.3.2
 
 flutter:
   uses-material-design: true

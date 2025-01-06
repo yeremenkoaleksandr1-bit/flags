@@ -1,4 +1,4 @@
-import 'package:state_manager/state_manager.dart';
+
 import 'package:flags/core/elements/paint.dart';
 import 'package:flags/domain/editor/styles/style.dart';
 import 'package:flags/domain/entities/path/path.dart';
@@ -18,7 +18,7 @@ class FessesStyle extends FlagStyle {
   }) : super(
           paths: (Rect rect) {
             final height = rect.height;
-            final total = ratios.sum;
+            final total = ratios.reduce((value, element) => value + element);
 
             return [
               SPath.rect(

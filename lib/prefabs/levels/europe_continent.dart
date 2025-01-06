@@ -5,11 +5,10 @@ import '../../domain/entities/game/game_levels/game_level.dart';
 import '../flags/asia.dart';
 import '../flags/europe.dart';
 
-class EuropeContinent extends GameLevels {
+class EuropeContinent extends GameContinentData {
   EuropeContinent()
       : super(
           name: 'Europe',
-          type: ContinentType.europe,
           sections: <GameLevelsSection>[
             GameLevelsSection(
               name: "super easy",

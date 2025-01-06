@@ -5,7 +5,6 @@ import 'dart:ui';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
-import 'package:state_manager/state_manager.dart';
 
 class DebugPaintProvider extends StatefulWidget {
   const DebugPaintProvider({
@@ -53,8 +52,7 @@ abstract class DebugPainter {
 
 class _DebugPaintProviderState extends State<DebugPaintProvider>
     implements DebugPainter {
-  final ValueNotifierSet<Function(Canvas canvas, Size size)> _queue =
-      ValueNotifierSet();
+  final Set<Function(Canvas canvas, Size size)> _queue = {};
 
   @override
   void initState() {
@@ -75,26 +73,21 @@ class _DebugPaintProviderState extends State<DebugPaintProvider>
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        widget.builder(context),
-        Positioned.fill(
-          child: IgnorePointer(
-            child: Material(
-              type: MaterialType.transparency,
-              child: ValueListenableBuilder(
-                valueListenable: _queue,
-                builder: (
-                  BuildContext context,
-                  Set<dynamic Function(Canvas, Size)> value,
-                  Widget? child,
-                ) {
-                  return CustomPaint(
-                    willChange: true,
-                    foregroundPainter: _Painter(
-                      value,
-                      onPaintCompleted: _queue.clear,
-                    ),
-                  );
-                },
+        RepaintBoundary(
+          child: widget.builder(context),
+        ),
+        RepaintBoundary(
+          child: Positioned.fill(
+            child: IgnorePointer(
+              child: Material(
+                type: MaterialType.transparency,
+                child: CustomPaint(
+                  willChange: true,
+                  foregroundPainter: _Painter(
+                    _queue,
+                    onPaintCompleted: _queue.clear,
+                  ),
+                ),
               ),
             ),
           ),
@@ -105,8 +98,10 @@ class _DebugPaintProviderState extends State<DebugPaintProvider>
 
   @override
   void paintFunc(void Function(Canvas canvas, Size size) callback) {
-    WidgetsBinding.instance.drawFrame();
-    _queue.add(callback);
+    // WidgetsBinding.instance.drawFrame();
+    setState(() {
+      _queue.add(callback);
+    });
   }
 }
 

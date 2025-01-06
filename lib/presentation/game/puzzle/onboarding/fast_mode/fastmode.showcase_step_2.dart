@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:state_manager/state_manager.dart';
+
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/uikit/assets/components/money.dart';
 import 'package:flags/uikit/layout_components/layout_components.dart';
@@ -31,7 +31,7 @@ class _PuzzleFastModeStep2ShowcaseState
     extends State<PuzzleFastModeStep2Showcase> {
   @override
   Widget build(BuildContext context) {
-    final mqs = context.mediaQuerySize;
+      final mqs = MediaQuery.of(context).size;
 
     return FShowcase(
       showcaseKey: widget.showcaseKey,

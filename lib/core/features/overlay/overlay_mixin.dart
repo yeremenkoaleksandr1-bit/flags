@@ -1,4 +1,4 @@
-import 'package:state_manager/state_manager.dart';
+
 import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -9,9 +9,9 @@ mixin OverlayStateMixin<T extends StatefulWidget> on State<T> {
 
   void showOverlay() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final renderBox = context.renderBox!;
+      final renderBox = context.findRenderObject()!;
 
-      _insertOverlay(renderBox.rect);
+      _insertOverlay(renderBox.paintBounds);
     });
   }
 

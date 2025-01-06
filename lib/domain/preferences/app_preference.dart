@@ -1,38 +1,45 @@
 import 'package:flags/domain/models/app/app.dart';
-import 'package:hive/hive.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class AppPreferences {
-  AppPreferences() {
-    data = box.get("data") ??
-        AppPreferencesData(
-          activeSound: true,
-          activeVibration: true,
-          isDebugMode: false,
+final class AppPreferencesCubit extends Cubit<AppPreferencesData> {
+  late final SharedPreferences _prefs;
+
+  AppPreferencesCubit(this._prefs)
+      : super(
+          AppPreferencesData(
+            activeSound: _prefs.getBool('activeSound') ?? true,
+            activeVibration: _prefs.getBool('activeVibration') ?? true,
+            isDebugMode: _prefs.getBool('isDebugMode') ?? false,
+          ),
         );
-  }
-
-  late final AppPreferencesData data;
-
-  final Box<AppPreferencesData> box =
-      Hive.box<AppPreferencesData>(name: "app_preferences");
 
   void setActiveSound(bool value) {
-    data.activeSound = value;
-    _save(data);
+    emit(
+      state.copyWith(
+        activeSound: value,
+      ),
+    );
+    _prefs.setBool('activeSound', value);
   }
 
   void setActiveVibration(bool value) {
-    data.activeVibration = value;
+    emit(
+      state.copyWith(
+        activeVibration: value,
+      ),
+    );
 
-    _save(data);
+    _prefs.setBool('activeVibration', value);
   }
 
   void setDebugMode(bool value) {
-    data.isDebugMode = value;
-    _save(data);
-  }
+    emit(
+      state.copyWith(
+        isDebugMode: value,
+      ),
+    );
 
-  void _save(AppPreferencesData value) {
-    box.put("data", value);
+    _prefs.setBool('isDebugMode', value);
   }
 }

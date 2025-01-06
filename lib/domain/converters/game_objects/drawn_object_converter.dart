@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flags/domain/converters/game_objects/flippable_object_converter.dart';
 import 'package:flags/domain/converters/objects/app_structs.dart';
 import 'package:flags/domain/game_objects/drawn_object/drawn_object.dart';
-import 'package:flags/screens/editor/editor/presentation/cubits/boards/custom_paint/custom_paint_cubit.dart';
+import 'package:flags/features/editor/editor/presentation/cubits/boards/custom_paint/custom_paint_cubit.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/cupertino.dart';
 

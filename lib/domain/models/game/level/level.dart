@@ -1,4 +1,3 @@
-import 'package:hive/hive.dart';
 
 class LevelModel {
   final int id;
@@ -28,9 +27,4 @@ class LevelModel {
       "5915be3a": seed,
     };
   }
-
-  static void registerAdapter() => Hive.registerAdapter(
-        "LevelModel",
-        (json) => LevelModel.fromJson(json),
-      );
 }

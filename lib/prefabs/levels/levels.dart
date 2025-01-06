@@ -12,7 +12,7 @@ export 'south_america_continent.dart';
 export 'whole_world_continent.dart';
 
 class FactoryGameContinent {
-  static final Map<ContinentType, GameLevels> continents = {
+  static final Map<ContinentType, GameContinentData> continents = {
     ContinentType.europe: EuropeContinent(),
     ContinentType.asia: AsiaContinent(),
     ContinentType.africa: AfricaContinent(),
@@ -26,7 +26,7 @@ class FactoryGameContinent {
       .expand((element) => element)
       .toList();
 
-  GameLevels create(ContinentType continent) {
+  GameContinentData create(ContinentType continent) {
     return continents[continent]!.clone();
   }
 }

@@ -1,4 +1,3 @@
-import 'package:state_manager/state_manager.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/uikit/assets/components/hand.dart';
@@ -36,7 +35,7 @@ class _PuzzleColoredObjectStep2ShowcaseState
     extends State<PuzzleColoredObjectStep2Showcase> {
   @override
   Widget build(BuildContext context) {
-    final mqs = context.mediaQuerySize;
+    final mqs = MediaQuery.of(context).size;
 
     return FShowcase(
       showcaseKey: widget.showcaseKey,

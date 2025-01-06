@@ -1,13 +1,10 @@
+import 'dart:convert';
+
 import 'package:flags/domain/domain.dart';
-import 'package:flags/logger.dart';
 import 'package:flags/prefabs/levels/levels.dart';
-import 'package:hive/hive.dart';
-import 'package:rxdart/rxdart.dart';
-import 'package:state_manager/state_manager.dart';
+import 'package:rx_shared_preferences/rx_shared_preferences.dart';
 
 abstract interface class ILevelsService {
-  static ILevelsService get I => Get.find<ILevelsService>();
-
   LevelModel? getLevelData({
     required int levelId,
     required ContinentType continent,
@@ -22,56 +19,25 @@ abstract interface class ILevelsService {
     int seed = 1,
   });
 
-  Stream<int> watchCompletedLevelsQuantity({
-    required ContinentType continent,
-    required GameProcessType gameMode,
-  });
-
-  int getCompletedLevelsQuantity({
-    required ContinentType continent,
-    required GameProcessType gameMode,
-  });
-
-  void removeDataOfContinent({
-    required ContinentType continent,
-    required GameProcessType gameMode,
-  });
+  int getCompletedLevelsCount();
 }
 
 class LevelsServiceImpl implements ILevelsService {
-  static const String _levelsBoxKey = "3294e1ce-1806-4ad2-a161-39854ced929f";
+  final SharedPreferences _preferences;
 
-  final Box<LevelModel> _box = Hive.box<LevelModel>(name: _levelsBoxKey);
-  final Box<bool> _boxPrefs = Hive.box<bool>(name: "${_levelsBoxKey}prefs");
+  LevelsServiceImpl(this._preferences) {
+    final isLevelsInitialized =
+        _preferences.getBool('levels_initialized') ?? false;
 
-  Future<ILevelsService> initialize() async {
-    final initData = _boxPrefs.get('initialized');
+    if (!isLevelsInitialized) {
+      final savedData = _preferences.getString('levels_progress') ?? '{}';
+      final initData = jsonDecode(savedData) as Map<String, dynamic>;
 
-    if (initData == null) {
-      const gameModes = GameProcessType.values;
+      _initializeLevels(initData);
 
-      final continents = FactoryGameContinent.continents;
-
-      for (final mode in gameModes) {
-        for (final continent in continents.entries) {
-          final key = "${mode.name}_${continent.value.name}_";
-
-          for (final level in continent.value.levels) {
-            final model = LevelModel(
-              id: level.id,
-              completed: false,
-              seed: -1,
-            );
-
-            _box.put("${key}_${level.id}", model);
-          }
-        }
-      }
-
-      _boxPrefs.put('initialized', true);
+      _preferences.setString('levels_progress', jsonEncode(initData));
+      _preferences.setBool('levels_initialized', true);
     }
-
-    return Get.put<ILevelsService>(this, permanent: true);
   }
 
   @override
@@ -90,7 +56,15 @@ class LevelsServiceImpl implements ILevelsService {
 
     final key = "${gameMode.index}_${continent.index}_$levelId";
 
-    _box.put(key, model);
+    _preferences.setString(
+      'levels_progress',
+      jsonEncode(
+        {
+          ...jsonDecode(_preferences.getString('levels_progress') ?? '{}'),
+          key: model.toJson(),
+        },
+      ),
+    );
   }
 
   @override
@@ -101,42 +75,45 @@ class LevelsServiceImpl implements ILevelsService {
   }) {
     final key = "${gameMode.index}_${continent.index}_$levelId";
 
-    return _box.get(key);
+    final data = jsonDecode(_preferences.getString('levels_progress') ?? '{}');
+
+    final levelData = data[key];
+
+    if (levelData == null) {
+      return null;
+    }
+
+    return LevelModel.fromJson(levelData);
+  }
+
+  void _initializeLevels(Map<String, dynamic> initData) {
+    const gameModes = GameProcessType.values;
+    final continents = FactoryGameContinent.continents;
+
+    for (final mode in gameModes) {
+      for (final continent in continents.entries) {
+        final keyPrefix = "${mode.name}_${continent.value.name}_";
+
+        for (final level in continent.value.levels) {
+          final key = "$keyPrefix${level.id}";
+          if (!initData.containsKey(key)) {
+            initData[key] = LevelModel(
+              id: level.id,
+              completed: false,
+              seed: -1,
+            ).toJson();
+          }
+        }
+      }
+    }
   }
 
   @override
-  Stream<int> watchCompletedLevelsQuantity({
-    required ContinentType continent,
-    required GameProcessType gameMode,
-  }) {
-    final streamController = _box.watch();
-    final keyPrefix = "${gameMode.index}_${continent.index}_";
-
-    return streamController.map<int>((event) {
-      final keys = _box.keys.where((element) => element.contains(keyPrefix));
-      return _box.getAll(keys).where((e) => e?.completed == true).length;
-    });
-  }
-
-  @override
-  int getCompletedLevelsQuantity({
-    required ContinentType continent,
-    required GameProcessType gameMode,
-  }) {
-    final keyPrefix = "${gameMode.index}_${continent.index}_";
-    final keys = _box.keys.where((element) => element.contains(keyPrefix));
-
-    return _box.getAll(keys).where((e) => e?.completed == true).length;
-  }
-
-  @override
-  void removeDataOfContinent({
-    required ContinentType continent,
-    required GameProcessType gameMode,
-  }) {
-    final keyPrefix = "${gameMode.index}_${continent.index}_";
-    final keys = _box.keys.where((element) => element.contains(keyPrefix));
-
-    _box.deleteAll(keys);
+  int getCompletedLevelsCount() {
+    final data = jsonDecode(_preferences.getString('levels_progress') ?? '{}');
+    return data.values
+        .whereType<Map<String, dynamic>>()
+        .where((element) => element['completed'] == true)
+        .length;
   }
 }

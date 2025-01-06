@@ -1,12 +1,12 @@
-import 'package:hive/hive.dart';
+import 'package:equatable/equatable.dart';
 
-class AppPreferencesData {
-  bool activeSound;
-  bool activeVibration;
+class AppPreferencesData extends Equatable {
+  final bool activeSound;
+  final bool activeVibration;
 
-  bool isDebugMode;
+  final bool isDebugMode;
 
-  AppPreferencesData({
+  const AppPreferencesData({
     required this.activeSound,
     required this.activeVibration,
     required this.isDebugMode,
@@ -25,8 +25,24 @@ class AppPreferencesData {
         isDebugMode: json['isDebugMode'],
       );
 
-  static void registerAdapter() => Hive.registerAdapter(
-        "AppPreferences",
-        (json) => AppPreferencesData.fromJson(json),
-      );
+  AppPreferencesData copyWith({
+    bool? activeSound,
+    bool? activeVibration,
+    bool? isDebugMode,
+  }) {
+    return AppPreferencesData(
+      activeSound: activeSound ?? this.activeSound,
+      activeVibration: activeVibration ?? this.activeVibration,
+      isDebugMode: isDebugMode ?? this.isDebugMode,
+    );
+  }
+
+
+  @override
+  List<Object?> get props => [
+        activeSound,
+        activeVibration,
+        isDebugMode,
+      ];
+
 }

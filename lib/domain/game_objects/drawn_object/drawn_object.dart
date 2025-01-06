@@ -1,5 +1,5 @@
 import 'package:flags/core/utils/utils.dart';
-import 'package:flags/screens/editor/editor/presentation/cubits/boards/custom_paint/custom_paint_cubit.dart';
+import 'package:flags/features/editor/editor/presentation/cubits/boards/custom_paint/custom_paint_cubit.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:memoize/memoize.dart';

@@ -1,9 +1,9 @@
-import 'package:flags/features/audio/audio.provider.dart';
-import 'package:flags/features/audio/sound_data.dart';
-import 'package:flags/features/vibration/vibration.provider.dart';
-import 'package:flags/ui/notifications/tap_button_notification.dart';
+import 'package:flags/features/app/features/audio/domain/sound_data.dart';
+import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
+import 'package:flags/features/app/features/vibration/presentation/bloc/vibration_cubit.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ScaledGestureDetector extends StatefulWidget {
   const ScaledGestureDetector({
@@ -30,8 +30,9 @@ class ScaledGestureDetector extends StatefulWidget {
 
 class _ScaledGestureDetectorState extends State<ScaledGestureDetector>
     with SingleTickerProviderStateMixin {
-  late final audioService = AudioProvider.of(context);
-  late final vibrationService = PhoneVibrationProvider.of(context);
+  IAudioCubit get audioCubit => context.read<IAudioCubit>();
+
+  IVibrationCubit get vibrationCubit => context.read<IVibrationCubit>();
 
   late final AnimationController _animationController;
 
@@ -61,8 +62,8 @@ class _ScaledGestureDetectorState extends State<ScaledGestureDetector>
 
   Future<void> onPointerUp() async {
     if (!isDisabled) {
-      vibrationService.vibrate(milliseconds: 50);
-      await audioService.playSfx(GameSfx.button);
+      vibrationCubit.vibrate(milliseconds: 50);
+      await audioCubit.playSfx(GameSfx.button);
 
       widget.onTap?.call();
       onPointerCancel();

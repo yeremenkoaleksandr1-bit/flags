@@ -1,8 +1,4 @@
-import 'package:flags/shared/services/disposable.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:state_manager/state_manager.dart';
-
-import '../../../../logger.dart';
 
 mixin ProcessedObjectFocusHandler {
   final ValueNotifier<dynamic> _object = ValueNotifier(null);

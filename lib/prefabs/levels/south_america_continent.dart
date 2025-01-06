@@ -3,11 +3,10 @@ import '../../domain/entities/game/game.dart';
 import '../../domain/entities/game/game_levels/game_level.dart';
 import '../flags/south_america.dart';
 
-class SouthAmericaContinent extends GameLevels {
+class SouthAmericaContinent extends GameContinentData {
   SouthAmericaContinent()
       : super(
           name: "South America",
-          type: ContinentType.southAmerica,
           sections: <GameLevelsSection>[
             GameLevelsSection(
               name: "easy",

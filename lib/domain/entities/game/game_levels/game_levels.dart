@@ -3,16 +3,14 @@ import 'package:flags/domain/entities/game/game.dart';
 
 import 'game_level.dart';
 
-class GameLevels {
+class GameContinentData {
   final String name;
-  final ContinentType type;
   final List<GameLevelsSection> sections;
 
   List<GameLevel> get levels => sections.expand((e) => e.levels).toList();
 
-  GameLevels({
+  GameContinentData({
     required this.name,
-    required this.type,
     required this.sections,
   }) {
     levels.asMap().forEach(
@@ -20,10 +18,9 @@ class GameLevels {
         );
   }
 
-  GameLevels clone() {
-    return GameLevels(
+  GameContinentData clone() {
+    return GameContinentData(
       name: name,
-      type: type,
       sections: [
         ...sections.map(
           (e) => e.clone(),

@@ -1,58 +1,66 @@
+import 'package:equatable/equatable.dart';
 import 'package:flags/shared/services/disposable.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:hive/hive.dart';
 
-class WinStreak implements IDisposable {
-  WinStreak({
-    int currentStreak = 0,
-    int longestStreak = 0,
-  })  : currentStreakRx = ValueNotifier(currentStreak),
-        longestStreakRx = ValueNotifier(longestStreak);
+class WinStreak extends Equatable {
+  const WinStreak({
+    required this.currentStreak,
+    required this.longestStreak,
+  });
 
-  final ValueNotifier<int> currentStreakRx;
-  final ValueNotifier<int> longestStreakRx;
+  final int currentStreak;
+  final int longestStreak;
 
-  void recordWin() {
-    currentStreakRx.value++;
-    if (currentStreakRx.value > longestStreakRx.value) {
-      longestStreakRx.value = currentStreakRx.value;
-    }
+  WinStreak recordWin() {
+    final currentStreak = this.currentStreak + 1;
+    return copyWith(
+      currentStreak: currentStreak,
+      longestStreak:
+          currentStreak > longestStreak ? currentStreak : longestStreak,
+    );
   }
 
-  void resetStreak() {
-    currentStreakRx.value = 0;
+  WinStreak resetStreak() {
+    return copyWith(
+      currentStreak: 0,
+    );
   }
 
   int getCurrentStreak() {
-    return currentStreakRx.value;
+    return currentStreak;
   }
 
   int getLongestStreak() {
-    return longestStreakRx.value;
+    return longestStreak;
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'currentStreak': currentStreakRx.value,
-      'longestStreak': longestStreakRx.value,
+      'currentStreak': currentStreak,
+      'longestStreak': longestStreak,
     };
   }
 
-  factory WinStreak.fromJson(Map<String, dynamic> map) {
+  factory WinStreak.fromJsonSafe(Map<String, dynamic> map) {
     return WinStreak(
-      currentStreak: map['currentStreak'] as int,
-      longestStreak: map['longestStreak'] as int,
+      currentStreak: map['currentStreak'] ?? 0,
+      longestStreak: map['longestStreak'] ?? 0,
     );
   }
 
-  static void registerAdapter() => Hive.registerAdapter(
-        "WinStreak",
-        (json) => WinStreak.fromJson(json),
-      );
+  WinStreak copyWith({
+    int? currentStreak,
+    int? longestStreak,
+  }) {
+    return WinStreak(
+      currentStreak: currentStreak ?? this.currentStreak,
+      longestStreak: longestStreak ?? this.longestStreak,
+    );
+  }
 
   @override
-  void dispose() {
-    currentStreakRx.dispose();
-    longestStreakRx.dispose();
-  }
+  List<Object?> get props => [
+        currentStreak,
+        longestStreak,
+      ];
 }

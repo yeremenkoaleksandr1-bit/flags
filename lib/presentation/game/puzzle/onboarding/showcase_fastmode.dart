@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:flags/core/flutter_engine.dart';
-import 'package:flags/features/onboarding/onboarding.service.dart';
+import 'package:flags/getIt.dart';
+import 'package:flags/services/onboarding/onboarding.service.dart';
 import 'package:flutter/material.dart';
 import 'package:showcaseview/showcaseview.dart';
 
 class PuzzleGameFastModeShowcase {
-  final IOnboardingService _service = IOnboardingService.I;
+  final IOnboardingService _service = getIt<IOnboardingService>();
 
   final GlobalKey key = GlobalKey();
 

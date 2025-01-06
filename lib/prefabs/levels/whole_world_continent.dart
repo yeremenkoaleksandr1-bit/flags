@@ -1,11 +1,10 @@
 import '../../domain/domain.dart';
 import '../../domain/entities/game/game.dart';
 
-class WholeWorldContinent extends GameLevels {
+class WholeWorldContinent extends GameContinentData {
   WholeWorldContinent()
       : super(
           name: "Whole World",
-          type: ContinentType.oceania,
           sections: <GameLevelsSection>[],
         );
 }

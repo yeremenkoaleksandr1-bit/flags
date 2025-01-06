@@ -1,10 +1,16 @@
+import 'package:flags/features/app/presentation/application.dart';
 import 'package:flags/main/app.dart';
+import 'package:flags/shared/data/local/secure_storage.dart';
+import 'package:flags/shared/data/local/shared_preferences_storage.dart';
 import 'package:flags/uikit/components/progress_indicator/linear_progress_indicator.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:rx_shared_preferences/rx_shared_preferences.dart';
+
+late final SharedPreferences sharedPreferences;
 
 void main() async {
   final WidgetsBinding binding = WidgetsFlutterBinding.ensureInitialized();
@@ -36,7 +42,11 @@ void main() async {
       ],
     );
 
+  await SecureStorageServiceImpl().init();
+  sharedPreferences = await SharedPreferences.getInstance();
+
+
   runApp(
-    const App(),
+    const Application(),
   );
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:showcaseview/showcaseview.dart';
-import 'package:state_manager/state_manager.dart';
+
 
 class FShowcase extends StatelessWidget {
   const FShowcase({
@@ -49,7 +49,7 @@ class FShowcase extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mqs = context.mediaQuerySize;
+      final mqs = MediaQuery.of(context).size;
 
     return Showcase.withWidget(
       key: showcaseKey,

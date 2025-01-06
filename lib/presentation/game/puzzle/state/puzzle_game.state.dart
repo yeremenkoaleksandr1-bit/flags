@@ -1,35 +1,47 @@
+import 'package:equatable/equatable.dart';
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:state_manager/state_manager.dart';
 
-class PuzzleGameState {
-  final ValueNotifier<GameLevel> level;
-  final ValueNotifier<GameDifficult> difficult;
-  final ValueNotifierList<BoardItem> boardObjects;
+base class PuzzleGameState extends Equatable {
+  final GameLevel level;
+  final GameDifficult difficult;
+  final List<BoardItem> boardObjects;
 
-  GameFlag get flag => level.value.flag;
+  GameFlag get flag => level.flag;
 
-  final ValueNotifierList<ProcessGameObject> placedObjects;
+  final List<ProcessGameObject> placedObjects;
 
-  double flagFitValue;
+  final double flagFitValue;
 
-  PuzzleGameState({
-    required List<BoardItem> boardObjects,
-    required GameDifficult difficult,
-    required GameLevel level,
+  const PuzzleGameState({
+    required this.level,
+    required this.difficult,
+    required this.boardObjects,
+    required this.placedObjects,
     required this.flagFitValue,
-  })  : level = ValueNotifier(level),
-        difficult = ValueNotifier(difficult),
-        boardObjects = ValueNotifierList(boardObjects),
-        placedObjects = ValueNotifierList();
+  });
+
+  PuzzleGameState copyWith({
+    GameLevel? level,
+    GameDifficult? difficult,
+    List<BoardItem>? boardObjects,
+    List<ProcessGameObject>? placedObjects,
+    double? flagFitValue,
+  }) {
+    return PuzzleGameState(
+      level: level ?? this.level,
+      difficult: difficult ?? this.difficult,
+      boardObjects: boardObjects ?? this.boardObjects,
+      placedObjects: placedObjects ?? this.placedObjects,
+      flagFitValue: flagFitValue ?? this.flagFitValue,
+    );
+  }
 
   void disposeState() {
     level.dispose();
-    difficult.dispose();
 
     for (final e in boardObjects) {
       e.dispose();
@@ -38,26 +50,52 @@ class PuzzleGameState {
     for (final e in placedObjects) {
       e.dispose();
     }
-
-    boardObjects.dispose();
-    placedObjects.dispose();
   }
+
+  @override
+  List<Object?> get props => [
+        level,
+        difficult,
+        boardObjects,
+        placedObjects,
+        flagFitValue,
+      ];
 }
 
-class PuzzleFastModeState extends PuzzleGameState {
-  final ValueNotifier<int> timerRx;
+final class PuzzleFastModeState extends PuzzleGameState {
+  final int timerRx;
 
-  PuzzleFastModeState({
+  const PuzzleFastModeState({
     required this.timerRx,
     required super.boardObjects,
     required super.difficult,
     required super.level,
     required super.flagFitValue,
+    required super.placedObjects,
   });
 
   @override
-  void disposeState() {
-    timerRx.dispose();
-    super.disposeState();
+  PuzzleFastModeState copyWith({
+    int? timerRx,
+    GameLevel? level,
+    GameDifficult? difficult,
+    List<BoardItem>? boardObjects,
+    List<ProcessGameObject>? placedObjects,
+    double? flagFitValue,
+  }) {
+    return PuzzleFastModeState(
+      timerRx: timerRx ?? this.timerRx,
+      boardObjects: boardObjects ?? this.boardObjects,
+      difficult: difficult ?? this.difficult,
+      level: level ?? this.level,
+      flagFitValue: flagFitValue ?? this.flagFitValue,
+      placedObjects: placedObjects ?? this.placedObjects,
+    );
   }
+
+  @override
+  List<Object?> get props => [
+        ...super.props,
+        timerRx,
+      ];
 }

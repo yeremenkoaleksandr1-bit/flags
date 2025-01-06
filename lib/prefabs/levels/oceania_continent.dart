@@ -3,11 +3,10 @@ import '../../domain/entities/game/game.dart';
 import '../../domain/entities/game/game_levels/game_level.dart';
 import '../flags/oceania.dart';
 
-class OceaniaContinent extends GameLevels {
+class OceaniaContinent extends GameContinentData {
   OceaniaContinent()
       : super(
           name: "Oceania",
-          type: ContinentType.oceania,
           sections: <GameLevelsSection>[
             GameLevelsSection(
               name: "easy",
