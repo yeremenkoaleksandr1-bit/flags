@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/uikit/assets/assets.dart';
@@ -50,7 +52,11 @@ class _LevelButtonState extends State<LevelButton> {
 
         var color = fColor;
         if (!widget.level.completed && widget.level.opened) {
-          color = fColor.brighten(0.5);
+          color = fColor.withValues(
+            red: 100,
+            green: 100,
+            blue: 100,
+          );
         }
         Widget child;
 

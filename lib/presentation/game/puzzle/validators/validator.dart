@@ -48,7 +48,6 @@ class PuzzleObjectPlacingHandler {
         ) ??
         true;
 
-    logger.i(isPreviousPlaced);
     if (!isPreviousPlaced) {
       return null;
     }

@@ -12,10 +12,10 @@ class FSoundMuteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vibrationCubit = context.read<IVibrationCubit>();
+    final cubit = context.read<IAudioCubit>();
 
     return FBlueButton(
-      onPressed: vibrationCubit.toggleMute,
+      onPressed: cubit.toggleMute,
       child: BuildAudioPreferences(
         builder: (BuildContext context, AudioState state) {
           return Icon(

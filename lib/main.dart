@@ -1,7 +1,9 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flags/features/app/presentation/application.dart';
 import 'package:flags/main/app.dart';
 import 'package:flags/shared/data/local/secure_storage.dart';
 import 'package:flags/shared/data/local/shared_preferences_storage.dart';
+import 'package:flags/ui/game_scaffold.dart';
 import 'package:flags/uikit/components/progress_indicator/linear_progress_indicator.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flame/flame.dart';
@@ -44,7 +46,6 @@ void main() async {
 
   await SecureStorageServiceImpl().init();
   sharedPreferences = await SharedPreferences.getInstance();
-
 
   runApp(
     const Application(),

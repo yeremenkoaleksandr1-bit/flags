@@ -1,22 +1,21 @@
 import 'package:bloc_utils/bloc_utils.dart';
 import 'package:flags/domain/domain.dart';
-import 'package:flags/prefabs/levels/levels.dart';
 import 'package:flags/presentation/presenters/continents_picker/route_params.dart';
 import 'package:flags/presentation/presenters/continents_picker/state/continents_picker.state.dart';
-import 'package:flame/extensions.dart';
 
 abstract interface class IContinentsPickerCubit
     with DynamicStatedCubitStream<ContinentsPickerState> {
-  void onContinentSelected(ContinentType continent);
-
-  void onPlayFastMode();
+  ContinentPickerRouteParams get params;
 }
 
 class ContinentsPickerCubitImpl extends StatedCubit<ContinentsPickerState>
     implements IContinentsPickerCubit {
-  final ContinentPickerRouteParams routeParams;
+  @override
+  final ContinentPickerRouteParams params;
 
-  ContinentsPickerCubitImpl({required this.routeParams});
+  ContinentsPickerCubitImpl({
+    required this.params,
+  });
 
   @override
   Future<void> onInit() async {
@@ -38,38 +37,5 @@ class ContinentsPickerCubitImpl extends StatedCubit<ContinentsPickerState>
     );
 
     super.onInit();
-  }
-
-  @override
-  void onContinentSelected(ContinentType continent) {
-    // QR.toName(
-    //   Routes.levelsPicker,
-    //   params: {
-    //     'data': LevelsPickerRouteParams(
-    //       gameProcessType: routeParams.gameProcessType,
-    //       continentType: continent,
-    //     ),
-    //   },
-    // );
-  }
-
-  @override
-  Future<void> onPlayFastMode() async {
-    final continent = [...ContinentType.values].random();
-
-    final levels = FactoryGameContinent().create(continent);
-
-    // QR.toName(
-    //   Routes.gameProcessFactory,
-    //   params: {
-    //     'data': GamesFactoryPageParams(
-    //       level: levels.levels.random,
-    //       difficult: [...GameDifficult.values].random,
-    //       gamesType: GameStyleType.fast,
-    //       gameMode: routeParams.gameProcessType,
-    //       continentType: continent,
-    //     ),
-    //   },
-    // );
   }
 }

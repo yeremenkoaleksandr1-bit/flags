@@ -2,6 +2,7 @@
 
 import 'dart:math';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:bloc_utils/bloc_utils.dart';
 import 'package:collection/collection.dart';
 import 'package:dart_numerics/dart_numerics.dart';
@@ -29,6 +30,7 @@ import 'package:flags/features/games/presentation/puzzle/scene_components/emblem
 import 'package:flags/features/games/presentation/puzzle/views/board.dart';
 import 'package:flags/features/levels_picker/presentation/bloc/levels_picker_cubit.dart';
 import 'package:flags/main.dart';
+import 'package:flags/navigator/router.gr.dart';
 import 'package:flags/prefabs/levels/levels.dart';
 import 'package:flags/features/app/presentation/bloc/app_cubit.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
@@ -80,7 +82,7 @@ abstract interface class IPuzzleCommonModeCubit<S extends PuzzleGameState>
 
   void tryPlaceFocussedEmblem();
 
-  void openMenu();
+  void openMenu(BuildContext context);
 
   void skipLevel();
 }
@@ -107,6 +109,7 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
   final BuildContext context;
 
   IAudioCubit get audioCubit => context.read<IAudioCubit>();
+
   IVibrationCubit get vibrationCubit => context.read<IVibrationCubit>();
 
   final ILevelsPickerCubit levelsCubit;
@@ -277,7 +280,7 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
         emit(
           SuccessState(
             state.copyWith(
-              placedObjects: [...state.placedObjects],
+              placedObjects: [...state.placedObjects, object],
             ) as S,
           ),
         );
@@ -326,11 +329,14 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
         level: level,
         nextLevel: data.level,
         isLastLevelInSection: isLastLevelInSection,
-        onExitPressed: () {
+        onExitPressed: (context) async {
           Navigator.of(context).pop();
-          Navigator.of(context).pop();
+
+          this.context.navigateNamedTo(
+            LevelsPickerRoute.name,
+          );
         },
-        onNextLevelPressed: () async {
+        onNextLevelPressed: (context) async {
           Navigator.of(context).pop();
           await EasyLoading.show();
 
@@ -437,7 +443,16 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
             scales: gameObject.scales,
           );
 
-          state.placedObjects.add(gameObject);
+          emit(
+            SuccessState(
+              state.copyWith(
+                placedObjects: [
+                  ...state.placedObjects,
+                  gameObject,
+                ],
+              ) as S,
+            ),
+          );
           final object = state.boardObjects.firstWhere((e) {
             return e.object.uniqueName == gameObject.uniqueName;
           });
@@ -514,7 +529,7 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
     });
   }
 
-  Future<void> onRestart() async {
+  Future<void> onRestart(BuildContext context) async {
     await restartLevel();
     Navigator.of(context).pop();
   }
@@ -541,7 +556,14 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
 
           final parts = await generateBoardParts();
 
-          state.boardObjects.addAll(parts);
+          emit(
+            SuccessState(
+              state.copyWith(
+                placedObjects: [],
+                boardObjects: [...parts],
+              ) as S,
+            ),
+          );
         });
       },
     );
@@ -654,7 +676,7 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
   }
 
   @override
-  Future<void> openMenu() async {
+  Future<void> openMenu(BuildContext context) async {
     await onMenuOpened();
 
     await PuzzleMenuDialog(
@@ -666,9 +688,10 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
     await onMenuClosed();
   }
 
-  void onGameExit() {
+  void onGameExit(BuildContext context) async {
     Navigator.of(context).pop();
-    Navigator.of(context).pop();
+
+    this.context.navigateNamedTo(LevelsPickerRoute.name);
   }
 
   Future<void> onMenuOpened() async {}
@@ -710,98 +733,104 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
           Random(gameSeed),
         );
 
-        final parts = [
+        final List<BoardItem<ProcessGameObject>> parts = [
           ...generatedObjects.map(
             (e) => BoardItem(object: e),
           ),
         ];
 
-        if (this is! IPuzzleFastModePresenter) {
-          if (!showcase.isCompleted("puzzle_common_object")) {
-            final flagPartIndex = parts.indexWhere(
-              (e) => state.level.flag.objects.whereType<PathGameObject>().any(
-                    (element) => e.object.uniqueName == element.uniqueName,
-                  ),
-            );
-
-            if (flagPartIndex != -1) {
-              final object = parts[flagPartIndex];
-
-              parts[flagPartIndex] = BoardItem(
-                object: object.object,
-                build: (instance) => PuzzleCommonObjectShowcase(
-                  showcaseKey: showcase.showcaseCommonObject,
-                  flagExposer: flagExposer,
-                  onReady: () {
-                    showcase.show(
-                      [showcase.showcaseCommonObject],
-                      "puzzle_common_object",
-                    );
-                  },
-                  child: instance,
-                ),
-              );
-            }
-          }
-
-          if (!showcase.isCompleted("puzzle_emblem_object")) {
-            final flagPartIndex = parts.indexWhere(
-              (e) => state.level.flag.objects.whereType<EmblemPart>().any(
-                    (element) => e.object.uniqueName == element.uniqueName,
-                  ),
-            );
-
-            if (flagPartIndex != -1) {
-              final object = parts[flagPartIndex];
-
-              parts[flagPartIndex] = BoardItem(
-                object: object.object,
-                build: (instance) => PuzzleEmblemObjectStep1Showcase(
-                  showcaseKey: showcase.emblemObjectStep1,
-                  flagExposer: flagExposer,
-                  onReady: () {
-                    showcase.show(
-                      [showcase.emblemObjectStep1],
-                      "puzzle_emblem_object",
-                    );
-                  },
-                  child: instance,
-                ),
-              );
-            }
-          }
-
-          if (!showcase.isCompleted("puzzle_colored_object")) {
-            final flagPartIndex = parts.indexWhere(
-              (e) => e.object is ColoredPart,
-            );
-
-            if (flagPartIndex != -1) {
-              final object = parts[flagPartIndex];
-
-              parts[flagPartIndex] = BoardItem(
-                object: object.object,
-                build: (instance) => PuzzleColoredObjectStep1Showcase(
-                  showcaseKey: showcase.coloredObjectStep1,
-                  onTap: () {
-                    showcase.complete("puzzle_colored_object");
-                  },
-                  onReady: () {
-                    showcase.show(
-                      [showcase.coloredObjectStep1],
-                      "puzzle_colored_object",
-                    );
-                  },
-                  child: instance,
-                ),
-              );
-            }
-          }
-        }
+        processShowcase(parts, state);
 
         return parts;
       },
       orElse: () => [],
     );
+  }
+
+  void processShowcase(List<BoardItem<ProcessGameObject>> parts, S state) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (this is! IPuzzleFastModePresenter) {
+        if (!showcase.isCompleted("puzzle_common_object")) {
+          final flagPartIndex = parts.indexWhere(
+            (e) => state.level.flag.objects.whereType<PathGameObject>().any(
+                  (element) => e.object.uniqueName == element.uniqueName,
+                ),
+          );
+
+          if (flagPartIndex != -1) {
+            final object = parts[flagPartIndex];
+
+            parts[flagPartIndex] = BoardItem(
+              object: object.object,
+              build: (instance) => PuzzleCommonObjectShowcase(
+                showcaseKey: showcase.showcaseCommonObject,
+                flagExposer: flagExposer,
+                onReady: () {
+                  showcase.show(
+                    [showcase.showcaseCommonObject],
+                    "puzzle_common_object",
+                  );
+                },
+                child: instance,
+              ),
+            );
+          }
+        }
+
+        if (!showcase.isCompleted("puzzle_emblem_object")) {
+          final flagPartIndex = parts.indexWhere(
+            (e) => state.level.flag.objects.whereType<EmblemPart>().any(
+                  (element) => e.object.uniqueName == element.uniqueName,
+                ),
+          );
+
+          if (flagPartIndex != -1) {
+            final object = parts[flagPartIndex];
+
+            parts[flagPartIndex] = BoardItem(
+              object: object.object,
+              build: (instance) => PuzzleEmblemObjectStep1Showcase(
+                showcaseKey: showcase.emblemObjectStep1,
+                flagExposer: flagExposer,
+                onReady: () {
+                  showcase.show(
+                    [showcase.emblemObjectStep1],
+                    "puzzle_emblem_object",
+                  );
+                },
+                child: instance,
+              ),
+            );
+          }
+        }
+
+        if (!showcase.isCompleted("puzzle_colored_object")) {
+          final flagPartIndex = parts.indexWhere(
+            (e) => e.object is ColoredPart,
+          );
+
+          if (flagPartIndex != -1) {
+            final object = parts[flagPartIndex];
+
+            parts[flagPartIndex] = BoardItem(
+              object: object.object,
+              build: (instance) => PuzzleColoredObjectStep1Showcase(
+                showcaseKey: showcase.coloredObjectStep1,
+                onTap: () {
+                  showcase.complete("puzzle_colored_object");
+                },
+                onReady: () {
+                  showcase.show(
+                    [showcase.coloredObjectStep1],
+                    "puzzle_colored_object",
+                  );
+                },
+                child: instance,
+              ),
+            );
+          }
+        }
+      }
+    });
   }
 }

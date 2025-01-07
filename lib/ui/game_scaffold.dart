@@ -1,4 +1,5 @@
-import 'package:flags/core/flutter_engine.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:flags/navigator/game_navigation_observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
@@ -12,8 +13,6 @@ enum GamePageSlideDirection {
 
 class GamePageBuilder extends StatefulWidget {
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
-  static final RouteObserver<ModalRoute<void>> routeObserver =
-      RouteObserver<ModalRoute<void>>();
 
   const GamePageBuilder({
     super.key,
@@ -40,8 +39,14 @@ class GamePageBuilder extends StatefulWidget {
 }
 
 class _GamePageBuilderState extends State<GamePageBuilder>
-    with RouteAware, SingleTickerProviderStateMixin {
+    with AutoRouteAware, SingleTickerProviderStateMixin
+    implements PopEntry<GamePageBuilder> {
   late final AnimationController _controller;
+  GameAutoRouteObserver? _observer;
+  ModalRoute<dynamic>? _route;
+
+  @override
+  late final ValueNotifier<bool> canPopNotifier = ValueNotifier<bool>(false);
 
   @override
   void initState() {
@@ -52,36 +57,84 @@ class _GamePageBuilderState extends State<GamePageBuilder>
     );
 
     _controller.value = 1;
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _controller.reverse(from: 1);
-    });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _observer =
+        RouterScope.of(context).firstObserverOfType<GameAutoRouteObserver>();
 
-    final route = ModalRoute.of(context);
-    if (route is PageRoute) {
-      GamePageBuilder.routeObserver.subscribe(this, route);
+    if (_observer != null) {
+      _observer!.subscribe(this, context.routeData);
     }
 
-    if (route!.isCurrent) {
-      FlutterEngine.widgetPostFrameCallback((timeStamp) {
-        _controller.reverse(from: 1).whenCompleteOrCancel(() {
-          widget.onPageFocussed?.call();
-        });
-      });
-    } else {
-      widget.onPageFocussed?.call();
+    final ModalRoute<dynamic>? nextRoute = ModalRoute.of(context);
+    if (nextRoute != _route) {
+      _route?.unregisterPopEntry(this);
+      _route = nextRoute;
+      _route?.registerPopEntry(this);
     }
   }
 
   @override
+  void onPopInvoked(bool didPop) {}
+
+  @override
+  Future<void> onPopInvokedWithResult(bool didPop, Object? result) async {
+    if (!didPop) {
+      await onPageUnfocused();
+      if (mounted) {
+        canPopNotifier.value = true;
+        await context.maybePop(result);
+        canPopNotifier.value = false;
+      }
+    }
+  }
+
+  Future<void> onPageFocussed() async {
+    await _controller.reverse(from: 1).whenComplete(() {
+      widget.onPageFocussed?.call();
+    });
+  }
+
+  Future<void> onPageUnfocused() async {
+    await _controller.forward(from: 0).whenComplete(() {
+      widget.onPageUnfocused?.call();
+    });
+  }
+
+  @override
+  void didPopNext() {
+    onPageFocussed();
+  }
+
+  @override
+  void didPushNext() {
+    onPageUnfocused();
+  }
+
+  @override
+  void didPush() {
+    onPageFocussed();
+  }
+
+  @override
+  void didPop() {
+    onPageUnfocused();
+  }
+
+  @override
+  void didUpdateWidget(covariant GamePageBuilder oldWidget) {
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   void dispose() {
-    _controller.dispose();
-    GamePageBuilder.routeObserver.unsubscribe(this);
     super.dispose();
+    canPopNotifier.dispose();
+    _controller.dispose();
+    _observer?.unsubscribe(this);
   }
 
   @override
@@ -159,33 +212,5 @@ class _GamePageBuilderState extends State<GamePageBuilder>
         );
       },
     );
-  }
-
-  @override
-  Future<void> didPop() async {
-    await _controller.forward(from: 0).whenComplete(() {
-      widget.onPageUnfocused?.call();
-    });
-    super.didPop();
-  }
-
-  @override
-  Future<void> didPopNext() async {
-    FlutterEngine.widgetPostFrameCallback((timeStamp) async {
-      await Future.delayed(const Duration());
-      await _controller.reverse(from: 1);
-      super.didPopNext();
-    });
-  }
-
-  @override
-  void didPushNext() {
-    FlutterEngine.widgetPostFrameCallback((timeStamp) async {
-      await Future.delayed(const Duration());
-      _controller.forward(from: 0);
-      widget.onPageUnfocused?.call();
-    });
-
-    super.didPushNext();
   }
 }

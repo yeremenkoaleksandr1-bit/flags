@@ -2,6 +2,7 @@ import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
 import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
+import 'package:flags/navigator/router.gr.dart';
 
 import 'package:flags/services/onboarding/onbloarding.controller.dart';
 import 'package:flags/ui/game_scaffold.dart';
@@ -45,24 +46,26 @@ class _HomeScreenState extends State<HomeScreen> {
   );
 
   void openGamePickerPage() {
+    context.navigateTo(
+      const GameModePickerRoute(),
+    );
     // QR.toName(Routes.gameModePicker);
   }
 
   void openMyFlagsPage() {
+    context.navigateTo(
+      const MyFlagsRoute(),
+    );
     //  QR.toName(Routes.myFlagsGallery);
   }
 
   @override
-  void onReady(BuildContext context) {
+  void initState() {
+    audioCubit.playBgm(GameMusics.main);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _onboardingController.show(showCaseWidgetKey.currentContext!);
     });
-  }
-
-  @override
-  void onPreInit(BuildContext context) {
-
-    audioCubit.playBgm(GameMusics.main);
+    super.initState();
   }
 
   @override

@@ -13,6 +13,7 @@ import 'package:flags/uikit/theme/palette.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 class GameFlagArea extends StatefulWidget {
@@ -77,10 +78,11 @@ class _GameFlagAreaState extends State<GameFlagArea> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.objects);
     return Padding(
       padding: const Pad(horizontal: 8),
       child: Material(
-        color: ThemePalette.black.withOpacity(0.7),
+        color: ThemePalette.black.withValues(alpha: 0.7),
         child: Stack(
           fit: StackFit.passthrough,
           children: [

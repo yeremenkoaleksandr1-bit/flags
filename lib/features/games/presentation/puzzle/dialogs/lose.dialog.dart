@@ -10,8 +10,8 @@ class PuzzleLoseDialog extends DialogWidget {
     required this.onExit,
   });
 
-  final VoidCallback onRestart;
-  final VoidCallback onExit;
+  final void Function(BuildContext context) onRestart;
+  final void Function(BuildContext context) onExit;
 
   @override
   Widget build(BuildContext context) {
@@ -26,14 +26,14 @@ class PuzzleLoseDialog extends DialogWidget {
           ),
         ),
         FYellowButton(
-          onPressed: onRestart,
+          onPressed: () => onRestart(context),
           child: Center(
             child: FText("restart"),
           ),
         ),
         Gap.v4,
         FRedButton(
-          onPressed: onExit,
+          onPressed: () => onExit(context),
           child: Center(
             child: FText("exit"),
           ),

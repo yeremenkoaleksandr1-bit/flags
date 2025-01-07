@@ -60,7 +60,7 @@ class PuzzleFastModeViewState
     return Row(
       children: [
         OpenMenuButton(
-          onPressed: cubit.openMenu,
+          onPressed: () => cubit.openMenu(context),
         ),
         Gap.h12,
         PuzzleFastModeStep1Showcase(

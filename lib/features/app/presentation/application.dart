@@ -1,18 +1,21 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:bloc_utils/bloc_utils.dart';
+import 'package:flags/domain/preferences/game_preferences.dart';
 import 'package:flags/features/app/data/shop_items.dart';
-import 'package:flags/features/app/features/shop/domain/shop.item.dart';
+import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
 import 'package:flags/features/app/features/shop/presentation/bloc/shop_cubit.dart';
 import 'package:flags/features/app/features/vibration/presentation/bloc/vibration_cubit.dart';
 import 'package:flags/features/app/presentation/bloc/app_cubit.dart';
 import 'package:flags/features/app/presentation/builder/app_state_builder.dart';
 import 'package:flags/features/app/presentation/widgets/flags_widget_app.dart';
 import 'package:flags/main.dart';
-import 'package:flags/presentation/navigator/router.dart';
-import 'package:flags/resources/resources.dart';
+import 'package:flags/navigator/router.dart';
 import 'package:flags/services/game_state/game_state_cubit.dart';
 import 'package:flags/services/layers/money_layer/money_layer.dart';
 import 'package:flags/ui/builders/main_router_builder.dart';
 import 'package:flags/ui/debug_paint.dart';
+import 'package:flags/ui/game_scaffold.dart';
+import 'package:flags/uikit/components/background/background.dart';
 import 'package:flags/uikit/drag_and_drop/provider.dart';
 import 'package:flags/uikit/theme/theme.dart';
 import 'package:flutter/cupertino.dart';
@@ -55,42 +58,51 @@ class _ApplicationState extends State<Application> {
           builder: (context, _) {
             return DragAndDropProvider(
               builder: (BuildContext context) {
-                return DebugPaintProvider(
-                  builder: (BuildContext context) {
-                    return EasyLoading.init()(
-                      context,
-                      BuildAppState(
-                        builder: (context, state) {
-                          return MultiBlocProvider(
-                            providers: [
-                              BlocProvider<IShopCubit>(
-                                create: (context) => ShopCubit(
-                                  gamePreferences:
-                                      context.read<IAppCubit>().gameState,
-                                  buyableItems: shopItemsData,
-                                ),
-                              ),
-                              BlocProvider<IVibrationCubit>(
-                                create: (BuildContext context) {
-                                  return VibrationCubit(
-                                    sharedPreferences,
-                                  );
-                                },
-                              ),
-                            ],
-                            child: Stack(
-                              children: [
-                                AppRouterBuilder(
-                                  router: router,
-                                ),
-                               // const UiMoneyLayer(),
-                              ],
+                return EasyLoading.init()(
+                  context,
+                  BuildAppState(
+                    builder: (context, state) {
+                      return MultiBlocProvider(
+                        providers: [
+                          BlocProvider<IShopCubit>(
+                            create: (context) => ShopCubit(
+                              gamePreferences:
+                                  context.read<IAppCubit>().gameState,
+                              buyableItems: shopItemsData,
                             ),
-                          );
-                        },
-                      ),
-                    );
-                  },
+                          ),
+                          BlocProvider<IVibrationCubit>(
+                            create: (BuildContext context) {
+                              return VibrationCubit(
+                                sharedPreferences,
+                              );
+                            },
+                          ),
+                          BlocProvider<IAudioCubit>(
+                            create: (BuildContext context) {
+                              return AudioCubit(sharedPreferences);
+                            },
+                          ),
+                          BlocProvider(
+                            create: (BuildContext context) {
+                              return GamePreferences(sharedPreferences);
+                            },
+                          ),
+                        ],
+                        child: Stack(
+                          children: [
+                            const Positioned.fill(
+                              child: Background(),
+                            ),
+                            AppRouterBuilder(
+                              router: router,
+                            ),
+                            const UiMoneyLayer(),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 );
               },
             );

@@ -1,4 +1,4 @@
-import 'package:flags/presentation/navigator/router.dart';
+import 'package:flags/navigator/router.dart';
 import 'package:flutter/widgets.dart';
 
 abstract class GameProcessScreen<T> extends StatefulWidget {

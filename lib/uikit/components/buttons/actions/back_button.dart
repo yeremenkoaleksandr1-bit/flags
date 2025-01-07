@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:flags/uikit/components/buttons/buttons.dart';
 import 'package:flags/uikit/theme/palette.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class _FBackButtonState extends State<FBackButton> {
       return;
     }
 
-    Navigator.of(context).pop();
+    await context.maybePop();
   }
 
   @override

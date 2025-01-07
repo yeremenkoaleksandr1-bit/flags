@@ -325,14 +325,14 @@ class PuzzleFastModePresenterImpl
   }
 
   @override
-  void onGameExit() {
+  void onGameExit(BuildContext context) {
     winStreak.resetStreak();
-    super.onGameExit();
+    super.onGameExit(context);
   }
 
   @override
-  Future<void> onRestart() async {
-    await super.onRestart();
+  Future<void> onRestart(BuildContext context) async {
+    await super.onRestart(context);
 
     await prepareFastModeLevel(true);
   }

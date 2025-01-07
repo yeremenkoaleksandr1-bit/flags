@@ -31,8 +31,8 @@ class PuzzleWinnerDialog extends DialogWidget {
   final List<EmblemPart> emblems;
   final bool isLastLevelInSection;
 
-  final VoidCallback onExitPressed;
-  final void Function() onNextLevelPressed;
+  final void Function(BuildContext context) onExitPressed;
+  final void Function(BuildContext context) onNextLevelPressed;
 
   bool isAnimationPlayed = false;
 
@@ -140,7 +140,7 @@ class PuzzleWinnerDialog extends DialogWidget {
           spacing: 8,
           children: [
             FGreenButton(
-              onPressed: onNextLevelPressed,
+              onPressed: () => onNextLevelPressed(context),
               child: Center(
                 child: FText(
                   nextLevelButtonText,
@@ -153,7 +153,7 @@ class PuzzleWinnerDialog extends DialogWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: FRedButton(
-                onPressed: onExitPressed,
+                onPressed: () => onExitPressed(context),
                 child: Center(
                   child: FText("Menu"),
                 ),

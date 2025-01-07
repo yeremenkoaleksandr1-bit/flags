@@ -1,3 +1,4 @@
+import 'package:auto_route/annotations.dart';
 import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
@@ -29,6 +30,7 @@ class GamesFactoryPageParams {
   });
 }
 
+@RoutePage()
 class GamesFactoryPage extends StatefulWidget {
   const GamesFactoryPage({
     super.key,

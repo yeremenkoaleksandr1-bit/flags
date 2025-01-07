@@ -31,9 +31,6 @@ class AudioCubit extends Cubit<AudioState> implements IAudioCubit {
   final IAudioService audioService;
 
   @override
-  Future<void> pauseBgm() => audioService.pauseBgm();
-
-  @override
   Future<void> playBgm(GameMusics source, {double volume = 1}) =>
       audioService.playBgm(source, volume: volume);
 
@@ -42,8 +39,33 @@ class AudioCubit extends Cubit<AudioState> implements IAudioCubit {
       audioService.playSfx(source, volume: volume);
 
   @override
-  Future<void> resumeBgm() => audioService.resumeBgm();
+  Future<void> resumeBgm() async {
+    emit(
+      state.copyWith(
+        paused: false,
+      ),
+    );
+    await audioService.resumeBgm();
+  }
 
   @override
-  Future<void> toggleMute() => audioService.toggleMute();
+  Future<void> pauseBgm() async {
+    emit(
+      state.copyWith(
+        paused: true,
+      ),
+    );
+    await audioService.pauseBgm();
+  }
+
+  @override
+  Future<void> toggleMute() async {
+    emit(
+      state.copyWith(
+        muted: !state.muted,
+      ),
+    );
+
+    await audioService.toggleMute();
+  }
 }

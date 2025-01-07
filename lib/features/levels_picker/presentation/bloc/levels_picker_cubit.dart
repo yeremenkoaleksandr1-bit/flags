@@ -18,16 +18,12 @@ class NextLevelData {
 
 abstract interface class ILevelsPickerCubit
     extends DynamicStatedCubitStream<GameContinentData> {
-  static ILevelsPickerCubit get i => getIt<ILevelsPickerCubit>();
+  ContinentType get continentType;
+
+  GameProcessType get gameProcessType;
 
   NextLevelData getNextLevelFromCurrent(
     GameLevel currentLevel,
-  );
-
-  Future<void> onLevelPicked(
-    GameLevel level,
-    GameDifficult difficult,
-    GameStyleType gameStyleType,
   );
 }
 
@@ -35,7 +31,9 @@ class LevelsPickerCubitImpl extends StatedCubit<GameContinentData>
     implements ILevelsPickerCubit {
   final ILevelsService levelsService;
 
+  @override
   final ContinentType continentType;
+  @override
   final GameProcessType gameProcessType;
 
   LevelsPickerCubitImpl({
@@ -83,30 +81,6 @@ class LevelsPickerCubitImpl extends StatedCubit<GameContinentData>
     );
 
     super.onInit();
-  }
-
-  @override
-  Future<void> onLevelPicked(
-    GameLevel level,
-    GameDifficult difficult,
-    GameStyleType gameStyleType,
-  ) async {
-    if (!level.opened) {
-      return;
-    }
-
-    // QR.toName(
-    //   Routes.gameProcessFactory,
-    //   params: {
-    //     'data': GamesFactoryPageParams(
-    //       level: level,
-    //       difficult: difficult,
-    //       gamesType: gameStyleType,
-    //       gameMode: gameProcessType,
-    //       continentType: continentType,
-    //     ),
-    //   },
-    // );
   }
 
   @override

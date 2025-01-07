@@ -1,11 +1,17 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bloc_utils/bloc_utils.dart';
+import 'package:flags/domain/enums/continent_type.dart';
+import 'package:flags/domain/enums/game_difficult.dart';
+import 'package:flags/domain/enums/game_style_type.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
 import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
 import 'package:flags/features/continents_picker/presentation/views/continent_view.dart';
 import 'package:flags/features/continents_picker/presentation/views/fast_mode_timer.view.dart';
-import 'package:flags/presentation/presentation.dart';
+import 'package:flags/features/games/presentation/games_factory.page.dart';
+import 'package:flags/navigator/router.gr.dart';
+import 'package:flags/prefabs/levels/levels.dart';
+import 'package:flags/presentation/presenters/continents_picker/continents_picker.presenter.dart';
 import 'package:flags/presentation/presenters/continents_picker/route_params.dart';
 import 'package:flags/presentation/presenters/continents_picker/state/continents_picker.state.dart';
 import 'package:flags/services/layers/money_layer/money_layer.dart';
@@ -16,31 +22,19 @@ import 'package:flags/uikit/components/safe_area/safe_area.dart';
 import 'package:flags/uikit/layout_components/showcase/showcase.dart';
 import 'package:flags/uikit/layout_components/showcase/showcase_item.dart';
 import 'package:flags/uikit/uikit.dart';
+import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:showcaseview/showcaseview.dart';
 
 @RoutePage()
 class ContinentsPickerScreen extends StatefulWidget
-    implements AutoRouteWrapper {
+     {
   const ContinentsPickerScreen({
     super.key,
-    required this.params,
   }) : super();
 
-  final ContinentPickerRouteParams params;
 
-  @override
-  Widget wrappedRoute(BuildContext context) {
-    return BlocProvider<IContinentsPickerCubit>(
-      create: (BuildContext context) {
-        return ContinentsPickerCubitImpl(
-          routeParams: params,
-        );
-      },
-      child: this,
-    );
-  }
 
   @override
   State<ContinentsPickerScreen> createState() => _ContinentsPickerScreenState();
@@ -75,18 +69,38 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
     } catch (e) {}
   }
 
-  @override
-  @override
-  void onClose() {
-    // final audio = AudioProvider.of();
-    //
-    // audio.playBgm(GameMusics.main);
-  }
 
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<IContinentsPickerCubit>();
     final moneyLayer = UiMoneyLayer.find();
+
+    void onContinentPicked(ContinentType type) {
+      context.navigateTo(
+        LevelsPickerRouter(
+          continentType: type,
+          gameProcessType: cubit.params.gameProcessType,
+        ),
+      );
+    }
+
+    void onPlayFastMode() {
+      final continent = [...ContinentType.values].random();
+
+      final levels = FactoryGameContinent().create(continent);
+
+      context.navigateTo(
+        GamesFactoryRoute(
+          params: GamesFactoryPageParams(
+            level: levels.levels.random(),
+            difficult: [...GameDifficult.values].random(),
+            gamesType: GameStyleType.fast,
+            gameMode: cubit.params.gameProcessType,
+            continentType: continent,
+          ),
+        ),
+      );
+    }
 
     return FShowcaseWidget(
       showcaseKey: showCaseWidgetKey,
@@ -130,14 +144,14 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
                             ),
                             child: ContinentsSlider(
                               continents: state.continents,
-                              onPressed: cubit.onContinentSelected,
-                              gameProcessType: widget.params.gameProcessType,
+                              onPressed: onContinentPicked,
+                              gameProcessType: cubit.params.gameProcessType,
                             ),
                           ),
                         ),
                       ),
                       FastModePlayTimerView(
-                        onTapPlayFastMode: cubit.onPlayFastMode,
+                        onTapPlayFastMode: onPlayFastMode,
                         showcaseKey: oFastModeButton,
                       ),
                       const Align(

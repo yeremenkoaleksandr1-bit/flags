@@ -12,8 +12,8 @@ class PuzzleMenuDialog extends DialogWidget {
     required this.seed,
   });
 
-  final VoidCallback onRestart;
-  final VoidCallback onExit;
+  final void Function(BuildContext context) onRestart;
+  final void Function(BuildContext context) onExit;
 
   final int seed;
 
@@ -60,14 +60,14 @@ class PuzzleMenuDialog extends DialogWidget {
         ),
         Gap.v24,
         FYellowButton(
-          onPressed: onRestart,
+          onPressed: () => onRestart(context),
           child: Center(
             child: FText("restart"),
           ),
         ),
         Gap.v24,
         FRedButton(
-          onPressed: onExit,
+          onPressed: () => onExit(context),
           child: Center(
             child: FText("exit"),
           ),

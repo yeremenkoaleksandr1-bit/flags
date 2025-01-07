@@ -10,27 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 @RoutePage()
-class LevelsPickerScreen extends StatelessWidget implements AutoRouteWrapper {
+class LevelsPickerScreen extends StatelessWidget {
   const LevelsPickerScreen({
     super.key,
-    required this.continentType,
-    required this.gameProcessType,
   });
-
-  final ContinentType continentType;
-  final GameProcessType gameProcessType;
-
-  @override
-  Widget wrappedRoute(BuildContext context) {
-    return BlocProvider<ILevelsPickerCubit>(
-      create: (context) => LevelsPickerCubitImpl(
-        continentType: continentType,
-        gameProcessType: gameProcessType,
-        levelsService: context.read<IAppCubit>().levelsService,
-      ),
-      child: this,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {

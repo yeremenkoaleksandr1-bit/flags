@@ -25,6 +25,7 @@ class VibrationCubit extends Cubit<VibrationState> implements IVibrationCubit {
 
   @override
   Future<void> toggleMute() async {
+
     emit(
       state.copyWith(
         muted: !state.muted,

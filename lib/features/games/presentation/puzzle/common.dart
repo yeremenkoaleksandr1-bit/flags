@@ -47,12 +47,12 @@ class PuzzleCommonModeViewState<T extends IPuzzleCommonModeCubit>
     return Row(
       children: [
         OpenMenuButton(
-          onPressed: cubit.openMenu,
+          onPressed: () => cubit.openMenu(context),
         ),
-        Gap.h4,
-        SkipLevelButton(
-          onPressed: cubit.skipLevel,
-        ),
+        // Gap.h4,
+        // SkipLevelButton(
+        //   onPressed: cubit.skipLevel,
+        // ),
         const Spacer(),
         HeartTries(
           state: cubit.heartTriesState,

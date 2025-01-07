@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:bloc_utils/bloc_utils.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/domain/preferences/preferences.dart';
@@ -11,6 +12,7 @@ import 'package:flags/features/app/presentation/bloc/app_state.dart';
 import 'package:flags/getIt.dart';
 import 'package:flags/main.dart';
 import 'package:flags/main/components/splash.dart';
+import 'package:flags/navigator/router.gr.dart';
 import 'package:flags/resources/resources.dart';
 import 'package:flags/services/onboarding/onboarding.service.dart';
 import 'package:flags/uikit/assets/assets.dart';
@@ -49,11 +51,6 @@ final class AppCubitImpl extends StatedCubit<AppState> implements IAppCubit {
   Future<void> onInit() async {
     final Completer<dynamic> endSplashAnimationCompleter = Completer();
 
-
-
-
-
-
     await Assets.init(context);
 
     appPreferences = AppPreferencesCubit(
@@ -81,24 +78,6 @@ final class AppCubitImpl extends StatedCubit<AppState> implements IAppCubit {
     );
 
     super.onInit();
-
-    FlutterEngine.schedulePostFrameCallback((timeStamp) {
-      // QR.replaceAllWithName(Routes.home).whenComplete(() async {
-      //   emit(
-      //     SuccessState(
-      //       AppState(
-      //         resources: resources,
-      //       ),
-      //     ),
-      //   );
-      //
-      //   FlutterEngine.widgetPostFrameCallback((timeStamp) async {
-      //     splashAnimator!.forward(from: 0);
-      //     await endSplashAnimationCompleter.future;
-      //     splashOverlayEntry.remove();
-      //   });
-      // });
-    });
   }
 }
 

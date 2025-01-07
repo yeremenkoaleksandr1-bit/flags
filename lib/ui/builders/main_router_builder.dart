@@ -1,10 +1,14 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/logger.dart';
-import 'package:flags/presentation/navigator/router.dart';
+import 'package:flags/navigator/game_navigation_observer.dart';
+import 'package:flags/navigator/router.dart';
+import 'package:flags/navigator/router.gr.dart';
+import 'package:flags/ui/game_scaffold.dart';
 import 'package:flags/uikit/text/f_text.dart';
 import 'package:flutter/material.dart';
 
-class AppRouterBuilder extends StatelessWidget {
+class AppRouterBuilder extends StatefulWidget {
   const AppRouterBuilder({
     super.key,
     required this.router,
@@ -13,11 +17,26 @@ class AppRouterBuilder extends StatelessWidget {
   final AppRouter router;
 
   @override
+  State<AppRouterBuilder> createState() => _AppRouterBuilderState();
+}
+
+class _AppRouterBuilderState extends State<AppRouterBuilder> {
+  @override
+  void initState() {
+    FlutterEngine.widgetPostFrameCallback((_) {
+      widget.router.replaceAll([
+        const HomeRoute(),
+      ]);
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Router(
       backButtonDispatcher: AutoRouteBackButtonDispatcher(
         context,
-        router,
+        widget.router,
         onFirstPress: () {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -26,8 +45,13 @@ class AppRouterBuilder extends StatelessWidget {
           );
         },
       ),
+      routeInformationParser: widget.router.defaultRouteParser(),
       routerDelegate: AutoRouterDelegate(
-        router,
+        widget.router,
+        navigatorObservers: () => [
+          AutoRouteObserver(),
+          GameAutoRouteObserver(),
+        ],
       ),
     );
   }
