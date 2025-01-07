@@ -28,13 +28,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:showcaseview/showcaseview.dart';
 
 @RoutePage()
-class ContinentsPickerScreen extends StatefulWidget
-     {
+class ContinentsPickerScreen extends StatefulWidget {
   const ContinentsPickerScreen({
     super.key,
   }) : super();
-
-
 
   @override
   State<ContinentsPickerScreen> createState() => _ContinentsPickerScreenState();
@@ -68,7 +65,6 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
       });
     } catch (e) {}
   }
-
 
   @override
   Widget build(BuildContext context) {

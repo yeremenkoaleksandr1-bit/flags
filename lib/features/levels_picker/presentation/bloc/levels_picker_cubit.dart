@@ -3,6 +3,7 @@ import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/entities/game/game.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/domain/services/levels/levels.service.dart';
+import 'package:flags/features/app/features/levels/presentation/bloc/levels_cubit.dart';
 import 'package:flags/getIt.dart';
 import 'package:flags/prefabs/levels/levels.dart';
 
@@ -29,7 +30,7 @@ abstract interface class ILevelsPickerCubit
 
 class LevelsPickerCubitImpl extends StatedCubit<GameContinentData>
     implements ILevelsPickerCubit {
-  final ILevelsService levelsService;
+  final GameLevelsCubit levelsCubit;
 
   @override
   final ContinentType continentType;
@@ -37,7 +38,7 @@ class LevelsPickerCubitImpl extends StatedCubit<GameContinentData>
   final GameProcessType gameProcessType;
 
   LevelsPickerCubitImpl({
-    required this.levelsService,
+    required this.levelsCubit,
     required this.continentType,
     required this.gameProcessType,
   });
@@ -54,10 +55,9 @@ class LevelsPickerCubitImpl extends StatedCubit<GameContinentData>
     var previousLevelCompleted = true;
 
     for (final level in gameLevelsData.levels) {
-      final levelData = levelsService.getLevelData(
-        levelId: level.id,
-        continent: continentType,
-        gameMode: gameProcessType,
+      final levelData = levelsCubit.getLevelData(
+        continentType,
+        level.id,
       );
 
       if (previousLevelCompleted) {

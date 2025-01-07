@@ -20,8 +20,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 abstract interface class IAppCubit extends DynamicStatedCubitStream<AppState> {
-  ILevelsService get levelsService;
-
   IEmblemsService get emblemsService;
 
   AppPreferencesCubit get appPreferences;
@@ -30,9 +28,6 @@ abstract interface class IAppCubit extends DynamicStatedCubitStream<AppState> {
 }
 
 final class AppCubitImpl extends StatedCubit<AppState> implements IAppCubit {
-  @override
-  late final ILevelsService levelsService;
-
   @override
   late final IEmblemsService emblemsService;
 
@@ -62,7 +57,6 @@ final class AppCubitImpl extends StatedCubit<AppState> implements IAppCubit {
     final Resources resources = Resources();
     await resources.initialize();
 
-    levelsService = LevelsServiceImpl(sharedPreferences);
     emblemsService = EmblemsServiceImpl(sharedPreferences);
 
     getIt.registerSingleton<IOnboardingService>(

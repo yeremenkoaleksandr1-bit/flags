@@ -8,6 +8,7 @@ import 'package:collection/collection.dart';
 import 'package:dart_numerics/dart_numerics.dart';
 import 'package:flags/core/extensions/num.dart';
 import 'package:flags/core/flutter_engine.dart';
+import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/domain/enums/game_difficult.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
@@ -18,6 +19,7 @@ import 'package:flags/domain/services/game/emblems.service.dart';
 import 'package:flags/domain/services/levels/levels.service.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
 import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
+import 'package:flags/features/app/features/levels/presentation/bloc/levels_cubit.dart';
 import 'package:flags/features/app/features/vibration/presentation/bloc/vibration_cubit.dart';
 import 'package:flags/features/games/presentation/components/heart_tries/heart_tries.dart';
 import 'package:flags/features/games/presentation/games_factory.page.dart';
@@ -114,7 +116,7 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
 
   final ILevelsPickerCubit levelsCubit;
 
-  ILevelsService get levelsService => appCubit.levelsService;
+  GameLevelsCubit get levelsService => context.read<GameLevelsCubit>();
 
   IEmblemsService get emblemsService => appCubit.emblemsService;
 
@@ -182,33 +184,36 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
 
   Future<void> preInitialization() async {
     final savedLevel = levelsService.getLevelData(
-      levelId: params.level.id,
-      continent: params.continentType,
-      gameMode: params.gameMode,
+      params.continentType,
+      params.level.id,
     );
 
     if (savedLevel == null) {
       final seed = Random().nextInt(int32MaxValue);
 
       levelsService.saveLevel(
-        levelId: params.level.id,
-        completed: params.level.completed,
+        id: params.level.id,
+        data: LevelProcessData(
+          completed: params.level.completed,
+          seed: seed,
+        ),
         continent: params.continentType,
-        gameMode: params.gameMode,
-        seed: seed,
       );
 
       gameSeed = seed;
     } else {
       if (savedLevel.seed == -1) {
         final seed = Random().nextInt(int32MaxValue);
+
         levelsService.saveLevel(
-          levelId: params.level.id,
-          completed: params.level.completed,
+          id: params.level.id,
+          data: LevelProcessData(
+            completed: params.level.completed,
+            seed: seed,
+          ),
           continent: params.continentType,
-          gameMode: params.gameMode,
-          seed: seed,
         );
+
         gameSeed = seed;
       } else {
         gameSeed = savedLevel.seed;
@@ -307,11 +312,12 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
 
   void onLevelCompleted(PuzzleGameState state) {
     levelsService.saveLevel(
-      levelId: state.level.id,
-      completed: true,
       continent: params.continentType,
-      gameMode: params.gameMode,
-      seed: -1,
+      id: state.level.id,
+      data: const LevelProcessData(
+        completed: true,
+        seed: -1,
+      ),
     );
 
     final NextLevelData data = levelsCubit.getNextLevelFromCurrent(state.level);
@@ -333,8 +339,8 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
           Navigator.of(context).pop();
 
           this.context.navigateNamedTo(
-            LevelsPickerRoute.name,
-          );
+                LevelsPickerRoute.name,
+              );
         },
         onNextLevelPressed: (context) async {
           Navigator.of(context).pop();
@@ -545,11 +551,12 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
           final seed = Random().nextInt(int32MaxValue);
 
           levelsService.saveLevel(
-            levelId: level.id,
-            completed: level.completed,
             continent: params.continentType,
-            gameMode: params.gameMode,
-            seed: seed,
+            id: level.id,
+            data: LevelProcessData(
+              completed: level.completed,
+              seed: seed,
+            ),
           );
 
           gameSeed = seed;

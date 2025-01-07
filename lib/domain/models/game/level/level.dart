@@ -1,30 +1,33 @@
+import 'package:equatable/equatable.dart';
 
-class LevelModel {
-  final int id;
-
+class LevelProcessData extends Equatable {
   final bool completed;
 
   final int seed;
 
-  LevelModel({
-    required this.id,
+  const LevelProcessData({
     required this.completed,
     required this.seed,
   });
 
-  factory LevelModel.fromJson(Map<String, dynamic> json) {
-    return LevelModel(
-      id: json["af5b0872"],
-      completed: json["57472cf5"],
-      seed: json["5915be3a"],
+  static LevelProcessData decode(String data) {
+    final parts = data.split('|');
+    final completed = parts[0] == 'true';
+    final seed = int.parse(parts[1]);
+
+    return LevelProcessData(
+      completed: completed,
+      seed: seed,
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      "af5b0872": id,
-      "57472cf5": completed,
-      "5915be3a": seed,
-    };
+  String encode() {
+    return "$completed|$seed";
   }
+
+  @override
+  List<Object?> get props => [
+        completed,
+        seed,
+      ];
 }

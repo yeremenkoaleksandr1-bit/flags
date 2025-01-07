@@ -62,7 +62,5 @@ final class AppRouter extends RootStackRouter {
       ];
 
   @override
-  List<AutoRouteGuard> get guards => [
-        GameNavigationGuard(),
-      ];
+  List<AutoRouteGuard> get guards => [];
 }

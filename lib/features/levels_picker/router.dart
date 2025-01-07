@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flags/domain/enums/continent_type.dart';
 import 'package:flags/domain/enums/game_mode_type.dart';
+import 'package:flags/features/app/features/levels/presentation/bloc/levels_cubit.dart';
 import 'package:flags/features/app/presentation/bloc/app_cubit.dart';
 import 'package:flags/features/levels_picker/presentation/bloc/levels_picker_cubit.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class LevelsPickerRouter extends StatelessWidget implements AutoRouteWrapper {
       create: (context) => LevelsPickerCubitImpl(
         continentType: continentType,
         gameProcessType: gameProcessType,
-        levelsService: context.read<IAppCubit>().levelsService,
+        levelsCubit: context.read<GameLevelsCubit>(),
       ),
       child: this,
     );
