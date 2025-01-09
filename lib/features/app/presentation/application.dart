@@ -1,4 +1,3 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:bloc_utils/bloc_utils.dart';
 import 'package:flags/domain/preferences/game_preferences.dart';
 import 'package:flags/features/app/data/shop_items.dart';
@@ -13,8 +12,6 @@ import 'package:flags/navigator/router.dart';
 import 'package:flags/services/game_state/game_state_cubit.dart';
 import 'package:flags/services/layers/money_layer/money_layer.dart';
 import 'package:flags/ui/builders/main_router_builder.dart';
-import 'package:flags/ui/debug_paint.dart';
-import 'package:flags/ui/game_scaffold.dart';
 import 'package:flags/uikit/components/background/background.dart';
 import 'package:flags/uikit/drag_and_drop/provider.dart';
 import 'package:flags/uikit/theme/theme.dart';
@@ -64,10 +61,15 @@ class _ApplicationState extends State<Application> {
                     builder: (context, state) {
                       return MultiBlocProvider(
                         providers: [
+                          BlocProvider(
+                            create: (BuildContext context) {
+                              return GamePreferencesCubit(sharedPreferences);
+                            },
+                          ),
                           BlocProvider<IShopCubit>(
                             create: (context) => ShopCubit(
                               gamePreferences:
-                                  context.read<IAppCubit>().gameState,
+                                  context.read<GamePreferencesCubit>(),
                               buyableItems: shopItemsData,
                             ),
                           ),
@@ -81,11 +83,6 @@ class _ApplicationState extends State<Application> {
                           BlocProvider<IAudioCubit>(
                             create: (BuildContext context) {
                               return AudioCubit(sharedPreferences);
-                            },
-                          ),
-                          BlocProvider(
-                            create: (BuildContext context) {
-                              return GamePreferences(sharedPreferences);
                             },
                           ),
                         ],

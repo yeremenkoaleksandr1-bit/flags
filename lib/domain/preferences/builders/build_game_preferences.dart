@@ -22,10 +22,8 @@ class BuildGamePreferences extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<GamePreferences>();
-
-    return BlocBuilder<GamePreferences, GamePreferencesState>(
-      bloc: cubit,
+    return BlocBuilder<GamePreferencesCubit, GamePreferencesState>(
+      bloc: context.read<GamePreferencesCubit>(),
       buildWhen: buildWhen,
       builder: builder,
     );

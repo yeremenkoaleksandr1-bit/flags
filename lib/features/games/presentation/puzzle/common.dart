@@ -144,7 +144,10 @@ class PuzzleCommonModeViewState<T extends IPuzzleCommonModeCubit>
         ),
         PartsBoard(
           cubit: cubit,
-          state: state,
+          boardObjects: [
+            ...state.boardObjects,
+          ],
+          flag: state.flag,
         ),
         EmblemEditingBoard(
           cubit: cubit,
@@ -158,9 +161,9 @@ class PuzzleCommonModeViewState<T extends IPuzzleCommonModeCubit>
 
   @override
   Widget build(BuildContext context) {
-    return BlocStateBuilder(
-      listener: cubit,
-      builder: (PuzzleGameState state) {
+    return BlocDynamicStateBuilder(
+      bloc: cubit,
+      builder: (BuildContext context, PuzzleGameState state) {
         return FShowcaseWidget(
           showcaseKey: cubit.showcase.key,
           builder: (BuildContext context) {

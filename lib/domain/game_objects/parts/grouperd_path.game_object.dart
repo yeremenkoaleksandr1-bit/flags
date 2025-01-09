@@ -28,17 +28,13 @@ class GroupedPathsPart extends ProcessGameObject {
   void draw(Canvas canvas, Size size, [double fraction = 1]) {
     super.draw(canvas, size);
 
-    canvas.translate(
-      position.x,
-      position.y,
-    );
-
     drawObjects(canvas, size);
   }
 
   void drawObjects(Canvas canvas, Size size) {
     for (final object in objects) {
       canvas.save();
+      canvas.translate(object.position.x, object.position.y);
       object.draw(canvas, size);
       canvas.restore();
     }

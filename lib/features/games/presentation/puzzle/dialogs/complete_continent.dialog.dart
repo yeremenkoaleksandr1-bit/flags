@@ -18,7 +18,7 @@ class PuzzleCompleteContinentDialog extends DialogWidget {
   });
 
   final ContinentType continent;
-  final VoidCallback onExit;
+  final void Function(BuildContext context) onExit;
 
   @override
   Widget buildContainer(BuildContext context, Widget child) {
@@ -31,7 +31,7 @@ class PuzzleCompleteContinentDialog extends DialogWidget {
       children: [
         buildContent(),
         GestureDetector(
-          onTap: onExit,
+          onTap: () => onExit(context),
         ),
       ],
     );

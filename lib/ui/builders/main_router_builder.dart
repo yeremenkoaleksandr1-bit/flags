@@ -33,27 +33,31 @@ class _AppRouterBuilderState extends State<AppRouterBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    return Router(
-      backButtonDispatcher: AutoRouteBackButtonDispatcher(
-        context,
-        widget.router,
-        onFirstPress: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: FText("Double press to exit"),
-            ),
-          );
-        },
-      ),
-      routeInformationParser: widget.router.defaultRouteParser(),
-      routerDelegate: AutoRouterDelegate(
-        widget.router,
-        navigatorObservers: () => [
-          AutoRouteObserver(),
-          GameAutoRouteObserver(),
-        ],
+    return RestorationScope(
+      restorationId: 'root-game',
+      child: Router(
+        backButtonDispatcher: AutoRouteBackButtonDispatcher(
+          context,
+          widget.router,
+          onFirstPress: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Double press to exit"),
+              ),
+            );
+          },
+        ),
+        routeInformationParser: widget.router.defaultRouteParser(),
+        routerDelegate: AutoRouterDelegate(
+          widget.router,
+          navigatorObservers: () => [
+            AutoRouteObserver(),
+            GameAutoRouteObserver(),
+          ],
+        ),
       ),
     );
+
   }
 }
 

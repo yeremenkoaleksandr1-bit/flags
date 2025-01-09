@@ -24,7 +24,7 @@ import 'board/board_actions.dart';
 part 'flag_editor_state.dart';
 
 abstract interface class IFlagEditorCubit
-    extends DynamicStatedCubitStream<FlagEditorState>
+    extends DynamicStatedBlocStream<FlagEditorState>
     implements IFlagEditorBoardActions {
   EditorFlagData get initialFlag;
 

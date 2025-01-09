@@ -1,15 +1,20 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bloc_utils/bloc_utils.dart';
+import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/domain/enums/continent_type.dart';
 import 'package:flags/domain/enums/game_difficult.dart';
+import 'package:flags/domain/enums/game_mode_type.dart';
 import 'package:flags/domain/enums/game_style_type.dart';
+import 'package:flags/domain/preferences/game_preferences.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
 import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
 import 'package:flags/features/continents_picker/presentation/views/continent_view.dart';
 import 'package:flags/features/continents_picker/presentation/views/fast_mode_timer.view.dart';
 import 'package:flags/features/games/presentation/games_factory.page.dart';
+import 'package:flags/features/levels_picker/presentation/components/level_button.dart';
 import 'package:flags/navigator/router.gr.dart';
+import 'package:flags/prefabs/flags/asia.dart';
 import 'package:flags/prefabs/levels/levels.dart';
 import 'package:flags/presentation/presenters/continents_picker/continents_picker.presenter.dart';
 import 'package:flags/presentation/presenters/continents_picker/route_params.dart';
@@ -19,6 +24,7 @@ import 'package:flags/services/onboarding/onbloarding.controller.dart';
 import 'package:flags/ui/game_scaffold.dart';
 import 'package:flags/uikit/components/buttons/buttons.dart';
 import 'package:flags/uikit/components/safe_area/safe_area.dart';
+import 'package:flags/uikit/game_widgets/flag/flag.dart';
 import 'package:flags/uikit/layout_components/showcase/showcase.dart';
 import 'package:flags/uikit/layout_components/showcase/showcase_item.dart';
 import 'package:flags/uikit/uikit.dart';
@@ -86,14 +92,20 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
       final levels = FactoryGameContinent().create(continent);
 
       context.navigateTo(
-        GamesFactoryRoute(
-          params: GamesFactoryPageParams(
-            level: levels.levels.random(),
-            difficult: [...GameDifficult.values].random(),
-            gamesType: GameStyleType.fast,
-            gameMode: cubit.params.gameProcessType,
-            continentType: continent,
-          ),
+        LevelsPickerRouter(
+          continentType: continent,
+          gameProcessType: cubit.params.gameProcessType,
+          children: [
+            GamesFactoryRoute(
+              params: GamesFactoryPageParams(
+                level: levels.levels.random(),
+                difficult: [...GameDifficult.values].random(),
+                gamesType: GameStyleType.fast,
+                gameMode: cubit.params.gameProcessType,
+                continentType: continent,
+              ),
+            )
+          ],
         ),
       );
     }
@@ -109,12 +121,43 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
             onPageUnfocused: moneyLayer.hide,
             startSlideDirection: GamePageSlideDirection.middle,
             endSlideDirection: GamePageSlideDirection.middle,
-            child: BlocStateBuilder(
-              listener: cubit,
-              builder: (ContinentsPickerState state) {
+            child: BlocDynamicStateBuilder(
+              bloc: cubit,
+              builder: (BuildContext context, ContinentsPickerState state) {
                 return SafeArea(
                   child: Stack(
                     children: [
+                      // Row(
+                      //   children: [
+                      //     FGreenButton(
+                      //       onPressed: () {
+                      //         context.read<GamePreferencesCubit>().addMoney(1);
+                      //       },
+                      //       child: FText("add money"),
+                      //     ),
+                      //     FGreenButton(
+                      //       onPressed: () {
+                      //         context.read<GamePreferencesCubit>().removeMoney(1);
+                      //       },
+                      //       child: FText("remove money"),
+                      //     ),
+                      //   ],
+                      // ),
+                      // FGreenButton(
+                      //   onPressed: () {
+                      //     showDialog(
+                      //       context: context,
+                      //       builder: (BuildContext context) {
+                      //         final flag = HongKongFlag();
+                      //         return FittedBox(
+                      //           fit: BoxFit.fitWidth,
+                      //           child: FlagView(flag: flag),
+                      //         );
+                      //       },
+                      //     );
+                      //   },
+                      //   child: FText("open"),
+                      // ),
                       Positioned(
                         top: 0,
                         left: 0,

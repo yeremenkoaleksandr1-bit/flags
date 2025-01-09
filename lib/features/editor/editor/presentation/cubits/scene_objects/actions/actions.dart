@@ -19,13 +19,11 @@ mixin SceneObjectsActionsMixin on Cubit<EditorSceneObjectsState> {
       final newObject = EditorDraggableWidget(
         object.copyWith(
           key: UniqueKey(),
+          uniqueName: UniqueKey().toString(),
         ),
       );
 
-      final newObjects = [...state.objects]..insert(
-          index + 1,
-          newObject,
-        );
+      final newObjects = [...state.objects, newObject];
 
       emit(
         state.copyWith(
@@ -69,7 +67,6 @@ mixin SceneObjectsActionsMixin on Cubit<EditorSceneObjectsState> {
 
           object.key = UniqueKey();
           object.flipVertical();
-
 
           return newObjects;
         },

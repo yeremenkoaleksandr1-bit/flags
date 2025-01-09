@@ -82,9 +82,9 @@ class ColoredPathEditingBoardState
                   ),
                   Gap.v24,
                   Expanded(
-                    child: BlocStateBuilder(
-                      listener: widget.cubit,
-                      builder: (state) {
+                    child: BlocDynamicStateBuilder(
+                      bloc: widget.cubit,
+                      builder: (BuildContext context, state) {
                         return ValueListenableBuilder(
                           valueListenable: colorRx,
                           builder: (

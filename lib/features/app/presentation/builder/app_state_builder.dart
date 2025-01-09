@@ -15,12 +15,10 @@ class BuildAppState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocStateBuilder(
-      listener: context.read<IAppCubit>(),
+    return BlocDynamicStateBuilder(
+      bloc: context.read<IAppCubit>(),
       loadingBuilder: Splash.new,
-      builder: (AppState state) {
-        return builder(context, state);
-      },
+      builder: builder,
     );
   }
 }

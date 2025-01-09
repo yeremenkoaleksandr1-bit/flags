@@ -48,7 +48,7 @@ class PuzzleFastModePresenterImpl
   @override
   final PuzzleGameFastModeShowcase showcaseFm = PuzzleGameFastModeShowcase();
 
-  WinStreak get winStreak => appCubit.gameState.state.winStreak;
+  WinStreak get winStreak => gamePreferences.state.winStreak;
 
   late ContinentType _randomContinent = params.continentType;
 
@@ -159,7 +159,7 @@ class PuzzleFastModePresenterImpl
 
         resetLevelState();
 
-        final parts = await generateBoardParts();
+        final parts = await generateBoardParts(randomLevel, difficult);
 
         emit(
           SuccessState(
@@ -255,7 +255,7 @@ class PuzzleFastModePresenterImpl
 
               // Overlay.of(QR.context!).insert(entry);
 
-              appCubit.gameState.addMoney(
+              gamePreferences.addMoney(
                 calcWinnerMoney(state.difficult),
               );
 

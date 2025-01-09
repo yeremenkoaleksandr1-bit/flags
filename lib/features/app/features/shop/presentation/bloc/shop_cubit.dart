@@ -19,7 +19,7 @@ abstract interface class IShopCubit extends StateStreamableSource<ShopState> {
 }
 
 class ShopCubit extends Cubit<ShopState> implements IShopCubit {
-  final GamePreferences gamePreferences;
+  final GamePreferencesCubit gamePreferences;
 
   final List<ShopItem> buyableItems;
 
@@ -35,9 +35,7 @@ class ShopCubit extends Cubit<ShopState> implements IShopCubit {
   @override
   void buiItem(String tag) {
     if (!service.isBought(tag) && canBuy(tag)) {
-      gamePreferences.addMoney(
-        -getPrice(tag),
-      );
+      gamePreferences.removeMoney(getPrice(tag));
       service.saveItem(tag);
     }
   }

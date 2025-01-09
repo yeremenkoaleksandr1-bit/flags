@@ -165,73 +165,76 @@ class _GamePageBuilderState extends State<GamePageBuilder>
     double translationX = 0;
     double translationY = 0;
 
-    return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints) {
-        final screenSize = constraints.biggest;
-        final screenWidth = screenSize.width;
-        final screenHeight = screenSize.height;
-
-        return widget.child.animate(
-          autoPlay: false,
-          controller: _controller,
-          effects: [
-            FadeEffect(
-              begin: 1,
-              end: 0,
-              curve: widget.curve,
-            ),
-            CustomEffect(
-              curve: widget.curve,
-              builder: (
-                BuildContext context,
-                double value,
-                Widget child,
-              ) {
-                if (_controller.status == AnimationStatus.forward) {
-                  switch (endSlideDirection) {
-                    case GamePageSlideDirection.top:
-                      translationY = -screenHeight * value;
-                    case GamePageSlideDirection.bottom:
-                      translationY = screenHeight * value;
-                    case GamePageSlideDirection.left:
-                      translationX = -screenWidth * value;
-                    case GamePageSlideDirection.right:
-                      translationX = screenWidth * value;
-                    case GamePageSlideDirection.middle:
-                      translationX = 1;
-                      translationY = 1;
+    return Material(
+      color: Colors.transparent,
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          final screenSize = constraints.biggest;
+          final screenWidth = screenSize.width;
+          final screenHeight = screenSize.height;
+      
+          return widget.child.animate(
+            autoPlay: false,
+            controller: _controller,
+            effects: [
+              FadeEffect(
+                begin: 1,
+                end: 0,
+                curve: widget.curve,
+              ),
+              CustomEffect(
+                curve: widget.curve,
+                builder: (
+                  BuildContext context,
+                  double value,
+                  Widget child,
+                ) {
+                  if (_controller.status == AnimationStatus.forward) {
+                    switch (endSlideDirection) {
+                      case GamePageSlideDirection.top:
+                        translationY = -screenHeight * value;
+                      case GamePageSlideDirection.bottom:
+                        translationY = screenHeight * value;
+                      case GamePageSlideDirection.left:
+                        translationX = -screenWidth * value;
+                      case GamePageSlideDirection.right:
+                        translationX = screenWidth * value;
+                      case GamePageSlideDirection.middle:
+                        translationX = 1;
+                        translationY = 1;
+                    }
+                  } else if (_controller.status == AnimationStatus.reverse) {
+                    switch (startSlideDirection) {
+                      case GamePageSlideDirection.top:
+                        translationY = -screenHeight * value;
+                      case GamePageSlideDirection.bottom:
+                        translationY = screenHeight * value;
+                      case GamePageSlideDirection.left:
+                        translationX = -screenWidth * value;
+                      case GamePageSlideDirection.right:
+                        translationX = screenWidth * value;
+                      case GamePageSlideDirection.middle:
+                        translationX = 1;
+                        translationY = 1;
+                    }
+                  } else {
+                    translationX = 1;
+                    translationY = 1;
                   }
-                } else if (_controller.status == AnimationStatus.reverse) {
-                  switch (startSlideDirection) {
-                    case GamePageSlideDirection.top:
-                      translationY = -screenHeight * value;
-                    case GamePageSlideDirection.bottom:
-                      translationY = screenHeight * value;
-                    case GamePageSlideDirection.left:
-                      translationX = -screenWidth * value;
-                    case GamePageSlideDirection.right:
-                      translationX = screenWidth * value;
-                    case GamePageSlideDirection.middle:
-                      translationX = 1;
-                      translationY = 1;
-                  }
-                } else {
-                  translationX = 1;
-                  translationY = 1;
-                }
-
-                return Transform.translate(
-                  offset: Offset(
-                    translationX - 1,
-                    translationY - 1,
-                  ),
-                  child: child,
-                );
-              },
-            ),
-          ],
-        );
-      },
+      
+                  return Transform.translate(
+                    offset: Offset(
+                      translationX - 1,
+                      translationY - 1,
+                    ),
+                    child: child,
+                  );
+                },
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

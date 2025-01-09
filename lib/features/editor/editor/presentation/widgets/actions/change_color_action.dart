@@ -24,9 +24,12 @@ final class ChangeColorAction extends EditorActionButton {
         await showColorPickerDialog(context, gameObject.path.color);
 
     if (newColor != null) {
+      final selectObjectBloc = context.read<EditorSelectedObjectCubit>();
+
       final newObject = bloc.updateGameObject(
         gameObject.copyWith(
           key: UniqueKey(),
+
           path: gameObject.path.copyWith(
             paint: gameObject.path.paint.copyWith(
               color: newColor,
@@ -36,7 +39,7 @@ final class ChangeColorAction extends EditorActionButton {
       );
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         if (newObject != null) {
-          final selectObjectBloc = context.read<EditorSelectedObjectCubit>();
+
           await Future.delayed(const Duration());
           selectObjectBloc.selectObject(newObject);
         }

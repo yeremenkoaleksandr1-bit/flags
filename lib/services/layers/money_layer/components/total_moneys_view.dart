@@ -3,6 +3,7 @@ import 'package:bloc_utils/bloc_utils.dart';
 import 'package:flags/domain/models/app/game_preferences_data.dart';
 import 'package:flags/domain/preferences/builders/build_game_preferences.dart';
 import 'package:flags/features/app/presentation/bloc/app_cubit.dart';
+import 'package:flags/logger.dart';
 import 'package:flags/uikit/assets/components/money.dart';
 import 'package:flags/uikit/shaders/outline_shader.dart';
 import 'package:flags/uikit/uikit.dart';
@@ -51,11 +52,6 @@ class TotalMoneysView extends StatelessWidget {
             Padding(
               padding: const Pad(left: 42, right: 14, top: 3),
               child: BuildGamePreferences(
-                buildWhen: (
-                  GamePreferencesState previous,
-                  GamePreferencesState current,
-                ) =>
-                    previous.moneys != current.moneys,
                 builder: (BuildContext context, GamePreferencesState state) {
                   return OutlineWidget(
                     child: FText(

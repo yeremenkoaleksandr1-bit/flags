@@ -27,7 +27,7 @@ class LevelButton extends StatefulWidget {
   final GameDifficult difficult;
   final bool isOpened;
 
-  final void Function(GameLevel level) onLevelSelected;
+  final void Function(GameLevel level)? onLevelSelected;
 
   @override
   State<LevelButton> createState() => _LevelButtonState();
@@ -79,7 +79,7 @@ class _LevelButtonState extends State<LevelButton> {
         }
 
         return FButton(
-          onPressed: () => widget.onLevelSelected(widget.level),
+          onPressed: () => widget.onLevelSelected?.call(widget.level),
           onLongPress: shoeFlagDialog,
           color: color,
           child: Stack(

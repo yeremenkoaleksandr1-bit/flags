@@ -84,9 +84,9 @@ class PuzzleFastModeViewState
 
   @override
   Widget build(BuildContext context) {
-    return BlocStateBuilder(
-      listener: cubit,
-      builder: (PuzzleFastModeState state) {
+    return BlocDynamicStateBuilder(
+      bloc: cubit,
+      builder: (BuildContext context, PuzzleFastModeState state) {
         return FShowcaseWidget(
           showcaseKey: cubit.showcaseFm.key,
           builder: (BuildContext context) {

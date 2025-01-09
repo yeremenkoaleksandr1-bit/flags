@@ -16,6 +16,7 @@ import 'package:flags/uikit/layout_components/showcase/showcase_item.dart';
 import 'package:flags/uikit/layout_components/sprite_widget.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 @RoutePage()
@@ -62,10 +63,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     audioCubit.playBgm(GameMusics.main);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _onboardingController.show(showCaseWidgetKey.currentContext!);
-    });
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      if (showCaseWidgetKey.currentContext != null) {
+        _onboardingController.show(showCaseWidgetKey.currentContext!);
+      }
+    });
   }
 
   @override

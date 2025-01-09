@@ -1,9 +1,11 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:bloc_utils/bloc_utils.dart';
 import 'package:flags/domain/editor/create_flag_data.dart';
 import 'package:flags/domain/editor/editor_flag.dart';
 import 'package:flags/main.dart';
 import 'package:flags/features/editor/my_flags/domain/services/editor_gallery.service.dart';
 import 'package:flags/features/editor/my_flags/presentation/dialogs/create_flag.dialog.dart';
+import 'package:flags/navigator/router.gr.dart';
 import 'package:flutter/cupertino.dart';
 
 final class MyFlagsCubit extends StatedCubit<List<EditorFlagData>> {
@@ -58,6 +60,11 @@ final class MyFlagsCubit extends StatedCubit<List<EditorFlagData>> {
     BuildContext context,
     EditorFlagData flag,
   ) async {
+    context.navigateTo(
+      EditorRoute(
+        flag: flag.clone(),
+      ),
+    );
     // final object = await QR.toName<EditorFlagData>(
     //   Routes.editFlag,
     //   params: {'data': flag.clone()},

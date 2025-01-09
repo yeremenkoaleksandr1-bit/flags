@@ -11,6 +11,7 @@ import 'package:flags/features/editor/editor/presentation/cubits/scene_objects/s
 import 'package:flags/features/editor/editor/presentation/cubits/selected_object/selected_object_cubit.dart';
 import 'package:flags/features/editor/editor/presentation/screen/editor_screen.view.dart';
 import 'package:flags/features/app/presentation/bloc/app_cubit.dart';
+import 'package:flags/services/layers/money_layer/money_layer.dart';
 import 'package:flags/ui/game_scaffold.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,9 @@ final class EditorScreen extends StatelessWidget implements AutoRouteWrapper {
   Widget build(BuildContext context) {
     return DeferredPointerHandler(
       child: GamePageBuilder(
-        onPageFocussed: () {},
+        onPageFocussed: () {
+
+        },
         startSlideDirection: GamePageSlideDirection.bottom,
         endSlideDirection: GamePageSlideDirection.bottom,
         child: const EditorScreenView(),

@@ -19,12 +19,10 @@ import 'package:flags/uikit/assets/assets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-abstract interface class IAppCubit extends DynamicStatedCubitStream<AppState> {
+abstract interface class IAppCubit extends DynamicStatedBlocStream<AppState> {
   IEmblemsService get emblemsService;
 
   AppPreferencesCubit get appPreferences;
-
-  GamePreferences get gameState;
 }
 
 final class AppCubitImpl extends StatedCubit<AppState> implements IAppCubit {
@@ -33,8 +31,7 @@ final class AppCubitImpl extends StatedCubit<AppState> implements IAppCubit {
 
   @override
   late final AppPreferencesCubit appPreferences;
-  @override
-  late final GamePreferences gameState;
+
 
   final BuildContext context;
 
@@ -44,15 +41,11 @@ final class AppCubitImpl extends StatedCubit<AppState> implements IAppCubit {
 
   @override
   Future<void> onInit() async {
-    final Completer<dynamic> endSplashAnimationCompleter = Completer();
-
     await Assets.init(context);
 
     appPreferences = AppPreferencesCubit(
       sharedPreferences,
     );
-
-    gameState = GamePreferences(sharedPreferences);
 
     final Resources resources = Resources();
     await resources.initialize();

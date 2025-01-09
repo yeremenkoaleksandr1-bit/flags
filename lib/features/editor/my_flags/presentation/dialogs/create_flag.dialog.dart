@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flags/domain/editor/create_flag_data.dart';
 import 'package:flags/domain/editor/proportions.dart';
 import 'package:flags/shared/mixins/form_mixin.dart';
@@ -22,7 +23,8 @@ class CreateFlagDialog extends DialogWidget {
   @override
   Widget buildContainer(BuildContext context, Widget child) {
     return GamePageBuilder(
-      startSlideDirection: GamePageSlideDirection.left,
+      startSlideDirection: GamePageSlideDirection.bottom,
+      endSlideDirection: GamePageSlideDirection.bottom,
       child: child,
     );
   }
@@ -53,12 +55,12 @@ class _ContentState extends State<_Content> with ReactiveFormHandlerMixin {
 
   @override
   FutureOr<void> onFormDataHandle(FormGroup form) async {
-    // await QR.back(
-    //   CreateFlagData(
-    //     name: form.control('name').value,
-    //     proportion: proportion.value,
-    //   ),
-    // );
+    await context.maybePop(
+      CreateFlagData(
+        name: form.control('name').value,
+        proportion: proportion.value,
+      ),
+    );
   }
 
   @override
@@ -145,7 +147,7 @@ class _ContentState extends State<_Content> with ReactiveFormHandlerMixin {
                     children: [
                       Expanded(
                         child: FRedButton(
-                          onPressed: Navigator.of(context).pop,
+                          onPressed: context.maybePop,
                           child: Center(
                             child: FText("Cancel"),
                           ),

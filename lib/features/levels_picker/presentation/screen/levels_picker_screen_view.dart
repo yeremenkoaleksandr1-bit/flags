@@ -37,9 +37,9 @@ class LevelsPickerScreenView extends StatelessWidget {
       );
     }
 
-    return BlocStateBuilder(
-      listener: cubit,
-      builder: (GameContinentData state) {
+    return BlocDynamicStateBuilder(
+      bloc: cubit,
+      builder: (BuildContext context, GameContinentData state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -62,6 +62,7 @@ class LevelsPickerScreenView extends StatelessWidget {
               child: ContinentLevelsView(
                 sections: state.sections,
                 onSelected: onLevelPicked,
+                continent: cubit.continentType,
               ),
             ),
           ],

@@ -5,7 +5,7 @@ import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
 
-base class PuzzleGameState extends Equatable {
+class PuzzleGameState extends Equatable {
   final GameLevel level;
   final GameDifficult difficult;
   final List<BoardItem> boardObjects;
@@ -62,7 +62,7 @@ base class PuzzleGameState extends Equatable {
       ];
 }
 
-final class PuzzleFastModeState extends PuzzleGameState {
+class PuzzleFastModeState extends PuzzleGameState {
   final int timerRx;
 
   const PuzzleFastModeState({

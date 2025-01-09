@@ -35,7 +35,8 @@ class _PuzzleColoredObjectStep1ShowcaseState
   @override
   Widget build(BuildContext context) {
     if (!onReady) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) async  {
+        await Future.delayed(const Duration(milliseconds: 100));
         widget.onReady();
       });
       onReady = true;

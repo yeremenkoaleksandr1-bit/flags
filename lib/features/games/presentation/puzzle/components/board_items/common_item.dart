@@ -13,7 +13,6 @@ import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-
 class BoardCommonItemWidget extends BoardItemWidget {
   const BoardCommonItemWidget({
     super.key,
@@ -51,7 +50,6 @@ class BoardCommonItemWidget extends BoardItemWidget {
 
 class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
     extends BoardItemWidgetState<T> with SingleTickerProviderStateMixin {
-
   IAudioCubit get audioCubit => context.read<IAudioCubit>();
 
   late final GlobalKey _key = GlobalKey();
@@ -103,7 +101,7 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
   @override
   void didUpdateWidget(covariant T oldWidget) {
     if (oldWidget.item != widget.item) {
-      modelRx.value = widget.item;
+      setState(() {});
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -223,7 +221,8 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
                 builder: (BuildContext context, Widget? child) {
                   final value = _controller.value;
 
-                  final renderBox = _key.currentContext!.findRenderObject()! as RenderBox;
+                  final renderBox =
+                      _key.currentContext!.findRenderObject()! as RenderBox;
 
                   final rect = renderBox.rect;
 

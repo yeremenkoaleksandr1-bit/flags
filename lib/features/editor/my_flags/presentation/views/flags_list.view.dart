@@ -25,10 +25,10 @@ class _FlagsListViewState extends State<FlagsListView> {
   Widget build(BuildContext context) {
     final bloc = context.read<MyFlagsCubit>();
 
-    return BlocStateBuilder(
-      listener: bloc,
+    return BlocDynamicStateBuilder(
+      bloc: bloc,
       buildWhen: (p, c) => p.hashCode != c.hashCode,
-      builder: (List<EditorFlagData> state) {
+      builder: (BuildContext context, List<EditorFlagData> state) {
         return FCard(
           padding: const Pad(all: 4, bottom: 12),
           child: Column(

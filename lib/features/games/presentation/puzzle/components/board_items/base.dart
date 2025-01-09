@@ -18,9 +18,7 @@ abstract class BoardItemWidget extends StatefulWidget {
 
 abstract class BoardItemWidgetState<T extends BoardItemWidget>
     extends State<T> {
-  late final ValueNotifier<BoardItem> modelRx = ValueNotifier(widget.item);
-
-  BoardItem get model => modelRx.value;
+  BoardItem get model => widget.item;
 
   IPuzzleCommonModeCubit get presenter => widget.cubit;
 
@@ -40,46 +38,25 @@ abstract class BoardItemWidgetState<T extends BoardItemWidget>
   }
 
   @override
-  void dispose() {
-    modelRx.value;
-    super.dispose();
-  }
-
-  @override
   @protected
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: modelRx,
+      valueListenable: model.active,
       builder: (
         BuildContext context,
-        BoardItem<ProcessGameObject> value,
-        Widget? child,
+        bool value,
+        Widget? _,
       ) {
-        Widget child = LayoutBuilder(
+        if (!value) {
+          return const SizedBox.shrink();
+        }
+
+        return LayoutBuilder(
           builder: (context, constraints) => buildWidget(
             context,
             constraints,
-            value,
+            model,
           ),
-        );
-
-        if (model.build != null) {
-          child = model.build!.call(child);
-        }
-
-        return ValueListenableBuilder(
-          valueListenable: model.active,
-          builder: (
-            BuildContext context,
-            bool value,
-            Widget? _,
-          ) {
-            if (!value) {
-              return const SizedBox.shrink();
-            }
-
-            return child;
-          },
         );
       },
     );

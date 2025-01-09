@@ -6,6 +6,7 @@ import 'package:flags/features/editor/editor/presentation/cubits/scene_objects/a
 import 'package:flags/features/editor/editor/presentation/object_handles/editor_draggable.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
+import 'package:flutter/foundation.dart';
 
 part 'scene_objects_state.dart';
 
@@ -23,14 +24,20 @@ final class EditorSceneObjectsCubit extends Cubit<EditorSceneObjectsState>
 
   EditorDraggableWidget? updateGameObject(GameObject object) {
     final objects = [...state.objects];
-    final index =
-        objects.indexWhere((e) => object.uniqueName == e.gameObject.uniqueName);
+    final index = objects.indexWhere(
+      (e) => object.uniqueName == e.gameObject.uniqueName,
+    );
 
     if (index != -1) {
-      final newObject = EditorDraggableWidget(object);
+      final newObject = EditorDraggableWidget(
+        object.copyWith(
+          key: UniqueKey(),
+          uniqueName: UniqueKey().toString(),
+        ),
+      );
 
-      objects.removeAt(index);
-      objects.insert(index, newObject);
+      objects[index] = newObject;
+
       emit(
         state.copyWith(
           objects: objects,

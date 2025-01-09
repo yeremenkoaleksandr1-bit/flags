@@ -18,7 +18,7 @@ class NextLevelData {
 }
 
 abstract interface class ILevelsPickerCubit
-    extends DynamicStatedCubitStream<GameContinentData> {
+    extends DynamicStatedBlocStream<GameContinentData> {
   ContinentType get continentType;
 
   GameProcessType get gameProcessType;

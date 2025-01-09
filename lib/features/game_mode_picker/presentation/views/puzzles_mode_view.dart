@@ -64,7 +64,7 @@ class _PuzzleModeViewState extends State<PuzzleModeView> {
           ),
         ),
         PathGameObject.fromSvgPath(
-          "M31.598 19 .402 37.011V.99L31.598 19Z",
+          "M62 36 .5 71.507V.493L62 36Z",
           name: "name",
           areaSize: size,
           color: const Color(0xffFF3131),
@@ -139,7 +139,7 @@ class _PuzzleModeViewState extends State<PuzzleModeView> {
                               strokeWidth: 18,
                               strokeColor: ThemePalette.gentleYellow,
                               textStyle: TextStyle(
-                                color: ThemePalette.gentleYellow.darken(0.5),
+                                color: ThemePalette.gentleYellow.darken(0.25),
                                 fontSize: 64,
                               ),
                             ),

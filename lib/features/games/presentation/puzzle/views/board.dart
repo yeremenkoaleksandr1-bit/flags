@@ -7,8 +7,10 @@ import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
+import 'package:flags/domain/game_objects/flag/flag.dart';
 import 'package:flags/features/games/presentation/puzzle/components/board_items/colored_item.dart';
 import 'package:flags/features/games/presentation/puzzle/components/board_items/common_item.dart';
+import 'package:flags/logger.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
 import 'package:flags/presentation/game/puzzle/entities/colored_part.game_object.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
@@ -25,11 +27,12 @@ class PartsBoard extends StatefulWidget {
     this.onDragEnd,
     this.onDragCompleted,
     required this.cubit,
-    required this.state,
+    required this.boardObjects, required this.flag,
   });
 
   final IPuzzleCommonModeCubit cubit;
-  final PuzzleGameState state;
+  final List<BoardItem<ProcessGameObject>> boardObjects;
+  final GameFlag flag;
 
   final void Function(ProcessGameObject object)? onDragStarted;
   final void Function(ProcessGameObject object, DragUpdateDetails details)?
@@ -193,7 +196,7 @@ class PartsBoardState extends State<PartsBoard> {
                 mainAxisSpacing: 2,
                 crossAxisSpacing: 2,
                 children: [
-                  ...widget.state.boardObjects.mapIndexed((i, e) {
+                  ...widget.boardObjects.mapIndexed((i, e) {
                     return FCard(
                       child: Material(
                         color: Colors.transparent,
@@ -244,22 +247,24 @@ class PartsBoardState extends State<PartsBoard> {
   }
 
   Widget buildBoardCommonItemView(BoardItem e) {
+
+    Widget child;
+
+
     if (e.object is ColoredPart) {
-      return BoardColoredPartWidget(
+      child =  BoardColoredPartWidget(
         cubit: widget.cubit,
         item: e,
       );
     }
 
-    return BoardCommonItemWidget(
+    child =  BoardCommonItemWidget(
       cubit: widget.cubit,
       item: e,
-      flag: widget.state.flag,
+      flag: widget.flag,
       onDragUpdate: widget.onDragUpdate,
       onDragStarted: (ProcessGameObject object) {
-        print("- ${object.runtimeType}");
-        print("- ${object is! EmblemPart}");
-        print("-- ${object is! ColoredPart}");
+
         // if (object is EmblemPart && object is ColoredPart) {
         //   activeDragging.value = false;
         // }
@@ -282,6 +287,12 @@ class PartsBoardState extends State<PartsBoard> {
       },
 
     );
+
+    if(e.build != null){
+      child = e.build!(child);
+    }
+
+    return child;
   }
 
   void toggleDraggingStatus(bool value) {

@@ -27,7 +27,7 @@ class CompletedLevelsCountStreamBuilder extends StatelessWidget {
 
     return LevelProgressBuilder(
       builder: (BuildContext context, GameModeProgressData state) {
-        return Text(cubit.getContinentCompletedLevels(continent).toString());
+        return builder(cubit.getContinentCompletedLevels(continent));
       },
     );
   }

@@ -4,7 +4,7 @@ import 'package:flags/presentation/presenters/continents_picker/route_params.dar
 import 'package:flags/presentation/presenters/continents_picker/state/continents_picker.state.dart';
 
 abstract interface class IContinentsPickerCubit
-    with DynamicStatedCubitStream<ContinentsPickerState> {
+    with DynamicStatedBlocStream<ContinentsPickerState> {
   ContinentPickerRouteParams get params;
 }
 

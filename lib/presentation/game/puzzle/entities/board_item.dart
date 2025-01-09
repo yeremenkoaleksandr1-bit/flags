@@ -22,6 +22,7 @@ class BoardItem<T extends ProcessGameObject> implements IDisposable {
   }) {
     final instance = BoardItem(
       object: object ?? this.object,
+      build: build,
     );
 
     instance.active.value = active.value;

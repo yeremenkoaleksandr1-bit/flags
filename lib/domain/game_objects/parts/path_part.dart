@@ -115,10 +115,10 @@ class PathGameObject extends ProcessGameObject {
   void drawPart(Canvas canvas, Size size) {
     super.draw(canvas, size);
 
-    canvas.scale(
-      size.width / path.bounds.width,
-      size.height / path.bounds.height,
-    );
+    // canvas.scale(
+    //   size.width / path.bounds.width,
+    //   size.height / path.bounds.height,
+    // );
 
     path.draw(canvas, size);
   }

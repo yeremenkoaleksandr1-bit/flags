@@ -21,24 +21,24 @@ class PuzzleMenuDialog extends DialogWidget {
   Widget buildContainer(BuildContext context, Widget child) {
     return Stack(
       children: [
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: CupertinoButton(
-            onPressed: () {
-              Clipboard.setData(
-                ClipboardData(
-                  text: seed.toString(),
-                ),
-              );
-            },
-            child: FText(
-              "$seed",
-              textStyle: const TextStyle(
-                fontFamily: "Troika",
-              ),
-            ),
-          ),
-        ),
+        // Align(
+        //   alignment: Alignment.bottomCenter,
+        //   child: CupertinoButton(
+        //     onPressed: () {
+        //       Clipboard.setData(
+        //         ClipboardData(
+        //           text: seed.toString(),
+        //         ),
+        //       );
+        //     },
+        //     child: FText(
+        //       "$seed",
+        //       textStyle: const TextStyle(
+        //         fontFamily: "Troika",
+        //       ),
+        //     ),
+        //   ),
+        // ),
         Align(
           child: super.buildContainer(context, child),
         ),

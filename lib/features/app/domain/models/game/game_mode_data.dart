@@ -44,7 +44,6 @@ class GameModeProgressData extends Equatable {
     SharedPreferences prefs,
   ) async {
     final encodedData = data.encode();
-    logger.w(encodedData);
     await prefs.setString('gp${data.gameMode.index}',encodedData);
   }
 
