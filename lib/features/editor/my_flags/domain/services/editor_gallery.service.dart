@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flags/domain/converters/editor_flag_converter.dart';
 import 'package:flags/domain/editor/editor_flag.dart';
+import 'package:flags/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract interface class IEditorGalleryService {
@@ -27,9 +30,20 @@ class EditorGalleryServiceImpl implements IEditorGalleryService {
 
   @override
   Future<void> saveFlag(EditorFlagData flag) async {
-    final data = const EditorFlagSerializer().toJson(flag);
     final list = _prefs.getStringList(_prefsKey) ?? [];
-    list.add(data);
+
+    final jsonData = const EditorFlagSerializer().toJson(flag);
+
+    final index = list.indexWhere(
+      (element) => jsonDecode(element)["name"] == flag.name,
+    );
+
+    if (index != -1) {
+      list[index] = jsonData;
+    } else {
+      list.insert(0, jsonData);
+    }
+
     await _prefs.setStringList(_prefsKey, list);
   }
 

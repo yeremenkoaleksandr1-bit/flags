@@ -34,9 +34,7 @@ final class EditorScreen extends StatelessWidget implements AutoRouteWrapper {
   Widget build(BuildContext context) {
     return DeferredPointerHandler(
       child: GamePageBuilder(
-        onPageFocussed: () {
-
-        },
+        onPageFocussed: () {},
         startSlideDirection: GamePageSlideDirection.bottom,
         endSlideDirection: GamePageSlideDirection.bottom,
         child: const EditorScreenView(),
@@ -52,6 +50,7 @@ final class EditorScreen extends StatelessWidget implements AutoRouteWrapper {
           create: (context) => FlagEditorCubit(
             initialFlag: flag,
             context: context,
+
           ),
         ),
         BlocProvider(

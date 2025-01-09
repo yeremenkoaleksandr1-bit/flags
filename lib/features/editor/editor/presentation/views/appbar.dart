@@ -1,3 +1,8 @@
+import 'package:auto_route/auto_route.dart';
+import 'package:flags/features/editor/editor/presentation/cubits/flag_background_style/flag_background_style_cubit.dart';
+import 'package:flags/features/editor/editor/presentation/cubits/scene_objects/scene_objects_cubit.dart';
+import 'package:flags/features/editor/my_flags/presentation/bloc/my_flags_cubit.dart';
+import 'package:flags/logger.dart';
 import 'package:flags/services/layers/money_layer/components/total_moneys_view.dart';
 import 'package:flags/uikit/components/buttons/actions/actions.dart';
 import 'package:flags/uikit/layout_components/layout_components.dart';
@@ -14,14 +19,23 @@ class EditorAppBarView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<IFlagEditorCubit>();
+    final sceneObject = context.read<EditorSceneObjectsCubit>();
+    final styleCubit = context.read<EditorFlagBackgroundStyleCubit>();
 
     Future<void> onBack() async {
       await EasyLoading.show();
-      final flag = await bloc.saveFlag();
+      try {
+        final flag = await bloc.saveFlag(
+          objects: sceneObject.state.objects,
+          style: styleCubit.state.style,
+        );
 
-      if (flag != null) {
-        Navigator.of(context).pop(flag);
-      }
+        if (flag != null) {
+          context.read<MyFlagsCubit>().updateFlag(flag);
+          Navigator.of(context).pop();
+        }
+      } catch (e) {}
+
       await EasyLoading.dismiss();
     }
 

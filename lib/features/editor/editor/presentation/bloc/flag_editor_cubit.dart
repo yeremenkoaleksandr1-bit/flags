@@ -1,6 +1,5 @@
 import 'dart:ui' as ui;
 
-import 'package:auto_route/auto_route.dart';
 import 'package:bloc_utils/bloc_utils.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flags/domain/editor/editor_flag.dart';
@@ -14,10 +13,7 @@ import 'package:flags/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:rx_shared_preferences/rx_shared_preferences.dart';
 
 import 'board/board_actions.dart';
 
@@ -32,7 +28,10 @@ abstract interface class IFlagEditorCubit
 
   Future<void> onClose();
 
-  Future<EditorFlagData?> saveFlag();
+  Future<EditorFlagData?> saveFlag({
+    required List<EditorDraggableWidget> objects,
+    required FlagStyle style,
+  });
 
   Future<void> exportImage();
 }
@@ -94,25 +93,19 @@ class FlagEditorCubit extends StatedCubit<FlagEditorState>
   }
 
   @override
-  Future<EditorFlagData?> saveFlag() async {
-    try {
-      final sceneObjectsCubit = context.read<EditorSceneObjectsCubit>();
-      final backgroundStyleCubit =
-          context.read<EditorFlagBackgroundStyleCubit>();
+  Future<EditorFlagData?> saveFlag({
+    required List<EditorDraggableWidget> objects,
+    required FlagStyle style,
+  }) async {
+    final objects0 = objects.map((e) => e.gameObject);
+    final backgroundStyle = style;
 
-      final objects = sceneObjectsCubit.state.objects.map((e) => e.gameObject);
-      final backgroundStyle = backgroundStyleCubit.state.style;
+    final finalFlag = initialFlag.copyWith(
+      objects: [...objects0],
+      backgroundStyle: backgroundStyle,
+    );
 
-      final finalFlag = initialFlag.copyWith(
-        objects: [...objects],
-        backgroundStyle: backgroundStyle,
-      );
-
-      await editorGalleryService.saveFlag(finalFlag);
-      return finalFlag;
-    } catch (e) {
-    } finally {
-      return null;
-    }
+    await editorGalleryService.saveFlag(finalFlag);
+    return finalFlag;
   }
 }

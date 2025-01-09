@@ -34,6 +34,13 @@ final class MyFlagsCubit extends StatedCubit<List<EditorFlagData>> {
     );
   }
 
+
+  void updateFlag(EditorFlagData flag){
+    emit(
+      SuccessState(editorGalleryService.flags),
+    );
+  }
+
   Future<void> createFlag(
     BuildContext context,
   ) async {
