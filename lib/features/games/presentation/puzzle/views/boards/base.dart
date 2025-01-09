@@ -10,7 +10,7 @@ abstract class ProcessObjectEditingBoard extends StatefulWidget {
     required this.cubit,
   });
 
-  final IPuzzleCommonModeCubit cubit;
+  final PuzzleCommonModeCubit cubit;
 }
 
 abstract class ProcessObjectEditingBoardState<

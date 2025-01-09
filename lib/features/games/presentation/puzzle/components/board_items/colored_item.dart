@@ -3,6 +3,7 @@ import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/features/games/presentation/puzzle/components/board_items/base.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
 import 'package:flags/presentation/game/puzzle/entities/colored_part.game_object.dart';
+import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_fast.presenter.dart';
 import 'package:flags/uikit/layout_components/containers/card.dart';
 import 'package:flags/uikit/theme/palette.dart';
@@ -33,12 +34,12 @@ class BoardColoredPartWidgetState
   }
 
   Future<void> onTap() async {
-    presenter.setFocusOnObject(model);
+    cubit.setFocusOnObject(model);
 
-    if (presenter is! IPuzzleFastModePresenter) {
+    if (cubit is! PuzzleFastModeCubit) {
       await Future.delayed(const Duration(milliseconds: 101));
-      presenter.showcase.show(
-        [presenter.showcase.coloredObjectStep2],
+      cubit.showcase.show(
+        [cubit.showcase.coloredObjectStep2],
         "puzzle_colored_object_2",
       );
     }

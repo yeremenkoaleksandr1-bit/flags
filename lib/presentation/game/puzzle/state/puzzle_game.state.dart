@@ -5,7 +5,11 @@ import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
 
-class PuzzleGameState extends Equatable {
+abstract class PuzzleBaseState extends Equatable {
+  const PuzzleBaseState();
+}
+
+class PuzzleGameState extends PuzzleBaseState {
   final GameLevel level;
   final GameDifficult difficult;
   final List<BoardItem> boardObjects;

@@ -31,7 +31,7 @@ class GameFlagArea extends StatefulWidget {
     required this.cubit,
   });
 
-  final IPuzzleCommonModeCubit cubit;
+  final PuzzleCommonModeCubit cubit;
 
   final GameFlag flag;
   final List<ProcessGameObject> objects;

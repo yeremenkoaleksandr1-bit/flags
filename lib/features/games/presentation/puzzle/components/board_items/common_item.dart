@@ -120,7 +120,7 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
   ) {
     final object = item.object;
 
-    final areaSize = presenter.flagExposer.renderBox.value?.size;
+    final areaSize = cubit.flagExposer.renderBox.value?.size;
 
     final areaWidth = areaSize?.width ?? 1;
     final fitted = areaWidth / (widget.flag.size.x);

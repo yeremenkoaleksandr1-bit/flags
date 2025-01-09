@@ -12,6 +12,7 @@ import 'package:flags/features/games/presentation/puzzle/components/skip_level_b
 import 'package:flags/features/games/presentation/puzzle/components/timer/timer.dart';
 import 'package:flags/presentation/game/puzzle/onboarding/fast_mode/fastmode.showcase_step_1.dart';
 import 'package:flags/presentation/game/puzzle/onboarding/fast_mode/fastmode.showcase_step_2.dart';
+import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_fast.presenter.dart';
 import 'package:flags/presentation/game/puzzle/state/puzzle_game.state.dart';
 import 'package:flags/uikit/layout_components/gap/gap.dart';
@@ -19,8 +20,7 @@ import 'package:flags/uikit/layout_components/showcase/showcase.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class PuzzleFastModeView
-    extends PuzzleCommonModeView<IPuzzleFastModePresenter> {
+class PuzzleFastModeView extends PuzzleCommonModeView<PuzzleFastModeCubit> {
   const PuzzleFastModeView({super.key, required super.cubit});
 
   @override
@@ -28,8 +28,9 @@ class PuzzleFastModeView
 }
 
 class PuzzleFastModeViewState
-    extends PuzzleCommonModeViewState<IPuzzleFastModePresenter> {
-
+    extends PuzzleCommonModeViewState<PuzzleFastModeCubit> {
+  @override
+  PuzzleFastModeCubit get cubit => widget.cubit;
 
   @override
   void initState() {
@@ -86,7 +87,7 @@ class PuzzleFastModeViewState
   Widget build(BuildContext context) {
     return BlocDynamicStateBuilder(
       bloc: cubit,
-      builder: (BuildContext context, PuzzleFastModeState state) {
+      builder: (BuildContext context, state) {
         return FShowcaseWidget(
           showcaseKey: cubit.showcaseFm.key,
           builder: (BuildContext context) {

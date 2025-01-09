@@ -23,7 +23,7 @@ import 'package:flame/extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class PuzzleCommonModeView<T extends IPuzzleCommonModeCubit>
+class PuzzleCommonModeView<T extends PuzzleCommonModeCubit>
     extends GameProcessScreen<T> {
   const PuzzleCommonModeView({
     super.key,
@@ -34,7 +34,7 @@ class PuzzleCommonModeView<T extends IPuzzleCommonModeCubit>
   State<GameProcessScreen<T>> createState() => PuzzleCommonModeViewState();
 }
 
-class PuzzleCommonModeViewState<T extends IPuzzleCommonModeCubit>
+class PuzzleCommonModeViewState<T extends PuzzleCommonModeCubit>
     extends GameProcessScreenState<T> {
   T get cubit => widget.cubit;
 

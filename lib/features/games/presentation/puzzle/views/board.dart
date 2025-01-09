@@ -30,7 +30,7 @@ class PartsBoard extends StatefulWidget {
     required this.boardObjects, required this.flag,
   });
 
-  final IPuzzleCommonModeCubit cubit;
+  final PuzzleCommonModeCubit cubit;
   final List<BoardItem<ProcessGameObject>> boardObjects;
   final GameFlag flag;
 

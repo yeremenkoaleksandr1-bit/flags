@@ -10,15 +10,15 @@ class PreparingFastModeTimer extends StatefulWidget {
 
   final ValueListenable<int> preparingTimer;
 
-  OverlayEntry overlay() {
-    return OverlayEntry(
-      builder: (BuildContext context) {
-        return PreparingFastModeTimer(
-          preparingTimer: preparingTimer,
-        );
-      },
-    );
-  }
+  // OverlayEntry overlay() {
+  //   return OverlayEntry(
+  //     builder: (BuildContext context) {
+  //       return PreparingFastModeTimer(
+  //         preparingTimer: preparingTimer,
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   State<PreparingFastModeTimer> createState() => _PreparingFastModeTimerState();

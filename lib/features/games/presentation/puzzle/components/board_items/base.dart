@@ -13,14 +13,14 @@ abstract class BoardItemWidget extends StatefulWidget {
   });
 
   final BoardItem item;
-  final IPuzzleCommonModeCubit cubit;
+  final PuzzleCommonModeCubit cubit;
 }
 
 abstract class BoardItemWidgetState<T extends BoardItemWidget>
     extends State<T> {
   BoardItem get model => widget.item;
 
-  IPuzzleCommonModeCubit get presenter => widget.cubit;
+  PuzzleCommonModeCubit get cubit => widget.cubit;
 
   ProcessGameObject get renderedObject => model.object;
 

@@ -64,37 +64,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-abstract interface class IPuzzleCommonModeCubit<S extends PuzzleGameState>
-    extends DynamicStatedBlocStream<S> with ProcessedObjectFocusHandler {
-  PuzzleGameShowcase get showcase;
-
-  GameLevel get level;
-
-  RenderBoxExposer get flagExposer;
-
-  bool handleGameObject(Vector2 position, ProcessGameObject object);
-
-  AnimationController get shakeAnimation;
-
-  IEmblemConfirmationController get emblemConfirmationView;
-
-  PartsBoardState get boardController;
-
-  HeartTriesState get heartTriesState;
-
-  void tryRemoveFocussedEmblem();
-
-  void tryPlaceFocussedEmblem();
-
-  void openMenu(BuildContext context);
-
-  void skipLevel();
-}
-
-class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
-    extends StatedCubit<S>
-    with ProcessedObjectFocusHandler
-    implements IPuzzleCommonModeCubit<S> {
+class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
+    with ProcessedObjectFocusHandler {
   final IAppCubit appCubit;
 
   final TickerProvider vsync;
@@ -127,7 +98,7 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
 
   final GamesFactoryPageParams params;
 
-  PuzzleCommonModePresenterImpl(
+  PuzzleCommonModeCubit(
     this.context,
     this.vsync, {
     required this.params,
@@ -141,22 +112,17 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
 
   int gameSeed = -1;
 
-  @override
   late final AnimationController shakeAnimation = AnimationController(
     vsync: vsync,
     duration: const Duration(milliseconds: 100),
   );
 
-  @override
   HeartTriesState heartTriesState;
 
-  @override
   final IEmblemConfirmationController emblemConfirmationView;
 
-  @override
   final PartsBoardState boardController;
 
-  @override
   RenderBoxExposer flagExposer = RenderBoxExposer();
 
   @override
@@ -178,7 +144,7 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
           boardObjects: const [],
           flagFitValue: 1,
           placedObjects: const [],
-        ) as S,
+        ),
       ),
     );
     await preInitialization();
@@ -254,7 +220,7 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
                   level,
                 ),
               ],
-            ) as S,
+            ),
           ),
         );
       },
@@ -270,7 +236,7 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
           SuccessState(
             state.copyWith(
               flagFitValue: renderBox.size.width / state.level.flag.size.x,
-            ) as S,
+            ) ,
           ),
         );
       },
@@ -296,7 +262,7 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
           SuccessState(
             state.copyWith(
               placedObjects: [...state.placedObjects, object],
-            ) as S,
+            ),
           ),
         );
 
@@ -433,14 +399,13 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
                   level,
                 ),
               ],
-            ) as S,
+            ),
           ),
         );
       },
     );
   }
 
-  @override
   bool handleGameObject(Vector2 position, ProcessGameObject object) {
     return state.maybeWhen(
       success: (state) {
@@ -481,7 +446,7 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
                   ...state.placedObjects,
                   gameObject,
                 ],
-              ) as S,
+              ),
             ),
           );
           final object = state.boardObjects.firstWhere((e) {
@@ -554,7 +519,7 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
           state.copyWith(
             boardObjects: [],
             placedObjects: [],
-          ) as S,
+          ),
         ),
       );
     });
@@ -598,7 +563,7 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
                     level,
                   ),
                 ],
-              ) as S,
+              ),
             ),
           );
         });
@@ -622,7 +587,6 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
     });
   }
 
-  @override
   void tryPlaceFocussedEmblem() {
     state.whenOrNull(
       success: (state) {
@@ -689,7 +653,6 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
     );
   }
 
-  @override
   void tryRemoveFocussedEmblem() {
     state.whenOrNull(
       success: (state) {
@@ -712,7 +675,6 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
     );
   }
 
-  @override
   Future<void> openMenu(BuildContext context) async {
     await onMenuOpened();
 
@@ -735,7 +697,6 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
 
   Future<void> onMenuClosed() async {}
 
-  @override
   void skipLevel() {
     state.whenOrNull(
       success: (state) {
@@ -791,7 +752,7 @@ class PuzzleCommonModePresenterImpl<S extends PuzzleGameState>
   ) {
     final preparedParts = [...parts];
 
-    if (this is! IPuzzleFastModePresenter) {
+    if (this is! PuzzleFastModeCubit) {
       if (!showcase.isCompleted("puzzle_common_object")) {
         final flagPartIndex = preparedParts.indexWhere(
           (e) => level.flag.objects.whereType<PathGameObject>().any(

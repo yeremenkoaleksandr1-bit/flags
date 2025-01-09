@@ -15,7 +15,7 @@ class PreparingFastModeInitializationGame extends StatefulWidget {
 
   final ValueListenable<int> preparingTimer;
 
-  final VoidCallback? onReady;
+  final void Function(BuildContext context)? onReady;
 
   Future<dynamic> showDialog(BuildContext context) async {
     return await showGeneralDialog(
@@ -45,7 +45,7 @@ class _PreparingFastModeInitializationGameState
     super.initState();
 
     FlutterEngine.widgetPostFrameCallback((timeStamp) {
-      widget.onReady?.call();
+      widget.onReady?.call(context);
     });
   }
 

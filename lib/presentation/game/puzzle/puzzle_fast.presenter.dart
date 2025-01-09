@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:bloc_utils/bloc_utils.dart';
 import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/core/extensions/num.dart';
@@ -13,31 +14,18 @@ import 'package:flags/domain/models/game/scores/win_streak.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
 import 'package:flags/features/games/presentation/puzzle/overlays/start_game.dart';
 import 'package:flags/prefabs/levels/levels.dart';
+import 'package:flags/presentation/game/puzzle/onboarding/showcase_fastmode.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
 import 'package:flags/presentation/game/puzzle/state/puzzle_game.state.dart';
 import 'package:flags/services/layers/money_layer/money_layer.dart';
 import 'package:flags/uikit/assets/components/money.dart';
+import 'package:flags/uikit/uikit.dart';
 import 'package:flame/extensions.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import '../../../uikit/uikit.dart';
-import 'onboarding/showcase_fastmode.dart';
-
-abstract interface class IPuzzleFastModePresenter
-    implements IPuzzleCommonModeCubit<PuzzleFastModeState> {
-  PuzzleGameFastModeShowcase get showcaseFm;
-
-  ValueListenable<int> get timerStream;
-
-  int get initialTimerValue;
-}
-
-class PuzzleFastModePresenterImpl
-    extends PuzzleCommonModePresenterImpl<PuzzleFastModeState>
-    implements IPuzzleFastModePresenter {
-  PuzzleFastModePresenterImpl(
+class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
+  PuzzleFastModeCubit(
     super.context,
     super.vsync, {
     required super.params,
@@ -45,7 +33,6 @@ class PuzzleFastModePresenterImpl
     required super.levelsCubit,
   });
 
-  @override
   final PuzzleGameFastModeShowcase showcaseFm = PuzzleGameFastModeShowcase();
 
   WinStreak get winStreak => gamePreferences.state.winStreak;
@@ -62,10 +49,8 @@ class PuzzleFastModePresenterImpl
   late final ValueNotifier<int> preparingTimer = ValueNotifier(-1);
   final Completer prepareGameCompleter = Completer();
 
-  @override
   int get initialTimerValue => timerRx.value;
 
-  @override
   ValueNotifier<int> get timerStream => timerRx;
 
   @override
@@ -100,7 +85,7 @@ class PuzzleFastModePresenterImpl
       } else {
         await PreparingFastModeInitializationGame(
           preparingTimer: preparingTimer,
-          onReady: () async {
+          onReady: (context) async {
             timerRx.notifyListeners();
             preparingTimer.value = 3;
             await Future.delayed(const Duration(milliseconds: 250), () {
@@ -199,122 +184,134 @@ class PuzzleFastModePresenterImpl
   }
 
   Future<void> prepareFastModeLevel([bool isRestart = false]) async {
-    state.whenOrNull(
-      success: (state) async {
-        final Completer moneyAddCompleter = Completer();
+    final GlobalKey moneyKey = GlobalKey();
 
-        await PreparingFastModeInitializationGame(
-          preparingTimer: preparingTimer,
-          onReady: () async {
-            // add money
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      state.whenOrNull(
+        success: (state) async {
+          final Completer moneyAddCompleter = Completer();
 
-            if (!isRestart) {
-              final uiMoneyLayer = UiMoneyLayer.find();
-              bool isCloseMoney = false;
-              preparingTimer.value = -1;
-              await uiMoneyLayer.show();
+          await PreparingFastModeInitializationGame(
+            preparingTimer: preparingTimer,
+            onReady: (context) async {
+              // add money
 
-              final GlobalKey moneyKey = GlobalKey();
+              if (!isRestart) {
+                final uiMoneyLayer = UiMoneyLayer.find();
+                bool isCloseMoney = false;
+                preparingTimer.value = -1;
+                await uiMoneyLayer.show();
 
-              final moneys = calcWinnerMoney(state.difficult);
+                final moneys = calcWinnerMoney(state.difficult);
 
-              late OverlayEntry entry;
+                late OverlayEntry entry;
 
-              entry = OverlayEntry(
-                builder: (context) {
-                  return GestureDetector(
-                    onTap: () async {
-                      if (!moneyAddCompleter.isCompleted) {
+                entry = OverlayEntry(
+                  builder: (context) {
+                    return GestureDetector(
+                      onTap: () async {
+                        if (!moneyAddCompleter.isCompleted) {
+                          await uiMoneyLayer.hide();
+                          entry.remove();
+                          isCloseMoney = true;
+                          moneyAddCompleter.complete();
+                        }
+                      },
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Center(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                height: 52,
+                                child: UIMoney(
+                                  key: moneyKey,
+                                ),
+                              ),
+                              Gap.h12,
+                              FText("+$moneys"),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+
+                // Overlay.of(QR.context!).insert(entry);
+
+                gamePreferences.addMoney(
+                  calcWinnerMoney(state.difficult),
+                );
+
+                await Future.delayed(
+                  const Duration(milliseconds: 250),
+                );
+
+                if (!isCloseMoney) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    final context = moneyKey.currentContext;
+                    if (context != null) {
+                      final rb = context.findRenderObject()! as RenderBox;
+                      final rect = rb.paintBounds.shift(rb.localToGlobal(Offset.zero));
+
+                      uiMoneyLayer
+                          .addMoneys(
+                        rect.center,
+                        moneys.clamp(
+                          1,
+                          25,
+                        ),
+                      )
+                          .then((value) async {
                         await uiMoneyLayer.hide();
                         entry.remove();
                         isCloseMoney = true;
-                        moneyAddCompleter.complete();
-                      }
-                    },
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Center(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SizedBox(
-                              height: 52,
-                              child: UIMoney(
-                                key: moneyKey,
-                              ),
-                            ),
-                            Gap.h12,
-                            FText("+$moneys"),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
+
+                        if (!moneyAddCompleter.isCompleted) {
+                          moneyAddCompleter.complete();
+                        }
+                      });
+                    }
+
+
+
+
+                  });
+                }
+              } else {
+                moneyAddCompleter.complete();
+              }
+
+              await moneyAddCompleter.future;
+
+              final initialTime = getInitialTime(
+                [...GameDifficult.values].random(),
+              );
+              timerRx.value = initialTime;
+              this.initialTime = initialTime;
+
+              preparingTimer.value = 3;
+
+              await initializeFastMode(
+                [...GameDifficult.values].random(),
               );
 
-              // Overlay.of(QR.context!).insert(entry);
+              periodicTimer.start(3).listen((event) {
+                preparingTimer.value = event;
 
-              gamePreferences.addMoney(
-                calcWinnerMoney(state.difficult),
-              );
+                if (event == 0) {
+                  Navigator.of(context).pop();
 
-              await Future.delayed(100.milliseconds);
-
-              if (!isCloseMoney) {
-                final rb =
-                    moneyKey.currentContext!.findRenderObject()! as RenderBox;
-                final rect = rb.rect;
-
-                uiMoneyLayer
-                    .addMoneys(
-                  rect.center,
-                  moneys.clamp(
-                    1,
-                    25,
-                  ),
-                )
-                    .then((value) async {
-                  await uiMoneyLayer.hide();
-                  entry.remove();
-                  isCloseMoney = true;
-
-                  if (!moneyAddCompleter.isCompleted) {
-                    moneyAddCompleter.complete();
-                  }
-                });
-              }
-            } else {
-              moneyAddCompleter.complete();
-            }
-
-            await moneyAddCompleter.future;
-
-            final initialTime = getInitialTime(
-              [...GameDifficult.values].random(),
-            );
-            timerRx.value = initialTime;
-            this.initialTime = initialTime;
-
-            preparingTimer.value = 3;
-
-            await initializeFastMode(
-              [...GameDifficult.values].random(),
-            );
-
-            periodicTimer.start(3).listen((event) {
-              preparingTimer.value = event;
-
-              if (event == 0) {
-                Navigator.of(context).pop();
-
-                initializeInGameTimer();
-              }
-            });
-          },
-        ).showDialog(context);
-      },
-    );
+                  initializeInGameTimer();
+                }
+              });
+            },
+          ).showDialog(context);
+        },
+      );
+    });
   }
 
   @override

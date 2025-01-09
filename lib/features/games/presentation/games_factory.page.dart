@@ -55,7 +55,7 @@ class _GamesFactoryPageState extends State<GamesFactoryPage>
 
     screen = switch (params.gamesType) {
       GameStyleType.common => PuzzleCommonModeView(
-          cubit: PuzzleCommonModePresenterImpl(
+          cubit: PuzzleCommonModeCubit(
             context,
             this,
             params: params,
@@ -64,7 +64,7 @@ class _GamesFactoryPageState extends State<GamesFactoryPage>
           ),
         ),
       GameStyleType.fast => PuzzleFastModeView(
-          cubit: PuzzleFastModePresenterImpl(
+          cubit: PuzzleFastModeCubit(
             context,
             this,
             params: params,

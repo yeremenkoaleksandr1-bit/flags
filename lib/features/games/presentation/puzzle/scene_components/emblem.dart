@@ -21,7 +21,7 @@ class EmblemSceneObject extends DraggableGameObjectWidget<DraggableEmblemPart> {
 
   final DraggableGameObjectWidgetState? currentActiveWidget;
 
-  final IPuzzleCommonModeCubit presenter;
+  final PuzzleCommonModeCubit presenter;
 
   @override
   State<EmblemSceneObject> createState() => EmblemSceneObjectState();
@@ -29,7 +29,7 @@ class EmblemSceneObject extends DraggableGameObjectWidget<DraggableEmblemPart> {
 
 class EmblemSceneObjectState extends DraggableGameObjectWidgetState<
     DraggableEmblemPart, EmblemSceneObject> {
-  IPuzzleCommonModeCubit get presenter => widget.presenter;
+  PuzzleCommonModeCubit get presenter => widget.presenter;
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class EmblemSceneObjectState extends DraggableGameObjectWidgetState<
       presenter.setFocusOnObject(this);
       _setConfirmationButtonsPosition();
 
-      if (presenter is! IPuzzleFastModePresenter) {
+      if (presenter is! PuzzleCommonModeCubit) {
         await Future.delayed(const Duration(milliseconds: 101));
         FlutterEngine.schedulePostFrameCallback((timeStamp) {
           presenter.showcase.show(
