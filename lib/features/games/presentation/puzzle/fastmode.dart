@@ -38,12 +38,7 @@ class PuzzleFastModeViewState
     audioCubit.playBgm(GameMusics.fastMode);
   }
 
-  @override
-  void dispose() {
-    audioCubit.playBgm(GameMusics.continents);
 
-    super.dispose();
-  }
 
   @override
   Widget buildHeaderMiddleWidget(
@@ -72,9 +67,9 @@ class PuzzleFastModeViewState
           ),
         ),
         const Spacer(),
-        SkipLevelButton(
-          onPressed: cubit.skipLevel,
-        ),
+        // SkipLevelButton(
+        //   onPressed: cubit.skipLevel,
+        // ),
         Gap.h4,
         HeartTries(
           state: cubit.heartTriesState,

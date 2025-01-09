@@ -688,7 +688,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
   }
 
   void onGameExit(BuildContext context) async {
-    Navigator.of(context).pop();
+    await context.maybePop();
 
     this.context.navigateNamedTo(LevelsPickerRoute.name);
   }

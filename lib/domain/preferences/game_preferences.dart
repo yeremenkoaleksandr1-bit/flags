@@ -14,7 +14,7 @@ class GamePreferencesCubit extends Cubit<GamePreferencesState> {
 
   static GamePreferencesState _loadState(SharedPreferences prefs) {
     return GamePreferencesState(
-      moneys: prefs.getInt('moneys') ?? 9999,
+      moneys: prefs.getInt('moneys') ?? 0,
       winStreak: WinStreak.fromJsonSafe(
         jsonDecode(
           prefs.getString('winStreak') ?? '{}',

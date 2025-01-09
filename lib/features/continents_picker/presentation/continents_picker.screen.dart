@@ -63,7 +63,6 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
   @override
   void initState() {
     super.initState();
-    audioCubit.playBgm(GameMusics.continents);
 
     try {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -110,6 +109,16 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
       );
     }
 
+    void onPageFocussed() {
+      audioCubit.playBgm(GameMusics.continents);
+      moneyLayer.show();
+    }
+
+    void onPageUnfocused() {
+      audioCubit.playBgm(GameMusics.main);
+      moneyLayer.hide();
+    }
+
     return FShowcaseWidget(
       showcaseKey: showCaseWidgetKey,
       enableShowcase: _onboardingController.canShow,
@@ -117,8 +126,8 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
       builder: (BuildContext context) {
         return GameSafeArea(
           child: GamePageBuilder(
-            onPageFocussed: moneyLayer.show,
-            onPageUnfocused: moneyLayer.hide,
+            onPageFocussed: onPageFocussed,
+            onPageUnfocused: onPageUnfocused,
             startSlideDirection: GamePageSlideDirection.middle,
             endSlideDirection: GamePageSlideDirection.middle,
             child: BlocDynamicStateBuilder(

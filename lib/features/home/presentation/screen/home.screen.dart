@@ -62,7 +62,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    audioCubit.playBgm(GameMusics.main);
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
@@ -74,6 +73,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    void onPageFocussed(){
+      audioCubit.playBgm(GameMusics.main);
+    }
+
     return FShowcaseWidget(
       showcaseKey: showCaseWidgetKey,
       enableShowcase: _onboardingController.canShow,
@@ -83,6 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: GamePageBuilder(
             startSlideDirection: GamePageSlideDirection.middle,
             endSlideDirection: GamePageSlideDirection.middle,
+            onPageFocussed: onPageFocussed,
             child: Stack(
               children: [
                 Padding(

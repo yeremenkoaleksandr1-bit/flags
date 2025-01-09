@@ -5,14 +5,16 @@ import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:bloc_utils/bloc_utils.dart';
-import 'package:drag_and_drop/extensions/render_box.dart';
+import 'package:flags/core/extensions/context.dart';
 import 'package:flags/core/extensions/num.dart';
 import 'package:flags/core/features/features.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/models/game/scores/win_streak.dart';
+import 'package:flags/domain/preferences/game_preferences.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
 import 'package:flags/features/games/presentation/puzzle/overlays/start_game.dart';
+import 'package:flags/navigator/router.gr.dart';
 import 'package:flags/prefabs/levels/levels.dart';
 import 'package:flags/presentation/game/puzzle/onboarding/showcase_fastmode.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
@@ -22,7 +24,7 @@ import 'package:flags/uikit/assets/components/money.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
   PuzzleFastModeCubit(
@@ -34,8 +36,6 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
   });
 
   final PuzzleGameFastModeShowcase showcaseFm = PuzzleGameFastModeShowcase();
-
-  WinStreak get winStreak => gamePreferences.state.winStreak;
 
   late ContinentType _randomContinent = params.continentType;
 
@@ -55,7 +55,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
 
   @override
   Future<void> onInit() {
-    winStreak.resetStreak();
+    gamePreferences.resetStreak();
     return super.onInit();
   }
 
@@ -172,13 +172,14 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
     periodicTimer.pause();
     periodicTimer.dispose();
     flagExposer.renderBox.removeListener(onFlagBuilt);
+    audioCubit.playBgm(GameMusics.continents);
     super.onClose();
   }
 
   @override
   Future<void> onLevelCompleted(PuzzleGameState state) async {
     periodicTimer.pause();
-    winStreak.recordWin();
+    gamePreferences.recordWin();
 
     await prepareFastModeLevel();
   }
@@ -239,7 +240,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
                   },
                 );
 
-                // Overlay.of(QR.context!).insert(entry);
+                Overlay.of(context).insert(entry);
 
                 gamePreferences.addMoney(
                   calcWinnerMoney(state.difficult),
@@ -250,35 +251,28 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
                 );
 
                 if (!isCloseMoney) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    final context = moneyKey.currentContext;
-                    if (context != null) {
-                      final rb = context.findRenderObject()! as RenderBox;
-                      final rect = rb.paintBounds.shift(rb.localToGlobal(Offset.zero));
+                  final context = moneyKey.currentContext;
+                  if (context != null) {
+                    final rect = context.renderBox!.rect;
 
-                      uiMoneyLayer
-                          .addMoneys(
-                        rect.center,
-                        moneys.clamp(
-                          1,
-                          25,
-                        ),
-                      )
-                          .then((value) async {
-                        await uiMoneyLayer.hide();
-                        entry.remove();
-                        isCloseMoney = true;
+                    uiMoneyLayer
+                        .addMoneys(
+                      rect.center,
+                      moneys.clamp(
+                        1,
+                        25,
+                      ),
+                    )
+                        .then((value) async {
+                      await uiMoneyLayer.hide();
+                      entry.remove();
+                      isCloseMoney = true;
 
-                        if (!moneyAddCompleter.isCompleted) {
-                          moneyAddCompleter.complete();
-                        }
-                      });
-                    }
-
-
-
-
-                  });
+                      if (!moneyAddCompleter.isCompleted) {
+                        moneyAddCompleter.complete();
+                      }
+                    });
+                  }
                 }
               } else {
                 moneyAddCompleter.complete();
@@ -316,19 +310,23 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
 
   @override
   Future<void> onGameOver() async {
-    winStreak.resetStreak();
+    gamePreferences.resetStreak();
     periodicTimer.pause();
     await super.onGameOver();
   }
 
   @override
-  void onGameExit(BuildContext context) {
-    winStreak.resetStreak();
-    super.onGameExit(context);
+  Future<void> onGameExit(BuildContext context) async {
+    gamePreferences.resetStreak();
+    await context.maybePop();
+    await this.context.maybePop();
+
+    //super.onGameExit(context);
   }
 
   @override
   Future<void> onRestart(BuildContext context) async {
+    gamePreferences.resetStreak();
     await super.onRestart(context);
 
     await prepareFastModeLevel(true);
