@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flags/logger.dart';
 import 'package:flags/navigator/game_navigation_observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -12,6 +13,8 @@ enum GamePageSlideDirection {
 }
 
 class GamePageBuilder extends StatefulWidget {
+  static final RouteObserver<ModalRoute<void>> routeObserver =
+      RouteObserver<ModalRoute<void>>();
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
   const GamePageBuilder({
@@ -22,6 +25,7 @@ class GamePageBuilder extends StatefulWidget {
     this.curve = Curves.linear,
     this.onPageFocussed,
     this.onPageUnfocused,
+    this.transitionDuration = const Duration(milliseconds: 250),
   });
 
   final Widget child;
@@ -34,12 +38,14 @@ class GamePageBuilder extends StatefulWidget {
   final VoidCallback? onPageFocussed;
   final VoidCallback? onPageUnfocused;
 
+  final Duration transitionDuration;
+
   @override
   State<GamePageBuilder> createState() => _GamePageBuilderState();
 }
 
 class _GamePageBuilderState extends State<GamePageBuilder>
-    with AutoRouteAware, SingleTickerProviderStateMixin
+    with AutoRouteAware, RouteAware, SingleTickerProviderStateMixin
     implements PopEntry<GamePageBuilder> {
   late final AnimationController _controller;
   GameAutoRouteObserver? _observer;
@@ -53,7 +59,7 @@ class _GamePageBuilderState extends State<GamePageBuilder>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: widget.transitionDuration,
     );
 
     _controller.value = 1;
@@ -62,18 +68,30 @@ class _GamePageBuilderState extends State<GamePageBuilder>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _observer =
-        RouterScope.of(context).firstObserverOfType<GameAutoRouteObserver>();
-
-    if (_observer != null) {
-      _observer!.subscribe(this, context.routeData);
-    }
-
     final ModalRoute<dynamic>? nextRoute = ModalRoute.of(context);
+
     if (nextRoute != _route) {
       _route?.unregisterPopEntry(this);
       _route = nextRoute;
       _route?.registerPopEntry(this);
+    }
+
+    final routeDataScope =
+        context.findAncestorWidgetOfExactType<RouteDataScope>();
+
+    if (routeDataScope != null) {
+      _observer =
+          RouterScope.of(context).firstObserverOfType<GameAutoRouteObserver>();
+      if (_observer != null) {
+        _observer!.subscribe(this, context.routeData);
+      }
+    } else {
+      if (_route != null) {
+        GamePageBuilder.routeObserver.subscribe(
+          this,
+          _route!,
+        );
+      }
     }
   }
 
@@ -93,8 +111,10 @@ class _GamePageBuilderState extends State<GamePageBuilder>
   }
 
   Future<void> onPageFocussed() async {
-    await _controller.reverse(from: 1).whenComplete(() {
-      widget.onPageFocussed?.call();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controller.reverse(from: 1).whenComplete(() {
+        widget.onPageFocussed?.call();
+      });
     });
   }
 
@@ -135,6 +155,7 @@ class _GamePageBuilderState extends State<GamePageBuilder>
     canPopNotifier.dispose();
     _controller.dispose();
     _observer?.unsubscribe(this);
+    GamePageBuilder.routeObserver.unsubscribe(this);
   }
 
   @override
