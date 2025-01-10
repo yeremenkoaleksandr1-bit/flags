@@ -4,7 +4,7 @@ import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const String _soundMuteKey = "94aa258bd3a5";
+const String _soundMuteKey = "settings.audio.muted";
 
 abstract class IAudioService implements IDisposable {
   ValueNotifier<bool> get muted;

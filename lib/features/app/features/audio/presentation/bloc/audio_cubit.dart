@@ -26,7 +26,9 @@ class AudioCubit extends Cubit<AudioState> implements IAudioCubit {
             muted: prefs.getBool('settings.audio.muted') ?? false,
             paused: prefs.getBool('settings.audio.paused') ?? false,
           ),
-        );
+        ) {
+    audioService.muted.value = state.muted;
+  }
 
   final IAudioService audioService;
 
