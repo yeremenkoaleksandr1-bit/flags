@@ -10,8 +10,11 @@ class ContinentComponent extends StatefulWidget {
     super.key,
     required this.imagePath,
     required this.name,
+    required this.isBought,
     required this.gameProcessType,
   });
+
+  final bool isBought;
 
   late ContinentType type;
 
@@ -24,37 +27,44 @@ class ContinentComponent extends StatefulWidget {
   factory ContinentComponent.fromType(
     ContinentType type,
     GameProcessType gameProcessType,
+    bool isBought,
   ) {
     return (switch (type) {
       ContinentType.europe => ContinentComponent._(
           name: "Europe",
           imagePath: 'assets/images/continents/europe.png',
           gameProcessType: gameProcessType,
+          isBought: isBought,
         ),
       ContinentType.asia => ContinentComponent._(
           name: "Asia",
           imagePath: 'assets/images/continents/asia.png',
           gameProcessType: gameProcessType,
+          isBought: isBought,
         ),
       ContinentType.africa => ContinentComponent._(
           name: "Africa",
           imagePath: 'assets/images/continents/africa.png',
           gameProcessType: gameProcessType,
+          isBought: isBought,
         ),
       ContinentType.oceania => ContinentComponent._(
           name: "Oceania",
           imagePath: 'assets/images/continents/oceania.png',
           gameProcessType: gameProcessType,
+          isBought: isBought,
         ),
       ContinentType.northAmerica => ContinentComponent._(
           name: "North America",
           imagePath: 'assets/images/continents/north_america.png',
           gameProcessType: gameProcessType,
+          isBought: isBought,
         ),
       ContinentType.southAmerica => ContinentComponent._(
           name: "South America",
           imagePath: 'assets/images/continents/south_america.png',
           gameProcessType: gameProcessType,
+          isBought: isBought,
         ),
     })
       ..type = type;
@@ -101,19 +111,21 @@ class _ContinentComponentState extends State<ContinentComponent> {
                     height: 1,
                   ),
                 ),
-                CompletedLevelsCountStreamBuilder(
-                  continent: widget.type,
-                  gameMode: widget.gameProcessType,
-                  builder: (int quantity) {
-                    return FText(
-                      "$quantity/$levelsCount",
-                      textStyle: const TextStyle(
-                        fontSize: 38,
-                        height: 1,
-                      ),
-                    );
-                  },
-                ),
+                if (widget.isBought)
+                  CompletedLevelsCountStreamBuilder(
+                    continent: widget.type,
+                    gameMode: widget.gameProcessType,
+                    builder: (int quantity) {
+                      return FText(
+                        "$quantity/$levelsCount",
+                        textStyle: const TextStyle(
+                          fontSize: 38,
+                          height: 1,
+                        ),
+                      );
+                    },
+                  ),
+                if (!widget.isBought) const Spacer(),
               ],
             ),
           ),

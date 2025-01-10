@@ -8,7 +8,7 @@
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <application
-        android:label="flags"
+        android:label="FlagsUP"
         android:name="${applicationName}"
         android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher">

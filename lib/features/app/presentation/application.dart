@@ -12,6 +12,7 @@ import 'package:flags/navigator/router.dart';
 import 'package:flags/services/game_state/game_state_cubit.dart';
 import 'package:flags/services/layers/money_layer/money_layer.dart';
 import 'package:flags/ui/builders/main_router_builder.dart';
+import 'package:flags/ui/clouds/clouds_painter.dart';
 import 'package:flags/uikit/components/background/background.dart';
 import 'package:flags/uikit/drag_and_drop/provider.dart';
 import 'package:flags/uikit/theme/theme.dart';
@@ -88,6 +89,17 @@ class _ApplicationState extends State<Application> {
                         ],
                         child: Stack(
                           children: [
+                            const Positioned.fill(
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: Color(0xff75C3F7),
+                                ),
+                              ),
+                            ),
+
+                            const Positioned.fill(
+                              child: CloudsPainter(),
+                            ),
                             const Positioned.fill(
                               child: Background(),
                             ),

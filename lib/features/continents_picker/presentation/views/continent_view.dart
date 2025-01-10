@@ -44,11 +44,12 @@ class _ContinentsSliderState extends State<ContinentsSlider> {
                       children: [
                         ShopItemView(
                           tag: "continent_${e.key}",
-                          child: () => ScaledGestureDetector(
+                          builder: (context, isBought) => ScaledGestureDetector(
                             onTap: () => widget.onPressed(e.value),
                             child: ContinentComponent.fromType(
                               e.value,
                               widget.gameProcessType,
+                              isBought,
                             ),
                           ),
                         ),

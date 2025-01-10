@@ -11,10 +11,10 @@ class ShopItemView extends StatefulWidget {
   const ShopItemView({
     super.key,
     required this.tag,
-    required this.child,
+    required this.builder,
   });
 
-  final Widget Function() child;
+  final Widget Function(BuildContext context, bool isBouth) builder;
 
   final String tag;
 
@@ -56,11 +56,12 @@ class _ShopItemViewState extends State<ShopItemView>
     Widget child;
 
     if (cubit.isBought(widget.tag)) {
-      child = widget.child();
+      child = widget.builder(context, true);
     } else {
       final price = cubit.getPrice(widget.tag);
+
       if (price == -1) {
-        child = widget.child();
+        child = widget.builder(context, true);
       } else {
         child = ScaledGestureDetector(
           onTap: onBuy,
@@ -74,7 +75,7 @@ class _ShopItemViewState extends State<ShopItemView>
                     opacity: 0.25,
                     child: ImageFiltered(
                       imageFilter: ColorFilters.topHighlight,
-                      child: widget.child(),
+                      child: widget.builder(context, false),
                     ),
                   ),
                 ),
