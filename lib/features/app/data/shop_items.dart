@@ -7,6 +7,7 @@ final List<ShopItem> shopItemsData = [
   const ShopItem(tag: 'continent_3', price: 250),
   const ShopItem(tag: 'continent_4', price: 250),
   const ShopItem(tag: 'continent_5', price: 600),
+  const ShopItem(tag: 'editor.custom_paint', price: 1000),
   ...Resources.i.emblemsResources.emblems.map(
     (e) => ShopItem(
       tag: "emblem_${e.name}",
