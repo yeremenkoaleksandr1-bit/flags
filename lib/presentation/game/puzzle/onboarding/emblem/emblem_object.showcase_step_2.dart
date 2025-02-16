@@ -29,11 +29,22 @@ class PuzzleEmblemObjectStep2Showcase extends StatefulWidget {
 
 class _PuzzleEmblemObjectStep2ShowcaseState
     extends State<PuzzleEmblemObjectStep2Showcase> {
+  bool onReady = false;
+
   @override
   Widget build(BuildContext context) {
       final mqs = MediaQuery.of(context).size;
 
-    return FShowcase(
+      if (!onReady) {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) async  {
+          await Future.delayed(const Duration(milliseconds: 100));
+
+        });
+        onReady = true;
+      }
+
+
+      return FShowcase(
       showcaseKey: widget.showcaseKey,
       onTargetClick: widget.onTap,
       onBarrierClick: widget.onTap,

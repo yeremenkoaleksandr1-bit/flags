@@ -236,7 +236,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
           SuccessState(
             state.copyWith(
               flagFitValue: renderBox.size.width / state.level.flag.size.x,
-            ) ,
+            ),
           ),
         );
       },
@@ -657,17 +657,31 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
     state.whenOrNull(
       success: (state) {
         final focussedObject = focusedObject.value;
+        logger.d(
+            focussedObject != null && focussedObject is GameObjectWidgetState);
+
         if (focussedObject != null && focussedObject is GameObjectWidgetState) {
           final widget = focussedObject;
 
+          final placedObjects = [...state.placedObjects];
           state.boardObjects
               .firstWhere(
                 (e) => e.object.uniqueName == widget.gameObject.uniqueName,
               )
               .setActive(true);
-          state.placedObjects.removeWhere(
+
+          placedObjects.removeWhere(
             (e) => e.uniqueName == widget.gameObject.uniqueName,
           );
+
+          emit(
+            SuccessState(
+              state.copyWith(
+                placedObjects: placedObjects,
+              ),
+            ),
+          );
+
           onObjectFocusRemoved(focussedObject);
           focusedObject.value = null;
         }
@@ -768,7 +782,6 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
               showcaseKey: showcase.showcaseCommonObject,
               flagExposer: flagExposer,
               onReady: () {
-                logger.w("qwe");
                 showcase.show(
                   [showcase.showcaseCommonObject],
                   "puzzle_common_object",
@@ -800,6 +813,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
                   [showcase.emblemObjectStep1],
                   "puzzle_emblem_object",
                 );
+                showcase.complete("puzzle_emblem_object");
               },
               child: instance,
             ),

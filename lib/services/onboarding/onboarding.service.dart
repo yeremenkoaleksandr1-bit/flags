@@ -1,3 +1,4 @@
+import 'package:flags/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract interface class IOnboardingService {
@@ -20,6 +21,7 @@ class OnboardingServiceImpl implements IOnboardingService {
 
   @override
   void complete(String tag) {
+    logger.d(tag);
     _prefs.setBool('onboarding.$tag', true);
   }
 }

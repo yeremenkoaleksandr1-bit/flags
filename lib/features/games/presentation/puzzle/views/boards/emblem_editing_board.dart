@@ -43,77 +43,142 @@ class _EmblemEditingBoardState extends ProcessObjectEditingBoardState<
     BuildContext context,
     EmblemSceneObjectState? focussedObject,
   ) {
-    return PuzzleEmblemObjectStep2Showcase(
-      showcaseKey: widget.cubit.showcase.emblemObjectStep2,
-      onTap: () {
-        widget.cubit.showcase.complete("puzzle_emblem_object");
-        widget.cubit.showcase.showcaseState.next();
-      },
-      child: DeferPointer(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ValueListenableBuilder(
-              valueListenable: _focusedObject,
-              builder: (
+    return DeferPointer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ValueListenableBuilder(
+            valueListenable: _focusedObject,
+            builder: (
                 BuildContext context,
                 value,
                 Widget? child,
-              ) {
-                if (_focusedObject.value is! EmblemSceneObjectState) {
-                  return const SizedBox.shrink();
-                }
+                ) {
+              if (_focusedObject.value is! EmblemSceneObjectState) {
+                return const SizedBox.shrink();
+              }
 
-                late final object =
-                    _focusedObject.value as EmblemSceneObjectState;
+              late final object =
+              _focusedObject.value as EmblemSceneObjectState;
 
-                return EmblemSizePicker(
-                  scales: object.gameObject.scales,
-                  initialValue: object.gameObject.scale,
-                  onChanged: (double value) {
-                    object.gameObject.scale = value;
-                  },
-                );
-              },
-            ),
-            const Spacer(),
-            Row(
-              children: [
-                Expanded(
-                  child: FGreenButton(
-                    onPressed: () => rotate(false),
-                    child: const AspectRatio(
-                      aspectRatio: 1,
-                      child: Icon(
-                        Icons.rotate_90_degrees_ccw_sharp,
-                        size: 64,
-                        color: Colors.white,
-                      ),
+              return EmblemSizePicker(
+                scales: object.gameObject.scales,
+                initialValue: object.gameObject.scale,
+                onChanged: (double value) {
+                  object.gameObject.scale = value;
+                },
+              );
+            },
+          ),
+          const Spacer(),
+          Row(
+            children: [
+              Expanded(
+                child: FGreenButton(
+                  onPressed: () => rotate(false),
+                  child: const AspectRatio(
+                    aspectRatio: 1,
+                    child: Icon(
+                      Icons.rotate_90_degrees_ccw_sharp,
+                      size: 64,
+                      color: Colors.white,
                     ),
                   ),
                 ),
-                Gap.h24,
-                Expanded(
-                  child: FGreenButton(
-                    onPressed: () => rotate(true),
-                    child: const AspectRatio(
-                      aspectRatio: 1,
-                      child: Icon(
-                        Icons.rotate_90_degrees_cw_outlined,
-                        size: 64,
-                        color: Colors.white,
-                      ),
+              ),
+              Gap.h24,
+              Expanded(
+                child: FGreenButton(
+                  onPressed: () => rotate(true),
+                  child: const AspectRatio(
+                    aspectRatio: 1,
+                    child: Icon(
+                      Icons.rotate_90_degrees_cw_outlined,
+                      size: 64,
+                      color: Colors.white,
                     ),
                   ),
                 ),
-              ],
-            ),
-            const Spacer(
-              flex: 2,
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+          const Spacer(
+            flex: 2,
+          ),
+        ],
       ),
     );
+    // return PuzzleEmblemObjectStep2Showcase(
+    //   showcaseKey: widget.cubit.showcase.emblemObjectStep2,
+    //   onTap: () {
+    //     widget.cubit.showcase.complete("puzzle_emblem_object");
+    //     widget.cubit.showcase.showcaseState.next();
+    //   },
+    //   child: DeferPointer(
+    //     child: Column(
+    //       crossAxisAlignment: CrossAxisAlignment.stretch,
+    //       children: [
+    //         ValueListenableBuilder(
+    //           valueListenable: _focusedObject,
+    //           builder: (
+    //             BuildContext context,
+    //             value,
+    //             Widget? child,
+    //           ) {
+    //             if (_focusedObject.value is! EmblemSceneObjectState) {
+    //               return const SizedBox.shrink();
+    //             }
+    //
+    //             late final object =
+    //                 _focusedObject.value as EmblemSceneObjectState;
+    //
+    //             return EmblemSizePicker(
+    //               scales: object.gameObject.scales,
+    //               initialValue: object.gameObject.scale,
+    //               onChanged: (double value) {
+    //                 object.gameObject.scale = value;
+    //               },
+    //             );
+    //           },
+    //         ),
+    //         const Spacer(),
+    //         Row(
+    //           children: [
+    //             Expanded(
+    //               child: FGreenButton(
+    //                 onPressed: () => rotate(false),
+    //                 child: const AspectRatio(
+    //                   aspectRatio: 1,
+    //                   child: Icon(
+    //                     Icons.rotate_90_degrees_ccw_sharp,
+    //                     size: 64,
+    //                     color: Colors.white,
+    //                   ),
+    //                 ),
+    //               ),
+    //             ),
+    //             Gap.h24,
+    //             Expanded(
+    //               child: FGreenButton(
+    //                 onPressed: () => rotate(true),
+    //                 child: const AspectRatio(
+    //                   aspectRatio: 1,
+    //                   child: Icon(
+    //                     Icons.rotate_90_degrees_cw_outlined,
+    //                     size: 64,
+    //                     color: Colors.white,
+    //                   ),
+    //                 ),
+    //               ),
+    //             ),
+    //           ],
+    //         ),
+    //         const Spacer(
+    //           flex: 2,
+    //         ),
+    //       ],
+    //     ),
+    //   ),
+    // );
   }
 }

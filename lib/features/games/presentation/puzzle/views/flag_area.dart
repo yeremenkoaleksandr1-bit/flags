@@ -5,6 +5,7 @@ import 'package:flags/domain/game_objects/flag/flag.dart';
 import 'package:flags/features/games/presentation/puzzle/scene_components/emblem.dart';
 import 'package:flags/features/games/presentation/puzzle/scene_components/factory.dart';
 import 'package:flags/features/app/presentation/bloc/app_cubit.dart';
+import 'package:flags/logger.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
 import 'package:flags/uikit/game_widgets/flag/flag.dart';
 import 'package:flags/uikit/game_widgets/game_widgets.dart';
@@ -78,7 +79,7 @@ class _GameFlagAreaState extends State<GameFlagArea> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.objects);
+
     return Padding(
       padding: const Pad(horizontal: 8),
       child: Material(

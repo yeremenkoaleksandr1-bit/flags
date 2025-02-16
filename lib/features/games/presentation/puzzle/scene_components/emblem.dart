@@ -39,15 +39,15 @@ class EmblemSceneObjectState extends DraggableGameObjectWidgetState<
       presenter.setFocusOnObject(this);
       _setConfirmationButtonsPosition();
 
-      if (presenter is! PuzzleCommonModeCubit) {
-        await Future.delayed(const Duration(milliseconds: 101));
-        FlutterEngine.schedulePostFrameCallback((timeStamp) {
-          presenter.showcase.show(
-            [presenter.showcase.emblemObjectStep2],
-            "puzzle_emblem_object",
-          );
-        });
-      }
+      // if (presenter is! PuzzleFastModeCubit) {
+      //   await Future.delayed(const Duration(milliseconds: 101));
+      //   FlutterEngine.widgetPostFrameCallback((timeStamp) {
+      //     presenter.showcase.show(
+      //       [presenter.showcase.emblemObjectStep2],
+      //       "puzzle_emblem_object",
+      //     );
+      //   });
+      // }
     });
   }
 
