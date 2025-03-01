@@ -25,7 +25,7 @@ class FCard extends StatelessWidget {
         color: color,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: color.darken(0.3),
+          color: color.darken(0.6),
           width: 2,
           strokeAlign: -0.98,
         ),

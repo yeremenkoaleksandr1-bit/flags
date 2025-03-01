@@ -152,6 +152,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
               difficult: difficult,
               level: randomLevel,
               boardObjects: [...parts],
+              placedObjects: [],
             ),
           ),
         );
