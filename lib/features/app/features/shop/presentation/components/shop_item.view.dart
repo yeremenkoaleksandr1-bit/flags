@@ -67,46 +67,49 @@ class _ShopItemViewState extends State<ShopItemView>
           onTap: onBuy,
           child: ShakeWidget(
             controller: animationController,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                IgnorePointer(
-                  child: Opacity(
-                    opacity: 0.25,
-                    child: ImageFiltered(
-                      imageFilter: ColorFilters.topHighlight,
-                      child: widget.builder(context, false),
+            child: IntrinsicHeight(
+              child: Stack(
+                clipBehavior: Clip.none,
+                fit: StackFit.passthrough,
+                children: [
+                  IgnorePointer(
+                    child: Opacity(
+                      opacity: 0.25,
+                      child: ImageFiltered(
+                        imageFilter: ColorFilters.topHighlight,
+                        child: widget.builder(context, false),
+                      ),
                     ),
                   ),
-                ),
-                Material(
-                  color: Colors.transparent,
-                  child: Center(
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: SizedBox(
-                        height: 64,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            OutlineWidget(
-                              child: UIMoney(),
-                            ),
-                            Gap.h12,
-                            FText(
-                              "$price",
-                              textStyle: const TextStyle(
-                                fontSize: 52,
+                  Material(
+                    color: Colors.transparent,
+                    child: Center(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: SizedBox(
+                          height: 48,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              OutlineWidget(
+                                child: UIMoney(),
                               ),
-                            ),
-                          ],
+                              Gap.h12,
+                              FText(
+                                "$price",
+                                textStyle: const TextStyle(
+                                  fontSize: 38,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );

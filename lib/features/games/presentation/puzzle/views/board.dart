@@ -27,7 +27,8 @@ class PartsBoard extends StatefulWidget {
     this.onDragEnd,
     this.onDragCompleted,
     required this.cubit,
-    required this.boardObjects, required this.flag,
+    required this.boardObjects,
+    required this.flag,
   });
 
   final PuzzleCommonModeCubit cubit;
@@ -247,48 +248,44 @@ class PartsBoardState extends State<PartsBoard> {
   }
 
   Widget buildBoardCommonItemView(BoardItem e) {
-
     Widget child;
 
-
     if (e.object is ColoredPart) {
-      child =  BoardColoredPartWidget(
+      child = BoardColoredPartWidget(
         cubit: widget.cubit,
         item: e,
       );
+    } else {
+      child = BoardCommonItemWidget(
+        cubit: widget.cubit,
+        item: e,
+        flag: widget.flag,
+        onDragUpdate: widget.onDragUpdate,
+        onDragStarted: (ProcessGameObject object) {
+          // if (object is EmblemPart && object is ColoredPart) {
+          //   activeDragging.value = false;
+          // }
+
+          widget.onDragStarted?.call(object);
+          if (isFullScreen.value) {
+            closeFullScreen();
+          }
+        },
+        onDraggableCanceled: widget.onDraggableCanceled,
+        onDragCompleted: (ProcessGameObject object) {
+          activeDragging.value = true;
+          widget.onDragStarted?.call(object);
+        },
+        onDragEnd: (
+          ProcessGameObject object,
+          SDraggableDetails details,
+        ) {
+          activeDragging.value = true;
+        },
+      );
     }
 
-    child =  BoardCommonItemWidget(
-      cubit: widget.cubit,
-      item: e,
-      flag: widget.flag,
-      onDragUpdate: widget.onDragUpdate,
-      onDragStarted: (ProcessGameObject object) {
-
-        // if (object is EmblemPart && object is ColoredPart) {
-        //   activeDragging.value = false;
-        // }
-
-        widget.onDragStarted?.call(object);
-        if (isFullScreen.value) {
-          closeFullScreen();
-        }
-      },
-      onDraggableCanceled: widget.onDraggableCanceled,
-      onDragCompleted: (ProcessGameObject object) {
-        activeDragging.value = true;
-        widget.onDragStarted?.call(object);
-      },
-      onDragEnd: (
-        ProcessGameObject object,
-        SDraggableDetails details,
-      ) {
-        activeDragging.value = true;
-      },
-
-    );
-
-    if(e.build != null){
+    if (e.build != null) {
       child = e.build!(child);
     }
 

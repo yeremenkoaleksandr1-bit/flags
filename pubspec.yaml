@@ -21,7 +21,7 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   shared_preferences: ^2.2.2
-  flame_audio: ^2.10.1
+  flame_audio: ^2.11.3
   add_to_cart_animation: ^2.0.3
   defer_pointer:
     path: packages/defer_pointer

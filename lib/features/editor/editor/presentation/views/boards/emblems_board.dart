@@ -7,6 +7,7 @@ import 'package:flags/core/extensions/extensions.dart';
 import 'package:flags/core/utils/calculator.dart';
 import 'package:flags/domain/game_objects/emblems/emblems.dart';
 import 'package:flags/domain/game_objects/game_objects.dart';
+import 'package:flags/features/app/features/shop/presentation/components/shop_item.view.dart';
 import 'package:flags/features/editor/editor/presentation/bloc/flag_editor_cubit.dart';
 import 'package:flags/features/editor/editor/presentation/cubits/boards/emblems/emblems_board_cubit.dart';
 import 'package:flags/features/editor/editor/presentation/cubits/scene_objects/scene_objects_cubit.dart';
@@ -127,17 +128,23 @@ class EmblemsBoard extends EditorBaseBoard {
                   ),
                 ),
                 const Divider(),
-                FYellowButton(
-                  onPressed: uploadImageToBoard,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(
-                      child: FText(
-                        "upload image",
-                        textAlign: TextAlign.center,
+                ShopItemView(
+                  tag: 'editor.upload_custom_image',
+                  builder: (BuildContext context, bool isBouth) {
+                    return FYellowButton(
+                      onPressed: uploadImageToBoard,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: FText(
+                            "upload image",
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
+
                 ),
               ],
             ),

@@ -11,9 +11,9 @@ abstract class IAudioService implements IDisposable {
 
   Future<void> toggleMute();
 
-  Future<void> playSfx(GameSfx source, {double volume = 1});
+  Future<void> playSfx(GameSfx source, {double volume = 1.25});
 
-  Future<void> playBgm(GameMusics source, {double volume = 1});
+  Future<void> playBgm(GameMusics source, {double volume = 0.9});
 
   Future<void> pauseBgm();
 
@@ -40,7 +40,7 @@ class AudioServiceImpl implements IAudioService {
   @override
   Future<void> playBgm(
     GameMusics source, {
-    double volume = 1,
+    double volume = 0.9,
   }) async {
     await FlameAudio.bgm.play(
       source.file,
@@ -65,11 +65,11 @@ class AudioServiceImpl implements IAudioService {
   @override
   Future<void> playSfx(
     GameSfx source, {
-    double volume = 1,
+    double volume = 1.25,
   }) async {
-    if (muted.value) {
-      return;
-    }
+    // if (muted.value) {
+    //   return;
+    // }
     await FlameAudio.play(
       source.file,
       volume: volume,
