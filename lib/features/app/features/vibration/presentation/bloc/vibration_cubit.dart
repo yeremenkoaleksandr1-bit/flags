@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:meta/meta.dart';
+import 'package:flags/logger.dart';
 import 'package:rx_shared_preferences/rx_shared_preferences.dart';
 import 'package:vibration/vibration.dart';
 
@@ -17,22 +17,22 @@ class VibrationCubit extends Cubit<VibrationState> implements IVibrationCubit {
   final SharedPreferences prefs;
 
   VibrationCubit(this.prefs)
-      : super(
-          VibrationState(
-            muted: prefs.getBool('settings.vibration.muted') ?? false,
-          ),
-        );
+    : super(
+        VibrationState(
+          muted: prefs.getBool('settings.vibration.muted') ?? false,
+        ),
+      );
 
   @override
   Future<void> toggleMute() async {
-
-    emit(
-      state.copyWith(
-        muted: !state.muted,
-      ),
-    );
+    final nextMuted = !state.muted;
+    emit(state.copyWith(muted: nextMuted));
 
     await prefs.setBool('settings.vibration.muted', state.muted);
+
+    if (!nextMuted) {
+      await vibrate(milliseconds: 80);
+    }
   }
 
   @override

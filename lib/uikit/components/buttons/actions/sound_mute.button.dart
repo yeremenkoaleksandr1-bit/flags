@@ -1,7 +1,5 @@
 import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
 import 'package:flags/features/app/features/audio/presentation/builder/audio_state_builder.dart';
-import 'package:flags/features/app/features/vibration/presentation/bloc/vibration_cubit.dart';
-import 'package:flags/features/app/features/vibration/presentation/builder/vibration_state_builder.dart';
 import 'package:flags/uikit/components/buttons/buttons.dart';
 import 'package:flags/uikit/theme/theme.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,6 +14,8 @@ class FSoundMuteButton extends StatelessWidget {
 
     return FBlueButton(
       onPressed: cubit.toggleMute,
+      enableHapticFeedback: false,
+      enableSoundFeedback: false,
       child: BuildAudioPreferences(
         builder: (BuildContext context, AudioState state) {
           return Icon(

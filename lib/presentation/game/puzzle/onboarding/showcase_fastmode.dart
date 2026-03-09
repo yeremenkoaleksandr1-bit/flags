@@ -26,10 +26,47 @@ class PuzzleGameFastModeShowcase {
     }
 
     FlutterEngine.widgetPostFrameCallback((timeStamp) {
-      showcaseState.startShowCase(currentShowcases);
+      final state = showcaseStateOrNull;
+      if (state == null || !state.isShowCaseCompleted) {
+        return;
+      }
+
+      state.startShowCase(currentShowcases);
     });
   }
 
+  void next() {
+    final state = showcaseStateOrNull;
+    if (state == null) {
+      return;
+    }
+
+    state.next();
+  }
+
+  void dismiss() {
+    final state = showcaseStateOrNull;
+    if (state == null) {
+      return;
+    }
+
+    state.dismiss();
+  }
+
+  ShowCaseWidgetState<ShowCaseWidget>? get showcaseStateOrNull {
+    final context = key.currentContext;
+
+    if (context == null || !context.mounted) {
+      return null;
+    }
+
+    try {
+      return ShowCaseWidget.of(context);
+    } catch (_) {
+      return null;
+    }
+  }
+
   ShowCaseWidgetState<ShowCaseWidget> get showcaseState =>
-      ShowCaseWidget.of(key.currentContext!);
+      showcaseStateOrNull!;
 }

@@ -8,6 +8,8 @@ class FGreenButton extends FButton {
     required super.onPressed,
     required super.child,
     super.padding,
+    super.enableHapticFeedback,
+    super.enableSoundFeedback,
   }) : super(
           color: ThemePalette.green,
         );

@@ -61,7 +61,7 @@ class PuzzleFastModeViewState
         Gap.h12,
         PuzzleFastModeStep1Showcase(
           showcaseKey: cubit.showcaseFm.step1,
-          onTap: cubit.showcaseFm.showcaseState.next,
+          onTap: cubit.showcaseFm.next,
           child: FastModeTimer(
             timerStream: cubit.timerStream,
           ),
@@ -92,7 +92,7 @@ class PuzzleFastModeViewState
                   child: PuzzleFastModeStep2Showcase(
                     showcaseKey: cubit.showcaseFm.step2,
                     onTap: () {
-                      cubit.showcaseFm.showcaseState.next();
+                      cubit.showcaseFm.next();
                       cubit.showcaseFm.complete('fast_mode');
                       cubit.showcaseFm.completeFuture?.complete();
                     },

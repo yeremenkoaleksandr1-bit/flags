@@ -1,5 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member, avoid_void_async
 
+import 'dart:async';
 import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
@@ -83,18 +84,17 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
 
   final BuildContext context;
 
-  IAudioCubit get audioCubit => context.read<IAudioCubit>();
+  final IAudioCubit audioCubit;
 
-  IVibrationCubit get vibrationCubit => context.read<IVibrationCubit>();
+  final IVibrationCubit vibrationCubit;
 
   final ILevelsPickerCubit levelsCubit;
 
-  GameLevelsCubit get levelsService => context.read<GameLevelsCubit>();
+  final GameLevelsCubit levelsService;
 
   IEmblemsService get emblemsService => appCubit.emblemsService;
 
-  GamePreferencesCubit get gamePreferences =>
-      context.read<GamePreferencesCubit>();
+  final GamePreferencesCubit gamePreferences;
 
   final GamesFactoryPageParams params;
 
@@ -104,7 +104,11 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
     required this.params,
     required this.appCubit,
     required this.levelsCubit,
-  })  : emblemConfirmationView = EmblemConfirmationWidgetState(),
+  })  : audioCubit = context.read<IAudioCubit>(),
+        vibrationCubit = context.read<IVibrationCubit>(),
+        levelsService = context.read<GameLevelsCubit>(),
+        gamePreferences = context.read<GamePreferencesCubit>(),
+        emblemConfirmationView = EmblemConfirmationWidgetState(),
         boardController = PartsBoardState(),
         heartTriesState = HeartTriesState(
           tries: 3,
@@ -124,6 +128,8 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
   final PartsBoardState boardController;
 
   RenderBoxExposer flagExposer = RenderBoxExposer();
+
+  bool _isGameOverShown = false;
 
   @override
   GameLevel get level => params.level;
@@ -148,8 +154,6 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
       ),
     );
     await preInitialization();
-    super.onInit();
-
     await initialization();
   }
 
@@ -197,6 +201,8 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
 
   @override
   Future<void> close() async {
+    _isGameOverShown = false;
+    showcase.dismiss();
     shakeAnimation.dispose();
 
     flagExposer.renderBox.removeListener(onFlagBuilt);
@@ -246,32 +252,44 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
   Future<void> placeObject(ProcessGameObject object) async {
     state.whenOrNull(
       success: (state) {
-        var sceneObject = state.boardObjects.firstWhereOrNull((e) {
-          return e.object.key == object.key;
-        });
-
-        if (object is EmblemPart) {
-          sceneObject = state.boardObjects.firstWhereOrNull((e) {
-            return e.object.uniqueName == object.uniqueName;
-          });
-        }
-
-        sceneObject?.setActive(false);
-
-        emit(
-          SuccessState(
-            state.copyWith(
-              placedObjects: [...state.placedObjects, object],
-            ),
-          ),
+        _applyPlacement(
+          state,
+          object,
+          placedObjects: [...state.placedObjects, object],
         );
-
-        unfocusObject();
-        tryCompleteLevel();
-
-        audioCubit.playSfx(GameSfx.correctlyObjectPlacing);
       },
     );
+  }
+
+  void _applyPlacement(
+    PuzzleGameState state,
+    ProcessGameObject object, {
+    required List<ProcessGameObject> placedObjects,
+  }) {
+    var sceneObject = state.boardObjects.firstWhereOrNull((e) {
+      return e.object.key == object.key;
+    });
+
+    if (object is EmblemPart) {
+      sceneObject = state.boardObjects.firstWhereOrNull((e) {
+        return e.object.uniqueName == object.uniqueName;
+      });
+    }
+
+    sceneObject?.setActive(false);
+
+    emit(
+      SuccessState(
+        state.copyWith(
+          placedObjects: placedObjects,
+        ),
+      ),
+    );
+
+    unfocusObject();
+    tryCompleteLevel();
+
+    unawaited(audioCubit.playSfx(GameSfx.correctlyObjectPlacing));
   }
 
   void tryCompleteLevel() {
@@ -479,7 +497,11 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
   }
 
   Future<void> onIncorrectPlacing() async {
-    await audioCubit.playSfx(GameSfx.incorrectObjectPlacing);
+    if (_isGameOverShown || isClosed) {
+      return;
+    }
+
+    unawaited(audioCubit.playSfx(GameSfx.incorrectObjectPlacing));
     vibrationCubit.vibrate();
     shakeAnimation.forward(from: 0);
 
@@ -491,8 +513,22 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
   }
 
   Future<void> onGameOver() async {
-    await audioCubit.playSfx(GameSfx.gameLoose);
-    await audioCubit.pauseBgm();
+    if (_isGameOverShown || isClosed || !context.mounted) {
+      return;
+    }
+
+    _isGameOverShown = true;
+    showcase.dismiss();
+
+    if (isClosed || !context.mounted) {
+      return;
+    }
+
+    unawaited(() async {
+      await audioCubit.playSfx(GameSfx.gameLoose);
+      await audioCubit.pauseBgm();
+    }());
+
     await PuzzleLoseDialog(
       onRestart: onRestart,
       onExit: onGameExit,
@@ -503,6 +539,8 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
   }
 
   void resetLevelState() {
+    _isGameOverShown = false;
+    showcase.dismiss();
     state.whenOrNull(success: (state) {
       for (final element in state.boardObjects) {
         element.dispose();
@@ -526,14 +564,16 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
   }
 
   Future<void> onRestart(BuildContext context) async {
+    _isGameOverShown = false;
     await restartLevel();
     Navigator.of(context).pop();
   }
 
   Future<void> restartLevel() async {
+    _isGameOverShown = false;
     state.whenOrNull(
       success: (state) async {
-        await audioCubit.resumeBgm();
+        unawaited(audioCubit.resumeBgm());
         final level = state.level;
 
         FlutterEngine.schedulePostFrameCallback((timeStamp) async {
@@ -643,8 +683,16 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
           final isCorrectScale = object.scale == flagObject.scale;
 
           if (isCorrectDistance && isCorrectRotation && isCorrectScale) {
-            state.placedObjects.removeWhere((e) => e is DraggableEmblemPart);
-            placeObject(flagObject);
+            final placedObjects = [
+              ...state.placedObjects.where((e) => e is! DraggableEmblemPart),
+              flagObject,
+            ];
+
+            _applyPlacement(
+              state,
+              flagObject,
+              placedObjects: placedObjects,
+            );
           } else {
             onIncorrectPlacing();
           }
@@ -690,6 +738,11 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
   }
 
   Future<void> openMenu(BuildContext context) async {
+    if (_isGameOverShown || isClosed || !context.mounted) {
+      return;
+    }
+
+    showcase.dismiss();
     await onMenuOpened();
 
     await PuzzleMenuDialog(

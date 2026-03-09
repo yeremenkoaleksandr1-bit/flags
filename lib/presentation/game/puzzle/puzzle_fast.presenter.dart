@@ -48,6 +48,8 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
 
   late final ValueNotifier<int> preparingTimer = ValueNotifier(-1);
   final Completer prepareGameCompleter = Completer();
+  StreamSubscription<int>? _timerSubscription;
+  StreamSubscription<int>? _prepareSubscription;
 
   int get initialTimerValue => timerRx.value;
 
@@ -89,8 +91,13 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
             timerRx.notifyListeners();
             preparingTimer.value = 3;
             await Future.delayed(const Duration(milliseconds: 250), () {
-              periodicTimer.start(3).listen(
+              _prepareSubscription?.cancel();
+              _prepareSubscription = periodicTimer.start(3).listen(
                 (event) {
+                  if (isClosed) {
+                    return;
+                  }
+
                   preparingTimer.value = event;
 
                   if (event <= 0) {
@@ -107,17 +114,22 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
   }
 
   Future<void> initializeInGameTimer() async {
-    periodicTimer.start(initialTime).listen((event) async {
+    await _timerSubscription?.cancel();
+    _timerSubscription = periodicTimer.start(initialTime).listen((event) async {
+      if (isClosed) {
+        return;
+      }
+
       timerRx.value = event;
 
       if (event <= 0) {
-        await audioCubit.playSfx(GameSfx.timerEnd);
-        onGameOver();
+        unawaited(audioCubit.playSfx(GameSfx.timerEnd));
+        await onGameOver();
       } else if (event <= 3) {
         if (event % 1 == 1) {
-          audioCubit.playSfx(GameSfx.timerTick1);
+          unawaited(audioCubit.playSfx(GameSfx.timerTick1));
         } else {
-          audioCubit.playSfx(GameSfx.timerTick2);
+          unawaited(audioCubit.playSfx(GameSfx.timerTick2));
         }
       }
     });
@@ -170,6 +182,9 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
 
   @override
   Future<void> onClose() async {
+    showcaseFm.dismiss();
+    await _timerSubscription?.cancel();
+    await _prepareSubscription?.cancel();
     periodicTimer.pause();
     periodicTimer.dispose();
     flagExposer.renderBox.removeListener(onFlagBuilt);
@@ -293,7 +308,12 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
                 [...GameDifficult.values].random(),
               );
 
-              periodicTimer.start(3).listen((event) {
+              await _prepareSubscription?.cancel();
+              _prepareSubscription = periodicTimer.start(3).listen((event) {
+                if (isClosed) {
+                  return;
+                }
+
                 preparingTimer.value = event;
 
                 if (event == 0) {
@@ -311,6 +331,9 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
 
   @override
   Future<void> onGameOver() async {
+    showcaseFm.dismiss();
+    await _timerSubscription?.cancel();
+    await _prepareSubscription?.cancel();
     gamePreferences.resetStreak();
     periodicTimer.pause();
     await super.onGameOver();
@@ -335,6 +358,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
 
   @override
   Future<void> onMenuOpened() async {
+    showcaseFm.dismiss();
     periodicTimer.pause();
   }
 

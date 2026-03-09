@@ -11,6 +11,8 @@ class FButton extends StatelessWidget {
     required this.child,
     this.onLongPress,
     this.padding = const Pad(all: 8),
+    this.enableHapticFeedback = true,
+    this.enableSoundFeedback = true,
   });
 
   final Color color;
@@ -18,6 +20,8 @@ class FButton extends StatelessWidget {
   final VoidCallback? onLongPress;
 
   final EdgeInsets padding;
+  final bool enableHapticFeedback;
+  final bool enableSoundFeedback;
 
   final Widget child;
 
@@ -28,6 +32,8 @@ class FButton extends StatelessWidget {
       child: ScaledGestureDetector(
         onTap: onPressed,
         onLongPress: onLongPress,
+        enableHapticFeedback: enableHapticFeedback,
+        enableSoundFeedback: enableSoundFeedback,
         child: CustomPaint(
           painter: CustomButtonPainter(
             colorFilter: ColorFilter.mode(

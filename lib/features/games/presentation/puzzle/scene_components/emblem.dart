@@ -34,6 +34,7 @@ class EmblemSceneObjectState extends DraggableGameObjectWidgetState<
   @override
   void initState() {
     super.initState();
+    gameObject.addListener(_onObjectChanged);
     FlutterEngine.widgetPostFrameCallback((timeStamp) async {
       presenter.emblemConfirmationView.show();
       presenter.setFocusOnObject(this);
@@ -49,6 +50,18 @@ class EmblemSceneObjectState extends DraggableGameObjectWidgetState<
       //   });
       // }
     });
+  }
+
+  @override
+  void dispose() {
+    gameObject.removeListener(_onObjectChanged);
+    super.dispose();
+  }
+
+  void _onObjectChanged() {
+    if (presenter.focusedObject.value == this) {
+      _setConfirmationButtonsPosition();
+    }
   }
 
   void _setConfirmationButtonsPosition() {

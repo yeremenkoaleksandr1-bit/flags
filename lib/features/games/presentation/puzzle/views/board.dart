@@ -59,6 +59,8 @@ class PartsBoardState extends State<PartsBoard> {
   final ValueNotifier<bool> isFullScreen = ValueNotifier(false);
 
   final ValueNotifier<double> _positionRx = ValueNotifier(0.0);
+  late final ValueNotifier<RenderBox?> _renderBoxListenable =
+      widget.cubit.flagExposer.renderBox;
 
   double _boardActualPosition = 0;
   late final _mediaQueryPaddingTop = MediaQuery.of(context).padding.top;
@@ -66,15 +68,16 @@ class PartsBoardState extends State<PartsBoard> {
   @override
   void initState() {
     FlutterEngine.schedulePostFrameCallback((timeStamp) {
-      widget.cubit.flagExposer.renderBox.addListener(
-        renderBoxListenFunc,
-      );
+      if (!mounted) return;
+      _renderBoxListenable.addListener(renderBoxListenFunc);
     });
     super.initState();
   }
 
   void renderBoxListenFunc() {
-    final value = widget.cubit.flagExposer.renderBox.value;
+    if (!mounted) return;
+
+    final value = _renderBoxListenable.value;
 
     if (value != null) {
       try {
@@ -87,6 +90,7 @@ class PartsBoardState extends State<PartsBoard> {
 
   @override
   void dispose() {
+    _renderBoxListenable.removeListener(renderBoxListenFunc);
     activeDragging.dispose();
     isFullScreen.dispose();
 
@@ -97,6 +101,7 @@ class PartsBoardState extends State<PartsBoard> {
 
   void closeFullScreen() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (!mounted) return;
       isFullScreen.value = false;
       _positionRx.value = _boardActualPosition;
     });

@@ -36,13 +36,9 @@ class _ApplicationState extends State<Application> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<IAppCubit>(
-          create: (context) => AppCubitImpl(
-            context: context,
-          ),
+          create: (context) => AppCubitImpl(context: context),
         ),
-        BlocProvider(
-          create: (_) => GameStateCubit(),
-        ),
+        BlocProvider(create: (_) => GameStateCubit()),
       ],
       child: BlocStateBuilderThemeProvider(
         child: FlagsWidgetsApp(
@@ -69,16 +65,14 @@ class _ApplicationState extends State<Application> {
                           ),
                           BlocProvider<IShopCubit>(
                             create: (context) => ShopCubit(
-                              gamePreferences:
-                                  context.read<GamePreferencesCubit>(),
+                              gamePreferences: context
+                                  .read<GamePreferencesCubit>(),
                               buyableItems: shopItemsData,
                             ),
                           ),
                           BlocProvider<IVibrationCubit>(
                             create: (BuildContext context) {
-                              return VibrationCubit(
-                                sharedPreferences,
-                              );
+                              return VibrationCubit(sharedPreferences);
                             },
                           ),
                           BlocProvider<IAudioCubit>(
@@ -97,15 +91,9 @@ class _ApplicationState extends State<Application> {
                               ),
                             ),
 
-                            const Positioned.fill(
-                              child: CloudsPainter(),
-                            ),
-                            const Positioned.fill(
-                              child: Background(),
-                            ),
-                            AppRouterBuilder(
-                              router: router,
-                            ),
+                            const Positioned.fill(child: CloudsPainter()),
+                            const Positioned.fill(child: Background()),
+                            AppRouterBuilder(router: router),
                             const UiMoneyLayer(),
                           ],
                         ),

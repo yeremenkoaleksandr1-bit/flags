@@ -47,6 +47,7 @@ final class AppCubitImpl extends StatedCubit<AppState> implements IAppCubit {
       sharedPreferences,
     );
 
+
     final Resources resources = Resources();
     await resources.initialize();
 

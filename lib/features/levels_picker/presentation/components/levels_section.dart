@@ -4,13 +4,12 @@ import 'package:flags/domain/entities/game/game.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/features/app/domain/models/game/game_mode_data.dart';
 import 'package:flags/features/app/features/levels/presentation/bloc/levels_cubit.dart';
+import 'package:flags/features/levels_picker/presentation/components/level_button.dart';
 import 'package:flags/uikit/layout_components/gap/gap.dart';
 import 'package:flags/uikit/text/f_text.dart';
 import 'package:flags/uikit/theme/palette.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'level_button.dart';
 
 class ContinentLevelsSection extends StatelessWidget {
   const ContinentLevelsSection({
@@ -35,22 +34,11 @@ class ContinentLevelsSection extends StatelessWidget {
           padding: const Pad(vertical: 12),
           child: Row(
             children: [
-              const Expanded(
-                child: Divider(
-                  color: ThemePalette.black,
-                ),
-              ),
+              const Expanded(child: Divider(color: ThemePalette.black)),
               Gap.h12,
-              FText(
-                section.name,
-                strokeWidth: 4,
-              ),
+              FText(section.name, strokeWidth: 4),
               Gap.h12,
-              const Expanded(
-                child: Divider(
-                  color: ThemePalette.black,
-                ),
-              ),
+              const Expanded(child: Divider(color: ThemePalette.black)),
             ],
           ),
         ),
@@ -61,33 +49,36 @@ class ContinentLevelsSection extends StatelessWidget {
               lineSpacing: 24,
               wrapFit: WrapFit.proportional,
               children: [
-                ...section.levels.map(
-                  (e) {
-                    final bool isOpened;
-                    if (e.id == 0) {
-                      isOpened = true;
-                    } else {
-                      isOpened = gameLevelsCubit
-                              .getLevelData(
-                                continent,
-                                (e.id - 1).clamp(0, 99999),
-                              )
-                              ?.completed ??
-                          false;
-                    }
+                ...section.levels.map((e) {
+                  final currentLevelData = gameLevelsCubit.getLevelData(
+                    continent,
+                    e.id,
+                  );
+                  final bool isOpened;
+                  if (e.id == 0) {
+                    isOpened = true;
+                  } else {
+                    isOpened =
+                        gameLevelsCubit
+                            .getLevelData(continent, (e.id - 1).clamp(0, 99999))
+                            ?.completed ??
+                        false;
+                  }
 
-                    return LevelButton(
-                      level: e,
-                      isOpened: isOpened,
-                      difficult: section.difficulty,
-                      onLevelSelected: isOpened ? onLevelSelected : null,
-                    );
-                  },
-                ),
+                  e.opened = isOpened;
+                  e.completed = currentLevelData?.completed ?? false;
+
+                  return LevelButton(
+                    level: e,
+                    isOpened: isOpened,
+                    difficult: section.difficulty,
+                    onLevelSelected: isOpened ? onLevelSelected : null,
+                  );
+                }),
               ],
             );
           },
-        )
+        ),
       ],
     );
   }

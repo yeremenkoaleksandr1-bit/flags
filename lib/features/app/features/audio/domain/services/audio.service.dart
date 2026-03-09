@@ -11,7 +11,7 @@ abstract class IAudioService implements IDisposable {
 
   Future<void> toggleMute();
 
-  Future<void> playSfx(GameSfx source, {double volume = 1.25});
+  Future<void> playSfx(GameSfx source, {double volume = 1});
 
   Future<void> playBgm(GameMusics source, {double volume = 0.9});
 
@@ -22,6 +22,9 @@ abstract class IAudioService implements IDisposable {
 
 class AudioServiceImpl implements IAudioService {
   final SharedPreferences _preferences;
+  final Future<void> _bgmInitialization;
+
+  GameMusics? _currentBgm;
 
   @override
   late final ValueNotifier<bool> muted;
@@ -31,10 +34,8 @@ class AudioServiceImpl implements IAudioService {
   AudioServiceImpl(
     this._preferences, {
     bool initialMuted = false,
-  }) {
+  }) : _bgmInitialization = FlameAudio.bgm.initialize() {
     muted = ValueNotifier(_preferences.getBool(_soundMuteKey) ?? initialMuted);
-
-    FlameAudio.bgm.initialize();
   }
 
   @override
@@ -42,6 +43,9 @@ class AudioServiceImpl implements IAudioService {
     GameMusics source, {
     double volume = 0.9,
   }) async {
+    await _bgmInitialization;
+    _currentBgm = source;
+
     await FlameAudio.bgm.play(
       source.file,
       volume: volume,
@@ -54,25 +58,39 @@ class AudioServiceImpl implements IAudioService {
 
   @override
   Future<void> pauseBgm() async {
+    await _bgmInitialization;
+
+    if (_currentBgm == null) {
+      return;
+    }
+
     await FlameAudio.bgm.pause();
   }
 
   @override
   Future<void> resumeBgm() async {
+    await _bgmInitialization;
+
+    if (_currentBgm == null || isMuted) {
+      return;
+    }
+
     await FlameAudio.bgm.resume();
   }
 
   @override
   Future<void> playSfx(
     GameSfx source, {
-    double volume = 1.25,
+    double volume = 1,
   }) async {
-    // if (muted.value) {
-    //   return;
-    // }
+    if (isMuted) {
+      return;
+    }
+
+    final normalizedVolume = volume.clamp(0.0, 1.0);
     await FlameAudio.play(
       source.file,
-      volume: volume,
+      volume: normalizedVolume,
     );
   }
 
@@ -81,7 +99,11 @@ class AudioServiceImpl implements IAudioService {
     muted.value = !isMuted;
     await _preferences.setBool(_soundMuteKey, isMuted);
 
-    if (isMuted && FlameAudio.bgm.isPlaying) {
+    if (_currentBgm == null) {
+      return;
+    }
+
+    if (isMuted) {
       await pauseBgm();
     } else {
       await resumeBgm();

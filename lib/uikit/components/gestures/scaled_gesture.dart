@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
 import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
 import 'package:flags/features/app/features/vibration/presentation/bloc/vibration_cubit.dart';
@@ -13,6 +15,8 @@ class ScaledGestureDetector extends StatefulWidget {
     this.duration,
     this.onLongPress,
     this.longPressDuration = const Duration(milliseconds: 500),
+    this.enableHapticFeedback = true,
+    this.enableSoundFeedback = true,
   });
 
   final GestureTapCallback? onTap;
@@ -21,6 +25,8 @@ class ScaledGestureDetector extends StatefulWidget {
   final Duration? duration;
 
   final Duration longPressDuration;
+  final bool enableHapticFeedback;
+  final bool enableSoundFeedback;
 
   final Widget child;
 
@@ -57,15 +63,18 @@ class _ScaledGestureDetectorState extends State<ScaledGestureDetector>
   Future<void> onPointerDown() async {
     if (!isDisabled) {
       _animationController.forward(from: _animationController.value);
+      if (widget.enableHapticFeedback) {
+        vibrationCubit.vibrate(milliseconds: 80);
+      }
     }
   }
 
   Future<void> onPointerUp() async {
     if (!isDisabled) {
-      vibrationCubit.vibrate(milliseconds: 50);
-      await audioCubit.playSfx(GameSfx.button);
-
       widget.onTap?.call();
+      if (widget.enableSoundFeedback) {
+        audioCubit.playSfx(GameSfx.button);
+      }
       onPointerCancel();
     }
   }

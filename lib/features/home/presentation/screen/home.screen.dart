@@ -1,9 +1,8 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
 import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
+import 'package:flags/features/debug/presentation/debug_button.dart';
 import 'package:flags/navigator/router.gr.dart';
-
 import 'package:flags/services/onboarding/onbloarding.controller.dart';
 import 'package:flags/ui/game_scaffold.dart';
 import 'package:flags/uikit/assets/assets.dart';
@@ -16,14 +15,15 @@ import 'package:flags/uikit/layout_components/showcase/showcase_item.dart';
 import 'package:flags/uikit/layout_components/sprite_widget.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vibration/vibration.dart';
+
+const bool _showDebugButtonInRelease = true;
 
 @RoutePage()
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({
-    super.key,
-  });
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -31,6 +31,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   IAudioCubit get audioCubit => context.read<IAudioCubit>();
+
 
   final GlobalKey oPlayButton = GlobalKey();
 
@@ -40,23 +41,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   late final OnboardingController _onboardingController = OnboardingController(
     tag: "home",
-    widgetsKeys: [
-      oPlayButton,
-      oMyFlagsButton,
-    ],
+    widgetsKeys: [oPlayButton, oMyFlagsButton],
   );
 
   void openGamePickerPage() {
-    context.navigateTo(
-      const GameModePickerRoute(),
-    );
+    context.navigateTo(const GameModePickerRoute());
     // QR.toName(Routes.gameModePicker);
   }
 
   void openMyFlagsPage() {
-    context.navigateTo(
-      const MyFlagsRoute(),
-    );
+    context.navigateTo(const MyFlagsRoute());
     //  QR.toName(Routes.myFlagsGallery);
   }
 
@@ -73,8 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-    void onPageFocussed(){
+    void onPageFocussed() {
       audioCubit.playBgm(GameMusics.main);
     }
 
@@ -111,9 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: FYellowButton(
                           onPressed: openGamePickerPage,
-                          child: Center(
-                            child: FText("PLAY"),
-                          ),
+                          child: Center(child: FText("PLAY")),
                         ),
                       ),
                       Gap.v12,
@@ -132,14 +123,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: FYellowButton(
                           onPressed: openMyFlagsPage,
-                          child: Center(
-                            child: FText("MY FLAGS"),
-                          ),
+                          child: Center(child: FText("MY FLAGS")),
                         ),
                       ),
-                      const Spacer(
-                        flex: 4,
-                      ),
+                      const Spacer(flex: 4),
+                      if (_showDebugButtonInRelease) ...[
+                        const DebugButton(),
+                      ],
                       const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

@@ -37,7 +37,7 @@ class AudioCubit extends Cubit<AudioState> implements IAudioCubit {
       audioService.playBgm(source, volume: volume);
 
   @override
-  Future<void> playSfx(GameSfx source, {double volume = 1.25}) =>
+  Future<void> playSfx(GameSfx source, {double volume = 1}) =>
       audioService.playSfx(source, volume: volume);
 
   @override
