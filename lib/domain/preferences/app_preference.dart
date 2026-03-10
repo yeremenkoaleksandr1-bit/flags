@@ -42,4 +42,7 @@ final class AppPreferencesCubit extends Cubit<AppPreferencesData> {
 
     _prefs.setBool('isDebugMode', value);
   }
+
+
+  bool get isDebugMode => state.isDebugMode;
 }

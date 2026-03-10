@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
 import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
+import 'package:flags/features/app/presentation/bloc/app_cubit.dart';
 import 'package:flags/features/debug/presentation/debug_button.dart';
 import 'package:flags/navigator/router.gr.dart';
 import 'package:flags/services/onboarding/onbloarding.controller.dart';
@@ -31,7 +32,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   IAudioCubit get audioCubit => context.read<IAudioCubit>();
-
 
   final GlobalKey oPlayButton = GlobalKey();
 
@@ -67,6 +67,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appCubit = context.read<IAppCubit>();
+
     void onPageFocussed() {
       audioCubit.playBgm(GameMusics.main);
     }
@@ -127,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const Spacer(flex: 4),
-                      if (_showDebugButtonInRelease) ...[
+                      if (appCubit.preferences.isDebugMode) ...[
                         const DebugButton(),
                       ],
                       const Row(

@@ -22,7 +22,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 abstract interface class IAppCubit extends DynamicStatedBlocStream<AppState> {
   IEmblemsService get emblemsService;
 
-  AppPreferencesCubit get appPreferences;
+  AppPreferencesCubit get preferences;
+
 }
 
 final class AppCubitImpl extends StatedCubit<AppState> implements IAppCubit {
@@ -30,7 +31,7 @@ final class AppCubitImpl extends StatedCubit<AppState> implements IAppCubit {
   late final IEmblemsService emblemsService;
 
   @override
-  late final AppPreferencesCubit appPreferences;
+  late final AppPreferencesCubit preferences;
 
 
   final BuildContext context;
@@ -43,9 +44,12 @@ final class AppCubitImpl extends StatedCubit<AppState> implements IAppCubit {
   Future<void> onInit() async {
     await Assets.init(context);
 
-    appPreferences = AppPreferencesCubit(
+    preferences = AppPreferencesCubit(
       sharedPreferences,
     );
+
+
+    preferences.setDebugMode(true);
 
 
     final Resources resources = Resources();
