@@ -3,22 +3,18 @@
 import 'package:bloc_utils/bloc_utils.dart';
 import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
-import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
 import 'package:flags/features/games/presentation/components/heart_tries/heart_tries.dart';
 import 'package:flags/features/games/presentation/puzzle/common.dart';
 import 'package:flags/features/games/presentation/puzzle/components/emblemb_contirmation_overlay_entry.dart';
 import 'package:flags/features/games/presentation/puzzle/components/menu_button.dart';
-import 'package:flags/features/games/presentation/puzzle/components/skip_level_button.dart';
 import 'package:flags/features/games/presentation/puzzle/components/timer/timer.dart';
 import 'package:flags/presentation/game/puzzle/onboarding/fast_mode/fastmode.showcase_step_1.dart';
 import 'package:flags/presentation/game/puzzle/onboarding/fast_mode/fastmode.showcase_step_2.dart';
-import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_fast.presenter.dart';
 import 'package:flags/presentation/game/puzzle/state/puzzle_game.state.dart';
 import 'package:flags/uikit/layout_components/gap/gap.dart';
 import 'package:flags/uikit/layout_components/showcase/showcase.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PuzzleFastModeView extends PuzzleCommonModeView<PuzzleFastModeCubit> {
   const PuzzleFastModeView({super.key, required super.cubit});

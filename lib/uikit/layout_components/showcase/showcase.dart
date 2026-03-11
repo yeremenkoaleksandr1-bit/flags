@@ -3,7 +3,6 @@ import 'package:showcaseview/showcaseview.dart';
 
 class FShowcaseWidget extends ShowCaseWidget {
   const FShowcaseWidget({
-    super.key,
     required this.showcaseKey,
     required super.builder,
     super.autoPlay,
@@ -19,7 +18,7 @@ class FShowcaseWidget extends ShowCaseWidget {
     super.onFinish,
     super.onStart,
     super.scrollDuration,
-  });
+  }) : super(key: showcaseKey);
 
   final GlobalKey showcaseKey;
 
@@ -36,11 +35,6 @@ class FShowcaseWidgetState extends ShowCaseWidgetState<FShowcaseWidget> {
       return widget.builder(context);
     }
 
-    return Builder(
-      key: widget.showcaseKey,
-      builder: (BuildContext context) {
-        return super.build(context);
-      },
-    );
+    return super.build(context);
   }
 }

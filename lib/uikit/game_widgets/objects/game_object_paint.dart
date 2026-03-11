@@ -15,17 +15,16 @@ class GameObjectPaint extends StatefulWidget {
 }
 
 class _GameObjectPaintState extends State<GameObjectPaint> {
-  late final GameObject _object = widget.gameObject.copyWith(
-    position: Vector2.zero(),
-  );
-
   @override
   Widget build(BuildContext context) {
+    final object = widget.gameObject.copyWith(
+      position: Vector2.zero(),
+    );
+
     return FittedBox(
-      fit: BoxFit.contain,
       child: CustomPaint(
-        size: _object.size.toSize(),
-        painter: GameObjectPainter(_object),
+        size: object.size.toSize(),
+        painter: GameObjectPainter(object),
       ),
     );
   }

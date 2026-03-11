@@ -1,6 +1,8 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:bloc_utils/bloc_utils.dart';
 import 'package:defer_pointer/defer_pointer.dart';
+import 'package:drag_and_drop/drag_and_drop.dart';
+import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
 import 'package:flags/features/app/presentation/bloc/app_cubit.dart';
 import 'package:flags/features/games/presentation/base/game_process_screen.dart';
@@ -35,7 +37,6 @@ class PuzzleCommonModeView<T extends PuzzleCommonModeCubit>
 class PuzzleCommonModeViewState<T extends PuzzleCommonModeCubit>
     extends GameProcessScreenState<T> {
   T get cubit => widget.cubit;
-
   IAudioCubit get audioCubit => context.read<IAudioCubit>();
 
   Widget buildHeaderWidget(BuildContext context, PuzzleGameState state) {
@@ -82,49 +83,64 @@ class PuzzleCommonModeViewState<T extends PuzzleCommonModeCubit>
         GameSafeArea(
           child: Padding(
             padding: const Pad(top: 48),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                LevelTitleView(levelName: state.level.flag.name),
-                ShakeWidget(
-                  controller: cubit.shakeAnimation,
-                  child: GameFlagArea(
-                    flag: state.level.flag,
-                    exposer: cubit.flagExposer,
-                    objects: state.placedObjects,
-                    onAcceptWithDetails: (context, details) {
-                      final renderBox =
-                          context.findRenderObject()! as RenderBox;
-
-                      final object = details.data;
-
-                      final sizeDif =
-                          (object.size * object.scale - object.size) * 2;
-
-                      return cubit.handleGameObject(
-                        renderBox
-                            .globalToLocal(
-                              details.offset.translate(sizeDif.x, sizeDif.y),
-                            )
-                            .toVector2(),
-                        details.data,
-                      );
-                    },
-                    cubit: cubit,
-                  ),
-                ),
-              ],
-            ),
+            child: buildFlagSection(context, state),
           ),
         ),
-        PartsBoard(
-          cubit: cubit,
-          boardObjects: [...state.boardObjects],
-          flag: state.flag,
-        ),
-        EmblemEditingBoard(cubit: cubit),
-        ColoredPathEditingBoard(cubit: cubit),
+        ...buildOverlayBoards(state),
       ],
+    );
+  }
+
+  Widget buildFlagSection(BuildContext context, PuzzleGameState state) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        LevelTitleView(levelName: state.level.flag.name),
+        ShakeWidget(
+          controller: cubit.shakeAnimation,
+          child: GameFlagArea(
+            flag: state.level.flag,
+            exposer: cubit.flagExposer,
+            objects: state.placedObjects,
+            onAcceptWithDetails: handleFlagObjectDrop,
+            cubit: cubit,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Iterable<Widget> buildOverlayBoards(PuzzleGameState state) {
+    return [
+      PartsBoard(
+        cubit: cubit,
+        boardObjects: [...state.boardObjects],
+        flag: state.flag,
+      ),
+      EmblemEditingBoard(cubit: cubit),
+      ColoredPathEditingBoard(cubit: cubit),
+    ];
+  }
+
+  bool handleFlagObjectDrop(
+    BuildContext context,
+    SDragTargetDetails<ProcessGameObject> details,
+  ) {
+    final renderBox = context.findRenderObject()! as RenderBox;
+    final localOffset = resolveDropOffset(renderBox, details);
+
+    return cubit.handleGameObject(localOffset.toVector2(), details.data);
+  }
+
+  Offset resolveDropOffset(
+    RenderBox renderBox,
+    SDragTargetDetails<ProcessGameObject> details,
+  ) {
+    final object = details.data;
+    final sizeOffset = (object.size * object.scale - object.size) * 2;
+
+    return renderBox.globalToLocal(
+      details.offset.translate(sizeOffset.x, sizeOffset.y),
     );
   }
 

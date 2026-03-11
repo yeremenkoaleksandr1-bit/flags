@@ -16,7 +16,6 @@ import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-
 class GameFlagArea extends StatefulWidget {
   const GameFlagArea({
     super.key,
@@ -43,14 +42,16 @@ class GameFlagArea extends StatefulWidget {
   final bool Function(
     BuildContext context,
     SDragTargetDetails<ProcessGameObject> details,
-  )? onWillAcceptWithDetails;
+  )?
+  onWillAcceptWithDetails;
 
   final SDragTargetAccept<ProcessGameObject>? onAccept;
 
   final bool Function(
     BuildContext context,
     SDragTargetDetails<ProcessGameObject> object,
-  )? onAcceptWithDetails;
+  )?
+  onAcceptWithDetails;
 
   final SDragTargetLeave<ProcessGameObject>? onLeave;
 
@@ -63,22 +64,19 @@ class GameFlagArea extends StatefulWidget {
 class _GameFlagAreaState extends State<GameFlagArea> {
   final GlobalKey _stackKey = GlobalKey();
 
-  Iterable<GameObjectWidget> buildObjects(
-    Iterable<ProcessGameObject> value,
-  ) {
-    return value.map(
-      (e) {
-        return PuzzleSceneItemsFactory.build(
-          e,
-          onEmblem: (o) => EmblemSceneObject(o, widget.cubit),
-          onDefault: GameObjectWidget.new,
-        );
-      },
-    );
+  Iterable<GameObjectWidget> buildObjects(Iterable<ProcessGameObject> value) {
+    return value.map((e) {
+      return PuzzleSceneItemsFactory.build(
+        e,
+        onEmblem: (o) => EmblemSceneObject(o, widget.cubit),
+        onDefault: GameObjectWidget.new,
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final appContext = context.read<IAppCubit>();
 
     return Padding(
       padding: const Pad(horizontal: 8),
@@ -96,14 +94,33 @@ class _GameFlagAreaState extends State<GameFlagArea> {
                   child: ClipRRect(
                     child: SizedBox.fromSize(
                       size: widget.flag.size.toSize(),
-                      child: GameObjectsRendering(
-                        [...buildObjects(widget.objects)],
-                      ),
+                      child: GameObjectsRendering([
+                        ...buildObjects(widget.objects),
+                      ]),
                     ),
                   ),
                 ),
               ),
             ),
+
+            if (appContext.preferences.isDebugMode)
+              IgnorePointer(
+                child: Opacity(
+                  opacity: 0.2,
+                  child: FittedBox(
+                    fit: BoxFit.fill,
+                    alignment: Alignment.topLeft,
+                    child: ClipRRect(
+                      child: SizedBox.fromSize(
+                        size: widget.flag.size.toSize(),
+                        child: GameObjectsRendering([
+                          ...buildObjects(widget.flag.objects),
+                        ]),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             buildDragTargetArea(),
           ],
         ),
@@ -126,23 +143,24 @@ class _GameFlagAreaState extends State<GameFlagArea> {
               return widget.onWillAcceptWithDetails?.call(context, details) ??
                   true;
             },
-            builder: (
-              BuildContext context,
-              List<ProcessGameObject?> candidateData,
-              List<dynamic> rejectedData,
-            ) {
-              return DecoratedBox(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: candidateData.isNotEmpty
-                        ? ThemePalette.black
-                        : ThemePalette.transparent,
-                    width: 2,
-                    strokeAlign: BorderSide.strokeAlignOutside,
-                  ),
-                ),
-              );
-            },
+            builder:
+                (
+                  BuildContext context,
+                  List<ProcessGameObject?> candidateData,
+                  List<dynamic> rejectedData,
+                ) {
+                  return DecoratedBox(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: candidateData.isNotEmpty
+                            ? ThemePalette.black
+                            : ThemePalette.transparent,
+                        width: 2,
+                        strokeAlign: BorderSide.strokeAlignOutside,
+                      ),
+                    ),
+                  );
+                },
           );
         },
       ),
