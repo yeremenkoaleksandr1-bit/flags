@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flags/app/app_scope.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
 import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
 import 'package:flags/features/app/presentation/bloc/app_cubit.dart';
@@ -39,10 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final GlobalKey showCaseWidgetKey = GlobalKey();
 
-  late final OnboardingController _onboardingController = OnboardingController(
-    tag: "home",
-    widgetsKeys: [oPlayButton, oMyFlagsButton],
-  );
+  late final OnboardingController _onboardingController;
 
   void openGamePickerPage() {
     context.navigateTo(const GameModePickerRoute());
@@ -57,6 +55,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _onboardingController = OnboardingController(
+      tag: "home",
+      widgetsKeys: [oPlayButton, oMyFlagsButton],
+      service: AppScope.readBootstrapOf(context).onboardingService,
+    );
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       if (showCaseWidgetKey.currentContext != null) {

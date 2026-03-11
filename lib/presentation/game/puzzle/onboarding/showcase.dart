@@ -1,10 +1,13 @@
-import 'package:flags/getIt.dart';
 import 'package:flags/services/onboarding/onboarding.service.dart';
 import 'package:flutter/material.dart';
 import 'package:showcaseview/showcaseview.dart';
 
 class PuzzleGameShowcase {
-  final IOnboardingService _service = getIt<IOnboardingService>();
+  PuzzleGameShowcase({
+    required IOnboardingService service,
+  }) : _service = service;
+
+  final IOnboardingService _service;
 
   final GlobalKey key = GlobalKey();
 

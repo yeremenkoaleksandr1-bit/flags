@@ -3,7 +3,6 @@ import 'package:collection/collection.dart';
 import 'package:flags/domain/preferences/game_preferences.dart';
 import 'package:flags/features/app/features/shop/domain/services/shop.service.dart';
 import 'package:flags/features/app/features/shop/domain/shop.item.dart';
-import 'package:flags/main.dart';
 import 'package:meta/meta.dart';
 
 part 'shop_state.dart';
@@ -23,13 +22,12 @@ class ShopCubit extends Cubit<ShopState> implements IShopCubit {
 
   final List<ShopItem> buyableItems;
 
-  final IShopService service = ShopServiceImpl(
-    sharedPreferences,
-  );
+  final IShopService service;
 
   ShopCubit({
     required this.gamePreferences,
     required this.buyableItems,
+    required this.service,
   }) : super(ShopInitial());
 
   @override

@@ -2,22 +2,14 @@
 
 import 'dart:async';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:bloc_utils/bloc_utils.dart';
-import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/domain/preferences/preferences.dart';
 import 'package:flags/domain/services/game/emblems.service.dart';
-import 'package:flags/domain/services/levels/levels.service.dart';
 import 'package:flags/features/app/presentation/bloc/app_state.dart';
-import 'package:flags/getIt.dart';
-import 'package:flags/main.dart';
-import 'package:flags/main/components/splash.dart';
-import 'package:flags/navigator/router.gr.dart';
 import 'package:flags/resources/resources.dart';
-import 'package:flags/services/onboarding/onboarding.service.dart';
 import 'package:flags/uikit/assets/assets.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 abstract interface class IAppCubit extends DynamicStatedBlocStream<AppState> {
   IEmblemsService get emblemsService;
@@ -35,33 +27,24 @@ final class AppCubitImpl extends StatedCubit<AppState> implements IAppCubit {
 
 
   final BuildContext context;
+  final SharedPreferences sharedPreferences;
 
   AppCubitImpl({
     required this.context,
+    required this.sharedPreferences,
   });
 
   @override
   Future<void> onInit() async {
     await Assets.init(context);
 
-    preferences = AppPreferencesCubit(
-      sharedPreferences,
-    );
-
-
+    preferences = AppPreferencesCubit(sharedPreferences);
     preferences.setDebugMode(true);
-
 
     final Resources resources = Resources();
     await resources.initialize();
 
     emblemsService = EmblemsServiceImpl(sharedPreferences);
-
-    getIt.registerSingleton<IOnboardingService>(
-      OnboardingServiceImpl(
-        prefs: sharedPreferences,
-      ),
-    );
 
     emit(
       SuccessState(
@@ -79,21 +62,21 @@ class ConsolidatedObserver extends NavigatorObserver {
   ConsolidatedObserver(this.observers);
 
   @override
-  void didPush(Route route, Route? previousRoute) {
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
     for (final observer in observers) {
       observer.didPush(route, previousRoute);
     }
   }
 
   @override
-  void didPop(Route route, Route? previousRoute) {
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
     for (final observer in observers) {
       observer.didPop(route, previousRoute);
     }
   }
 
   @override
-  void didReplace({Route? newRoute, Route? oldRoute}) {
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
     for (final observer in observers) {
       observer.didReplace(newRoute: newRoute, oldRoute: oldRoute);
     }

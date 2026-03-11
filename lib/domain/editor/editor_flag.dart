@@ -8,12 +8,9 @@ import 'package:flutter/material.dart';
 
 class EditorFlagData extends Equatable {
   final String name;
-
   final double proportion;
-
   final List<GameObject> objects;
-
-  late FlagStyle backgroundStyle;
+  final FlagStyle backgroundStyle;
 
   Rect get rect =>
       Vector2(GameFlag.defaultSize.x, GameFlag.defaultSize.y / proportion)
@@ -23,26 +20,26 @@ class EditorFlagData extends Equatable {
     required this.name,
     required this.proportion,
     this.objects = const [],
-  }) {
-    backgroundStyle = ClearStyle(
-      rect: rect,
-      colors: [
-        Colors.white,
-      ],
-    );
-  }
+    FlagStyle? backgroundStyle,
+  }) : backgroundStyle = backgroundStyle ??
+            ClearStyle(
+              rect:
+                  Vector2(GameFlag.defaultSize.x, GameFlag.defaultSize.y / proportion)
+                      .toRect(),
+              colors: [
+                Colors.white,
+              ],
+            );
 
   EditorFlagData clone() {
-    final data = EditorFlagData(
+    return EditorFlagData(
       name: name,
       proportion: proportion,
       objects: [
         ...objects.map((e) => e.copyWith()),
       ],
+      backgroundStyle: backgroundStyle,
     );
-
-    data.backgroundStyle = backgroundStyle;
-    return data;
   }
 
   EditorFlagData copyWith({
@@ -51,15 +48,12 @@ class EditorFlagData extends Equatable {
     List<GameObject>? objects,
     FlagStyle? backgroundStyle,
   }) {
-    final data = EditorFlagData(
+    return EditorFlagData(
       name: name ?? this.name,
       proportion: proportion ?? this.proportion,
       objects: objects ?? this.objects,
+      backgroundStyle: backgroundStyle ?? this.backgroundStyle,
     );
-
-    data.backgroundStyle = backgroundStyle ?? this.backgroundStyle;
-
-    return data;
   }
 
   @override

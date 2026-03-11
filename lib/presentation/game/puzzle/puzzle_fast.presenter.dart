@@ -33,9 +33,11 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
     required super.params,
     required super.appCubit,
     required super.levelsCubit,
+    required super.onboardingService,
   });
 
-  final PuzzleGameFastModeShowcase showcaseFm = PuzzleGameFastModeShowcase();
+  late final PuzzleGameFastModeShowcase showcaseFm =
+      PuzzleGameFastModeShowcase(service: onboardingService);
 
   late ContinentType _randomContinent = params.continentType;
 

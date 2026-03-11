@@ -2,12 +2,9 @@
 
 import 'dart:async';
 import 'dart:math';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:bloc_utils/bloc_utils.dart';
 import 'package:collection/collection.dart';
-import 'package:dart_numerics/dart_numerics.dart';
-import 'package:flags/core/extensions/num.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
@@ -18,7 +15,6 @@ import 'package:flags/domain/game_objects/flag/flag_extensions.dart';
 import 'package:flags/domain/game_objects/game_objects.dart';
 import 'package:flags/domain/preferences/game_preferences.dart';
 import 'package:flags/domain/services/game/emblems.service.dart';
-import 'package:flags/domain/services/levels/levels.service.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
 import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
 import 'package:flags/features/app/features/levels/presentation/bloc/levels_cubit.dart';
@@ -34,14 +30,12 @@ import 'package:flags/features/games/presentation/puzzle/scene_components/emblem
 import 'package:flags/features/games/presentation/puzzle/views/board.dart';
 import 'package:flags/features/levels_picker/presentation/bloc/levels_picker_cubit.dart';
 import 'package:flags/logger.dart';
-import 'package:flags/main.dart';
 import 'package:flags/navigator/router.gr.dart';
 import 'package:flags/prefabs/levels/levels.dart';
 import 'package:flags/features/app/presentation/bloc/app_cubit.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
 import 'package:flags/presentation/game/puzzle/entities/colored_part.game_object.dart';
 import 'package:flags/presentation/game/puzzle/entities/draggable_emblem_part.game_object.dart';
-import 'package:flags/presentation/game/puzzle/entities/scallable_emblem.dart';
 import 'package:flags/presentation/game/puzzle/generators/easy.dart';
 import 'package:flags/presentation/game/puzzle/generators/extra_hard.dart';
 import 'package:flags/presentation/game/puzzle/generators/hard.dart';
@@ -53,8 +47,9 @@ import 'package:flags/presentation/game/puzzle/onboarding/common_object/common_o
 import 'package:flags/presentation/game/puzzle/onboarding/emblem/emblem_object.showcase_step_1.dart';
 import 'package:flags/presentation/game/puzzle/onboarding/showcase.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_fast.presenter.dart';
+import 'package:flags/presentation/game/puzzle/services/puzzle_level_progress_service.dart';
+import 'package:flags/presentation/game/puzzle/services/puzzle_object_placement_service.dart';
 import 'package:flags/presentation/game/puzzle/state/puzzle_game.state.dart';
-import 'package:flags/presentation/game/puzzle/validators/validator.dart';
 import 'package:flags/services/onboarding/onboarding.service.dart';
 import 'package:flags/uikit/game_widgets/game_widgets.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
@@ -73,12 +68,9 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
 
   // SHOWCASE
 
-  final IOnboardingService onboardingService = OnboardingServiceImpl(
-    prefs: sharedPreferences,
-  );
+  final IOnboardingService onboardingService;
 
-  @override
-  final PuzzleGameShowcase showcase = PuzzleGameShowcase();
+  final PuzzleGameShowcase showcase;
 
   // ________
 
@@ -97,6 +89,8 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
   final GamePreferencesCubit gamePreferences;
 
   final GamesFactoryPageParams params;
+  final PuzzleLevelProgressService levelProgressService;
+  final PuzzleObjectPlacementService placementService;
 
   PuzzleCommonModeCubit(
     this.context,
@@ -104,10 +98,14 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
     required this.params,
     required this.appCubit,
     required this.levelsCubit,
+    required this.onboardingService,
+    this.levelProgressService = const PuzzleLevelProgressService(),
+    this.placementService = const PuzzleObjectPlacementService(),
   })  : audioCubit = context.read<IAudioCubit>(),
         vibrationCubit = context.read<IVibrationCubit>(),
         levelsService = context.read<GameLevelsCubit>(),
         gamePreferences = context.read<GamePreferencesCubit>(),
+        showcase = PuzzleGameShowcase(service: onboardingService),
         emblemConfirmationView = EmblemConfirmationWidgetState(),
         boardController = PartsBoardState(),
         heartTriesState = HeartTriesState(
@@ -158,44 +156,11 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
   }
 
   Future<void> preInitialization() async {
-    final savedLevel = levelsService.getLevelData(
-      params.continentType,
-      params.level.id,
+    gameSeed = levelProgressService.resolveSeed(
+      levelsCubit: levelsService,
+      continentType: params.continentType,
+      level: params.level,
     );
-
-    if (savedLevel == null) {
-      final seed = Random().nextInt(int32MaxValue);
-
-      levelsService.saveLevel(
-        id: params.level.id,
-        data: LevelProcessData(
-          completed: params.level.completed,
-          seed: seed,
-        ),
-        continent: params.continentType,
-      );
-
-      gameSeed = seed;
-    } else {
-      if (savedLevel.seed == -1) {
-        final seed = Random().nextInt(int32MaxValue);
-
-        levelsService.saveLevel(
-          id: params.level.id,
-          data: LevelProcessData(
-            completed: params.level.completed,
-            seed: seed,
-          ),
-          continent: params.continentType,
-        );
-
-        gameSeed = seed;
-      } else {
-        gameSeed = savedLevel.seed;
-      }
-    }
-
-    //gameSeed = 946879961;
     flagExposer.renderBox.addListener(onFlagBuilt);
   }
 
@@ -266,15 +231,10 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
     ProcessGameObject object, {
     required List<ProcessGameObject> placedObjects,
   }) {
-    var sceneObject = state.boardObjects.firstWhereOrNull((e) {
-      return e.object.key == object.key;
-    });
-
-    if (object is EmblemPart) {
-      sceneObject = state.boardObjects.firstWhereOrNull((e) {
-        return e.object.uniqueName == object.uniqueName;
-      });
-    }
+    final sceneObject = placementService.findSceneObject(
+      boardObjects: state.boardObjects,
+      object: object,
+    );
 
     sceneObject?.setActive(false);
 
@@ -305,13 +265,10 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
   }
 
   void onLevelCompleted(PuzzleGameState state) {
-    levelsService.saveLevel(
-      continent: params.continentType,
-      id: state.level.id,
-      data: const LevelProcessData(
-        completed: true,
-        seed: -1,
-      ),
+    levelProgressService.saveCompletedLevel(
+      levelsCubit: levelsService,
+      continentType: params.continentType,
+      levelId: state.level.id,
     );
 
     final NextLevelData data = levelsCubit.getNextLevelFromCurrent(state.level);
@@ -396,7 +353,11 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
   Future<void> openNextLevel(NextLevelData data) async {
     state.whenOrNull(
       success: (state) async {
-        gameSeed = Random().nextInt(int32MaxValue);
+        gameSeed = levelProgressService.createNextSeed(
+          levelsCubit: levelsService,
+          continentType: params.continentType,
+          level: data.level ?? state.level,
+        );
         resetLevelState();
 
         final level = data.level ?? state.level;
@@ -427,64 +388,35 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
   bool handleGameObject(Vector2 position, ProcessGameObject object) {
     return state.maybeWhen(
       success: (state) {
-        ProcessGameObject gameObject = object;
-
-        if (gameObject is ScalableEmblemPart) {
-          final emblemFromFlag = state.flag.emblems.firstOrNull;
-
-          if (emblemFromFlag != null) {
-            gameObject = gameObject.copyWith(
-              key: emblemFromFlag.key,
-              previousMustBePlaced: emblemFromFlag.previousMustBePlaced,
-            );
-          }
-
-          final isPreviousPlaced = gameObject.previousMustBePlaced?.every(
-                (e) => state.placedObjects.map((e) => e.uniqueName).contains(e),
-              ) ??
-              true;
-
-          if (!isPreviousPlaced) {
-            onIncorrectPlacing();
-            return false;
-          }
-
-          gameObject = DraggableEmblemPart.fromEmblem(
-            gameObject.copyWith(
-              key: gameObject.key,
-              position: position / state.flagFitValue,
-            ),
-            scales: gameObject.scales,
-          );
-
-          emit(
-            SuccessState(
-              state.copyWith(
-                placedObjects: [
-                  ...state.placedObjects,
-                  gameObject,
-                ],
-              ),
-            ),
-          );
-          final object = state.boardObjects.firstWhere((e) {
-            return e.object.uniqueName == gameObject.uniqueName;
-          });
-
-          object.setActive(false);
-
-          return true;
-        }
-
-        final availableObject = PuzzleObjectPlacingHandler().handle(
-          object: gameObject,
-          flag: state.level.flag,
+        final availableObject = placementService.resolvePlacedObject(
+          object: object,
           placedObjects: state.placedObjects,
+          flag: state.level.flag,
           position: position,
           fitValue: state.flagFitValue,
         );
 
         if (availableObject != null) {
+          if (availableObject is DraggableEmblemPart) {
+            emit(
+              SuccessState(
+                state.copyWith(
+                  placedObjects: [
+                    ...state.placedObjects,
+                    availableObject,
+                  ],
+                ),
+              ),
+            );
+            placementService
+                .findSceneObject(
+                  boardObjects: state.boardObjects,
+                  object: availableObject,
+                )
+                ?.setActive(false);
+            return true;
+          }
+
           placeObject(availableObject);
         } else {
           onIncorrectPlacing();
@@ -578,18 +510,11 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
 
         FlutterEngine.schedulePostFrameCallback((timeStamp) async {
           resetLevelState();
-          final seed = Random().nextInt(int32MaxValue);
-
-          levelsService.saveLevel(
-            continent: params.continentType,
-            id: level.id,
-            data: LevelProcessData(
-              completed: level.completed,
-              seed: seed,
-            ),
+          gameSeed = levelProgressService.createNextSeed(
+            levelsCubit: levelsService,
+            continentType: params.continentType,
+            level: level,
           );
-
-          gameSeed = seed;
 
           final parts = await generateBoardParts(level, state.difficult);
 
@@ -641,9 +566,10 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
           object.scale =
               sceneObject.scaleConverter(sceneObject.gameObject.scale);
 
-          final flagObject = state.level.flag.objects.firstWhereOrNull(
+          final flagObject = state.level.flag.objects.whereType<EmblemPart>()
+              .firstWhereOrNull(
             (e) => e.uniqueName == object.uniqueName,
-          ) as EmblemPart?;
+          );
 
           if (flagObject == null) {
             onIncorrectPlacing();
@@ -652,37 +578,11 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
 
           final fitValue = state.flagFitValue;
 
-          final fittedFlagObjectPosition = flagObject.position;
-
-          final isCorrectDistance =
-              fittedFlagObjectPosition.distanceTo(object.position) <
-                  (15 / fitValue);
-
-          var isCorrectRotation = object.rotation == flagObject.rotation;
-
-          if (!flagObject.emblem.identicalRotation) {
-            if (flagObject.emblem.symmetrical180) {
-              final rotation180 = (flagObject.rotation + pi) % (2 * pi);
-              isCorrectRotation =
-                  isCorrectRotation || object.rotation == rotation180;
-            }
-
-            if (flagObject.emblem.symmetrical90) {
-              final double rotationDifference =
-                  (object.rotation - flagObject.rotation).abs();
-              final double rotationRemainder = rotationDifference % (pi / 2);
-
-              isCorrectRotation = isCorrectRotation ||
-                  rotationRemainder < 1e-9 ||
-                  (pi / 2 - rotationRemainder) < 1e-9;
-            }
-          } else {
-            isCorrectRotation = true;
-          }
-
-          final isCorrectScale = object.scale == flagObject.scale;
-
-          if (isCorrectDistance && isCorrectRotation && isCorrectScale) {
+          if (placementService.isFocusedEmblemPlacementValid(
+            candidate: object,
+            target: flagObject,
+            fitValue: fitValue,
+          )) {
             final placedObjects = [
               ...state.placedObjects.where((e) => e is! DraggableEmblemPart),
               flagObject,

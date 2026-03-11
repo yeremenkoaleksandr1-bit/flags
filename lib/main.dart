@@ -1,21 +1,14 @@
-import 'package:auto_route/auto_route.dart';
+import 'package:flags/app/app_bootstrap.dart';
 import 'package:flags/features/app/presentation/application.dart';
-import 'package:flags/main/app.dart';
-import 'package:flags/shared/data/local/secure_storage.dart';
-import 'package:flags/shared/data/local/shared_preferences_storage.dart';
-import 'package:flags/ui/game_scaffold.dart';
 import 'package:flags/uikit/components/progress_indicator/linear_progress_indicator.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:rx_shared_preferences/rx_shared_preferences.dart';
-
-late final SharedPreferences sharedPreferences;
 
 void main() async {
-  final WidgetsBinding binding = WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
   );
@@ -29,7 +22,7 @@ void main() async {
 
   EasyLoading.instance
     ..maskType = EasyLoadingMaskType.custom
-    ..maskColor = ThemePalette.black.withOpacity(0.6)
+    ..maskColor = ThemePalette.black.withValues(alpha: 0.6)
     ..loadingStyle = EasyLoadingStyle.custom
     ..animationStyle = EasyLoadingAnimationStyle.opacity
     ..backgroundColor = ThemePalette.transparent
@@ -44,10 +37,11 @@ void main() async {
       ],
     );
 
-  await SecureStorageServiceImpl().init();
-  sharedPreferences = await SharedPreferences.getInstance();
+  final bootstrap = await AppBootstrap.initialize();
 
   runApp(
-    const Application(),
+    Application(
+      bootstrap: bootstrap,
+    ),
   );
 }

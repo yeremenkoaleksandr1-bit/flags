@@ -1,6 +1,7 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bloc_utils/bloc_utils.dart';
+import 'package:flags/app/app_scope.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/domain/enums/continent_type.dart';
 import 'package:flags/domain/enums/game_difficult.dart';
@@ -52,17 +53,19 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
 
   final GlobalKey showCaseWidgetKey = GlobalKey();
 
-  late final OnboardingController _onboardingController = OnboardingController(
-    tag: "continents_picker4",
-    widgetsKeys: [
-      oContinentButton,
-      oFastModeButton,
-    ],
-  );
+  late final OnboardingController _onboardingController;
 
   @override
   void initState() {
     super.initState();
+    _onboardingController = OnboardingController(
+      tag: "continents_picker4",
+      widgetsKeys: [
+        oContinentButton,
+        oFastModeButton,
+      ],
+      service: AppScope.readBootstrapOf(context).onboardingService,
+    );
 
     try {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

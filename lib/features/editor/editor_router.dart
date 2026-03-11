@@ -1,5 +1,6 @@
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:flags/app/app_scope.dart';
 import 'package:flags/features/editor/my_flags/presentation/bloc/my_flags_cubit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,8 +11,12 @@ class EditorRouter extends StatelessWidget implements AutoRouteWrapper {
 
   @override
   Widget wrappedRoute(BuildContext context) {
+    final sharedPreferences = AppScope.bootstrapOf(context).sharedPreferences;
+
     return BlocProvider(
-      create: (_) => MyFlagsCubit(),
+      create: (_) => MyFlagsCubit(
+        sharedPreferences: sharedPreferences,
+      ),
       child: this,
     );
   }

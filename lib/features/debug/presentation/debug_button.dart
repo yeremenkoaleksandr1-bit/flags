@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 
+import 'package:flags/app/app_scope.dart';
 import 'package:flags/domain/preferences/game_preferences.dart';
 import 'package:flags/features/debug/debug_tools.dart';
-import 'package:flags/main.dart';
 import 'package:flags/uikit/components/buttons/buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -52,6 +52,7 @@ class _DebugDialogState extends State<_DebugDialog> {
   }
 
   Future<void> _unlockAllLevels() async {
+    final sharedPreferences = AppScope.bootstrapOf(context).sharedPreferences;
     await DebugTools.unlockAllLevels(sharedPreferences);
     if (!mounted) {
       return;

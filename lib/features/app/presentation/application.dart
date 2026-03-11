@@ -1,13 +1,15 @@
 import 'package:bloc_utils/bloc_utils.dart';
+import 'package:flags/app/app_bootstrap.dart';
+import 'package:flags/app/app_scope.dart';
 import 'package:flags/domain/preferences/game_preferences.dart';
 import 'package:flags/features/app/data/shop_items.dart';
 import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
+import 'package:flags/features/app/features/shop/domain/services/shop.service.dart';
 import 'package:flags/features/app/features/shop/presentation/bloc/shop_cubit.dart';
 import 'package:flags/features/app/features/vibration/presentation/bloc/vibration_cubit.dart';
 import 'package:flags/features/app/presentation/bloc/app_cubit.dart';
 import 'package:flags/features/app/presentation/builder/app_state_builder.dart';
 import 'package:flags/features/app/presentation/widgets/flags_widget_app.dart';
-import 'package:flags/main.dart';
 import 'package:flags/navigator/router.dart';
 import 'package:flags/services/game_state/game_state_cubit.dart';
 import 'package:flags/services/layers/money_layer/money_layer.dart';
@@ -22,7 +24,12 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 class Application extends StatefulWidget {
-  const Application({super.key});
+  const Application({
+    super.key,
+    required this.bootstrap,
+  });
+
+  final AppBootstrap bootstrap;
 
   @override
   State<Application> createState() => _ApplicationState();
@@ -33,55 +40,53 @@ class _ApplicationState extends State<Application> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<IAppCubit>(
-          create: (context) => AppCubitImpl(context: context),
-        ),
-        BlocProvider(create: (_) => GameStateCubit()),
-      ],
-      child: BlocStateBuilderThemeProvider(
-        child: FlagsWidgetsApp(
-          title: "FlagsUp",
-          theme: AppTheme.themeData,
-          localizationsDelegates: const [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          builder: (context, _) {
-            return DragAndDropProvider(
-              builder: (BuildContext context) {
-                return EasyLoading.init()(
-                  context,
-                  BuildAppState(
-                    builder: (context, state) {
-                      return MultiBlocProvider(
-                        providers: [
-                          BlocProvider(
-                            create: (BuildContext context) {
-                              return GamePreferencesCubit(sharedPreferences);
-                            },
-                          ),
-                          BlocProvider<IShopCubit>(
-                            create: (context) => ShopCubit(
-                              gamePreferences: context
-                                  .read<GamePreferencesCubit>(),
-                              buyableItems: shopItemsData,
-                            ),
-                          ),
-                          BlocProvider<IVibrationCubit>(
-                            create: (BuildContext context) {
-                              return VibrationCubit(sharedPreferences);
-                            },
-                          ),
-                          BlocProvider<IAudioCubit>(
-                            create: (BuildContext context) {
-                              return AudioCubit(sharedPreferences);
-                            },
-                          ),
-                        ],
-                        child: Stack(
+    final sharedPreferences = widget.bootstrap.sharedPreferences;
+
+    return AppScope(
+      bootstrap: widget.bootstrap,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<IAppCubit>(
+            create: (context) => AppCubitImpl(
+              context: context,
+              sharedPreferences: sharedPreferences,
+            ),
+          ),
+          BlocProvider(create: (_) => GameStateCubit()),
+          BlocProvider(
+            create: (_) => GamePreferencesCubit(sharedPreferences),
+          ),
+          BlocProvider<IShopCubit>(
+            create: (context) => ShopCubit(
+              gamePreferences: context.read<GamePreferencesCubit>(),
+              buyableItems: shopItemsData,
+              service: ShopServiceImpl(sharedPreferences),
+            ),
+          ),
+          BlocProvider<IVibrationCubit>(
+            create: (_) => VibrationCubit(sharedPreferences),
+          ),
+          BlocProvider<IAudioCubit>(
+            create: (_) => AudioCubit(sharedPreferences),
+          ),
+        ],
+        child: BlocStateBuilderThemeProvider(
+          child: FlagsWidgetsApp(
+            title: "FlagsUp",
+            theme: AppTheme.themeData,
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            builder: (context, _) {
+              return DragAndDropProvider(
+                builder: (BuildContext context) {
+                  return EasyLoading.init()(
+                    context,
+                    BuildAppState(
+                      builder: (context, state) {
+                        return Stack(
                           children: [
                             const Positioned.fill(
                               child: DecoratedBox(
@@ -90,20 +95,19 @@ class _ApplicationState extends State<Application> {
                                 ),
                               ),
                             ),
-
                             const Positioned.fill(child: CloudsPainter()),
                             const Positioned.fill(child: Background()),
                             AppRouterBuilder(router: router),
                             const UiMoneyLayer(),
                           ],
-                        ),
-                      );
-                    },
-                  ),
-                );
-              },
-            );
-          },
+                        );
+                      },
+                    ),
+                  );
+                },
+              );
+            },
+          ),
         ),
       ),
     );

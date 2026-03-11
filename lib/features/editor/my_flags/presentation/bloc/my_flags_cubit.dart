@@ -2,16 +2,19 @@ import 'package:auto_route/auto_route.dart';
 import 'package:bloc_utils/bloc_utils.dart';
 import 'package:flags/domain/editor/create_flag_data.dart';
 import 'package:flags/domain/editor/editor_flag.dart';
-import 'package:flags/main.dart';
 import 'package:flags/features/editor/my_flags/domain/services/editor_gallery.service.dart';
 import 'package:flags/features/editor/my_flags/presentation/dialogs/create_flag.dialog.dart';
 import 'package:flags/navigator/router.gr.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final class MyFlagsCubit extends StatedCubit<List<EditorFlagData>> {
   late final IEditorGalleryService editorGalleryService;
+  final SharedPreferences sharedPreferences;
 
-  MyFlagsCubit();
+  MyFlagsCubit({
+    required this.sharedPreferences,
+  });
 
   @override
   Future<void> onInit() async {
@@ -35,7 +38,7 @@ final class MyFlagsCubit extends StatedCubit<List<EditorFlagData>> {
   }
 
 
-  void updateFlag(EditorFlagData flag){
+  void updateFlag(EditorFlagData flag) {
     emit(
       SuccessState(editorGalleryService.flags),
     );

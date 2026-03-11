@@ -1,10 +1,19 @@
 import 'package:flags/shared/services/disposable.dart';
 import 'package:flutter/material.dart';
 
+class RenderBoxNotifier extends ValueNotifier<RenderBox?> {
+  RenderBoxNotifier() : super(null);
+
+  void update(RenderBox nextRenderBox) {
+    value = nextRenderBox;
+    notifyListeners();
+  }
+}
+
 class RenderBoxExposer implements IDisposable {
   bool isExposed = false;
 
-  ValueNotifier<RenderBox?> renderBox = ValueNotifier(null);
+  RenderBoxNotifier renderBox = RenderBoxNotifier();
 
   @override
   void dispose() {
@@ -34,9 +43,9 @@ class _RenderBoxExposedState extends State<RenderBoxExposed> {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       widget.exposer.isExposed = true;
-      widget.exposer.renderBox.value =
-          _globalKey.currentContext!.findRenderObject()! as RenderBox;
-      widget.exposer.renderBox.notifyListeners();
+      widget.exposer.renderBox.update(
+        _globalKey.currentContext!.findRenderObject()! as RenderBox,
+      );
     });
 
     return KeyedSubtree(

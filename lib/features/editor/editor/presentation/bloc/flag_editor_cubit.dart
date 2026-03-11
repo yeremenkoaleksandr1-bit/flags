@@ -5,17 +5,15 @@ import 'package:equatable/equatable.dart';
 import 'package:flags/domain/editor/editor_flag.dart';
 import 'package:flags/domain/editor/styles/style.dart';
 import 'package:flags/domain/game_objects/game_objects.dart';
-import 'package:flags/features/editor/editor/presentation/cubits/flag_background_style/flag_background_style_cubit.dart';
-import 'package:flags/features/editor/editor/presentation/cubits/scene_objects/scene_objects_cubit.dart';
 import 'package:flags/features/editor/editor/presentation/object_handles/editor_draggable.dart';
 import 'package:flags/features/editor/my_flags/domain/services/editor_gallery.service.dart';
-import 'package:flags/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'board/board_actions.dart';
+import 'package:flags/features/editor/editor/presentation/bloc/board/board_actions.dart';
 
 part 'flag_editor_state.dart';
 
@@ -51,8 +49,10 @@ class FlagEditorCubit extends StatedCubit<FlagEditorState>
   FlagEditorCubit({
     required this.initialFlag,
     required this.context,
+    required this.sharedPreferences,
   }) : super();
 
+  final SharedPreferences sharedPreferences;
   late final IEditorGalleryService editorGalleryService;
 
   @override

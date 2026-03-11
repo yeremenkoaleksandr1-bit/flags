@@ -1,5 +1,6 @@
 import 'package:auto_route/annotations.dart';
 import 'package:defer_pointer/defer_pointer.dart';
+import 'package:flags/app/app_scope.dart';
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
@@ -12,7 +13,6 @@ import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_fast.presenter.dart';
 import 'package:flags/ui/game_scaffold.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class GamesFactoryPageParams {
@@ -56,6 +56,8 @@ class _GamesFactoryPageState extends State<GamesFactoryPage>
   @override
   void initState() {
     final params = widget.params;
+    final onboardingService =
+        AppScope.readBootstrapOf(context).onboardingService;
 
     screen = switch (params.gamesType) {
       GameStyleType.common => PuzzleCommonModeView(
@@ -65,6 +67,7 @@ class _GamesFactoryPageState extends State<GamesFactoryPage>
             params: params,
             appCubit: context.read<IAppCubit>(),
             levelsCubit: context.read<ILevelsPickerCubit>(),
+            onboardingService: onboardingService,
           ),
         ),
       GameStyleType.fast => PuzzleFastModeView(
@@ -74,6 +77,7 @@ class _GamesFactoryPageState extends State<GamesFactoryPage>
             params: params,
             appCubit: context.read<IAppCubit>(),
             levelsCubit: context.read<ILevelsPickerCubit>(),
+            onboardingService: onboardingService,
           ),
         ),
     };

@@ -1,10 +1,9 @@
-import 'package:flags/getIt.dart';
 import 'package:flags/services/onboarding/onboarding.service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:showcaseview/showcaseview.dart';
 
 class OnboardingController {
-  final IOnboardingService _service = getIt<IOnboardingService>();
+  final IOnboardingService _service;
 
   final List<GlobalKey> widgetsKeys;
 
@@ -13,7 +12,8 @@ class OnboardingController {
   OnboardingController({
     required this.tag,
     required this.widgetsKeys,
-  });
+    required IOnboardingService service,
+  }) : _service = service;
 
   void show(BuildContext context) {
     if (!canShow) {
