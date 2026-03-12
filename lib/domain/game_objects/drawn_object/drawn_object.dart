@@ -1,12 +1,13 @@
 import 'package:flags/core/utils/utils.dart';
+import 'package:flags/domain/game_objects/base/flippable.dart';
 import 'package:flags/features/editor/editor/presentation/cubits/boards/custom_paint/custom_paint_cubit.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:memoize/memoize.dart';
 
-import '../base/flippable.dart';
-
 class DrawnGameObject extends FlippableGameObject {
+  static const double viewportSize = 64 * 5.6;
+
   final CustomPaintState pathsHistory;
 
   DrawnGameObject({
@@ -38,13 +39,13 @@ class DrawnGameObject extends FlippableGameObject {
     );
 
     canvas.scale(
-      this.size.x / (64 * 5.6),
-      this.size.y / (64 * 5.6),
+      this.size.x / viewportSize,
+      this.size.y / viewportSize,
     );
 
     canvas.clipRect(
       _cachedRect(
-        const Size.square(64 * 5.6),
+        const Size.square(viewportSize),
       ),
     );
 
