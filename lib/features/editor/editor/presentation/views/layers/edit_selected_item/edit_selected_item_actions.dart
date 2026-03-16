@@ -293,7 +293,10 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
                       onDragStart: onRotationStart,
                       borderRadiusCircular: 24,
                       onDragEnd: onDragEnd,
-                      child: const SizedBox.shrink(),
+                      child: const Icon(
+                        Icons.rotate_right_rounded,
+                        size: 14,
+                      ),
                     ),
                   ),
                   Positioned(
