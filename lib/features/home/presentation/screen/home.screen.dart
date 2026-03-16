@@ -57,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _onboardingController = OnboardingController(
       tag: "home",
+      showcaseKey: showCaseWidgetKey,
       widgetsKeys: [oPlayButton, oMyFlagsButton],
       service: AppScope.readBootstrapOf(context).onboardingService,
     );

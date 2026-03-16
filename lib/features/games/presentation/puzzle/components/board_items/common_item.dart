@@ -52,9 +52,11 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
   IAudioCubit get audioCubit => context.read<IAudioCubit>();
 
   late final GlobalKey _key = GlobalKey();
+  late final GlobalKey _childKey = GlobalKey();
 
   final RenderBoxExposer _exposer = RenderBoxExposer();
   late final AnimationController _controller;
+  Rect _dragStartBounds = Rect.zero;
 
   @override
   void initState() {
@@ -65,13 +67,10 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
     super.initState();
   }
 
-  Widget buildChild(
-    BuildContext context,
+  double _calculatePanelScaleToFit(
     BoxConstraints constraints,
-    BoardItem item,
+    ProcessGameObject object,
   ) {
-    final object = model.object;
-
     final transform = Matrix4.identity()
       ..rotateZ(object.rotation)
       ..scale(object.scale);
@@ -84,7 +83,30 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
 
     final double scaleX = parentRect.width / transformedRect.width;
     final double scaleY = parentRect.height / transformedRect.height;
-    final double scaleToFit = scaleX < scaleY ? scaleX : scaleY;
+    return scaleX < scaleY ? scaleX : scaleY;
+  }
+
+  Rect _calculateRotatedBounds(ProcessGameObject object) {
+    return MatrixUtils.transformRect(
+      Matrix4.identity()..rotateZ(object.rotation),
+      Vector2.zero() & object.size,
+    );
+  }
+
+  void _captureDragStartBounds() {
+    _dragStartBounds = _childKey.currentContext?.globalPaintBounds ?? Rect.zero;
+  }
+
+  Widget buildChild(
+    BuildContext context,
+    BoxConstraints constraints,
+    BoardItem item,
+  ) {
+    final object = model.object;
+    final transform = Matrix4.identity()
+      ..rotateZ(object.rotation)
+      ..scale(object.scale);
+    final double scaleToFit = _calculatePanelScaleToFit(constraints, object);
 
     final Matrix4 finalTransform = transform.clone()..scale(scaleToFit);
 
@@ -127,6 +149,7 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
       areaWidth / widget.flag.size.x,
       areaHeight / widget.flag.size.y,
     );
+    final panelScaleToFit = _calculatePanelScaleToFit(constraints, object);
 
     final matrix = Matrix4.identity()
       ..translate(object.size.x / 2, object.size.y / 2)
@@ -222,12 +245,29 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
 
                   final renderBox =
                       _key.currentContext!.findRenderObject()! as RenderBox;
-
                   final rect = renderBox.rect;
 
                   final position = rect.center.toVector2();
 
-                  final double scale = lerpDouble(1, object.scale, value)!;
+                  final rotatedBounds = _calculateRotatedBounds(object);
+                  final fallbackStartScale = fitted == 0
+                      ? object.scale
+                      : object.scale * panelScaleToFit / fitted;
+                  final startScaleX = rotatedBounds.width == 0 || fitted == 0
+                      ? fallbackStartScale
+                      : _dragStartBounds.width / (rotatedBounds.width * fitted);
+                  final startScaleY = rotatedBounds.height == 0 || fitted == 0
+                      ? fallbackStartScale
+                      : _dragStartBounds.height /
+                            (rotatedBounds.height * fitted);
+                  final startScale = _dragStartBounds == Rect.zero
+                      ? fallbackStartScale
+                      : (startScaleX + startScaleY) / 2;
+                  final double scale = lerpDouble(
+                    startScale,
+                    object.scale,
+                    value,
+                  )!;
 
                   return ValueListenableBuilder(
                     valueListenable: _feedbackPosition,
@@ -264,9 +304,15 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
             child: Builder(
               key: ValueKey(item.hashCode),
               builder: (context) {
-                return ConstrainedBox(
-                  constraints: constraints,
-                  child: buildChild(context, constraints, item),
+                return Listener(
+                  onPointerDown: (_) => _captureDragStartBounds(),
+                  child: ConstrainedBox(
+                    constraints: constraints,
+                    child: KeyedSubtree(
+                      key: _childKey,
+                      child: buildChild(context, constraints, item),
+                    ),
+                  ),
                 );
               },
             ),

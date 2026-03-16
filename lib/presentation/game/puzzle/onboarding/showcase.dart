@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:showcaseview/showcaseview.dart';
 
 class PuzzleGameShowcase {
-  PuzzleGameShowcase({
-    required IOnboardingService service,
-  }) : _service = service;
+  static const int _maxStartAttempts = 12;
+
+  PuzzleGameShowcase({required IOnboardingService service})
+    : _service = service;
 
   final IOnboardingService _service;
 
@@ -28,14 +29,7 @@ class PuzzleGameShowcase {
       return;
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final state = showcaseStateOrNull;
-      if (state == null || state.isShowCaseCompleted == false) {
-        return;
-      }
-
-      state.startShowCase(currentShowcases);
-    });
+    _startWhenReady(currentShowcases, attempt: 0);
   }
 
   void next() {
@@ -57,19 +51,36 @@ class PuzzleGameShowcase {
   }
 
   ShowCaseWidgetState<ShowCaseWidget>? get showcaseStateOrNull {
-    final context = key.currentContext;
-
-    if (context == null || !context.mounted) {
-      return null;
+    final state = key.currentState;
+    if (state is ShowCaseWidgetState<ShowCaseWidget>) {
+      return state;
     }
 
-    try {
-      return ShowCaseWidget.of(context);
-    } catch (_) {
-      return null;
-    }
+    return null;
   }
 
-  ShowCaseWidgetState<ShowCaseWidget> get showcaseState =>
-      showcaseStateOrNull!;
+  ShowCaseWidgetState<ShowCaseWidget> get showcaseState => showcaseStateOrNull!;
+
+  void _startWhenReady(
+    List<GlobalKey> currentShowcases, {
+    required int attempt,
+  }) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = showcaseStateOrNull;
+      final hasAllTargets = currentShowcases.every(
+        (key) => key.currentContext != null,
+      );
+
+      if (state != null && state.isShowCaseCompleted && hasAllTargets) {
+        state.startShowCase(currentShowcases);
+        return;
+      }
+
+      if (attempt >= _maxStartAttempts) {
+        return;
+      }
+
+      _startWhenReady(currentShowcases, attempt: attempt + 1);
+    });
+  }
 }

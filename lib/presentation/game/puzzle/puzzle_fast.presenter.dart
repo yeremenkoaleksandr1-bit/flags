@@ -36,15 +36,17 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
     required super.onboardingService,
   });
 
-  late final PuzzleGameFastModeShowcase showcaseFm =
-      PuzzleGameFastModeShowcase(service: onboardingService);
+  late final PuzzleGameFastModeShowcase showcaseFm = PuzzleGameFastModeShowcase(
+    service: onboardingService,
+  );
 
   late ContinentType _randomContinent = params.continentType;
 
   late final PeriodicTimer periodicTimer = PeriodicTimer();
 
-  late final ValueNotifier<int> timerRx =
-      ValueNotifier(getInitialTime(params.difficult));
+  late final ValueNotifier<int> timerRx = ValueNotifier(
+    getInitialTime(params.difficult),
+  );
 
   late int initialTime = timerRx.value;
 
@@ -52,6 +54,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
   final Completer prepareGameCompleter = Completer();
   StreamSubscription<int>? _timerSubscription;
   StreamSubscription<int>? _prepareSubscription;
+  bool _isPreparationCountdownStarted = false;
 
   int get initialTimerValue => timerRx.value;
 
@@ -71,48 +74,44 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
 
     FlutterEngine.widgetPostFrameCallback((timeStamp) async {
       if (!showcaseFm.isCompleted("fast_mode")) {
-        showcaseFm.completeFuture = Completer();
-
-        showcaseFm.show(
-          [
-            showcaseFm.step1,
-            showcaseFm.step2,
-          ],
-          "fast_mode",
-        );
+        showcaseFm.show([showcaseFm.step1, showcaseFm.step2], "fast_mode");
 
         timerRx.notifyListeners();
-
-        await showcaseFm.completeFuture?.future;
-
-        initializeInGameTimer();
       } else {
-        await PreparingFastModeInitializationGame(
-          preparingTimer: preparingTimer,
-          onReady: (context) async {
-            timerRx.notifyListeners();
-            preparingTimer.value = 3;
-            await Future.delayed(const Duration(milliseconds: 250), () {
-              _prepareSubscription?.cancel();
-              _prepareSubscription = periodicTimer.start(3).listen(
-                (event) {
-                  if (isClosed) {
-                    return;
-                  }
-
-                  preparingTimer.value = event;
-
-                  if (event <= 0) {
-                    initializeInGameTimer();
-                    Navigator.of(context).pop();
-                  }
-                },
-              );
-            });
-          },
-        ).showDialog(context);
+        await startPreparationCountdown();
       }
     });
+  }
+
+  Future<void> startPreparationCountdown() async {
+    if (_isPreparationCountdownStarted) {
+      return;
+    }
+
+    _isPreparationCountdownStarted = true;
+    await PreparingFastModeInitializationGame(
+      preparingTimer: preparingTimer,
+      onReady: (context) async {
+        timerRx.notifyListeners();
+        preparingTimer.value = 3;
+        await Future.delayed(const Duration(milliseconds: 250), () {
+          _prepareSubscription?.cancel();
+          _prepareSubscription = periodicTimer.start(3).listen((event) {
+            if (isClosed) {
+              return;
+            }
+
+            preparingTimer.value = event;
+
+            if (event <= 0) {
+              _isPreparationCountdownStarted = false;
+              initializeInGameTimer();
+              Navigator.of(context).pop();
+            }
+          });
+        });
+      },
+    ).showDialog(context);
   }
 
   Future<void> initializeInGameTimer() async {
@@ -137,6 +136,11 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
     });
   }
 
+  void completeFastModeShowcase() {
+    showcaseFm.dismiss();
+    unawaited(startPreparationCountdown());
+  }
+
   void timerTick(int value) {
     timerRx.value = value;
   }
@@ -148,36 +152,36 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
   late Completer<dynamic> _fastModeGenerationCompleter;
 
   Future<void> initializeFastMode(GameDifficult difficult) async {
-    state.whenOrNull(success: (state) {
-      _fastModeGenerationCompleter = Completer();
+    state.whenOrNull(
+      success: (state) {
+        _fastModeGenerationCompleter = Completer();
 
-      FlutterEngine.schedulePostFrameCallback((timeStamp) async {
-        _randomContinent = [...ContinentType.values].random();
+        FlutterEngine.schedulePostFrameCallback((timeStamp) async {
+          _randomContinent = [...ContinentType.values].random();
 
-        final randomLevel = FactoryGameContinent.allLevels.random();
+          final randomLevel = FactoryGameContinent.allLevels.random();
 
-        resetLevelState();
+          resetLevelState();
 
-        final parts = await generateBoardParts(randomLevel, difficult);
+          final parts = await generateBoardParts(randomLevel, difficult);
 
-        emit(
-          SuccessState(
-            state.copyWith(
-              difficult: difficult,
-              level: randomLevel,
-              boardObjects: [...parts],
-              placedObjects: [],
+          emit(
+            SuccessState(
+              state.copyWith(
+                difficult: difficult,
+                level: randomLevel,
+                boardObjects: [...parts],
+                placedObjects: [],
+              ),
             ),
-          ),
-        );
+          );
 
-        await Future.delayed(
-          const Duration(milliseconds: 100),
-        );
+          await Future.delayed(const Duration(milliseconds: 100));
 
-        _fastModeGenerationCompleter.complete();
-      });
-    });
+          _fastModeGenerationCompleter.complete();
+        });
+      },
+    );
 
     return await _fastModeGenerationCompleter.future;
   }
@@ -185,6 +189,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
   @override
   Future<void> onClose() async {
     showcaseFm.dismiss();
+    _isPreparationCountdownStarted = false;
     await _timerSubscription?.cancel();
     await _prepareSubscription?.cancel();
     periodicTimer.pause();
@@ -196,6 +201,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
 
   @override
   Future<void> onLevelCompleted(PuzzleGameState state) async {
+    _isPreparationCountdownStarted = false;
     periodicTimer.pause();
     gamePreferences.recordWin();
 
@@ -244,9 +250,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
                             children: [
                               SizedBox(
                                 height: 52,
-                                child: UIMoney(
-                                  key: moneyKey,
-                                ),
+                                child: UIMoney(key: moneyKey),
                               ),
                               Gap.h12,
                               FText("+$moneys"),
@@ -260,13 +264,9 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
 
                 Overlay.of(context).insert(entry);
 
-                gamePreferences.addMoney(
-                  calcWinnerMoney(state.difficult),
-                );
+                gamePreferences.addMoney(calcWinnerMoney(state.difficult));
 
-                await Future.delayed(
-                  const Duration(milliseconds: 250),
-                );
+                await Future.delayed(const Duration(milliseconds: 250));
 
                 if (!isCloseMoney) {
                   final context = moneyKey.currentContext;
@@ -274,22 +274,16 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
                     final rect = context.renderBox!.rect;
 
                     uiMoneyLayer
-                        .addMoneys(
-                      rect.center,
-                      moneys.clamp(
-                        1,
-                        25,
-                      ),
-                    )
+                        .addMoneys(rect.center, moneys.clamp(1, 25))
                         .then((value) async {
-                      await uiMoneyLayer.hide();
-                      entry.remove();
-                      isCloseMoney = true;
+                          await uiMoneyLayer.hide();
+                          entry.remove();
+                          isCloseMoney = true;
 
-                      if (!moneyAddCompleter.isCompleted) {
-                        moneyAddCompleter.complete();
-                      }
-                    });
+                          if (!moneyAddCompleter.isCompleted) {
+                            moneyAddCompleter.complete();
+                          }
+                        });
                   }
                 }
               } else {
@@ -306,9 +300,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
 
               preparingTimer.value = 3;
 
-              await initializeFastMode(
-                [...GameDifficult.values].random(),
-              );
+              await initializeFastMode([...GameDifficult.values].random());
 
               await _prepareSubscription?.cancel();
               _prepareSubscription = periodicTimer.start(3).listen((event) {
@@ -334,6 +326,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
   @override
   Future<void> onGameOver() async {
     showcaseFm.dismiss();
+    _isPreparationCountdownStarted = false;
     await _timerSubscription?.cancel();
     await _prepareSubscription?.cancel();
     gamePreferences.resetStreak();
@@ -353,6 +346,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
   @override
   Future<void> onRestart(BuildContext context) async {
     gamePreferences.resetStreak();
+    _isPreparationCountdownStarted = false;
     await super.onRestart(context);
 
     await prepareFastModeLevel(true);

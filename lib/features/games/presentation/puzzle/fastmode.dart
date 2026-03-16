@@ -34,42 +34,28 @@ class PuzzleFastModeViewState
     audioCubit.playBgm(GameMusics.fastMode);
   }
 
-
-
   @override
-  Widget buildHeaderMiddleWidget(
-    BuildContext context,
-    PuzzleGameState state,
-  ) {
+  Widget buildHeaderMiddleWidget(BuildContext context, PuzzleGameState state) {
     return const SizedBox.shrink();
   }
 
   @override
-  Widget buildHeaderWidget(
-    BuildContext context,
-    PuzzleGameState state,
-  ) {
+  Widget buildHeaderWidget(BuildContext context, PuzzleGameState state) {
     return Row(
       children: [
-        OpenMenuButton(
-          onPressed: () => cubit.openMenu(context),
-        ),
+        OpenMenuButton(onPressed: () => cubit.openMenu(context)),
         Gap.h12,
         PuzzleFastModeStep1Showcase(
           showcaseKey: cubit.showcaseFm.step1,
           onTap: cubit.showcaseFm.next,
-          child: FastModeTimer(
-            timerStream: cubit.timerStream,
-          ),
+          child: FastModeTimer(timerStream: cubit.timerStream),
         ),
         const Spacer(),
         // SkipLevelButton(
         //   onPressed: cubit.skipLevel,
         // ),
         Gap.h4,
-        HeartTries(
-          state: cubit.heartTriesState,
-        )
+        HeartTries(state: cubit.heartTriesState),
       ],
     );
   }
@@ -81,6 +67,12 @@ class PuzzleFastModeViewState
       builder: (BuildContext context, state) {
         return FShowcaseWidget(
           showcaseKey: cubit.showcaseFm.key,
+          onComplete: (index, key) {
+            if (key == cubit.showcaseFm.step2) {
+              cubit.showcaseFm.complete('fast_mode');
+              cubit.completeFastModeShowcase();
+            }
+          },
           builder: (BuildContext context) {
             return Stack(
               children: [
@@ -89,22 +81,12 @@ class PuzzleFastModeViewState
                     showcaseKey: cubit.showcaseFm.step2,
                     onTap: () {
                       cubit.showcaseFm.next();
-                      cubit.showcaseFm.complete('fast_mode');
-                      cubit.showcaseFm.completeFuture?.complete();
                     },
                     child: const SizedBox.shrink(),
                   ),
                 ),
-                buildHeader(
-                  context,
-                  state,
-                ),
-                DeferredPointerHandler(
-                  child: buildBody(
-                    context,
-                    state,
-                  ),
-                ),
+                buildHeader(context, state),
+                DeferredPointerHandler(child: buildBody(context, state)),
                 EmblemConfirmationWidget(
                   state: cubit.emblemConfirmationView,
                   onConfirm: cubit.tryPlaceFocussedEmblem,

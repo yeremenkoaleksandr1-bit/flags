@@ -167,7 +167,11 @@ class ShowCaseWidgetState<T extends ShowCaseWidget> extends State<T> {
   /// Completes showcase of given key and starts next one
   /// otherwise will finish the entire showcase view
   void completed(GlobalKey? key) {
-    if (ids != null && ids![activeWidgetId!] == key && mounted) {
+    if (!_hasActiveStep) {
+      return;
+    }
+
+    if (ids![activeWidgetId!] == key && mounted) {
       setState(() {
         _onComplete();
         activeWidgetId = activeWidgetId! + 1;
@@ -184,6 +188,10 @@ class ShowCaseWidgetState<T extends ShowCaseWidget> extends State<T> {
   /// Completes current active showcase and starts next one
   /// otherwise will finish the entire showcase view
   void next() {
+    if (!_hasActiveStep || !mounted) {
+      return;
+    }
+
     if (ids != null && mounted) {
       setState(() {
         _onComplete();
@@ -201,6 +209,10 @@ class ShowCaseWidgetState<T extends ShowCaseWidget> extends State<T> {
   /// Completes current active showcase and starts previous one
   /// otherwise will finish the entire showcase view
   void previous() {
+    if (!_hasActiveStep || !mounted) {
+      return;
+    }
+
     if (ids != null && ((activeWidgetId ?? 0) - 1) >= 0 && mounted) {
       setState(() {
         _onComplete();
@@ -220,14 +232,22 @@ class ShowCaseWidgetState<T extends ShowCaseWidget> extends State<T> {
   }
 
   void _onStart() {
-    if (activeWidgetId! < ids!.length) {
+    if (_hasActiveStep && activeWidgetId! < ids!.length) {
       widget.onStart?.call(activeWidgetId, ids![activeWidgetId!]);
     }
   }
 
   void _onComplete() {
-    widget.onComplete?.call(activeWidgetId, ids![activeWidgetId!]);
+    if (_hasActiveStep) {
+      widget.onComplete?.call(activeWidgetId, ids![activeWidgetId!]);
+    }
   }
+
+  bool get _hasActiveStep =>
+      ids != null &&
+      activeWidgetId != null &&
+      activeWidgetId! >= 0 &&
+      activeWidgetId! < ids!.length;
 
   void _cleanupAfterSteps() {
     ids = null;

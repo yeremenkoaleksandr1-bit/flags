@@ -36,9 +36,7 @@ import 'package:showcaseview/showcaseview.dart';
 
 @RoutePage()
 class ContinentsPickerScreen extends StatefulWidget {
-  const ContinentsPickerScreen({
-    super.key,
-  }) : super();
+  const ContinentsPickerScreen({super.key}) : super();
 
   @override
   State<ContinentsPickerScreen> createState() => _ContinentsPickerScreenState();
@@ -60,18 +58,19 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
     super.initState();
     _onboardingController = OnboardingController(
       tag: "continents_picker4",
-      widgetsKeys: [
-        oContinentButton,
-        oFastModeButton,
-      ],
+      showcaseKey: showCaseWidgetKey,
+      widgetsKeys: [oContinentButton, oFastModeButton],
       service: AppScope.readBootstrapOf(context).onboardingService,
     );
 
-    try {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _onboardingController.show(showCaseWidgetKey.currentContext!);
-      });
-    } catch (e) {}
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      final context = showCaseWidgetKey.currentContext;
+      if (context == null) {
+        return;
+      }
+
+      _onboardingController.show(context);
+    });
   }
 
   @override
@@ -106,7 +105,7 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
                 gameMode: cubit.params.gameProcessType,
                 continentType: continent,
               ),
-            )
+            ),
           ],
         ),
       );
