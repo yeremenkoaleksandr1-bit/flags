@@ -2,12 +2,10 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:drag_and_drop/drag_and_drop.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
+import 'package:flags/features/app/presentation/bloc/app_cubit.dart';
 import 'package:flags/features/games/presentation/puzzle/scene_components/emblem.dart';
 import 'package:flags/features/games/presentation/puzzle/scene_components/factory.dart';
-import 'package:flags/features/app/presentation/bloc/app_cubit.dart';
-import 'package:flags/logger.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
-import 'package:flags/uikit/game_widgets/flag/flag.dart';
 import 'package:flags/uikit/game_widgets/game_widgets.dart';
 import 'package:flags/uikit/game_widgets/objects/game_objects_rendering.dart';
 import 'package:flags/uikit/theme/palette.dart';
@@ -16,7 +14,7 @@ import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class GameFlagArea extends StatefulWidget {
+class GameFlagArea extends StatelessWidget {
   const GameFlagArea({
     super.key,
     required this.objects,
@@ -58,90 +56,124 @@ class GameFlagArea extends StatefulWidget {
   final SDragTargetMove<ProcessGameObject>? onMove;
 
   @override
-  State<GameFlagArea> createState() => _GameFlagAreaState();
-}
-
-class _GameFlagAreaState extends State<GameFlagArea> {
-  final GlobalKey _stackKey = GlobalKey();
-
-  Iterable<GameObjectWidget> buildObjects(Iterable<ProcessGameObject> value) {
-    return value.map((e) {
-      return PuzzleSceneItemsFactory.build(
-        e,
-        onEmblem: (o) => EmblemSceneObject(o, widget.cubit),
-        onDefault: GameObjectWidget.new,
-      );
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final appContext = context.read<IAppCubit>();
+    final isDebugMode = context.select<IAppCubit, bool>(
+      (appCubit) => appCubit.preferences.isDebugMode,
+    );
+    final flagSize = flag.size.toSize();
+    final flagAspectRatio = flag.size.x / flag.size.y;
+    final placedObjects = _buildObjects(objects).toList(growable: false);
+    final debugObjects = isDebugMode
+        ? _buildObjects(flag.objects).toList(growable: false)
+        : null;
 
     return Padding(
       padding: const Pad(horizontal: 8),
       child: Material(
-        color: ThemePalette.black.withValues(alpha: 0.7),
-        child: Stack(
-          fit: StackFit.passthrough,
-          children: [
-            RenderBoxExposed(
-              exposer: widget.exposer,
-              child: RepaintBoundary(
-                child: FittedBox(
-                  fit: BoxFit.fill,
-                  alignment: Alignment.topLeft,
-                  child: ClipRRect(
-                    child: SizedBox.fromSize(
-                      size: widget.flag.size.toSize(),
-                      child: GameObjectsRendering([
-                        ...buildObjects(widget.objects),
-                      ]),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+        color: Colors.transparent,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final surfaceSize = _resolveSurfaceSize(
+              constraints.biggest,
+              flagAspectRatio,
+            );
 
-            if (appContext.preferences.isDebugMode)
-              IgnorePointer(
-                child: Opacity(
-                  opacity: 0.2,
-                  child: FittedBox(
-                    fit: BoxFit.fill,
-                    alignment: Alignment.topLeft,
-                    child: ClipRRect(
-                      child: SizedBox.fromSize(
-                        size: widget.flag.size.toSize(),
-                        child: GameObjectsRendering([
-                          ...buildObjects(widget.flag.objects),
-                        ]),
+            return Center(
+              child: SizedBox.fromSize(
+                size: surfaceSize,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: ThemePalette.black.withValues(alpha: 0.7),
                       ),
                     ),
-                  ),
+                    RenderBoxExposed(
+                      exposer: exposer,
+                      child: RepaintBoundary(
+                        child: _buildFlagLayer(
+                          flagSize: flagSize,
+                          objects: placedObjects,
+                        ),
+                      ),
+                    ),
+                    if (debugObjects != null)
+                      IgnorePointer(
+                        child: Opacity(
+                          opacity: 0.2,
+                          child: _buildFlagLayer(
+                            flagSize: flagSize,
+                            objects: debugObjects,
+                          ),
+                        ),
+                      ),
+                    _buildDragTargetArea(),
+                  ],
                 ),
               ),
-            buildDragTargetArea(),
-          ],
+            );
+          },
         ),
       ),
     );
   }
 
-  Positioned buildDragTargetArea() {
+  Iterable<GameObjectWidget> _buildObjects(
+    Iterable<ProcessGameObject> objects,
+  ) {
+    return objects.map(
+      (object) => PuzzleSceneItemsFactory.build(
+        object,
+        onEmblem: (emblem) => EmblemSceneObject(emblem, cubit),
+        onDefault: GameObjectWidget.new,
+      ),
+    );
+  }
+
+  Widget _buildFlagLayer({
+    required Size flagSize,
+    required List<GameObjectWidget> objects,
+  }) {
+    return ClipRRect(
+      child: SizedBox.expand(
+        child: FittedBox(
+          fit: BoxFit.fill,
+          child: SizedBox.fromSize(
+            size: flagSize,
+            child: GameObjectsRendering(objects),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Size _resolveSurfaceSize(Size availableSize, double aspectRatio) {
+    if (availableSize.isEmpty) {
+      return Size.zero;
+    }
+
+    final availableAspectRatio = availableSize.width / availableSize.height;
+
+    if (availableAspectRatio > aspectRatio) {
+      return Size(availableSize.height * aspectRatio, availableSize.height);
+    }
+
+    return Size(availableSize.width, availableSize.width / aspectRatio);
+  }
+
+  Positioned _buildDragTargetArea() {
     return Positioned.fill(
       child: Builder(
         builder: (BuildContext context) {
           return SDragTargetArea<ProcessGameObject>(
-            onLeave: widget.onLeave,
+            onLeave: onLeave,
             onAcceptWithDetails: (details) {
-              return widget.onAcceptWithDetails?.call(context, details) ??
-                  false;
+              return onAcceptWithDetails?.call(context, details) ?? false;
             },
-            onMove: widget.onMove,
+            onMove: onMove,
             onWillAcceptWithDetails: (details) {
-              return widget.onWillAcceptWithDetails?.call(context, details) ??
-                  true;
+              return onWillAcceptWithDetails?.call(context, details) ?? true;
             },
             builder:
                 (

@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:drag_and_drop/drag_and_drop.dart';
@@ -29,19 +30,16 @@ class BoardCommonItemWidget extends BoardItemWidget {
   final GameFlag flag;
 
   final void Function(ProcessGameObject object)? onDragStarted;
-  final void Function(
-    ProcessGameObject object,
-    DragUpdateDetails details,
-  )? onDragUpdate;
+  final void Function(ProcessGameObject object, DragUpdateDetails details)?
+  onDragUpdate;
   final void Function(
     ProcessGameObject object,
     Velocity velocity,
     Offset offset,
-  )? onDraggableCanceled;
-  final void Function(
-    ProcessGameObject object,
-    SDraggableDetails details,
-  )? onDragEnd;
+  )?
+  onDraggableCanceled;
+  final void Function(ProcessGameObject object, SDraggableDetails details)?
+  onDragEnd;
   final void Function(ProcessGameObject object)? onDragCompleted;
 
   @override
@@ -49,7 +47,8 @@ class BoardCommonItemWidget extends BoardItemWidget {
 }
 
 class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
-    extends BoardItemWidgetState<T> with SingleTickerProviderStateMixin {
+    extends BoardItemWidgetState<T>
+    with SingleTickerProviderStateMixin {
   IAudioCubit get audioCubit => context.read<IAudioCubit>();
 
   late final GlobalKey _key = GlobalKey();
@@ -123,7 +122,11 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
     final areaSize = cubit.flagExposer.renderBox.value?.size;
 
     final areaWidth = areaSize?.width ?? 1;
-    final fitted = areaWidth / (widget.flag.size.x);
+    final areaHeight = areaSize?.height ?? 1;
+    final fitted = math.min(
+      areaWidth / widget.flag.size.x,
+      areaHeight / widget.flag.size.y,
+    );
 
     final matrix = Matrix4.identity()
       ..translate(object.size.x / 2, object.size.y / 2)
@@ -144,10 +147,7 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
       feedback.height,
     );
 
-    feedBackRect = MatrixUtils.transformRect(
-      Matrix4.identity(),
-      feedBackRect,
-    );
+    feedBackRect = MatrixUtils.transformRect(Matrix4.identity(), feedBackRect);
 
     return RenderBoxExposed(
       exposer: _exposer,
@@ -177,9 +177,7 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
 
               widget.onDragUpdate?.call(
                 object,
-                DragUpdateDetails(
-                  globalPosition: globalPosition,
-                ),
+                DragUpdateDetails(globalPosition: globalPosition),
               );
 
               // DebugPainter.paint((canvas, size) {
@@ -208,13 +206,14 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
             onDragCanceled: () =>
                 audioCubit.playSfx(GameSfx.cancelObjectPlacing),
             feedbackRect: feedBackRect,
-            dragAnchorStrategy: (
-              SDraggable<Object> draggable,
-              BuildContext context,
-              Offset position,
-            ) {
-              return position;
-            },
+            dragAnchorStrategy:
+                (
+                  SDraggable<Object> draggable,
+                  BuildContext context,
+                  Offset position,
+                ) {
+                  return position;
+                },
             feedbackBuilder: (context, renderBox) {
               return AnimatedBuilder(
                 animation: _controller,
@@ -228,51 +227,35 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
 
                   final position = rect.center.toVector2();
 
-                  final double scale = lerpDouble(
-                    1,
-                    object.scale,
-                    value,
-                  )!;
+                  final double scale = lerpDouble(1, object.scale, value)!;
 
                   return ValueListenableBuilder(
                     valueListenable: _feedbackPosition,
-                    builder: (
-                      BuildContext context,
-                      Offset value,
-                      Widget? child,
-                    ) {
-                      position.lerp(
-                        value.toVector2(),
-                        _controller.value,
-                      );
+                    builder:
+                        (BuildContext context, Offset value, Widget? child) {
+                          position.lerp(value.toVector2(), _controller.value);
 
-                      return Transform(
-                        alignment: Alignment.center,
-                        transform: Matrix4.identity()
-                          ..translate(
-                            position.x,
-                            position.y,
-                          )
-                          ..translate(-object.size.x / 2, -object.size.y / 2)
-                          ..scale(scale)
-                          ..scale(fitted)
-                          ..translate2(
-                            Vector2(0, -object.size.y / 2),
-                          ),
-                        child: child,
-                      );
-                    },
+                          return Transform(
+                            alignment: Alignment.center,
+                            transform: Matrix4.identity()
+                              ..translate(position.x, position.y)
+                              ..translate(
+                                -object.size.x / 2,
+                                -object.size.y / 2,
+                              )
+                              ..scale(scale)
+                              ..scale(fitted)
+                              ..translate2(Vector2(0, -object.size.y / 2)),
+                            child: child,
+                          );
+                        },
                     child: child,
                   );
                 },
                 child: Transform(
                   alignment: Alignment.center,
                   transform: Matrix4.identity()..rotateZ(object.rotation),
-                  child: super.buildWidget(
-                    context,
-                    constraints,
-                    item,
-                  ),
+                  child: super.buildWidget(context, constraints, item),
                 ),
               );
             },
@@ -283,11 +266,7 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
               builder: (context) {
                 return ConstrainedBox(
                   constraints: constraints,
-                  child: buildChild(
-                    context,
-                    constraints,
-                    item,
-                  ),
+                  child: buildChild(context, constraints, item),
                 );
               },
             ),

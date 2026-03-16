@@ -34,10 +34,7 @@ class GamesFactoryPageParams {
 
 @RoutePage()
 class GamesFactoryPage extends StatefulWidget {
-  const GamesFactoryPage({
-    super.key,
-    required this.params,
-  });
+  const GamesFactoryPage({super.key, required this.params});
 
   final GamesFactoryPageParams params;
 
@@ -56,30 +53,31 @@ class _GamesFactoryPageState extends State<GamesFactoryPage>
   @override
   void initState() {
     final params = widget.params;
-    final onboardingService =
-        AppScope.readBootstrapOf(context).onboardingService;
+    final onboardingService = AppScope.readBootstrapOf(
+      context,
+    ).onboardingService;
 
     screen = switch (params.gamesType) {
       GameStyleType.common => PuzzleCommonModeView(
-          cubit: PuzzleCommonModeCubit(
-            context,
-            this,
-            params: params,
-            appCubit: context.read<IAppCubit>(),
-            levelsCubit: context.read<ILevelsPickerCubit>(),
-            onboardingService: onboardingService,
-          ),
+        cubit: PuzzleCommonModeCubit(
+          context,
+          this,
+          params: params,
+          appCubit: context.read<IAppCubit>(),
+          levelsCubit: context.read<ILevelsPickerCubit>(),
+          onboardingService: onboardingService,
         ),
+      ),
       GameStyleType.fast => PuzzleFastModeView(
-          cubit: PuzzleFastModeCubit(
-            context,
-            this,
-            params: params,
-            appCubit: context.read<IAppCubit>(),
-            levelsCubit: context.read<ILevelsPickerCubit>(),
-            onboardingService: onboardingService,
-          ),
+        cubit: PuzzleFastModeCubit(
+          context,
+          this,
+          params: params,
+          appCubit: context.read<IAppCubit>(),
+          levelsCubit: context.read<ILevelsPickerCubit>(),
+          onboardingService: onboardingService,
         ),
+      ),
     };
 
     super.initState();
@@ -103,19 +101,14 @@ class _GamesFactoryPageState extends State<GamesFactoryPage>
         startSlideDirection: GamePageSlideDirection.middle,
         endSlideDirection: GamePageSlideDirection.bottom,
         onPageFocussed: onPageFocussed,
-        child: BackButtonListener(
-          onBackButtonPressed: () async {
-            return true;
+        child: Builder(
+          builder: (BuildContext context) {
+            if (_isReady) {
+              return screen;
+            } else {
+              return const SizedBox();
+            }
           },
-          child: Builder(
-            builder: (BuildContext context) {
-              if (_isReady) {
-                return screen;
-              } else {
-                return const SizedBox();
-              }
-            },
-          ),
         ),
       ),
     );

@@ -1,16 +1,8 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:flags/logger.dart';
 import 'package:flags/navigator/game_navigation_observer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
-enum GamePageSlideDirection {
-  top,
-  bottom,
-  left,
-  right,
-  middle,
-}
+enum GamePageSlideDirection { top, bottom, left, right, middle }
 
 class GamePageBuilder extends StatefulWidget {
   static final RouteObserver<ModalRoute<void>> routeObserver =
@@ -76,21 +68,19 @@ class _GamePageBuilderState extends State<GamePageBuilder>
       _route?.registerPopEntry(this);
     }
 
-    final routeDataScope =
-        context.findAncestorWidgetOfExactType<RouteDataScope>();
+    final routeDataScope = context
+        .findAncestorWidgetOfExactType<RouteDataScope>();
 
     if (routeDataScope != null) {
-      _observer =
-          RouterScope.of(context).firstObserverOfType<GameAutoRouteObserver>();
+      _observer = RouterScope.of(
+        context,
+      ).firstObserverOfType<GameAutoRouteObserver>();
       if (_observer != null) {
         _observer!.subscribe(this, context.routeData);
       }
     } else {
       if (_route != null) {
-        GamePageBuilder.routeObserver.subscribe(
-          this,
-          _route!,
-        );
+        GamePageBuilder.routeObserver.subscribe(this, _route!);
       }
     }
   }
@@ -162,79 +152,78 @@ class _GamePageBuilderState extends State<GamePageBuilder>
   Widget build(BuildContext context) {
     final startSlideDirection = widget.startSlideDirection;
     final endSlideDirection = widget.endSlideDirection;
-    double translationX = 0;
-    double translationY = 0;
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
 
     return Material(
       color: Colors.transparent,
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          final screenSize = constraints.biggest;
-          final screenWidth = screenSize.width;
-          final screenHeight = screenSize.height;
-      
-          return widget.child.animate(
-            autoPlay: false,
-            controller: _controller,
-            effects: [
-              FadeEffect(
-                begin: 1,
-                end: 0,
-                curve: widget.curve,
-              ),
-              CustomEffect(
-                curve: widget.curve,
-                builder: (
-                  BuildContext context,
-                  double value,
-                  Widget child,
-                ) {
-                  if (_controller.status == AnimationStatus.forward) {
-                    switch (endSlideDirection) {
-                      case GamePageSlideDirection.top:
-                        translationY = -screenHeight * value;
-                      case GamePageSlideDirection.bottom:
-                        translationY = screenHeight * value;
-                      case GamePageSlideDirection.left:
-                        translationX = -screenWidth * value;
-                      case GamePageSlideDirection.right:
-                        translationX = screenWidth * value;
-                      case GamePageSlideDirection.middle:
-                        translationX = 1;
-                        translationY = 1;
-                    }
-                  } else if (_controller.status == AnimationStatus.reverse) {
-                    switch (startSlideDirection) {
-                      case GamePageSlideDirection.top:
-                        translationY = -screenHeight * value;
-                      case GamePageSlideDirection.bottom:
-                        translationY = screenHeight * value;
-                      case GamePageSlideDirection.left:
-                        translationX = -screenWidth * value;
-                      case GamePageSlideDirection.right:
-                        translationX = screenWidth * value;
-                      case GamePageSlideDirection.middle:
-                        translationX = 1;
-                        translationY = 1;
-                    }
-                  } else {
-                    translationX = 1;
-                    translationY = 1;
-                  }
-      
-                  return Transform.translate(
-                    offset: Offset(
-                      translationX - 1,
-                      translationY - 1,
-                    ),
-                    child: child,
-                  );
-                },
-              ),
-            ],
+      child: AnimatedBuilder(
+        animation: _controller,
+        child: widget.child,
+        builder: (BuildContext context, Widget? child) {
+          final value = CurvedAnimation(
+            parent: _controller,
+            curve: widget.curve,
+          ).value;
+
+          final offset = _resolveOffset(
+            value: value,
+            screenWidth: screenWidth,
+            screenHeight: screenHeight,
+            startSlideDirection: startSlideDirection,
+            endSlideDirection: endSlideDirection,
+          );
+
+          return Opacity(
+            opacity: 1 - value,
+            child: Transform.translate(offset: offset, child: child),
           );
         },
       ),
     );
+  }
+
+  Offset _resolveOffset({
+    required double value,
+    required double screenWidth,
+    required double screenHeight,
+    required GamePageSlideDirection startSlideDirection,
+    required GamePageSlideDirection endSlideDirection,
+  }) {
+    if (_controller.status == AnimationStatus.forward) {
+      return _offsetForDirection(
+        direction: endSlideDirection,
+        value: value,
+        screenWidth: screenWidth,
+        screenHeight: screenHeight,
+      );
+    }
+
+    if (_controller.status == AnimationStatus.reverse) {
+      return _offsetForDirection(
+        direction: startSlideDirection,
+        value: value,
+        screenWidth: screenWidth,
+        screenHeight: screenHeight,
+      );
+    }
+
+    return Offset.zero;
+  }
+
+  Offset _offsetForDirection({
+    required GamePageSlideDirection direction,
+    required double value,
+    required double screenWidth,
+    required double screenHeight,
+  }) {
+    return switch (direction) {
+      GamePageSlideDirection.top => Offset(0, -screenHeight * value),
+      GamePageSlideDirection.bottom => Offset(0, screenHeight * value),
+      GamePageSlideDirection.left => Offset(-screenWidth * value, 0),
+      GamePageSlideDirection.right => Offset(screenWidth * value, 0),
+      GamePageSlideDirection.middle => Offset.zero,
+    };
   }
 }

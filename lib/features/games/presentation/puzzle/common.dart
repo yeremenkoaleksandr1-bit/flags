@@ -36,6 +36,10 @@ class PuzzleCommonModeView<T extends PuzzleCommonModeCubit>
 
 class PuzzleCommonModeViewState<T extends PuzzleCommonModeCubit>
     extends GameProcessScreenState<T> {
+  static const double _flagSectionMinHeight = 220;
+  static const double _flagSectionMaxHeight = 420;
+  static const double _flagSectionHeightFactor = 0.42;
+
   T get cubit => widget.cubit;
   IAudioCubit get audioCubit => context.read<IAudioCubit>();
 
@@ -92,18 +96,28 @@ class PuzzleCommonModeViewState<T extends PuzzleCommonModeCubit>
   }
 
   Widget buildFlagSection(BuildContext context, PuzzleGameState state) {
+    final mediaQuery = MediaQuery.of(context);
+    final safeHeight = mediaQuery.size.height - mediaQuery.padding.vertical;
+    final flagSectionHeight = (safeHeight * _flagSectionHeightFactor).clamp(
+      _flagSectionMinHeight,
+      _flagSectionMaxHeight,
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         LevelTitleView(levelName: state.level.flag.name),
-        ShakeWidget(
-          controller: cubit.shakeAnimation,
-          child: GameFlagArea(
-            flag: state.level.flag,
-            exposer: cubit.flagExposer,
-            objects: state.placedObjects,
-            onAcceptWithDetails: handleFlagObjectDrop,
-            cubit: cubit,
+        SizedBox(
+          height: flagSectionHeight,
+          child: ShakeWidget(
+            controller: cubit.shakeAnimation,
+            child: GameFlagArea(
+              flag: state.level.flag,
+              exposer: cubit.flagExposer,
+              objects: state.placedObjects,
+              onAcceptWithDetails: handleFlagObjectDrop,
+              cubit: cubit,
+            ),
           ),
         ),
       ],

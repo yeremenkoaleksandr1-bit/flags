@@ -9,11 +9,10 @@ import 'package:flags/ui/dialogs/dialogs.dart';
 import 'package:flags/uikit/components/buttons/buttons.dart';
 import 'package:flags/uikit/game_widgets/flag/flag.dart';
 import 'package:flags/uikit/uikit.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class PuzzleWinnerDialog extends DialogWidget {
-  PuzzleWinnerDialog({
+  const PuzzleWinnerDialog({
     super.key,
     required this.level,
     this.nextLevel,
@@ -23,155 +22,205 @@ class PuzzleWinnerDialog extends DialogWidget {
     required this.onNextLevelPressed,
   });
 
-  final GlobalKey _moneyStartWidget = GlobalKey();
-
   final GameLevel level;
   final GameLevel? nextLevel;
-
   final List<EmblemPart> emblems;
   final bool isLastLevelInSection;
-
   final void Function(BuildContext context) onExitPressed;
   final void Function(BuildContext context) onNextLevelPressed;
 
-  bool isAnimationPlayed = false;
+  @override
+  Widget build(BuildContext context) {
+    return _PuzzleWinnerDialogContent(
+      level: level,
+      nextLevel: nextLevel,
+      emblems: emblems,
+      isLastLevelInSection: isLastLevelInSection,
+      onExitPressed: onExitPressed,
+      onNextLevelPressed: onNextLevelPressed,
+    );
+  }
+}
+
+class _PuzzleWinnerDialogContent extends StatefulWidget {
+  const _PuzzleWinnerDialogContent({
+    required this.level,
+    required this.nextLevel,
+    required this.emblems,
+    required this.isLastLevelInSection,
+    required this.onExitPressed,
+    required this.onNextLevelPressed,
+  });
+
+  final GameLevel level;
+  final GameLevel? nextLevel;
+  final List<EmblemPart> emblems;
+  final bool isLastLevelInSection;
+  final void Function(BuildContext context) onExitPressed;
+  final void Function(BuildContext context) onNextLevelPressed;
+
+  @override
+  State<_PuzzleWinnerDialogContent> createState() =>
+      _PuzzleWinnerDialogContentState();
+}
+
+class _PuzzleWinnerDialogContentState
+    extends State<_PuzzleWinnerDialogContent> {
+  final GlobalKey _moneyStartWidgetKey = GlobalKey();
+
+  bool _isMoneyAnimationScheduled = false;
+
+  bool get _isLastLevelInContinent =>
+      widget.nextLevel == null && !widget.isLastLevelInSection;
+
+  int get _moneyAward => widget.level.completed ? 0 : widget.level.id;
+
+  bool get _showMoneyAward => _moneyAward != 0;
+
+  bool get _showEmblemsAward => widget.emblems.isNotEmpty;
+
+  bool get _showAwards => _showMoneyAward || _showEmblemsAward;
+
+  String get _nextLevelButtonText {
+    if (_isLastLevelInContinent) {
+      return '';
+    }
+
+    if (widget.isLastLevelInSection) {
+      return 'Next section';
+    }
+
+    return 'Next level ${widget.nextLevel!.id + 1}';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scheduleMoneyAnimationIfNeeded();
+  }
+
+  @override
+  void didUpdateWidget(covariant _PuzzleWinnerDialogContent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.level != widget.level ||
+        oldWidget.emblems != widget.emblems) {
+      _isMoneyAnimationScheduled = false;
+      _scheduleMoneyAnimationIfNeeded();
+    }
+  }
+
+  void _scheduleMoneyAnimationIfNeeded() {
+    if (!_showMoneyAward || _isMoneyAnimationScheduled) {
+      return;
+    }
+
+    _isMoneyAnimationScheduled = true;
+
+    FlutterEngine.widgetPostFrameCallback((_) async {
+      if (!mounted) {
+        return;
+      }
+
+      final currentContext = _moneyStartWidgetKey.currentContext;
+      if (currentContext == null) {
+        return;
+      }
+
+      final renderObject = currentContext.findRenderObject();
+      if (renderObject is! RenderBox || !renderObject.attached) {
+        return;
+      }
+
+      final uiMoneyLayer = UiMoneyLayer.find();
+
+      await uiMoneyLayer.show();
+      await uiMoneyLayer.addMoneys(
+        renderObject.rect.center,
+        _moneyAward.clamp(1, 50),
+      );
+      await Future.delayed(const Duration(milliseconds: 1250));
+      await uiMoneyLayer.hide();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final isLastLevelInContinent =
-        nextLevel == null && isLastLevelInSection == false;
-
-    final isCurrentLevelCompleted = level.completed;
-
-    var nextLevelButtonText = "";
-
-    if (!isLastLevelInContinent) {
-      if (!isLastLevelInSection) {
-        nextLevelButtonText = "Next level ${nextLevel!.id + 1}";
-      } else {
-        nextLevelButtonText = "Next section";
-      }
-    }
-
-    final addMoneyView = !level.completed ? level.id : 0;
-
-    final showMoneyAward = addMoneyView != 0;
-    final showEmblemsAward = emblems.isNotEmpty;
-    final showAward = showMoneyAward || showEmblemsAward;
-
-    if (showMoneyAward && !isAnimationPlayed) {
-      isAnimationPlayed = true;
-      FlutterEngine.widgetPostFrameCallback((timeStamp) {
-        if (_moneyStartWidget.currentContext != null) {
-          final renderBox = _moneyStartWidget.currentContext!
-              .findRenderObject()! as RenderBox;
-
-          final rect = renderBox.rect;
-
-          final uiMoneyLayer = UiMoneyLayer.find();
-
-          uiMoneyLayer.show().then(
-            (value) async {
-              await uiMoneyLayer.addMoneys(
-                rect.center,
-                addMoneyView.clamp(1, 50),
-              );
-
-              await Future.delayed(
-                const Duration(
-                  milliseconds: 1250,
-                ),
-              );
-
-              await uiMoneyLayer.hide();
-            },
-          );
-        }
-      });
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       spacing: 24,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: FText(
-                    "${level.flag.name} - completed!",
-                    textStyle: const TextStyle(
-                      fontSize: 48,
-                    ),
-                  ),
-                ),
+        _buildHeader(),
+        if (_showAwards) _buildAwards(),
+        _buildActions(context),
+      ],
+    );
+  }
+
+  Widget _buildHeader() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: FText(
+                '${widget.level.flag.name} - completed!',
+                textStyle: const TextStyle(fontSize: 48),
               ),
-            ),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: FlagView(flag: level.flag),
-            ),
-          ],
-        ),
-        if (showAward)
-          FCard(
-            color: ThemePalette.peach,
-            child: Column(
-              spacing: 12,
-              children: [
-                if (showMoneyAward)
-                  AddedMoneyView(
-                    money: addMoneyView,
-                    widgetKey: _moneyStartWidget,
-                  ),
-                if (showEmblemsAward)
-                  PuzzleNewEmblemView(
-                    emblems: emblems,
-                  ),
-              ],
             ),
           ),
-        Column(
-          spacing: 8,
-          children: [
-            FGreenButton(
-              onPressed: () => onNextLevelPressed(context),
-              child: Center(
-                child: FText(
-                  nextLevelButtonText,
-                  textStyle: const TextStyle(
-                    fontSize: 48,
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: FRedButton(
-                onPressed: () => onExitPressed(context),
-                child: Center(
-                  child: FText("Menu"),
-                ),
-              ),
-            ),
-          ],
         ),
-        // if (IAppCubit.isDebugMode) ...[
-        //   Column(
-        //     children: [
-        //       Text("nextLevel: ${nextLevel?.flag.name}"),
-        //       Text("is Last Level In Continent: $isLastLevelInContinent"),
-        //       Text("is Current Level Completed: $isCurrentLevelCompleted"),
-        //       Text("is Last Level In Section: $isLastLevelInSection"),
-        //       Text("level Emblems: ${emblems.length}"),
-        //     ],
-        //   ),
-        // ],
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 280, maxHeight: 460),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: FlagView(flag: widget.level.flag),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAwards() {
+    return FCard(
+      color: ThemePalette.peach,
+      child: Column(
+        spacing: 12,
+        children: [
+          if (_showMoneyAward)
+            AddedMoneyView(money: _moneyAward, widgetKey: _moneyStartWidgetKey),
+          if (_showEmblemsAward) PuzzleNewEmblemView(emblems: widget.emblems),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActions(BuildContext context) {
+    return Column(
+      spacing: 8,
+      children: [
+        FGreenButton(
+          onPressed: () => widget.onNextLevelPressed(context),
+          child: Center(
+            child: FText(
+              _nextLevelButtonText,
+              textStyle: const TextStyle(fontSize: 48),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: FRedButton(
+            onPressed: () => widget.onExitPressed(context),
+            child: Center(child: FText('Menu')),
+          ),
+        ),
       ],
     );
   }

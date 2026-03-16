@@ -101,16 +101,14 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
     required this.onboardingService,
     this.levelProgressService = const PuzzleLevelProgressService(),
     this.placementService = const PuzzleObjectPlacementService(),
-  })  : audioCubit = context.read<IAudioCubit>(),
-        vibrationCubit = context.read<IVibrationCubit>(),
-        levelsService = context.read<GameLevelsCubit>(),
-        gamePreferences = context.read<GamePreferencesCubit>(),
-        showcase = PuzzleGameShowcase(service: onboardingService),
-        emblemConfirmationView = EmblemConfirmationWidgetState(),
-        boardController = PartsBoardState(),
-        heartTriesState = HeartTriesState(
-          tries: 3,
-        );
+  }) : audioCubit = context.read<IAudioCubit>(),
+       vibrationCubit = context.read<IVibrationCubit>(),
+       levelsService = context.read<GameLevelsCubit>(),
+       gamePreferences = context.read<GamePreferencesCubit>(),
+       showcase = PuzzleGameShowcase(service: onboardingService),
+       emblemConfirmationView = EmblemConfirmationWidgetState(),
+       boardController = PartsBoardState(),
+       heartTriesState = HeartTriesState(tries: 3);
 
   int gameSeed = -1;
 
@@ -185,12 +183,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
         emit(
           SuccessState(
             state.copyWith(
-              boardObjects: [
-                ...prepareShowcaseObjects(
-                  parts,
-                  level,
-                ),
-              ],
+              boardObjects: [...prepareShowcaseObjects(parts, level)],
             ),
           ),
         );
@@ -202,13 +195,11 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
     state.whenOrNull(
       success: (state) {
         final renderBox = flagExposer.renderBox.value!;
+        final widthFit = renderBox.size.width / state.level.flag.size.x;
+        final heightFit = renderBox.size.height / state.level.flag.size.y;
 
         emit(
-          SuccessState(
-            state.copyWith(
-              flagFitValue: renderBox.size.width / state.level.flag.size.x,
-            ),
-          ),
+          SuccessState(state.copyWith(flagFitValue: min(widthFit, heightFit))),
         );
       },
     );
@@ -238,13 +229,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
 
     sceneObject?.setActive(false);
 
-    emit(
-      SuccessState(
-        state.copyWith(
-          placedObjects: placedObjects,
-        ),
-      ),
-    );
+    emit(SuccessState(state.copyWith(placedObjects: placedObjects)));
 
     unfocusObject();
     tryCompleteLevel();
@@ -275,9 +260,8 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
 
     final level = state.level.copyWith();
 
-    final emblems = [...level.flag.emblems]..removeWhere(
-        (e) => emblemsService.isOpened(e.name),
-      );
+    final emblems = [...level.flag.emblems]
+      ..removeWhere((e) => emblemsService.isOpened(e.name));
 
     final isLastLevelInSection = data.section?.difficulty != state.difficult;
 
@@ -289,9 +273,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
         onExitPressed: (context) async {
           Navigator.of(context).pop();
 
-          this.context.navigateNamedTo(
-                LevelsPickerRoute.name,
-              );
+          this.context.navigateNamedTo(LevelsPickerRoute.name);
         },
         onNextLevelPressed: (context) async {
           Navigator.of(context).pop();
@@ -303,10 +285,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
           });
         },
         emblems: emblems,
-      ).showModal(
-        context,
-        barrierDismissible: false,
-      );
+      ).showModal(context, barrierDismissible: false);
     }
 
     state.level.completeLevel();
@@ -339,14 +318,9 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
         onExit: (context) {
           Navigator.of(context).pop();
 
-          this.context.navigateNamedTo(
-                LevelsPickerRoute.name,
-              );
+          this.context.navigateNamedTo(LevelsPickerRoute.name);
         },
-      ).showModal(
-        context,
-        barrierDismissible: false,
-      );
+      ).showModal(context, barrierDismissible: false);
     }
   }
 
@@ -372,12 +346,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
               level: data.level,
               difficult: data.section!.difficulty,
               placedObjects: [],
-              boardObjects: [
-                ...prepareShowcaseObjects(
-                  parts,
-                  level,
-                ),
-              ],
+              boardObjects: [...prepareShowcaseObjects(parts, level)],
             ),
           ),
         );
@@ -401,10 +370,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
             emit(
               SuccessState(
                 state.copyWith(
-                  placedObjects: [
-                    ...state.placedObjects,
-                    availableObject,
-                  ],
+                  placedObjects: [...state.placedObjects, availableObject],
                 ),
               ),
             );
@@ -464,35 +430,27 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
     await PuzzleLoseDialog(
       onRestart: onRestart,
       onExit: onGameExit,
-    ).showModal(
-      context,
-      barrierDismissible: false,
-    );
+    ).showModal(context, barrierDismissible: false);
   }
 
   void resetLevelState() {
     _isGameOverShown = false;
     showcase.dismiss();
-    state.whenOrNull(success: (state) {
-      for (final element in state.boardObjects) {
-        element.dispose();
-      }
+    state.whenOrNull(
+      success: (state) {
+        for (final element in state.boardObjects) {
+          element.dispose();
+        }
 
-      emblemConfirmationView.hide();
-      focusedObject.value = null;
-      heartTriesState.refresh();
+        emblemConfirmationView.hide();
+        focusedObject.value = null;
+        heartTriesState.refresh();
 
-      boardController.toggleDraggingStatus(true);
+        boardController.toggleDraggingStatus(true);
 
-      emit(
-        SuccessState(
-          state.copyWith(
-            boardObjects: [],
-            placedObjects: [],
-          ),
-        ),
-      );
-    });
+        emit(SuccessState(state.copyWith(boardObjects: [], placedObjects: [])));
+      },
+    );
   }
 
   Future<void> onRestart(BuildContext context) async {
@@ -522,12 +480,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
             SuccessState(
               state.copyWith(
                 placedObjects: [],
-                boardObjects: [
-                  ...prepareShowcaseObjects(
-                    parts,
-                    level,
-                  ),
-                ],
+                boardObjects: [...prepareShowcaseObjects(parts, level)],
               ),
             ),
           );
@@ -563,13 +516,13 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
 
           object.position = sceneObject!.gameObject.position;
           object.rotation = sceneObject.gameObject.rotation;
-          object.scale =
-              sceneObject.scaleConverter(sceneObject.gameObject.scale);
-
-          final flagObject = state.level.flag.objects.whereType<EmblemPart>()
-              .firstWhereOrNull(
-            (e) => e.uniqueName == object.uniqueName,
+          object.scale = sceneObject.scaleConverter(
+            sceneObject.gameObject.scale,
           );
+
+          final flagObject = state.level.flag.objects
+              .whereType<EmblemPart>()
+              .firstWhereOrNull((e) => e.uniqueName == object.uniqueName);
 
           if (flagObject == null) {
             onIncorrectPlacing();
@@ -588,11 +541,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
               flagObject,
             ];
 
-            _applyPlacement(
-              state,
-              flagObject,
-              placedObjects: placedObjects,
-            );
+            _applyPlacement(state, flagObject, placedObjects: placedObjects);
           } else {
             onIncorrectPlacing();
           }
@@ -606,7 +555,8 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
       success: (state) {
         final focussedObject = focusedObject.value;
         logger.d(
-            focussedObject != null && focussedObject is GameObjectWidgetState);
+          focussedObject != null && focussedObject is GameObjectWidgetState,
+        );
 
         if (focussedObject != null && focussedObject is GameObjectWidgetState) {
           final widget = focussedObject;
@@ -622,13 +572,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
             (e) => e.uniqueName == widget.gameObject.uniqueName,
           );
 
-          emit(
-            SuccessState(
-              state.copyWith(
-                placedObjects: placedObjects,
-              ),
-            ),
-          );
+          emit(SuccessState(state.copyWith(placedObjects: placedObjects)));
 
           onObjectFocusRemoved(focussedObject);
           focusedObject.value = null;
@@ -673,12 +617,12 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
   }
 
   double getScoreMultiplier(GameDifficult difficult) => switch (difficult) {
-        GameDifficult.superEasy => 1,
-        GameDifficult.easy => 1.5,
-        GameDifficult.medium => 2,
-        GameDifficult.hard => 2.5,
-        GameDifficult.extraHard => 3,
-      };
+    GameDifficult.superEasy => 1,
+    GameDifficult.easy => 1.5,
+    GameDifficult.medium => 2,
+    GameDifficult.hard => 2.5,
+    GameDifficult.extraHard => 3,
+  };
 
   Future<List<BoardItem<ProcessGameObject>>> generateBoardParts(
     GameLevel level,
@@ -696,15 +640,12 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
           GameDifficult.extraHard => PuzzleExtraHardGenerator.new,
         };
 
-        final generatedObjects = generator(levels: levels).generate(
-          level.flag,
-          Random(gameSeed),
-        );
+        final generatedObjects = generator(
+          levels: levels,
+        ).generate(level.flag, Random(gameSeed));
 
         final List<BoardItem<ProcessGameObject>> parts = [
-          ...generatedObjects.map(
-            (e) => BoardItem(object: e),
-          ),
+          ...generatedObjects.map((e) => BoardItem(object: e)),
         ];
 
         return parts;
@@ -723,8 +664,8 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
       if (!showcase.isCompleted("puzzle_common_object")) {
         final flagPartIndex = preparedParts.indexWhere(
           (e) => level.flag.objects.whereType<PathGameObject>().any(
-                (element) => e.object.uniqueName == element.uniqueName,
-              ),
+            (element) => e.object.uniqueName == element.uniqueName,
+          ),
         );
 
         if (flagPartIndex != -1) {
@@ -735,10 +676,9 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
               showcaseKey: showcase.showcaseCommonObject,
               flagExposer: flagExposer,
               onReady: () {
-                showcase.show(
-                  [showcase.showcaseCommonObject],
-                  "puzzle_common_object",
-                );
+                showcase.show([
+                  showcase.showcaseCommonObject,
+                ], "puzzle_common_object");
               },
               child: instance,
             ),
@@ -749,8 +689,8 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
       if (!showcase.isCompleted("puzzle_emblem_object")) {
         final flagPartIndex = preparedParts.indexWhere(
           (e) => level.flag.objects.whereType<EmblemPart>().any(
-                (element) => e.object.uniqueName == element.uniqueName,
-              ),
+            (element) => e.object.uniqueName == element.uniqueName,
+          ),
         );
 
         if (flagPartIndex != -1) {
@@ -762,10 +702,9 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
               showcaseKey: showcase.emblemObjectStep1,
               flagExposer: flagExposer,
               onReady: () {
-                showcase.show(
-                  [showcase.emblemObjectStep1],
-                  "puzzle_emblem_object",
-                );
+                showcase.show([
+                  showcase.emblemObjectStep1,
+                ], "puzzle_emblem_object");
                 showcase.complete("puzzle_emblem_object");
               },
               child: instance,
@@ -790,10 +729,9 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
                 showcase.complete("puzzle_colored_object");
               },
               onReady: () {
-                showcase.show(
-                  [showcase.coloredObjectStep1],
-                  "puzzle_colored_object",
-                );
+                showcase.show([
+                  showcase.coloredObjectStep1,
+                ], "puzzle_colored_object");
               },
               child: instance,
             ),
