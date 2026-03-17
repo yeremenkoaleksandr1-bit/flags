@@ -82,95 +82,112 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
       final Vector2 delta = (dragPos - startTapPos) / fraction;
       final Vector2 rotatedDelta = _rotateVector(delta, -angle);
 
-      Vector2 newSize = initialSize + (rotatedDelta..multiply(pivot));
+      Vector2 newSize = initialSize + (rotatedDelta.clone()..multiply(pivot));
 
-      newSize = Vector2(
-        max(newSize.x, 1),
-        max(newSize.y, 1),
-      );
+      newSize = Vector2(max(newSize.x, 1), max(newSize.y, 1));
 
       if (isProportionalResizing) {
         if (pivot.x == 1 && pivot.y == 1) {
-          newSize = Vector2(
-            newSize.x,
-            newSize.x / aspectRatio,
-          );
+          newSize = Vector2(newSize.x, newSize.x / aspectRatio);
         }
 
         if (pivot.x == 1 && pivot.y == 0) {
-          newSize = Vector2(
-            newSize.x,
-            newSize.x / aspectRatio,
-          );
+          newSize = Vector2(newSize.x, newSize.x / aspectRatio);
         }
 
         if (pivot.x == 1 && pivot.y == -1) {
-          newSize = Vector2(
-            newSize.y * aspectRatio,
-            newSize.y,
-          );
+          newSize = Vector2(newSize.y * aspectRatio, newSize.y);
         }
 
         if (pivot.x == 0 && pivot.y == 1) {
-          newSize = Vector2(
-            newSize.y,
-            newSize.y / aspectRatio,
-          );
+          newSize = Vector2(newSize.y, newSize.y / aspectRatio);
         }
 
         if (pivot.x == 0 && pivot.y == -1) {
-          newSize = Vector2(
-            newSize.y * aspectRatio,
-            newSize.y,
-          );
+          newSize = Vector2(newSize.y * aspectRatio, newSize.y);
         }
 
         if (pivot.x == -1 && pivot.y == 1) {
-          newSize = Vector2(
-            newSize.x * aspectRatio,
-            newSize.x,
-          );
+          newSize = Vector2(newSize.x * aspectRatio, newSize.x);
         }
 
         if (pivot.x == -1 && pivot.y == 0) {
-          newSize = Vector2(
-            newSize.x * aspectRatio,
-            newSize.x,
-          );
+          newSize = Vector2(newSize.x * aspectRatio, newSize.x);
         }
 
         if (pivot.x == -1 && pivot.y == -1) {
-          newSize = Vector2(
-            newSize.x,
-            newSize.x / aspectRatio,
-          );
+          newSize = Vector2(newSize.x, newSize.x / aspectRatio);
         }
       }
+
+      newSize = Vector2(max(newSize.x, 1), max(newSize.y, 1));
 
       object.size = newSize;
 
-      final Vector2 invertedPivot = Vector2(
-        pivot.x == -1 ? 1 : (pivot.x == 1 ? 0 : pivot.x),
-        pivot.y == -1 ? 1 : (pivot.y == 1 ? 0 : pivot.y),
-      );
-
       if (newSize.x > 1 && newSize.y > 1) {
-        if (pivot.x == -1 && pivot.y == -1) {
-          object.position = initialPosition -
-              _rotateVector(
-                Vector2(rotatedDelta.x, rotatedDelta.x)
-                  ..multiply(invertedPivot),
-                angle,
-              );
-        } else {
-          final Vector2 effectiveDelta = (pivot.y == -1 || pivot.x == -1)
-              ? _rotateVector(rotatedDelta..multiply(invertedPivot), angle)
-              : Vector2.zero();
-
-          object.position = initialPosition - effectiveDelta;
-        }
+        object.position = _positionForFixedOppositePoint(
+          pivot: pivot,
+          angle: angle,
+          newSize: newSize,
+        );
       }
     }
+  }
+
+  Vector2 _positionForFixedOppositePoint({
+    required Vector2 pivot,
+    required double angle,
+    required Vector2 newSize,
+  }) {
+    final initialOppositePoint = _oppositeHandlePoint(
+      size: initialSize,
+      pivot: pivot,
+    );
+    final fixedWorldPoint =
+        initialPosition + _rotateVector(initialOppositePoint, angle);
+
+    final newOppositePoint = _oppositeHandlePoint(size: newSize, pivot: pivot);
+
+    return fixedWorldPoint - _rotateVector(newOppositePoint, angle);
+  }
+
+  Vector2 _oppositeHandlePoint({
+    required Vector2 size,
+    required Vector2 pivot,
+  }) {
+    if (pivot.x == -1 && pivot.y == -1) {
+      return Vector2(size.x, size.y);
+    }
+
+    if (pivot.x == 1 && pivot.y == -1) {
+      return Vector2(0, size.y);
+    }
+
+    if (pivot.x == -1 && pivot.y == 1) {
+      return Vector2(size.x, 0);
+    }
+
+    if (pivot.x == 1 && pivot.y == 1) {
+      return Vector2.zero();
+    }
+
+    if (pivot.x == -1 && pivot.y == 0) {
+      return Vector2(size.x, size.y / 2);
+    }
+
+    if (pivot.x == 1 && pivot.y == 0) {
+      return Vector2(0, size.y / 2);
+    }
+
+    if (pivot.x == 0 && pivot.y == -1) {
+      return Vector2(size.x / 2, size.y);
+    }
+
+    if (pivot.x == 0 && pivot.y == 1) {
+      return Vector2(size.x / 2, 0);
+    }
+
+    return Vector2.zero();
   }
 
   void onUpdateTopLeft(DragUpdateDetails event) {
@@ -251,7 +268,8 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
 
     final offset = object.size / 2;
 
-    final rotatedOffset = (offset.clone()..rotate(snappedAngle)) -
+    final rotatedOffset =
+        (offset.clone()..rotate(snappedAngle)) -
         (offset.clone()..rotate(initialRotation));
 
     object.position = initialPosition - rotatedOffset;
@@ -273,14 +291,9 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
       fit: StackFit.passthrough,
       children: [
         DecoratedBox(
-          decoration: BoxDecoration(
-            border: Border.all(),
-          ),
+          decoration: BoxDecoration(border: Border.all()),
           child: LayoutBuilder(
-            builder: (
-              BuildContext context,
-              BoxConstraints constraints,
-            ) {
+            builder: (BuildContext context, BoxConstraints constraints) {
               return Stack(
                 clipBehavior: Clip.none,
                 fit: StackFit.expand,
@@ -291,12 +304,8 @@ class _EditSelectedItemActionsState extends State<EditSelectedItemActions> {
                     child: EOHandleButton(
                       onDragUpdate: onUpdateRotation,
                       onDragStart: onRotationStart,
-                      borderRadiusCircular: 24,
                       onDragEnd: onDragEnd,
-                      child: const Icon(
-                        Icons.rotate_right_rounded,
-                        size: 14,
-                      ),
+                      child: const Icon(Icons.rotate_right_rounded, size: 14),
                     ),
                   ),
                   Positioned(
