@@ -2,6 +2,7 @@ import 'package:flags/domain/domain.dart';
 import 'package:flags/prefabs/levels/levels.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'completed_levels_count_stream_view.dart';
 
@@ -31,43 +32,42 @@ class ContinentComponent extends StatefulWidget {
   ) {
     return (switch (type) {
       ContinentType.europe => ContinentComponent._(
-          name: "Europe",
-          imagePath: 'assets/images/continents/europe.png',
-          gameProcessType: gameProcessType,
-          isBought: isBought,
-        ),
+        name: "Europe",
+        imagePath: 'assets/images/continents/europe.png',
+        gameProcessType: gameProcessType,
+        isBought: isBought,
+      ),
       ContinentType.asia => ContinentComponent._(
-          name: "Asia",
-          imagePath: 'assets/images/continents/asia.png',
-          gameProcessType: gameProcessType,
-          isBought: isBought,
-        ),
+        name: "Asia",
+        imagePath: 'assets/images/continents/asia.png',
+        gameProcessType: gameProcessType,
+        isBought: isBought,
+      ),
       ContinentType.africa => ContinentComponent._(
-          name: "Africa",
-          imagePath: 'assets/images/continents/africa.png',
-          gameProcessType: gameProcessType,
-          isBought: isBought,
-        ),
+        name: "Africa",
+        imagePath: 'assets/images/continents/africa.png',
+        gameProcessType: gameProcessType,
+        isBought: isBought,
+      ),
       ContinentType.oceania => ContinentComponent._(
-          name: "Oceania",
-          imagePath: 'assets/images/continents/oceania.png',
-          gameProcessType: gameProcessType,
-          isBought: isBought,
-        ),
+        name: "Oceania",
+        imagePath: 'assets/images/continents/oceania.png',
+        gameProcessType: gameProcessType,
+        isBought: isBought,
+      ),
       ContinentType.northAmerica => ContinentComponent._(
-          name: "North America",
-          imagePath: 'assets/images/continents/north_america.png',
-          gameProcessType: gameProcessType,
-          isBought: isBought,
-        ),
+        name: "North America",
+        imagePath: 'assets/images/continents/north_america.png',
+        gameProcessType: gameProcessType,
+        isBought: isBought,
+      ),
       ContinentType.southAmerica => ContinentComponent._(
-          name: "South America",
-          imagePath: 'assets/images/continents/south_america.png',
-          gameProcessType: gameProcessType,
-          isBought: isBought,
-        ),
-    })
-      ..type = type;
+        name: "South America",
+        imagePath: 'assets/images/continents/south_america.png',
+        gameProcessType: gameProcessType,
+        isBought: isBought,
+      ),
+    })..type = type;
   }
 
   @override
@@ -91,10 +91,8 @@ class _ContinentComponentState extends State<ContinentComponent> {
         children: [
           Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 400),
-              child: Image.asset(
-                widget.imagePath,
-              ),
+              constraints: BoxConstraints(maxHeight: 400.h),
+              child: Image.asset(widget.imagePath),
             ),
           ),
           Center(
@@ -105,11 +103,8 @@ class _ContinentComponentState extends State<ContinentComponent> {
                 FText(
                   widget.name,
                   textAlign: TextAlign.center,
-                  strokeWidth: 12,
-                  textStyle: const TextStyle(
-                    fontSize: 64,
-                    height: 1,
-                  ),
+                  strokeWidth: 12.r,
+                  textStyle: TextStyle(fontSize: 64.sp, height: 1),
                 ),
                 if (widget.isBought)
                   CompletedLevelsCountStreamBuilder(
@@ -118,10 +113,7 @@ class _ContinentComponentState extends State<ContinentComponent> {
                     builder: (int quantity) {
                       return FText(
                         "$quantity/$levelsCount",
-                        textStyle: const TextStyle(
-                          fontSize: 38,
-                          height: 1,
-                        ),
+                        textStyle: TextStyle(fontSize: 38.sp, height: 1),
                       );
                     },
                   ),

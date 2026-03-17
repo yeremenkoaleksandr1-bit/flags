@@ -6,6 +6,7 @@ import 'package:flags/uikit/layout_components/showcase/showcase_item.dart';
 import 'package:flags/uikit/layout_components/sprite_widget.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FastModePlayTimerView extends StatelessWidget {
   const FastModePlayTimerView({
@@ -24,15 +25,15 @@ class FastModePlayTimerView extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         Positioned(
-          bottom: 100,
-          height: 200,
+          bottom: 100.h,
+          height: 200.h,
           left: 0,
           right: 0,
           child: FShowcase(
             showcaseKey: showcaseKey,
-            targetPadding: const Pad(horizontal: -12, top: -24),
+            targetPadding: Pad(horizontal: -12.w, top: -24.h),
             tooltip: (bounds) => Positioned(
-              top: bounds.top - 68,
+              top: bounds.top - 68.h,
               left: 0,
               right: 0,
               child: Center(
@@ -56,9 +57,9 @@ class FastModePlayTimerView extends StatelessWidget {
                       children: [
                         Center(
                           child: Transform.translate(
-                            offset: const Offset(-84, 0),
+                            offset: Offset(-84.w, 0),
                             child: SizedBox.square(
-                              dimension: 128,
+                              dimension: 128.r,
                               child: Center(
                                 child: SpriteUIWidget(
                                   image: Assets.images.timer.image,
@@ -68,14 +69,14 @@ class FastModePlayTimerView extends StatelessWidget {
                           ),
                         ),
                         Positioned(
-                          left: 142,
+                          left: 142.w,
                           right: 0,
-                          bottom: 32,
+                          bottom: 32.h,
                           child: Center(
                             child: FText(
                               "Play",
-                              textStyle: const TextStyle(
-                                fontSize: 64,
+                              textStyle: TextStyle(
+                                fontSize: 64.sp,
                                 color: ThemePalette.yellow,
                               ),
                             ),
@@ -88,22 +89,18 @@ class FastModePlayTimerView extends StatelessWidget {
                           child: Center(
                             child: FText(
                               "Fast mode",
-                              textStyle: const TextStyle(
-                                fontSize: 48,
-                              ),
+                              textStyle: TextStyle(fontSize: 48.sp),
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const Positioned(
-                    left: 64,
+                  Positioned(
+                    left: 64.w,
                     right: 0,
-                    bottom: 120,
-                    child: Center(
-                      child: WinnerStreakView(),
-                    ),
+                    bottom: 120.h,
+                    child: const Center(child: WinnerStreakView()),
                   ),
                 ],
               ),

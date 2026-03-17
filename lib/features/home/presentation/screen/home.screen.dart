@@ -17,11 +17,8 @@ import 'package:flags/uikit/layout_components/showcase/showcase_item.dart';
 import 'package:flags/uikit/layout_components/sprite_widget.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:vibration/vibration.dart';
-
-const bool _showDebugButtonInRelease = true;
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 @RoutePage()
 class HomeScreen extends StatefulWidget {
@@ -90,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Stack(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: ThemePaddings.screen,
                   child: Column(
                     children: [
                       SpriteUIWidget(image: Assets.images.logo.image),
@@ -117,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       FShowcase(
                         showcaseKey: oMyFlagsButton,
                         tooltip: (bounds) => Positioned(
-                          top: bounds.top - 112,
+                          top: bounds.top - 112.h,
                           left: 0,
                           right: 0,
                           child: Center(
@@ -136,12 +133,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (appCubit.preferences.isDebugMode) ...[
                         const DebugButton(),
                       ],
-                      const Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          FVibrationMuteButton(),
+                          const FVibrationMuteButton(),
                           Gap.h12,
-                          FSoundMuteButton(),
+                          const FSoundMuteButton(),
                         ],
                       ),
                       Gap.v24,

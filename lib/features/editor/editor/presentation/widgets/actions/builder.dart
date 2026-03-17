@@ -10,6 +10,7 @@ import 'package:flags/features/editor/editor/presentation/widgets/actions/layer_
 import 'package:flags/features/editor/editor/presentation/widgets/actions/toggle_magnet_action.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'change_color_action.dart';
 import 'duplicate_action.dart';
@@ -27,8 +28,8 @@ class EditorSelectedObjectActionsBuilder extends StatelessWidget {
           final object = state.object;
 
           return Wrap(
-            spacing: 4,
-            runSpacing: 4,
+            spacing: 4.w,
+            runSpacing: 4.h,
             children: [
               const ToggleMagnetAction(),
               if (object != null) ...[
@@ -40,19 +41,13 @@ class EditorSelectedObjectActionsBuilder extends StatelessWidget {
                   FlipVerticalAction(object),
                   FlipHorizontalAction(object),
                 ],
-                if (object.gameObject is ImageGameObject) ...[],
+                if (object.gameObject is ImageGameObject) ...<dynamic>[],
                 if (object.gameObject is ShapeGameObject) ...[
                   ChangeColorAction(object),
                 ],
                 RemoveObjectAction(object),
               ],
-            ]
-                .map(
-                  (e) => DeferPointer(
-                    child: e,
-                  ),
-                )
-                .toList(),
+            ].map((e) => DeferPointer(child: e)).toList(),
           );
         },
       ),

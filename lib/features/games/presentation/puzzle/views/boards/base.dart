@@ -2,19 +2,20 @@ import 'package:flags/core/extensions/render_box.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
 import 'package:flags/uikit/layout_components/containers/card.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:multi_value_listenable_builder/multi_value_listenable_builder.dart';
 
 abstract class ProcessObjectEditingBoard extends StatefulWidget {
-  const ProcessObjectEditingBoard({
-    super.key,
-    required this.cubit,
-  });
+  const ProcessObjectEditingBoard({super.key, required this.cubit});
 
   final PuzzleCommonModeCubit cubit;
 }
 
 abstract class ProcessObjectEditingBoardState<
-    T extends ProcessObjectEditingBoard, G> extends State<T> {
+  T extends ProcessObjectEditingBoard,
+  G
+>
+    extends State<T> {
   final ValueNotifier<G?> _currentObject = ValueNotifier(null);
 
   final ValueNotifier<bool> activeRx = ValueNotifier(false);
@@ -69,11 +70,7 @@ abstract class ProcessObjectEditingBoardState<
         activeRx,
         _currentObject,
       ],
-      builder: (
-        BuildContext context,
-        List<dynamic> values,
-        Widget? child,
-      ) {
+      builder: (BuildContext context, List<dynamic> values, Widget? child) {
         double top;
         final RenderBox? flagRenderBox = values[0];
 
@@ -84,7 +81,7 @@ abstract class ProcessObjectEditingBoardState<
         final rect = flagRenderBox?.getRect() ?? Offset.zero & Size.zero;
 
         if (activeRx.value) {
-          top = rect.bottom + 24;
+          top = rect.bottom + 24.h;
         } else {
           top = mq.size.height + mq.padding.bottom;
         }
@@ -101,12 +98,7 @@ abstract class ProcessObjectEditingBoardState<
           top: top,
           height: mq.size.height - rect.bottom,
           child: RepaintBoundary(
-            child: FCard(
-              child: buildWidget(
-                context,
-                _currentObject.value,
-              ),
-            ),
+            child: FCard(child: buildWidget(context, _currentObject.value)),
           ),
         );
       },

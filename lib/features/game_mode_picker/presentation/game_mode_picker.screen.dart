@@ -62,11 +62,11 @@ class GameModePickerScreen extends StatelessWidget{
             },
             itemCount: entries.length + 1,
           ),
-          const Align(
+           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
               padding: Pad(bottom: ThemeIndents.s12),
-              child: FBackButton(),
+              child: const FBackButton(),
             ),
           ),
         ],

@@ -10,7 +10,9 @@ import 'package:flags/uikit/components/buttons/actions/close_button.dart';
 import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
+import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ColoredPathEditingBoard extends ProcessObjectEditingBoard {
   const ColoredPathEditingBoard({
@@ -80,8 +82,9 @@ class ColoredPathEditingBoardState
                       },
                     ),
                   ),
-                  Gap.v24,
+                  Gap.v12,
                   Expanded(
+
                     child: BlocDynamicStateBuilder(
                       bloc: widget.cubit,
                       builder: (BuildContext context, state) {
@@ -114,14 +117,14 @@ class ColoredPathEditingBoardState
                       },
                     ),
                   ),
-                  Gap.v48,
+                  Gap.v18,
                   Center(
                     child: RenderBoxExposed(
                       exposer: colorsListExposer,
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
-                        child: RowSuper(
-                          innerDistance: 12,
+                        child: Row(
+                          spacing: 12.w,
                           children: [
                             ...objectInstance.colors.map(
                               (e) => _ColorButton(

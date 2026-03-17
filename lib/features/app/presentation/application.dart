@@ -22,6 +22,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Application extends StatefulWidget {
   const Application({super.key, required this.bootstrap});
@@ -39,78 +40,86 @@ class _ApplicationState extends State<Application> {
   Widget build(BuildContext context) {
     final sharedPreferences = widget.bootstrap.sharedPreferences;
 
-    return AppScope(
-      bootstrap: widget.bootstrap,
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider<IAppCubit>(
-            create: (context) => AppCubitImpl(
-              context: context,
-              sharedPreferences: sharedPreferences,
-            ),
-          ),
-          BlocProvider(create: (_) => GameStateCubit()),
-          BlocProvider(create: (_) => GamePreferencesCubit(sharedPreferences)),
-          BlocProvider<IShopCubit>(
-            create: (context) => ShopCubit(
-              gamePreferences: context.read<GamePreferencesCubit>(),
-              buyableItems: shopItemsData,
-              service: ShopServiceImpl(sharedPreferences),
-            ),
-          ),
-          BlocProvider<IVibrationCubit>(
-            create: (_) => VibrationCubit(sharedPreferences),
-          ),
-          BlocProvider<IAudioCubit>(
-            create: (_) => AudioCubit(sharedPreferences),
-          ),
-        ],
-        child: BlocStateBuilderThemeProvider(
-          child: FlagsWidgetsApp(
-            title: "FlagsUp",
-            theme: AppTheme.themeData,
-            localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
+    return ScreenUtilInit(
+      designSize: const Size(360, 800),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return AppScope(
+          bootstrap: widget.bootstrap,
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider<IAppCubit>(
+                create: (context) => AppCubitImpl(
+                  context: context,
+                  sharedPreferences: sharedPreferences,
+                ),
+              ),
+              BlocProvider(create: (_) => GameStateCubit()),
+              BlocProvider(
+                create: (_) => GamePreferencesCubit(sharedPreferences),
+              ),
+              BlocProvider<IShopCubit>(
+                create: (context) => ShopCubit(
+                  gamePreferences: context.read<GamePreferencesCubit>(),
+                  buyableItems: shopItemsData,
+                  service: ShopServiceImpl(sharedPreferences),
+                ),
+              ),
+              BlocProvider<IVibrationCubit>(
+                create: (_) => VibrationCubit(sharedPreferences),
+              ),
+              BlocProvider<IAudioCubit>(
+                create: (_) => AudioCubit(sharedPreferences),
+              ),
             ],
-            builder: (context, _) {
-              return MediaQuery(
-                data: MediaQuery.of(context).copyWith(
-                  textScaler: TextScaler.noScaling,
-
-                ),
-                child: DragAndDropProvider(
-                  builder: (BuildContext context) {
-                    return EasyLoading.init()(
+            child: BlocStateBuilderThemeProvider(
+              child: FlagsWidgetsApp(
+                title: "FlagsUp",
+                theme: AppTheme.themeData,
+                localizationsDelegates: const [
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                builder: (context, _) {
+                  return MediaQuery(
+                    data: MediaQuery.of(
                       context,
-                      BuildAppState(
-                        builder: (context, state) {
-                          return Stack(
-                            children: [
-                              const Positioned.fill(
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    color: Color(0xff75C3F7),
+                    ).copyWith(textScaler: TextScaler.noScaling),
+                    child: DragAndDropProvider(
+                      builder: (BuildContext context) {
+                        return EasyLoading.init()(
+                          context,
+                          BuildAppState(
+                            builder: (context, state) {
+                              return Stack(
+                                children: [
+                                  const Positioned.fill(
+                                    child: DecoratedBox(
+                                      decoration: BoxDecoration(
+                                        color: Color(0xff75C3F7),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                              const Positioned.fill(child: CloudsPainter()),
-                              const Positioned.fill(child: Background()),
-                              AppRouterBuilder(router: router),
-                              const UiMoneyLayer(),
-                            ],
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
-              );
-            },
+                                  const Positioned.fill(child: CloudsPainter()),
+                                  const Positioned.fill(child: Background()),
+                                  AppRouterBuilder(router: router),
+                                  const UiMoneyLayer(),
+                                ],
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

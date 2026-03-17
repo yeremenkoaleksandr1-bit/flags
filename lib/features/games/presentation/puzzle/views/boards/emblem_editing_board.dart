@@ -4,24 +4,25 @@ import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/features/games/presentation/puzzle/components/emblem_size_picker.dart';
 import 'package:flags/features/games/presentation/puzzle/scene_components/emblem.dart';
 import 'package:flags/features/games/presentation/puzzle/views/boards/base.dart';
-import 'package:flags/presentation/game/puzzle/onboarding/emblem/emblem_object.showcase_step_2.dart';
 import 'package:flags/uikit/components/buttons/colors/green_button.dart';
 import 'package:flags/uikit/layout_components/gap/gap.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class EmblemEditingBoard extends ProcessObjectEditingBoard {
-  const EmblemEditingBoard({
-    super.key,
-    required super.cubit,
-  });
+  const EmblemEditingBoard({super.key, required super.cubit});
 
   @override
   State<EmblemEditingBoard> createState() => _EmblemEditingBoardState();
 }
 
-class _EmblemEditingBoardState extends ProcessObjectEditingBoardState<
-    EmblemEditingBoard, EmblemSceneObjectState> {
+class _EmblemEditingBoardState
+    extends
+        ProcessObjectEditingBoardState<
+          EmblemEditingBoard,
+          EmblemSceneObjectState
+        > {
   late final ValueListenable<dynamic> _focusedObject =
       widget.cubit.focusedObject;
 
@@ -47,64 +48,65 @@ class _EmblemEditingBoardState extends ProcessObjectEditingBoardState<
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ValueListenableBuilder(
-            valueListenable: _focusedObject,
-            builder: (
-                BuildContext context,
-                value,
-                Widget? child,
-                ) {
-              if (_focusedObject.value is! EmblemSceneObjectState) {
-                return const SizedBox.shrink();
-              }
+          Flexible(
+            fit: .loose,
+            child: ValueListenableBuilder(
+              valueListenable: _focusedObject,
+              builder: (BuildContext context, value, Widget? child) {
+                if (_focusedObject.value is! EmblemSceneObjectState) {
+                  return const SizedBox.shrink();
+                }
 
-              late final object =
-              _focusedObject.value as EmblemSceneObjectState;
+                late final object =
+                    _focusedObject.value as EmblemSceneObjectState;
 
-              return EmblemSizePicker(
-                scales: object.gameObject.scales,
-                initialValue: object.gameObject.scale,
-                onChanged: (double value) {
-                  object.gameObject.scale = value;
-                },
-              );
-            },
+                return EmblemSizePicker(
+                  scales: object.gameObject.scales,
+                  initialValue: object.gameObject.scale,
+                  onChanged: (double value) {
+                    object.gameObject.scale = value;
+                  },
+                );
+              },
+            ),
           ),
-          const Spacer(),
-          Row(
-            children: [
-              Expanded(
-                child: FGreenButton(
-                  onPressed: () => rotate(false),
-                  child: const AspectRatio(
-                    aspectRatio: 1,
-                    child: Icon(
-                      Icons.rotate_90_degrees_ccw_sharp,
-                      size: 64,
-                      color: Colors.white,
+          Gap.v12,
+          Flexible(
+            fit: .tight,
+            child: Row(
+              spacing: 12.w,
+              children: [
+                Expanded(
+                  child: FGreenButton(
+                    onPressed: () => rotate(false),
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: Icon(
+                        Icons.rotate_90_degrees_ccw_sharp,
+                        size: 64.r,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Gap.h24,
-              Expanded(
-                child: FGreenButton(
-                  onPressed: () => rotate(true),
-                  child: const AspectRatio(
-                    aspectRatio: 1,
-                    child: Icon(
-                      Icons.rotate_90_degrees_cw_outlined,
-                      size: 64,
-                      color: Colors.white,
+            
+                Expanded(
+                  child: FGreenButton(
+                    onPressed: () => rotate(true),
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: Icon(
+                        Icons.rotate_90_degrees_cw_outlined,
+                        size: 64.r,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          const Spacer(
-            flex: 2,
-          ),
+          Gap.v12,
         ],
       ),
     );

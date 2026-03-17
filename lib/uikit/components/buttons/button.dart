@@ -1,7 +1,7 @@
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FButton extends StatelessWidget {
   const FButton({
@@ -10,7 +10,7 @@ class FButton extends StatelessWidget {
     required this.onPressed,
     required this.child,
     this.onLongPress,
-    this.padding = const Pad(all: 8),
+    this.padding,
     this.enableHapticFeedback = true,
     this.enableSoundFeedback = true,
   });
@@ -19,7 +19,7 @@ class FButton extends StatelessWidget {
   final VoidCallback onPressed;
   final VoidCallback? onLongPress;
 
-  final EdgeInsets padding;
+  final EdgeInsets? padding;
   final bool enableHapticFeedback;
   final bool enableSoundFeedback;
 
@@ -36,15 +36,9 @@ class FButton extends StatelessWidget {
         enableSoundFeedback: enableSoundFeedback,
         child: CustomPaint(
           painter: CustomButtonPainter(
-            colorFilter: ColorFilter.mode(
-              color,
-              BlendMode.modulate,
-            ),
+            colorFilter: ColorFilter.mode(color, BlendMode.modulate),
           ),
-          child: Padding(
-            padding: padding,
-            child: child,
-          ),
+          child: Padding(padding: padding ?? EdgeInsets.all(8.r), child: child),
         ),
       ),
     );
@@ -54,9 +48,7 @@ class FButton extends StatelessWidget {
 class CustomButtonPainter extends CustomPainter {
   final ColorFilter colorFilter;
 
-  CustomButtonPainter({
-    required this.colorFilter,
-  });
+  CustomButtonPainter({required this.colorFilter});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -65,7 +57,7 @@ class CustomButtonPainter extends CustomPainter {
       ..style = PaintingStyle.fill
       ..colorFilter = colorFilter;
 
-    const borderRadius = BorderRadius.all(Radius.circular(8));
+    final borderRadius = BorderRadius.all(Radius.circular(8.r));
     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
     final rrect = borderRadius.toRRect(rect);
     canvas.drawRRect(rrect, fillPaint);
@@ -73,11 +65,11 @@ class CustomButtonPainter extends CustomPainter {
     final strokePaint = Paint()
       ..color = const Color(0xFFD5D5D5)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2
+      ..strokeWidth = 2.r
       ..colorFilter = colorFilter;
     canvas.drawRRect(rrect.deflate(1), strokePaint);
 
-    const double padding = 6.0;
+    final double padding = 6.r;
     final innerRect = Rect.fromLTWH(
       padding,
       size.height - size.height / 2.5 - padding,
@@ -85,8 +77,8 @@ class CustomButtonPainter extends CustomPainter {
       size.height / 2.5,
     );
 
-    final innerRrect = const BorderRadius.all(
-      Radius.circular(4),
+    final innerRrect = BorderRadius.all(
+      Radius.circular(4.r),
     ).toRRect(innerRect);
 
     final innerFillPaint = Paint()

@@ -1,20 +1,13 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 abstract class ThemeBorders {
   const ThemeBorders._();
 
-  static const BorderRadius r4 = BorderRadius.all(
-    Radius.circular(4),
-  );
+  static BorderRadius get r4 => BorderRadius.all(Radius.circular(4.r));
 
-  static const BorderRadius r8 = BorderRadius.all(
-    Radius.circular(8),
-  );
+  static BorderRadius get r8 => BorderRadius.all(Radius.circular(8.r));
 
   static const ShapeBorder rounded = StadiumBorder();
-  static const ShapeBorder small = RoundedRectangleBorder(
-    borderRadius: BorderRadius.all(
-      Radius.circular(8),
-    ),
-  );
+  static ShapeBorder get small => RoundedRectangleBorder(borderRadius: r8);
 }

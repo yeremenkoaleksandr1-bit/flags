@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flags/uikit/components/buttons/button.dart';
 import 'package:flags/uikit/theme/palette.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class EmblemSizePicker extends StatefulWidget {
   const EmblemSizePicker({
@@ -45,27 +46,26 @@ class _EmblemSizePickerState extends State<EmblemSizePicker> {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             crossAxisCount: 4,
-            crossAxisSpacing: 12,
+            crossAxisSpacing: 12.w,
+            mainAxisSpacing: 12.h,
             children: [
-              ...widget.scales.mapIndexed(
-                (i, e) {
-                  final color = currentActive == i
-                      ? ThemePalette.green
-                      : ThemePalette.gray;
+              ...widget.scales.mapIndexed((i, e) {
+                final color = currentActive == i
+                    ? ThemePalette.green
+                    : ThemePalette.gray;
 
-                  return AspectRatio(
-                    aspectRatio: 1,
-                    child: FButton(
-                      color: color,
-                      onPressed: () => onSelected(i),
-                      child: FittedBox(
-                        fit: BoxFit.fitHeight,
-                        child: Text("${i + 1}"),
-                      ),
+                return AspectRatio(
+                  aspectRatio: 1,
+                  child: FButton(
+                    color: color,
+                    onPressed: () => onSelected(i),
+                    child: FittedBox(
+                      fit: BoxFit.fitHeight,
+                      child: Text("${i + 1}"),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              }),
             ],
           ),
         );

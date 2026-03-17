@@ -1,6 +1,7 @@
 import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../uikit/assets/components/tiled_background.dart';
 import '../../../../uikit/components/progress_indicator/linear_progress_indicator.dart';
@@ -32,21 +33,17 @@ class Splash extends StatelessWidget {
                           end: 0.005,
                           begin: -0.005,
                           curve: Curves.linear,
-                          duration: const Duration(
-                            milliseconds: 2000,
-                          ),
+                          duration: const Duration(milliseconds: 2000),
                         ),
                   ),
                   const Spacer(),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 84),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 84.w),
                     child: Column(
                       children: [
-                        Text(
+                        const Text(
                           "loading",
-                          style: TextStyle(
-                            color: ThemePalette.white,
-                          ),
+                          style: TextStyle(color: ThemePalette.white),
                         ),
                         FLinearProgressIndicator(),
                       ],

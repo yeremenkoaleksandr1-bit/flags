@@ -55,10 +55,20 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
   StreamSubscription<int>? _timerSubscription;
   StreamSubscription<int>? _prepareSubscription;
   bool _isPreparationCountdownStarted = false;
+  bool _isExitingFastMode = false;
 
   int get initialTimerValue => timerRx.value;
 
   ValueNotifier<int> get timerStream => timerRx;
+
+  Future<void> _stopFastModeActivity() async {
+    _isPreparationCountdownStarted = false;
+    await _timerSubscription?.cancel();
+    await _prepareSubscription?.cancel();
+    _timerSubscription = null;
+    _prepareSubscription = null;
+    periodicTimer.pause();
+  }
 
   @override
   Future<void> onInit() {
@@ -189,10 +199,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
   @override
   Future<void> onClose() async {
     showcaseFm.dismiss();
-    _isPreparationCountdownStarted = false;
-    await _timerSubscription?.cancel();
-    await _prepareSubscription?.cancel();
-    periodicTimer.pause();
+    await _stopFastModeActivity();
     periodicTimer.dispose();
     flagExposer.renderBox.removeListener(onFlagBuilt);
     audioCubit.playBgm(GameMusics.continents);
@@ -201,6 +208,10 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
 
   @override
   Future<void> onLevelCompleted(PuzzleGameState state) async {
+    if (_isExitingFastMode) {
+      return;
+    }
+
     _isPreparationCountdownStarted = false;
     periodicTimer.pause();
     gamePreferences.recordWin();
@@ -325,17 +336,21 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
 
   @override
   Future<void> onGameOver() async {
+    if (_isExitingFastMode) {
+      return;
+    }
+
     showcaseFm.dismiss();
-    _isPreparationCountdownStarted = false;
-    await _timerSubscription?.cancel();
-    await _prepareSubscription?.cancel();
+    await _stopFastModeActivity();
     gamePreferences.resetStreak();
-    periodicTimer.pause();
     await super.onGameOver();
   }
 
   @override
   Future<void> onGameExit(BuildContext context) async {
+    _isExitingFastMode = true;
+    showcaseFm.dismiss();
+    await _stopFastModeActivity();
     gamePreferences.resetStreak();
     await context.maybePop();
     await this.context.maybePop();
@@ -345,6 +360,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
 
   @override
   Future<void> onRestart(BuildContext context) async {
+    _isExitingFastMode = false;
     gamePreferences.resetStreak();
     _isPreparationCountdownStarted = false;
     await super.onRestart(context);
@@ -360,6 +376,10 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
 
   @override
   Future<void> onMenuClosed() async {
+    if (_isExitingFastMode || isClosed) {
+      return;
+    }
+
     periodicTimer.resumePause();
   }
 

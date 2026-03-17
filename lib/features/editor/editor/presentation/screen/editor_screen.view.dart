@@ -21,6 +21,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../views/editor_area.view.dart';
 import '../widgets/flag_style_color_changer.dart';
@@ -41,16 +42,14 @@ final class EditorScreenView extends StatelessWidget {
               gestures: {
                 PanGestureRecognizer:
                     GestureRecognizerFactoryWithHandlers<PanGestureRecognizer>(
-                  PanGestureRecognizer.new,
-                  (i) {
-                    i.onEnd = (e) => selectionCubit.selectObject(null);
-                  },
-                ),
+                      PanGestureRecognizer.new,
+                      (i) {
+                        i.onEnd = (e) => selectionCubit.selectObject(null);
+                      },
+                    ),
               },
               behavior: HitTestBehavior.translucent,
-              child: const Material(
-                color: Colors.transparent,
-              ),
+              child: const Material(color: Colors.transparent),
             ),
           ),
           Positioned.fill(
@@ -89,9 +88,7 @@ final class EditorScreenView extends StatelessWidget {
                             ),
                           ),
                           Gap.v12,
-                          const Expanded(
-                            child: _Content(),
-                          ),
+                          const Expanded(child: _Content()),
                         ],
                       ),
                     ),
@@ -112,9 +109,7 @@ final class EditorScreenView extends StatelessWidget {
 }
 
 final class _Content extends StatelessWidget {
-  const _Content({
-    super.key,
-  });
+  const _Content({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -123,41 +118,34 @@ final class _Content extends StatelessWidget {
       bloc: bloc,
       buildWhen: (o, n) => o.runtimeType.toString() != n.runtimeType.toString(),
       builder: (BuildContext context, state) {
-        return const Stack(
-          fit: StackFit.expand,
+        return Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Positioned.fill(
-              child: Column(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Padding(
-                      padding: Pad(horizontal: 4),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Spacer(),
-                          Align(
-                            alignment: Alignment.topRight,
-                            child: FlagStyleColorChanger(),
-                          ),
-                          Gap.v4,
-                          EditorAreaView(),
-                          Gap.v4,
-                          EditorSelectedObjectActionsBuilder(),
-                          Spacer(),
-                        ],
-                      ),
+            Flexible(
+
+              child: Padding(
+                padding: const Pad(horizontal: 4).r,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+
+                    const Align(
+                      alignment: Alignment.topRight,
+                      child: FlagStyleColorChanger(),
                     ),
-                  ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: EditorBottomButtonsView(),
-                    ),
-                  ),
-                ],
+                    Gap.v4,
+                    const EditorAreaView(),
+                    Gap.v4,
+                    const EditorSelectedObjectActionsBuilder(),
+
+                  ],
+                ),
               ),
+            ),
+            const Align(
+              alignment: Alignment.bottomCenter,
+              child: EditorBottomButtonsView(),
             ),
           ],
         );

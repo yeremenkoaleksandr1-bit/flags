@@ -52,6 +52,7 @@ dependencies:
   showcaseview:
     path: packages/showcaseview
   flutter_easyloading: ^3.0.5
+  flutter_screenutil: ^5.9.3
   reactive_forms: ^17.0.1
   multi_value_listenable_builder: ^0.0.2
   memoize: ^3.0.0

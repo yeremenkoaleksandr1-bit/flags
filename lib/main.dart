@@ -13,10 +13,7 @@ void main() async {
     const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
   );
 
-  SystemChrome.setEnabledSystemUIMode(
-    SystemUiMode.manual,
-    overlays: [],
-  );
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
 
   await Flame.device.setPortraitUpOnly();
 
@@ -30,18 +27,24 @@ void main() async {
     ..indicatorColor = ThemePalette.white
     ..textColor = ThemePalette.white
     ..dismissOnTap = false
-    ..indicatorWidget = Column(
-      children: [
-        FText("loading"),
-        const FLinearProgressIndicator(),
-      ],
+    ..indicatorWidget = Builder(
+      builder: (context) {
+        return const Column(
+          children: [_LoadingLabel(), FLinearProgressIndicator()],
+        );
+      },
     );
 
   final bootstrap = await AppBootstrap.initialize();
 
-  runApp(
-    Application(
-      bootstrap: bootstrap,
-    ),
-  );
+  runApp(Application(bootstrap: bootstrap));
+}
+
+class _LoadingLabel extends StatelessWidget {
+  const _LoadingLabel();
+
+  @override
+  Widget build(BuildContext context) {
+    return FText("loading");
+  }
 }

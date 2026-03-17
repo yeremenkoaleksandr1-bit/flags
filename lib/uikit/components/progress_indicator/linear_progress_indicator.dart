@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/uikit/theme/palette.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 const int _kIndeterminateLinearDuration = 1800;
 
 abstract class ProgressIndicator extends StatefulWidget {
-  const ProgressIndicator({
-    super.key,
-  });
+  const ProgressIndicator({super.key});
 }
 
 class _LinearProgressIndicatorPainter extends CustomPainter {
@@ -84,10 +82,8 @@ class _LinearProgressIndicatorPainter extends CustomPainter {
 }
 
 class FLinearProgressIndicator extends ProgressIndicator {
-  const FLinearProgressIndicator({
-    super.key,
-    this.minHeight,
-  }) : assert(minHeight == null || minHeight > 0);
+  const FLinearProgressIndicator({super.key, this.minHeight})
+    : assert(minHeight == null || minHeight > 0);
 
   final double? minHeight;
 
@@ -124,27 +120,24 @@ class _LinearProgressIndicatorState extends State<FLinearProgressIndicator>
     super.dispose();
   }
 
-  Widget _buildIndicator(
-    BuildContext context,
-    double animationValue,
-  ) {
+  Widget _buildIndicator(BuildContext context, double animationValue) {
     return Container(
-      padding: const Pad(all: 4),
+      padding: EdgeInsets.all(4.r),
       decoration: const ShapeDecoration(
         color: ThemePalette.white,
         shape: StadiumBorder(),
       ),
-      constraints: const BoxConstraints(
+      constraints: BoxConstraints(
         minWidth: double.infinity,
-        minHeight: 18,
+        minHeight: widget.minHeight ?? 18.h,
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(48),
+        borderRadius: BorderRadius.circular(48.r),
         child: CustomPaint(
           painter: _LinearProgressIndicatorPainter(
             backgroundColor: ThemePalette.yellow,
             animationValue: animationValue,
-            indicatorBorderRadius: const Radius.circular(48),
+            indicatorBorderRadius: Radius.circular(48.r),
           ),
         ),
       ),

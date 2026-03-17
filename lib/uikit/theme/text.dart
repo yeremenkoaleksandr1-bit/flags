@@ -1,6 +1,8 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 abstract class FontSizes {
-  static const double title = 48;
-  static const double subtitle = 42;
-  static const double body = 32;
-  static const double caption = 24;
+  static double get title => 48.sp;
+  static double get subtitle => 42.sp;
+  static double get body => 32.sp;
+  static double get caption => 24.sp;
 }

@@ -1,4 +1,3 @@
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/core/elements/paint.dart';
 import 'package:flags/domain/entities/path/path.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
@@ -6,7 +5,6 @@ import 'package:flags/domain/game_objects/parts/path_part.dart';
 import 'package:flags/domain/interfaces/drawable/i_drawable.dart';
 import 'package:flags/uikit/assets/assets.dart';
 import 'package:flags/uikit/game_widgets/flag/flag.dart';
-import 'package:flags/uikit/layout_components/assets/assets.dart';
 import 'package:flags/uikit/layout_components/containers/card.dart';
 import 'package:flags/uikit/layout_components/sprite_widget.dart';
 import 'package:flags/uikit/painters/drawable_painter.dart';
@@ -15,8 +13,7 @@ import 'package:flags/uikit/theme/indents.dart';
 import 'package:flags/uikit/theme/palette.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
-
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PuzzleModeView extends StatefulWidget {
   const PuzzleModeView({super.key});
@@ -78,7 +75,7 @@ class _PuzzleModeViewState extends State<PuzzleModeView> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const Pad(all: ThemeIndents.s24),
+      padding: EdgeInsets.all(ThemeIndents.s24),
       child: Stack(
         fit: StackFit.passthrough,
         children: [
@@ -97,24 +94,22 @@ class _PuzzleModeViewState extends State<PuzzleModeView> {
                       children: [
                         Positioned(
                           child: Padding(
-                            padding: const Pad(all: 9, top: 24, bottom: 12),
-                            child: FlagView(
-                              flag: flag,
-                            ),
+                            padding: EdgeInsets.fromLTRB(9.w, 24.h, 9.w, 12.h),
+                            child: FlagView(flag: flag),
                           ),
                         ),
                         Positioned(
-                          top: constraints.maxHeight - 60,
-                          left: constraints.maxWidth - 140,
-                          width: 64,
+                          top: constraints.maxHeight - 60.h,
+                          left: constraints.maxWidth - 140.w,
+                          width: 64.w,
                           child: Stack(
                             clipBehavior: Clip.none,
                             children: [
                               Positioned(
-                                top: -24,
-                                left: -24,
-                                width: 64,
-                                height: 64,
+                                top: -24.h,
+                                left: -24.w,
+                                width: 64.w,
+                                height: 64.h,
                                 child: DrawablePaint(drawable: itemInHand),
                               ),
                               Transform.rotate(
@@ -129,22 +124,22 @@ class _PuzzleModeViewState extends State<PuzzleModeView> {
                           ),
                         ),
                         Positioned(
-                          top: -52,
+                          top: -52.h,
                           left: 0,
-                          right: 48,
+                          right: 48.w,
                           child: Align(
                             alignment: Alignment.topCenter,
                             child: FText(
                               "Puzzles",
-                              strokeWidth: 18,
+                              strokeWidth: 18.r,
                               strokeColor: ThemePalette.gentleYellow,
                               textStyle: TextStyle(
                                 color: ThemePalette.gentleYellow.darken(0.25),
-                                fontSize: 64,
+                                fontSize: 64.sp,
                               ),
                             ),
                           ),
-                        )
+                        ),
                       ],
                     );
                   },
