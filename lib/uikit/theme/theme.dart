@@ -11,13 +11,13 @@ export 'text.dart';
 
 abstract class AppTheme {
   static ThemeData get themeData => ThemeData(
-        fontFamily: "Troika",
-        textTheme: const TextTheme().apply(fontFamily: "Troika"),
-        scaffoldBackgroundColor: ThemePalette.transparent,
-        useMaterial3: true,
-        colorScheme: const ColorScheme.light(
-          primary: ThemePalette.brown,
-        ),
-        inputDecorationTheme: InputThemes.common,
-      );
+    fontFamily: "Troika",
+    textTheme: const TextTheme().apply(
+      fontFamily: "Troika",
+    ),
+    scaffoldBackgroundColor: ThemePalette.transparent,
+    useMaterial3: true,
+    colorScheme: const ColorScheme.light(primary: ThemePalette.brown),
+    inputDecorationTheme: InputThemes.common,
+  );
 }

@@ -24,10 +24,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 class Application extends StatefulWidget {
-  const Application({
-    super.key,
-    required this.bootstrap,
-  });
+  const Application({super.key, required this.bootstrap});
 
   final AppBootstrap bootstrap;
 
@@ -53,9 +50,7 @@ class _ApplicationState extends State<Application> {
             ),
           ),
           BlocProvider(create: (_) => GameStateCubit()),
-          BlocProvider(
-            create: (_) => GamePreferencesCubit(sharedPreferences),
-          ),
+          BlocProvider(create: (_) => GamePreferencesCubit(sharedPreferences)),
           BlocProvider<IShopCubit>(
             create: (context) => ShopCubit(
               gamePreferences: context.read<GamePreferencesCubit>(),
@@ -80,31 +75,37 @@ class _ApplicationState extends State<Application> {
               GlobalCupertinoLocalizations.delegate,
             ],
             builder: (context, _) {
-              return DragAndDropProvider(
-                builder: (BuildContext context) {
-                  return EasyLoading.init()(
-                    context,
-                    BuildAppState(
-                      builder: (context, state) {
-                        return Stack(
-                          children: [
-                            const Positioned.fill(
-                              child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: Color(0xff75C3F7),
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: TextScaler.noScaling,
+
+                ),
+                child: DragAndDropProvider(
+                  builder: (BuildContext context) {
+                    return EasyLoading.init()(
+                      context,
+                      BuildAppState(
+                        builder: (context, state) {
+                          return Stack(
+                            children: [
+                              const Positioned.fill(
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    color: Color(0xff75C3F7),
+                                  ),
                                 ),
                               ),
-                            ),
-                            const Positioned.fill(child: CloudsPainter()),
-                            const Positioned.fill(child: Background()),
-                            AppRouterBuilder(router: router),
-                            const UiMoneyLayer(),
-                          ],
-                        );
-                      },
-                    ),
-                  );
-                },
+                              const Positioned.fill(child: CloudsPainter()),
+                              const Positioned.fill(child: Background()),
+                              AppRouterBuilder(router: router),
+                              const UiMoneyLayer(),
+                            ],
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
               );
             },
           ),
