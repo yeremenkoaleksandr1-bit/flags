@@ -18,6 +18,7 @@ import 'package:flags/domain/services/game/emblems.service.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
 import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
 import 'package:flags/features/app/features/levels/presentation/bloc/levels_cubit.dart';
+import 'package:flags/features/app/features/monetization/presentation/bloc/monetization_cubit.dart';
 import 'package:flags/features/app/features/vibration/presentation/bloc/vibration_cubit.dart';
 import 'package:flags/features/games/presentation/components/heart_tries/heart_tries.dart';
 import 'package:flags/features/games/presentation/games_factory.page.dart';
@@ -79,6 +80,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
   final IAudioCubit audioCubit;
 
   final IVibrationCubit vibrationCubit;
+  final MonetizationCubit monetizationCubit;
 
   final ILevelsPickerCubit levelsCubit;
 
@@ -103,6 +105,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
     this.placementService = const PuzzleObjectPlacementService(),
   }) : audioCubit = context.read<IAudioCubit>(),
        vibrationCubit = context.read<IVibrationCubit>(),
+       monetizationCubit = context.read<MonetizationCubit>(),
        levelsService = context.read<GameLevelsCubit>(),
        gamePreferences = context.read<GamePreferencesCubit>(),
        showcase = PuzzleGameShowcase(service: onboardingService),
@@ -250,6 +253,8 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
   }
 
   void onLevelCompleted(PuzzleGameState state) {
+    final moneyReward = state.level.completed ? 0 : state.level.id;
+
     levelProgressService.saveCompletedLevel(
       levelsCubit: levelsService,
       continentType: params.continentType,
@@ -272,11 +277,13 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
         isLastLevelInSection: isLastLevelInSection,
         onExitPressed: (context) async {
           Navigator.of(context).pop();
+          await monetizationCubit.consumePostLevelAdOpportunity();
 
           this.context.navigateNamedTo(LevelsPickerRoute.name);
         },
         onNextLevelPressed: (context) async {
           Navigator.of(context).pop();
+          await monetizationCubit.consumePostLevelAdOpportunity();
           await EasyLoading.show();
 
           await openNextLevel(data);
@@ -284,6 +291,17 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
             await EasyLoading.dismiss();
           });
         },
+        onDoubleRewardPressed:
+            moneyReward == 0
+                ? null
+                : (context) async {
+                  final rewarded = await monetizationCubit.claimDoubleReward();
+                  if (rewarded) {
+                    gamePreferences.addMoney(moneyReward);
+                  }
+
+                  return rewarded;
+                },
         emblems: emblems,
       ).showModal(context, barrierDismissible: false);
     }
@@ -302,6 +320,8 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
           emblemsService.saveEmblem(emblem.name);
         }
       }
+
+      monetizationCubit.registerLevelCompleted();
     }
 
     if (data.level != null) {
@@ -315,8 +335,9 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
     if (data.section == null) {
       PuzzleCompleteContinentDialog(
         continent: params.continentType,
-        onExit: (context) {
+        onExit: (context) async {
           Navigator.of(context).pop();
+          await monetizationCubit.consumePostLevelAdOpportunity();
 
           this.context.navigateNamedTo(LevelsPickerRoute.name);
         },
@@ -426,6 +447,8 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
       await audioCubit.playSfx(GameSfx.gameLoose);
       await audioCubit.pauseBgm();
     }());
+
+    await monetizationCubit.onGameOverAdOpportunity();
 
     await PuzzleLoseDialog(
       onRestart: onRestart,

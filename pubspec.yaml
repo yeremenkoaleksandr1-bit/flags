@@ -71,6 +71,9 @@ dependencies:
   flutter_secure_storage: ^9.2.3
   auto_route: ^9.2.2
   freezed_annotation: ^2.4.4
+  google_mobile_ads: ^7.0.0
+  in_app_purchase: ^3.2.3
+  games_services: ^5.0.0
 
 dev_dependencies:
   flutter_test:

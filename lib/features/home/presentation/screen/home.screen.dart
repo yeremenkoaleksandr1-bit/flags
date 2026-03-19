@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flags/app/app_scope.dart';
+import 'package:flags/features/app/features/auth/presentation/widgets/game_services_account_button.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
 import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
 import 'package:flags/features/app/presentation/bloc/app_cubit.dart';
@@ -144,6 +145,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       Gap.v24,
                     ],
                   ),
+                ),
+                const Positioned(
+                  top: 12,
+                  right: 12,
+                  child: GameServicesAccountButton(),
                 ),
               ],
             ),

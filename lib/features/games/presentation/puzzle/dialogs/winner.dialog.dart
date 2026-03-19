@@ -20,6 +20,7 @@ class PuzzleWinnerDialog extends DialogWidget {
     required this.emblems,
     required this.isLastLevelInSection,
     required this.onNextLevelPressed,
+    this.onDoubleRewardPressed,
   });
 
   final GameLevel level;
@@ -28,6 +29,7 @@ class PuzzleWinnerDialog extends DialogWidget {
   final bool isLastLevelInSection;
   final void Function(BuildContext context) onExitPressed;
   final void Function(BuildContext context) onNextLevelPressed;
+  final Future<bool> Function(BuildContext context)? onDoubleRewardPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +40,7 @@ class PuzzleWinnerDialog extends DialogWidget {
       isLastLevelInSection: isLastLevelInSection,
       onExitPressed: onExitPressed,
       onNextLevelPressed: onNextLevelPressed,
+      onDoubleRewardPressed: onDoubleRewardPressed,
     );
   }
 }
@@ -50,6 +53,7 @@ class _PuzzleWinnerDialogContent extends StatefulWidget {
     required this.isLastLevelInSection,
     required this.onExitPressed,
     required this.onNextLevelPressed,
+    required this.onDoubleRewardPressed,
   });
 
   final GameLevel level;
@@ -58,6 +62,7 @@ class _PuzzleWinnerDialogContent extends StatefulWidget {
   final bool isLastLevelInSection;
   final void Function(BuildContext context) onExitPressed;
   final void Function(BuildContext context) onNextLevelPressed;
+  final Future<bool> Function(BuildContext context)? onDoubleRewardPressed;
 
   @override
   State<_PuzzleWinnerDialogContent> createState() =>
@@ -69,6 +74,8 @@ class _PuzzleWinnerDialogContentState
   final GlobalKey _moneyStartWidgetKey = GlobalKey();
 
   bool _isMoneyAnimationScheduled = false;
+  bool _isDoubleRewardLoading = false;
+  bool _isDoubleRewardClaimed = false;
 
   bool get _isLastLevelInContinent =>
       widget.nextLevel == null && !widget.isLastLevelInSection;
@@ -80,6 +87,9 @@ class _PuzzleWinnerDialogContentState
   bool get _showEmblemsAward => widget.emblems.isNotEmpty;
 
   bool get _showAwards => _showMoneyAward || _showEmblemsAward;
+
+  bool get _canClaimDoubleReward =>
+      widget.onDoubleRewardPressed != null && !_isDoubleRewardClaimed;
 
   String get _nextLevelButtonText {
     if (_isLastLevelInContinent) {
@@ -144,6 +154,26 @@ class _PuzzleWinnerDialogContentState
     });
   }
 
+  Future<void> _handleDoubleReward(BuildContext context) async {
+    if (!_canClaimDoubleReward || _isDoubleRewardLoading) {
+      return;
+    }
+
+    setState(() {
+      _isDoubleRewardLoading = true;
+    });
+
+    final rewarded = await widget.onDoubleRewardPressed!(context);
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _isDoubleRewardLoading = false;
+      _isDoubleRewardClaimed = rewarded;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -205,6 +235,23 @@ class _PuzzleWinnerDialogContentState
     return Column(
       spacing: 8,
       children: [
+        if (_canClaimDoubleReward)
+          FBlueButton(
+            onPressed:
+                _isDoubleRewardLoading
+                    ? () {}
+                    : () {
+                      _handleDoubleReward(context);
+                    },
+            child: Center(
+              child: FText(
+                _isDoubleRewardLoading
+                    ? 'Loading ad...'
+                    : 'x2 reward',
+                textStyle: const TextStyle(fontSize: 40),
+              ),
+            ),
+          ),
         FGreenButton(
           onPressed: () => widget.onNextLevelPressed(context),
           child: Center(

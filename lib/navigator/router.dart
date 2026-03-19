@@ -1,6 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:flags/navigator/game_navigation_guard.dart';
-
 import 'router.gr.dart';
 
 @AutoRouterConfig()
@@ -17,6 +15,9 @@ final class AppRouter extends RootStackRouter {
         CustomRoute(
           initial: true,
           page: HomeRoute.page,
+        ),
+        CustomRoute(
+          page: GameServicesAccountRoute.page,
         ),
         CustomRoute(
           page: GameModePickerRouter.page,

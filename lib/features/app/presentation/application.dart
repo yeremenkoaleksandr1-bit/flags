@@ -3,7 +3,9 @@ import 'package:flags/app/app_bootstrap.dart';
 import 'package:flags/app/app_scope.dart';
 import 'package:flags/domain/preferences/game_preferences.dart';
 import 'package:flags/features/app/data/shop_items.dart';
+import 'package:flags/features/app/features/auth/presentation/bloc/game_services_auth_cubit.dart';
 import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
+import 'package:flags/features/app/features/monetization/presentation/bloc/monetization_cubit.dart';
 import 'package:flags/features/app/features/shop/domain/services/shop.service.dart';
 import 'package:flags/features/app/features/shop/presentation/bloc/shop_cubit.dart';
 import 'package:flags/features/app/features/vibration/presentation/bloc/vibration_cubit.dart';
@@ -58,6 +60,12 @@ class _ApplicationState extends State<Application> {
               BlocProvider(create: (_) => GameStateCubit()),
               BlocProvider(
                 create: (_) => GamePreferencesCubit(sharedPreferences),
+              ),
+              BlocProvider(
+                create: (_) => GameServicesAuthCubit(sharedPreferences),
+              ),
+              BlocProvider(
+                create: (_) => MonetizationCubit(sharedPreferences),
               ),
               BlocProvider<IShopCubit>(
                 create: (context) => ShopCubit(
