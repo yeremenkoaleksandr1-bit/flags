@@ -22,7 +22,7 @@ val signingStoreFile =
     }
 
 android {
-    namespace = "com.dipflix.flags"
+    namespace = "com.forceman.flagsup"
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
@@ -36,7 +36,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.dipflix.flags"
+        applicationId = "com.forceman.flagsup"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
