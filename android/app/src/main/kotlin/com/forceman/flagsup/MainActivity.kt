@@ -1,4 +1,4 @@
-package com.dipflix.flags
+package com.forceman.flagsup
 
 import android.os.Bundle
 import android.view.View
