@@ -75,7 +75,7 @@ class _ApplicationState extends State<Application> {
             ],
             child: BlocStateBuilderThemeProvider(
               child: FlagsWidgetsApp(
-                title: "FlagsUp",
+                title: "Flags Up",
                 theme: AppTheme.themeData,
                 localizationsDelegates: const [
                   GlobalMaterialLocalizations.delegate,
