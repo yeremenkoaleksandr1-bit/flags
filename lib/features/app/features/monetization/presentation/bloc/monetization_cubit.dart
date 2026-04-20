@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flags/features/app/features/monetization/presentation/bloc/monetization_state.dart';
+import 'package:flags/logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -49,7 +50,6 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   bool _pendingPostLevelInterstitial = false;
 
   Future<void> _initialize() async {
-
     _loadInterstitialAd();
     _loadRewardedAd();
 
@@ -227,6 +227,7 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   void _loadRewardedAd() {
     _rewardedLoadCompleter ??= Completer<void>();
 
+    logger.i(_rewardedUnitId);
     RewardedAd.load(
       adUnitId: _rewardedUnitId,
       request: const AdRequest(),
@@ -361,28 +362,20 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   }
 
   String get _interstitialUnitId {
-    if (kDebugMode) {
-      return Platform.isAndroid
-          ? 'ca-app-pub-3940256099942544/1033173712'
-          : 'ca-app-pub-3940256099942544/4411468910';
-    }
-
     return dotenv.get(
-      'ADMOB_INTERSTITIAL_ID',
-      fallback: 'ca-app-pub-3940256099942544/1033173712',
+      'ADMOB_INTERSTITIAL_ID_',
+      fallback: Platform.isAndroid
+          ? 'ca-app-pub-3940256099942544/1033173712'
+          : 'ca-app-pub-3940256099942544/4411468910',
     );
   }
 
   String get _rewardedUnitId {
-    if (kDebugMode) {
-      return Platform.isAndroid
-          ? 'ca-app-pub-3940256099942544/5224354917'
-          : 'ca-app-pub-3940256099942544/1712485313';
-    }
-
     return dotenv.get(
-      'ADMOB_REWARDED_ID',
-      fallback: 'ca-app-pub-3940256099942544/5224354917',
+      'ADMOB_REWARDED_ID_',
+      fallback: Platform.isAndroid
+          ? 'ca-app-pub-3940256099942544/1033173712'
+          : 'ca-app-pub-3940256099942544/4411468910',
     );
   }
 
