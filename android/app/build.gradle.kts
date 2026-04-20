@@ -12,6 +12,13 @@ val keyProperties = Properties().apply {
     load(FileInputStream(file("key.properties")))
 }
 
+val envProperties = Properties().apply {
+    val envFile = rootProject.file("../.env")
+    if (envFile.exists()) {
+        envFile.inputStream().use(::load)
+    }
+}
+
 val configuredStoreFile = file(keyProperties["storeFile"] as String)
 val fallbackStoreFile = rootProject.file("keys/app")
 val signingStoreFile =
@@ -41,6 +48,11 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders["admobAppId"] =
+            envProperties.getProperty(
+                "ADMOB_ANDROID_APP_ID",
+                "ca-app-pub-3940256099942544~3347511713",
+            )
     }
 
     signingConfigs {

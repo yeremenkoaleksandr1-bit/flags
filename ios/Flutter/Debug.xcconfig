@@ -1,1 +1,4 @@
+#if __has_include("AdMob.xcconfig")
+#include "AdMob.xcconfig"
+#endif
 #include "Generated.xcconfig"

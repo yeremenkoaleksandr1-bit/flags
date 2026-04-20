@@ -13,6 +13,7 @@ import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/models/game/scores/win_streak.dart';
 import 'package:flags/domain/preferences/game_preferences.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
+import 'package:flags/features/games/presentation/puzzle/dialogs/lose.dialog.dart';
 import 'package:flags/features/games/presentation/puzzle/overlays/start_game.dart';
 import 'package:flags/navigator/router.gr.dart';
 import 'package:flags/prefabs/levels/levels.dart';
@@ -56,6 +57,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
   StreamSubscription<int>? _prepareSubscription;
   bool _isPreparationCountdownStarted = false;
   bool _isExitingFastMode = false;
+  bool _isFastModeGameOverShown = false;
 
   int get initialTimerValue => timerRx.value;
 
@@ -212,9 +214,11 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
       return;
     }
 
+    _isFastModeGameOverShown = false;
     _isPreparationCountdownStarted = false;
     periodicTimer.pause();
     gamePreferences.recordWin();
+    await monetizationCubit.onFastModeRoundCompleted();
 
     await prepareFastModeLevel();
   }
@@ -336,19 +340,72 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
 
   @override
   Future<void> onGameOver() async {
-    if (_isExitingFastMode) {
+    if (_isExitingFastMode || _isFastModeGameOverShown) {
       return;
     }
 
+    _isFastModeGameOverShown = true;
     showcaseFm.dismiss();
     await _stopFastModeActivity();
     gamePreferences.resetStreak();
-    await super.onGameOver();
+
+    if (isClosed || !context.mounted) {
+      return;
+    }
+
+    unawaited(() async {
+      await audioCubit.playSfx(GameSfx.gameLoose);
+      await audioCubit.pauseBgm();
+    }());
+
+    await monetizationCubit.onFastModeRoundCompleted();
+
+    if (isClosed || !context.mounted) {
+      return;
+    }
+
+    await _showFastModeLoseDialog();
+  }
+
+  Future<void> _showFastModeLoseDialog() async {
+    await _waitUntilAppResumed();
+
+    if (isClosed || !context.mounted) {
+      return;
+    }
+
+    await WidgetsBinding.instance.endOfFrame;
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    if (isClosed || !context.mounted) {
+      return;
+    }
+
+    await PuzzleLoseDialog(
+      onRestart: onRestart,
+      onExit: onGameExit,
+    ).showModal(context, barrierDismissible: false, useRootNavigator: true);
+  }
+
+  Future<void> _waitUntilAppResumed() async {
+    final binding = WidgetsBinding.instance;
+    final deadline = DateTime.now().add(const Duration(seconds: 3));
+
+    while (!isClosed && DateTime.now().isBefore(deadline)) {
+      final lifecycleState = binding.lifecycleState;
+      if (lifecycleState == null ||
+          lifecycleState == AppLifecycleState.resumed) {
+        return;
+      }
+
+      await Future.delayed(const Duration(milliseconds: 50));
+    }
   }
 
   @override
   Future<void> onGameExit(BuildContext context) async {
     _isExitingFastMode = true;
+    _isFastModeGameOverShown = false;
     showcaseFm.dismiss();
     await _stopFastModeActivity();
     gamePreferences.resetStreak();
@@ -361,6 +418,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
   @override
   Future<void> onRestart(BuildContext context) async {
     _isExitingFastMode = false;
+    _isFastModeGameOverShown = false;
     gamePreferences.resetStreak();
     _isPreparationCountdownStarted = false;
     await super.onRestart(context);

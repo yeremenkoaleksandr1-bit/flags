@@ -253,7 +253,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
   }
 
   void onLevelCompleted(PuzzleGameState state) {
-    final moneyReward = state.level.completed ? 0 : state.level.id;
+    final moneyReward = state.level.id;
 
     levelProgressService.saveCompletedLevel(
       levelsCubit: levelsService,
@@ -291,17 +291,14 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
             await EasyLoading.dismiss();
           });
         },
-        onDoubleRewardPressed:
-            moneyReward == 0
-                ? null
-                : (context) async {
-                  final rewarded = await monetizationCubit.claimDoubleReward();
-                  if (rewarded) {
-                    gamePreferences.addMoney(moneyReward);
-                  }
+        onDoubleRewardPressed: (context) async {
+          final rewarded = await monetizationCubit.claimDoubleReward();
+          if (rewarded) {
+            gamePreferences.addMoney(moneyReward);
+          }
 
-                  return rewarded;
-                },
+          return rewarded;
+        },
         emblems: emblems,
       ).showModal(context, barrierDismissible: false);
     }
