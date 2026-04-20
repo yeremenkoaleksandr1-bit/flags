@@ -5,7 +5,9 @@ import 'package:flags/uikit/uikit.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,6 +18,9 @@ void main() async {
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
 
   await Flame.device.setPortraitUpOnly();
+  await dotenv.load(fileName: '.env');
+
+  await MobileAds.instance.initialize();
 
   EasyLoading.instance
     ..maskType = EasyLoadingMaskType.custom

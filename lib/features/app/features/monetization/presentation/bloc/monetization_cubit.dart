@@ -2,13 +2,14 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flags/features/app/features/monetization/presentation/bloc/monetization_state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'monetization_state.dart';
 
 final class MonetizationCubit extends Cubit<MonetizationState> {
   MonetizationCubit(this._prefs)
@@ -27,9 +28,11 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   static const String _premiumPrefsKey = 'monetization.isPremium';
   static const String _completedLevelsPrefsKey =
       'monetization.completedLevelsSinceInterstitial';
-  static const String _noAdsProductId = String.fromEnvironment(
+  static const String _fastModeRoundsPrefsKey =
+      'monetization.fastModeRoundsSinceInterstitial';
+  static final String _noAdsProductId = dotenv.get(
     'NO_ADS_PRODUCT_ID',
-    defaultValue: 'flagsup_no_ads_subscription',
+    fallback: 'flagsup_no_ads_subscription',
   );
 
   final SharedPreferences _prefs;
@@ -41,19 +44,19 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   ProductDetails? _subscriptionProduct;
   InterstitialAd? _interstitialAd;
   RewardedAd? _rewardedAd;
+  Completer<void>? _interstitialLoadCompleter;
+  Completer<void>? _rewardedLoadCompleter;
   bool _pendingPostLevelInterstitial = false;
 
   Future<void> _initialize() async {
-    await MobileAds.instance.initialize();
+
     _loadInterstitialAd();
     _loadRewardedAd();
 
     final storeAvailable = await _inAppPurchase.isAvailable();
     if (!storeAvailable) {
       emit(
-        state.copyWith(
-          statusMessage: 'Store is unavailable on this device',
-        ),
+        state.copyWith(statusMessage: 'Store is unavailable on this device'),
       );
       return;
     }
@@ -83,24 +86,14 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
       return;
     }
 
-    emit(
-      state.copyWith(
-        isPurchasePending: true,
-        clearStatusMessage: true,
-      ),
-    );
+    emit(state.copyWith(isPurchasePending: true, clearStatusMessage: true));
 
     final purchaseParam = PurchaseParam(productDetails: _subscriptionProduct!);
     await _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
   }
 
   Future<void> restorePurchases() async {
-    emit(
-      state.copyWith(
-        isPurchasePending: true,
-        clearStatusMessage: true,
-      ),
-    );
+    emit(state.copyWith(isPurchasePending: true, clearStatusMessage: true));
     await _inAppPurchase.restorePurchases();
   }
 
@@ -134,6 +127,21 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
     }
 
     _pendingPostLevelInterstitial = false;
+    await _showInterstitialAd();
+  }
+
+  Future<void> onFastModeRoundCompleted() async {
+    if (state.isPremium) {
+      return;
+    }
+
+    final completedRounds = (_prefs.getInt(_fastModeRoundsPrefsKey) ?? 0) + 1;
+    if (completedRounds < 5) {
+      _prefs.setInt(_fastModeRoundsPrefsKey, completedRounds);
+      return;
+    }
+
+    _prefs.setInt(_fastModeRoundsPrefsKey, 0);
     await _showInterstitialAd();
   }
 
@@ -184,14 +192,13 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
 
   void _handlePurchaseStreamError(Object error) {
     emit(
-      state.copyWith(
-        isPurchasePending: false,
-        statusMessage: error.toString(),
-      ),
+      state.copyWith(isPurchasePending: false, statusMessage: error.toString()),
     );
   }
 
   void _loadInterstitialAd() {
+    _interstitialLoadCompleter ??= Completer<void>();
+
     InterstitialAd.load(
       adUnitId: _interstitialUnitId,
       request: const AdRequest(),
@@ -199,15 +206,27 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
         onAdLoaded: (ad) {
           _interstitialAd?.dispose();
           _interstitialAd = ad..setImmersiveMode(true);
+          if (_interstitialLoadCompleter != null &&
+              !_interstitialLoadCompleter!.isCompleted) {
+            _interstitialLoadCompleter!.complete();
+          }
+          _interstitialLoadCompleter = null;
         },
         onAdFailedToLoad: (_) {
           _interstitialAd = null;
+          if (_interstitialLoadCompleter != null &&
+              !_interstitialLoadCompleter!.isCompleted) {
+            _interstitialLoadCompleter!.complete();
+          }
+          _interstitialLoadCompleter = null;
         },
       ),
     );
   }
 
   void _loadRewardedAd() {
+    _rewardedLoadCompleter ??= Completer<void>();
+
     RewardedAd.load(
       adUnitId: _rewardedUnitId,
       request: const AdRequest(),
@@ -215,18 +234,27 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
         onAdLoaded: (ad) {
           _rewardedAd?.dispose();
           _rewardedAd = ad;
+          if (_rewardedLoadCompleter != null &&
+              !_rewardedLoadCompleter!.isCompleted) {
+            _rewardedLoadCompleter!.complete();
+          }
+          _rewardedLoadCompleter = null;
         },
         onAdFailedToLoad: (_) {
           _rewardedAd = null;
+          if (_rewardedLoadCompleter != null &&
+              !_rewardedLoadCompleter!.isCompleted) {
+            _rewardedLoadCompleter!.complete();
+          }
+          _rewardedLoadCompleter = null;
         },
       ),
     );
   }
 
   Future<void> _showInterstitialAd() async {
-    final ad = _interstitialAd;
+    final ad = await _prepareInterstitialAd();
     if (ad == null) {
-      _loadInterstitialAd();
       return;
     }
 
@@ -255,13 +283,13 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   }
 
   Future<bool> _showRewardedAd() async {
-    final ad = _rewardedAd;
+    final ad = await _prepareRewardedAd();
     if (ad == null) {
-      _loadRewardedAd();
       return false;
     }
 
     final completer = Completer<bool>();
+    var rewardEarned = false;
     _rewardedAd = null;
 
     ad.fullScreenContentCallback = FullScreenContentCallback(
@@ -269,7 +297,7 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
         ad.dispose();
         _loadRewardedAd();
         if (!completer.isCompleted) {
-          completer.complete(false);
+          completer.complete(rewardEarned);
         }
       },
       onAdFailedToShowFullScreenContent: (ad, _) {
@@ -284,13 +312,52 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
     ad.setImmersiveMode(true);
     ad.show(
       onUserEarnedReward: (_, __) {
-        if (!completer.isCompleted) {
-          completer.complete(true);
-        }
+        rewardEarned = true;
       },
     );
 
     return completer.future;
+  }
+
+  Future<InterstitialAd?> _prepareInterstitialAd() async {
+    if (_interstitialAd != null) {
+      return _interstitialAd;
+    }
+
+    await _showAdPlaceholderWhile(() async {
+      _loadInterstitialAd();
+      await _interstitialLoadCompleter?.future.timeout(
+        const Duration(seconds: 5),
+        onTimeout: () {},
+      );
+    });
+
+    return _interstitialAd;
+  }
+
+  Future<RewardedAd?> _prepareRewardedAd() async {
+    if (_rewardedAd != null) {
+      return _rewardedAd;
+    }
+
+    await _showAdPlaceholderWhile(() async {
+      _loadRewardedAd();
+      await _rewardedLoadCompleter?.future.timeout(
+        const Duration(seconds: 5),
+        onTimeout: () {},
+      );
+    });
+
+    return _rewardedAd;
+  }
+
+  Future<void> _showAdPlaceholderWhile(Future<void> Function() action) async {
+    await EasyLoading.show(status: 'Searching for ad...');
+    try {
+      await action();
+    } finally {
+      await EasyLoading.dismiss();
+    }
   }
 
   String get _interstitialUnitId {
@@ -300,9 +367,9 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
           : 'ca-app-pub-3940256099942544/4411468910';
     }
 
-    return const String.fromEnvironment(
+    return dotenv.get(
       'ADMOB_INTERSTITIAL_ID',
-      defaultValue: 'ca-app-pub-3940256099942544/1033173712',
+      fallback: 'ca-app-pub-3940256099942544/1033173712',
     );
   }
 
@@ -313,9 +380,9 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
           : 'ca-app-pub-3940256099942544/1712485313';
     }
 
-    return const String.fromEnvironment(
+    return dotenv.get(
       'ADMOB_REWARDED_ID',
-      defaultValue: 'ca-app-pub-3940256099942544/5224354917',
+      fallback: 'ca-app-pub-3940256099942544/5224354917',
     );
   }
 

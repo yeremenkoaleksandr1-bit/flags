@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
@@ -72,6 +74,7 @@ class _PuzzleWinnerDialogContent extends StatefulWidget {
 class _PuzzleWinnerDialogContentState
     extends State<_PuzzleWinnerDialogContent> {
   final GlobalKey _moneyStartWidgetKey = GlobalKey();
+  Future<void> _moneyAnimationQueue = Future.value();
 
   bool _isMoneyAnimationScheduled = false;
   bool _isDoubleRewardLoading = false;
@@ -80,7 +83,11 @@ class _PuzzleWinnerDialogContentState
   bool get _isLastLevelInContinent =>
       widget.nextLevel == null && !widget.isLastLevelInSection;
 
-  int get _moneyAward => widget.level.completed ? 0 : widget.level.id;
+  int get _moneyAward => widget.level.id;
+
+  bool get _isReplayRewardOnly => widget.level.completed;
+
+  bool get _shouldAutoAnimateMoneyAward => !_isReplayRewardOnly;
 
   bool get _showMoneyAward => _moneyAward != 0;
 
@@ -90,6 +97,12 @@ class _PuzzleWinnerDialogContentState
 
   bool get _canClaimDoubleReward =>
       widget.onDoubleRewardPressed != null && !_isDoubleRewardClaimed;
+
+  String get _rewardButtonText => _isDoubleRewardLoading
+      ? 'Loading ad...'
+      : _isReplayRewardOnly
+      ? 'Watch ad for reward'
+      : 'x2 reward';
 
   String get _nextLevelButtonText {
     if (_isLastLevelInContinent) {
@@ -121,37 +134,62 @@ class _PuzzleWinnerDialogContentState
   }
 
   void _scheduleMoneyAnimationIfNeeded() {
-    if (!_showMoneyAward || _isMoneyAnimationScheduled) {
+    if (!_showMoneyAward ||
+        !_shouldAutoAnimateMoneyAward ||
+        _isMoneyAnimationScheduled) {
       return;
     }
 
     _isMoneyAnimationScheduled = true;
+    _enqueueMoneyAnimation(_moneyAward.clamp(1, 50));
+  }
+
+  Future<void> _enqueueMoneyAnimation(int coinsCount) {
+    return _moneyAnimationQueue = _moneyAnimationQueue.then((_) async {
+      await _playMoneyAnimation(coinsCount);
+    });
+  }
+
+  Future<void> _playMoneyAnimation(int coinsCount) async {
+    final completer = Completer<void>();
 
     FlutterEngine.widgetPostFrameCallback((_) async {
       if (!mounted) {
+        if (!completer.isCompleted) {
+          completer.complete();
+        }
         return;
       }
 
       final currentContext = _moneyStartWidgetKey.currentContext;
       if (currentContext == null) {
+        if (!completer.isCompleted) {
+          completer.complete();
+        }
         return;
       }
 
       final renderObject = currentContext.findRenderObject();
       if (renderObject is! RenderBox || !renderObject.attached) {
+        if (!completer.isCompleted) {
+          completer.complete();
+        }
         return;
       }
 
       final uiMoneyLayer = UiMoneyLayer.find();
 
       await uiMoneyLayer.show();
-      await uiMoneyLayer.addMoneys(
-        renderObject.rect.center,
-        _moneyAward.clamp(1, 50),
-      );
+      await uiMoneyLayer.addMoneys(renderObject.rect.center, coinsCount);
       await Future.delayed(const Duration(milliseconds: 1250));
       await uiMoneyLayer.hide();
+
+      if (!completer.isCompleted) {
+        completer.complete();
+      }
     });
+
+    await completer.future;
   }
 
   Future<void> _handleDoubleReward(BuildContext context) async {
@@ -164,6 +202,10 @@ class _PuzzleWinnerDialogContentState
     });
 
     final rewarded = await widget.onDoubleRewardPressed!(context);
+    if (rewarded && _showMoneyAward) {
+      await _enqueueMoneyAnimation(_moneyAward.clamp(1, 50));
+    }
+
     if (!mounted) {
       return;
     }
@@ -237,17 +279,14 @@ class _PuzzleWinnerDialogContentState
       children: [
         if (_canClaimDoubleReward)
           FBlueButton(
-            onPressed:
-                _isDoubleRewardLoading
-                    ? () {}
-                    : () {
-                      _handleDoubleReward(context);
-                    },
+            onPressed: _isDoubleRewardLoading
+                ? () {}
+                : () {
+                    _handleDoubleReward(context);
+                  },
             child: Center(
               child: FText(
-                _isDoubleRewardLoading
-                    ? 'Loading ad...'
-                    : 'x2 reward',
+                _rewardButtonText,
                 textStyle: const TextStyle(fontSize: 40),
               ),
             ),

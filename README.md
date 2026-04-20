@@ -1,16 +1,25 @@
 # flags
 
-A new Flutter project.
+## Environment
 
-## Getting Started
+Monetization identifiers are loaded from `.env` via `flutter_dotenv`.
 
-This project is a starting point for a Flutter application.
+Create `.env` in the project root from `.env.example`:
 
-A few resources to get you started if this is your first Flutter project:
+```env
+ADMOB_ANDROID_APP_ID=ca-app-pub-...~...
+ADMOB_IOS_APP_ID=ca-app-pub-...~...
+NO_ADS_PRODUCT_ID=your_store_product_id
+ADMOB_INTERSTITIAL_ID=ca-app-pub-.../...
+ADMOB_REWARDED_ID=ca-app-pub-.../...
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Android reads `ADMOB_ANDROID_APP_ID` during native build.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+iOS generates [ios/Flutter/AdMob.xcconfig](/E:/work/flags/ios/Flutter/AdMob.xcconfig:1) from `.env` during Xcode build and reads `ADMOB_IOS_APP_ID` from there:
+
+```env
+ADMOB_IOS_APP_ID=ca-app-pub-...~...
+```
+
+If you leave test ids in place, debug builds will still work, but production ads should use your real AdMob app and unit identifiers.

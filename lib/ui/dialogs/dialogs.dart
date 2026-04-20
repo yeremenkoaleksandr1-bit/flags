@@ -16,10 +16,12 @@ abstract class DialogWidget extends StatelessWidget {
     RouteSettings? routeSettings,
     bool barrierDismissible = true,
     EdgeInsets? padding,
+    bool useRootNavigator = false,
   }) => showDialog<T>(
     context: context,
     routeSettings: routeSettings,
     barrierDismissible: barrierDismissible,
+    useRootNavigator: useRootNavigator,
     builder: (BuildContext context) => Padding(
       padding: padding ?? ThemePaddings.screen,
       child: Align(

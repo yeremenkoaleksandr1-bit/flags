@@ -3,7 +3,7 @@ description: "A new Flutter project."
 
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ^3.10.4
@@ -61,6 +61,7 @@ dependencies:
   flutter_bloc: ^9.0.0
   equatable: ^2.0.5
   flutter_colorpicker: ^1.1.0
+  flutter_dotenv: ^5.2.1
   image_gallery_saver:
     git:
       url: https://github.com/knottx/image_gallery_saver.git
@@ -96,6 +97,7 @@ flutter:
     - shaders/outline.frag
 
   assets:
+    - .env
     - assets/
     - assets/fonts/
     - assets/images/
