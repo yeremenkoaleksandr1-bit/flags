@@ -59,72 +59,76 @@ class UiMoneyLayerState extends UiLayerState<UiMoneyLayer, IUiMoneyLayer>
     );
   }
 
-  late StreamSubscription<dynamic>? _subscription = null;
+  StreamSubscription<dynamic>? _subscription;
 
-  late Completer<dynamic>? _availableCompleter;
-  late Completer<dynamic>? _completer;
+  Completer<dynamic>? _availableCompleter;
+  Completer<dynamic>? _completer;
 
   @override
   Future<void> addMoneys(Offset fromPosition, int count) async {
     _subscription?.cancel();
+    _subscription = null;
 
-    if (moneyRenderBox != null) {
-      final Random random = Random();
-      _completer = Completer();
-      int availableItem = 20;
-      int totalMoneys = count;
-
-      _subscription = Stream.periodic(
-        const Duration(milliseconds: 100),
-      ).listen((event) async {
-        if (availableItem <= 0) {
-          await _availableCompleter?.future;
-        }
-        totalMoneys--;
-        if (totalMoneys <= 0) {
-          _subscription?.cancel();
-          if (_completer != null && !_completer!.isCompleted) {
-            _completer?.complete();
-          }
-        }
-
-        if (moneyRenderBox != null) {
-          final rect = moneyRenderBox!.rect;
-
-          widgetsPool.acquire(
-            onCall: (MoneyAnimatedItemController state) async {
-              availableItem--;
-
-              if (availableItem <= 0) {
-                _availableCompleter = Completer();
-              }
-
-              await Future.delayed(
-                Duration(
-                  milliseconds: random.nextIntRange(100, 250),
-                ),
-              );
-
-              state.playAnimation(
-                OVector(fromPosition, rect.center),
-                onCompleted: (key) {
-                  availableItem++;
-
-                  widgetsPool.release(key);
-                  if (availableItem <= 0) {
-                    if (_availableCompleter != null &&
-                        !_availableCompleter!.isCompleted) {
-                      _availableCompleter?.complete();
-                    }
-                  }
-                },
-              );
-            },
-          );
-        }
-      });
+    if (count <= 0 || moneyRenderBox == null) {
+      return;
     }
 
-    return _completer?.future;
+    final Random random = Random();
+    _completer = Completer();
+    int availableItem = 20;
+    int totalMoneys = count;
+
+    _subscription = Stream.periodic(
+      const Duration(milliseconds: 100),
+    ).listen((event) async {
+      if (availableItem <= 0) {
+        await _availableCompleter?.future;
+      }
+      totalMoneys--;
+      if (totalMoneys <= 0) {
+        _subscription?.cancel();
+        _subscription = null;
+        if (_completer != null && !_completer!.isCompleted) {
+          _completer?.complete();
+        }
+      }
+
+      if (moneyRenderBox != null) {
+        final rect = moneyRenderBox!.rect;
+
+        widgetsPool.acquire(
+          onCall: (MoneyAnimatedItemController state) async {
+            availableItem--;
+
+            if (availableItem <= 0) {
+              _availableCompleter = Completer();
+            }
+
+            await Future.delayed(
+              Duration(
+                milliseconds: random.nextIntRange(100, 250),
+              ),
+            );
+
+            state.playAnimation(
+              OVector(fromPosition, rect.center),
+              onCompleted: (key) {
+                availableItem++;
+
+                widgetsPool.release(key);
+                if (availableItem > 0) {
+                  if (_availableCompleter != null &&
+                      !_availableCompleter!.isCompleted) {
+                    _availableCompleter?.complete();
+                  }
+                }
+              },
+            );
+          },
+        );
+      }
+    });
+
+    return _completer?.future ?? Future.value();
   }
 }

@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flags/domain/domain.dart';
 import 'package:flags/features/app/features/shop/presentation/components/shop_item.view.dart';
+import 'package:flags/features/continents_picker/presentation/components/progress_card.dart';
+import 'package:flags/prefabs/levels/levels.dart';
 import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
 import 'package:flags/uikit/text/f_text.dart';
 import 'package:flags/uikit/theme/palette.dart';
@@ -120,6 +122,7 @@ class _ContinentsSliderState extends State<ContinentsSlider> {
                       child: _ContinentSlide(
                         continent: continent,
                         isBought: isBought,
+                        gameMode: widget.gameProcessType,
                       ),
                     ),
                   ),
@@ -151,34 +154,7 @@ class _ContinentsSliderState extends State<ContinentsSlider> {
             },
           ),
         ),
-        Positioned(
-          bottom: 0,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: List.generate(
-              widget.continents.length,
-              (index) {
-                final isActive = index == _page.round();
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  width: isActive ? 14.w : 8.w,
-                  height: 8.h,
-                  margin: EdgeInsets.symmetric(horizontal: 4.w),
-                  decoration: BoxDecoration(
-                    color: isActive
-                        ? const Color(0xFF2D6ED8)
-                        : ThemePalette.white.withValues(alpha: 0.65),
-                    borderRadius: BorderRadius.circular(999.r),
-                    border: Border.all(
-                      color: const Color(0xFF2E5BA9),
-                      width: 1.5.r,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
+
       ],
     );
   }
@@ -187,10 +163,12 @@ class _ContinentsSliderState extends State<ContinentsSlider> {
 class _ContinentSlide extends StatelessWidget {
   const _ContinentSlide({
     required this.continent,
+    required this.gameMode,
     required this.isBought,
   });
 
   final ContinentType continent;
+  final GameProcessType gameMode;
   final bool isBought;
 
   @override
@@ -208,15 +186,29 @@ class _ContinentSlide extends StatelessWidget {
         Center(
           child: FittedBox(
             fit: BoxFit.scaleDown,
-            child: FText(
-              createContinentTitle(continent).toUpperCase(),
-              textAlign: TextAlign.center,
-              strokeWidth: 10,
-              textStyle: TextStyle(
-                fontSize: 46.sp,
-                height: 1,
-                fontWeight: FontWeight.w900,
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FText(
+                  createContinentTitle(continent).toUpperCase(),
+                  textAlign: TextAlign.center,
+                  strokeWidth: 10,
+                  textStyle: TextStyle(
+                    fontSize: 46.sp,
+                    height: 1,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                SizedBox(
+                  width: 200.w,
+                  child: ProgressCard(
+                    continent: continent,
+                    gameMode: gameMode,
+                    levelsCount:
+                        FactoryGameContinent.continents[continent]!.levels.length,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
