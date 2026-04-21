@@ -3,7 +3,7 @@ import 'package:flags/domain/game_objects/base/game_object.dart';
 import 'package:flags/features/editor/editor/presentation/cubits/area/area_cubit.dart';
 import 'package:flags/uikit/components/listenable_builder/listenable_builder.dart';
 import 'package:flags/uikit/game_widgets/game_widgets.dart';
-import 'package:flame/extensions.dart';
+import 'package:flame/extensions.dart' hide Matrix4;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

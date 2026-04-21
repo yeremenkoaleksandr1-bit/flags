@@ -3,7 +3,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flags/domain/interfaces/drawable/i_drawable.dart';
 import 'package:flags/shared/services/disposable.dart';
-import 'package:flame/components.dart';
+import 'package:flame/components.dart' show Vector2;
 import 'package:flutter/material.dart';
 
 abstract class GameObject
@@ -82,7 +82,12 @@ abstract class GameObject
     }
   }
 
-  Rect get rect => _position & _size;
+  Rect get rect => Rect.fromLTWH(
+        _position.x,
+        _position.y,
+        _size.x,
+        _size.y,
+      );
 
   @protected
   Future<void> init();

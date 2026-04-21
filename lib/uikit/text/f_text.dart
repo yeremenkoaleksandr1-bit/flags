@@ -12,6 +12,7 @@ class FText extends StrokeText {
     double strokeWidth = 6,
     super.textColor = ThemePalette.white,
     super.textAlign,
+    super.maxLines,
     TextStyle? textStyle,
   }) : super(
          strokeWidth: strokeWidth.r,

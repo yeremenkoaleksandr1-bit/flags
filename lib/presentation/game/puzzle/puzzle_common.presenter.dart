@@ -31,7 +31,6 @@ import 'package:flags/features/games/presentation/puzzle/scene_components/emblem
 import 'package:flags/features/games/presentation/puzzle/views/board.dart';
 import 'package:flags/features/levels_picker/presentation/bloc/levels_picker_cubit.dart';
 import 'package:flags/logger.dart';
-import 'package:flags/navigator/router.gr.dart';
 import 'package:flags/prefabs/levels/levels.dart';
 import 'package:flags/features/app/presentation/bloc/app_cubit.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
@@ -278,8 +277,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
         onExitPressed: (context) async {
           Navigator.of(context).pop();
           await monetizationCubit.consumePostLevelAdOpportunity();
-
-          this.context.navigateNamedTo(LevelsPickerRoute.name);
+          await this.context.maybePop();
         },
         onNextLevelPressed: (context) async {
           Navigator.of(context).pop();
@@ -335,8 +333,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
         onExit: (context) async {
           Navigator.of(context).pop();
           await monetizationCubit.consumePostLevelAdOpportunity();
-
-          this.context.navigateNamedTo(LevelsPickerRoute.name);
+          await this.context.maybePop();
         },
       ).showModal(context, barrierDismissible: false);
     }
@@ -620,8 +617,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
 
   void onGameExit(BuildContext context) async {
     await context.maybePop();
-
-    this.context.navigateNamedTo(LevelsPickerRoute.name);
+    await this.context.maybePop();
   }
 
   Future<void> onMenuOpened() async {}

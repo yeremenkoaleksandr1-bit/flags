@@ -8,7 +8,7 @@ import 'package:flags/features/editor/editor/presentation/cubits/magnet_area/mag
 import 'package:flags/features/editor/editor/presentation/cubits/selected_object/selected_object_cubit.dart';
 import 'package:flags/uikit/game_widgets/objects/draggable_object.dart';
 import 'package:flags/uikit/game_widgets/objects/game_object_paint.dart';
-import 'package:flame/extensions.dart';
+import 'package:flame/extensions.dart' hide Matrix4;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

@@ -1,6 +1,7 @@
 import 'package:flags/app/app_bootstrap.dart';
 import 'package:flags/features/app/presentation/application.dart';
 import 'package:flags/uikit/components/progress_indicator/linear_progress_indicator.dart';
+import 'package:flags/uikit/shaders/shaders.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ void main() async {
 
   await Flame.device.setPortraitUpOnly();
   await dotenv.load(fileName: '.env');
+  await GameShaders.init();
 
   await MobileAds.instance.initialize();
 

@@ -34,19 +34,17 @@ class TotalMoneysView extends StatelessWidget {
             Positioned(
               top: -8.h,
               left: -8.w,
-              height: 48.h,
-              child: OutlineWidget(key: widgetKey, child: UIMoney()),
+              height: 50.h,
+              child: OutlineShader(strokeWidth: 2, child: UIMoney()),
             ),
             Padding(
               padding: EdgeInsets.only(left: 42.w, right: 14.w, top: 3.h),
               child: BuildGamePreferences(
                 builder: (BuildContext context, GamePreferencesState state) {
-                  return OutlineWidget(
-                    child: FText(
-                      "${state.moneys}",
-                      strokeWidth: 4.r,
-                      textStyle: TextStyle(fontSize: 28.sp),
-                    ),
+                  return FText(
+                    "${state.moneys}",
+                    strokeWidth: 4.r,
+                    textStyle: TextStyle(fontSize: 28.sp),
                   );
                 },
               ),

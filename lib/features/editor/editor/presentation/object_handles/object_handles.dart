@@ -2,7 +2,7 @@ import 'package:flags/domain/game_objects/game_objects.dart';
 import 'package:flags/features/editor/editor/presentation/bloc/flag_editor_cubit.dart';
 import 'package:flags/features/editor/editor/presentation/object_handles/editor_draggable.dart';
 import 'package:flags/uikit/game_widgets/objects/draggable_object.dart';
-import 'package:flame/extensions.dart';
+import 'package:flame/extensions.dart' hide Matrix4;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

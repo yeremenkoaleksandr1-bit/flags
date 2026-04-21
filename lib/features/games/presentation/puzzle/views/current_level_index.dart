@@ -1,3 +1,4 @@
+import 'package:bloc_utils/bloc_utils.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/domain/entities/game/game_levels/game_levels_section.dart';
 import 'package:flags/features/levels_picker/presentation/bloc/levels_picker_cubit.dart';
@@ -17,10 +18,11 @@ class CurrentLevelIndex extends StatelessWidget {
     final ILevelsPickerCubit levelsPickerCubit =
         context.read<ILevelsPickerCubit>();
 
-    final List<GameLevelsSection> sections = levelsPickerCubit.state.maybeWhen(
-      success: (state) => state.sections,
-      orElse: () => [],
-    );
+    final state = levelsPickerCubit.state;
+    final List<GameLevelsSection> sections = switch (state) {
+      SuccessState(data: final data) => data.sections,
+      _ => const [],
+    };
 
     final levels = sections.map((e) => e.levels).expand((e) => e).toList();
 

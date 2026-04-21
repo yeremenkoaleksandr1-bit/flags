@@ -92,7 +92,7 @@ class _ShopItemViewState extends State<ShopItemView>
                             mainAxisAlignment: MainAxisAlignment.center,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              OutlineWidget(
+                              OutlineShader(
                                 child: UIMoney(),
                               ),
                               Gap.h12,

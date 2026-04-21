@@ -10,7 +10,7 @@ import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.
 import 'package:flags/features/games/presentation/puzzle/components/board_items/base.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
-import 'package:flame/extensions.dart';
+import 'package:flame/extensions.dart' hide Matrix4;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -285,7 +285,7 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
                               )
                               ..scale(scale)
                               ..scale(fitted)
-                              ..translate2(Vector2(0, -object.size.y / 2)),
+                              ..translate(0.0, -object.size.y / 2),
                             child: child,
                           );
                         },

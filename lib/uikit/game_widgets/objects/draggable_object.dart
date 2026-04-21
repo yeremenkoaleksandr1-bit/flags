@@ -4,7 +4,7 @@ import 'package:flags/uikit/game_widgets/game_widgets.dart';
 import 'package:flags/uikit/outlide_listener/outside_gesture_behavior.dart';
 import 'package:flags/uikit/outlide_listener/outside_listener.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
-import 'package:flame/extensions.dart';
+import 'package:flame/extensions.dart' hide Matrix4;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';

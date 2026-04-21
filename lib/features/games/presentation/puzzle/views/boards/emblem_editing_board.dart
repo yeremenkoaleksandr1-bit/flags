@@ -49,7 +49,7 @@ class _EmblemEditingBoardState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Flexible(
-            fit: .loose,
+            fit: FlexFit.loose,
             child: ValueListenableBuilder(
               valueListenable: _focusedObject,
               builder: (BuildContext context, value, Widget? child) {
@@ -72,7 +72,7 @@ class _EmblemEditingBoardState
           ),
           Gap.v12,
           Flexible(
-            fit: .tight,
+            fit: FlexFit.tight,
             child: Row(
               spacing: 12.w,
               children: [

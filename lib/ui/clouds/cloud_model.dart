@@ -12,6 +12,7 @@ class Cloud {
   double scale;
 
   late final Path path;
+  late final Rect bounds;
 
   Cloud({
     required String path,
@@ -22,11 +23,10 @@ class Cloud {
     this.scale = 1,
   }) {
     this.path = parseSvgPathData(path);
+    bounds = this.path.getBounds();
 
     transparency = transparency.clamp(0.6, 0.9);
   }
-
-  Rect get bounds => path.getBounds();
 
   void updatePosition(double value) {
     position = Offset(

@@ -62,10 +62,7 @@ dependencies:
   equatable: ^2.0.5
   flutter_colorpicker: ^1.1.0
   flutter_dotenv: ^5.2.1
-  image_gallery_saver:
-    git:
-      url: https://github.com/knottx/image_gallery_saver.git
-      ref: knottx-latest
+  image_gallery_saver: 2.0.3
   file_picker: ^8.1.2
   pointer_interceptor: ^0.10.1+2
   get_it: ^8.0.3
@@ -75,6 +72,10 @@ dependencies:
   google_mobile_ads: ^7.0.0
   in_app_purchase: ^3.2.3
   games_services: ^5.0.0
+
+dependency_overrides:
+  image_gallery_saver:
+    path: packages/third_party/image_gallery_saver
 
 dev_dependencies:
   flutter_test:
@@ -95,6 +96,8 @@ flutter:
     - shaders/sprite.frag
     - shaders/pixel_fade.frag
     - shaders/outline.frag
+    - shaders/stroke_text.frag
+    - shaders/widget_outline.frag
 
   assets:
     - .env

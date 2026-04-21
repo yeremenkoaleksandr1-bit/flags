@@ -46,7 +46,7 @@ class EditorAppBarView extends StatelessWidget {
         ),
         Gap.h24,
         Expanded(
-          child: FText(bloc.initialFlag.name),
+          child: FText(bloc.initialFlag.name, maxLines: 1, ),
         ),
         const TotalMoneysView(
           widgetKey: ValueKey("total_moneys"),

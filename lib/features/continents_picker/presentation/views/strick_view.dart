@@ -26,7 +26,7 @@ class WinnerStreakView extends StatelessWidget {
             child: Center(
               child: Transform.rotate(
                 angle: radians(-15),
-                child: OutlineWidget(
+                child: OutlineShader(
                   child: SpriteUIWidget(image: Assets.images.winnerCup.image),
                 ),
               ),
