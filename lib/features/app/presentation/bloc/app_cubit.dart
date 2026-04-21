@@ -39,8 +39,7 @@ final class AppCubitImpl extends StatedCubit<AppState> implements IAppCubit {
     await Assets.init(context);
 
     preferences = AppPreferencesCubit(sharedPreferences);
-
-    preferences.setDebugMode(false);
+    preferences.setDebugMode(true);
 
     final Resources resources = Resources();
     await resources.initialize();
