@@ -48,12 +48,11 @@ class GameServicesAccountCard extends StatelessWidget {
                   ],
                   const SizedBox(height: 12),
                   FBlueButton(
-                    onPressed:
-                        authState.isLoading
-                            ? () {}
-                            : () {
-                              authCubit.signIn();
-                            },
+                    onPressed: authState.isLoading
+                        ? () {}
+                        : () {
+                            authCubit.signIn();
+                          },
                     child: Center(
                       child: FText(
                         authState.isSignedIn ? 'Reconnect' : 'Connect',
@@ -69,12 +68,12 @@ class GameServicesAccountCard extends StatelessWidget {
                         FText(
                           monetizationState.isPremium
                               ? 'No Ads active'
-                              : 'No Ads subscription',
+                              : 'No Ads purchase',
                           textStyle: const TextStyle(fontSize: 22),
                         ),
                         const SizedBox(height: 4),
                         FText(
-                          monetizationState.subscriptionPriceLabel,
+                          monetizationState.productPriceLabel,
                           textStyle: const TextStyle(fontSize: 18, height: 1),
                         ),
                         if (monetizationState.statusMessage != null) ...[
@@ -90,28 +89,28 @@ class GameServicesAccountCard extends StatelessWidget {
                         const SizedBox(height: 12),
                         if (!monetizationState.isPremium)
                           FYellowButton(
-                            onPressed:
-                                monetizationState.isPurchasePending
-                                    ? () {}
-                                    : () {
-                                      monetizationCubit.buyNoAdsSubscription();
-                                    },
+                            onPressed: monetizationState.isPurchasePending
+                                ? () {}
+                                : () {
+                                    monetizationCubit.buyNoAdsSubscription(
+                                      context,
+                                    );
+                                  },
                             child: Center(
                               child: FText(
                                 monetizationState.isPurchasePending
                                     ? 'Processing...'
-                                    : 'Buy for ${monetizationState.subscriptionPriceLabel}',
+                                    : 'Buy for ${monetizationState.productPriceLabel}',
                               ),
                             ),
                           ),
                         const SizedBox(height: 8),
                         FBlueButton(
-                          onPressed:
-                              monetizationState.isPurchasePending
-                                  ? () {}
-                                  : () {
-                                    monetizationCubit.restorePurchases();
-                                  },
+                          onPressed: monetizationState.isPurchasePending
+                              ? () {}
+                              : () {
+                                  monetizationCubit.restorePurchases();
+                                },
                           child: Center(child: FText('Restore purchases')),
                         ),
                       ],

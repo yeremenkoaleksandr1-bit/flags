@@ -35,7 +35,7 @@ class TotalMoneysView extends StatelessWidget {
               top: -8.h,
               left: -8.w,
               height: 50.h,
-              child: OutlineShader(strokeWidth: 2, child: UIMoney()),
+              child: OutlineShader(child: UIMoney()),
             ),
             Padding(
               padding: EdgeInsets.only(left: 42.w, right: 14.w, top: 3.h),

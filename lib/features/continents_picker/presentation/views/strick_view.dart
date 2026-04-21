@@ -16,44 +16,24 @@ class WinnerStreakView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const Pad(right: 12),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox.square(
-            dimension: 38,
-            child: Center(
-              child: Transform.rotate(
-                angle: radians(-15),
-                child: OutlineShader(
-                  child: SpriteUIWidget(image: Assets.images.winnerCup.image),
-                ),
-              ),
-            ),
+    return BuildGamePreferences(
+      buildWhen: (
+        previous,
+        current,
+      ) =>
+          previous.winStreak.longestStreak !=
+          current.winStreak.longestStreak,
+      builder: (
+        BuildContext context,
+        GamePreferencesState state,
+      ) {
+        return FText(
+          '${state.winStreak.longestStreak}',
+          textStyle: const TextStyle(
+            fontSize: 24,
           ),
-          Gap.h12,
-          BuildGamePreferences(
-            buildWhen: (
-              previous,
-              current,
-            ) =>
-                previous.winStreak.longestStreak !=
-                current.winStreak.longestStreak,
-            builder: (
-              BuildContext context,
-              GamePreferencesState state,
-            ) {
-              return FText(
-                '${state.winStreak.longestStreak}',
-                textStyle: const TextStyle(
-                  fontSize: 24,
-                ),
-              );
-            },
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

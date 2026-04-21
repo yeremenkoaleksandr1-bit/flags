@@ -2,8 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/features/app/features/monetization/presentation/bloc/monetization_state.dart';
-import 'package:flags/logger.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -32,8 +33,8 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   static const String _fastModeRoundsPrefsKey =
       'monetization.fastModeRoundsSinceInterstitial';
   static final String _noAdsProductId = dotenv.get(
-    'NO_ADS_PRODUCT_ID',
-    fallback: 'flagsup_no_ads_subscription',
+    Platform.isAndroid ? "NO_ADS_PRODUCT_ID" : "NO_ADS_PRODUCT_IOS_ID",
+    fallback: 'remove-ads',
   );
 
   final SharedPreferences _prefs;
@@ -42,7 +43,7 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
 
   late final StreamSubscription<List<PurchaseDetails>> _purchaseSubscription;
 
-  ProductDetails? _subscriptionProduct;
+  ProductDetails? _noAdsProduct;
   InterstitialAd? _interstitialAd;
   RewardedAd? _rewardedAd;
   Completer<void>? _interstitialLoadCompleter;
@@ -50,6 +51,8 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   bool _pendingPostLevelInterstitial = false;
 
   Future<void> _initialize() async {
+    await InAppPurchase.instance.restorePurchases();
+
     _loadInterstitialAd();
     _loadRewardedAd();
 
@@ -65,22 +68,51 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
       _noAdsProductId,
     });
 
-    if (productResponse.productDetails.isNotEmpty) {
-      _subscriptionProduct = productResponse.productDetails.first;
+    if (productResponse.error != null) {
       emit(
         state.copyWith(
-          subscriptionPriceLabel: _subscriptionProduct!.price,
+          statusMessage: productResponse.error!.message,
+        ),
+      );
+      return;
+    }
+
+    if (productResponse.productDetails.isNotEmpty) {
+      _noAdsProduct = productResponse.productDetails.first;
+      emit(
+        state.copyWith(
+          productPriceLabel: _noAdsProduct!.price,
           clearStatusMessage: true,
         ),
       );
+      return;
     }
+
+    final notFoundId = productResponse.notFoundIDs.isNotEmpty
+        ? productResponse.notFoundIDs.first
+        : _noAdsProductId;
+    emit(
+      state.copyWith(
+        statusMessage: 'Product not found in store: $notFoundId',
+      ),
+    );
   }
 
-  Future<void> buyNoAdsSubscription() async {
-    if (_subscriptionProduct == null) {
+  Future<void> buyNoAdsSubscription(BuildContext context) async {
+    if (dotenv.getBool("IS_DEBUG", fallback: false)) {
+      await _activatePremiumLocally(
+        statusMessage: 'No Ads activated automatically in debug mode',
+      );
+      FlutterEngine.widgetPostFrameCallback((_) {
+        Navigator.of(context).pop();
+      });
+      return;
+    }
+
+    if (_noAdsProduct == null) {
       emit(
         state.copyWith(
-          statusMessage: 'Create the subscription in Google Play Console first',
+          statusMessage: 'No Ads product is unavailable: $_noAdsProductId',
         ),
       );
       return;
@@ -88,13 +120,33 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
 
     emit(state.copyWith(isPurchasePending: true, clearStatusMessage: true));
 
-    final purchaseParam = PurchaseParam(productDetails: _subscriptionProduct!);
+    final purchaseParam = PurchaseParam(productDetails: _noAdsProduct!);
     await _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
+
+    if (Platform.isIOS) {
+      final transactions = await _inAppPurchase.restorePurchases();
+      return transactions;
+    }
+
+    FlutterEngine.widgetPostFrameCallback((_) {
+      Navigator.of(context).pop();
+    });
   }
 
   Future<void> restorePurchases() async {
     emit(state.copyWith(isPurchasePending: true, clearStatusMessage: true));
     await _inAppPurchase.restorePurchases();
+  }
+
+  Future<void> _activatePremiumLocally({required String statusMessage}) async {
+    await _prefs.setBool(_premiumPrefsKey, true);
+    emit(
+      state.copyWith(
+        isPremium: true,
+        isPurchasePending: false,
+        statusMessage: statusMessage,
+      ),
+    );
   }
 
   Future<void> onGameOverAdOpportunity() async {
@@ -165,13 +217,8 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
 
       if (purchase.status == PurchaseStatus.purchased ||
           purchase.status == PurchaseStatus.restored) {
-        _prefs.setBool(_premiumPrefsKey, true);
-        emit(
-          state.copyWith(
-            isPremium: true,
-            isPurchasePending: false,
-            statusMessage: 'No Ads activated',
-          ),
+        unawaited(
+          _activatePremiumLocally(statusMessage: 'No Ads activated'),
         );
       }
 
@@ -227,7 +274,6 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   void _loadRewardedAd() {
     _rewardedLoadCompleter ??= Completer<void>();
 
-    logger.i(_rewardedUnitId);
     RewardedAd.load(
       adUnitId: _rewardedUnitId,
       request: const AdRequest(),
@@ -363,7 +409,9 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
 
   String get _interstitialUnitId {
     return dotenv.get(
-      'ADMOB_INTERSTITIAL_ID_',
+      Platform.isAndroid
+          ? 'ADMOB_INTERSTITIAL_ID'
+          : 'ADMOB_INTERSTITIAL_IOS_ID',
       fallback: Platform.isAndroid
           ? 'ca-app-pub-3940256099942544/1033173712'
           : 'ca-app-pub-3940256099942544/4411468910',
@@ -372,7 +420,7 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
 
   String get _rewardedUnitId {
     return dotenv.get(
-      'ADMOB_REWARDED_ID_',
+      Platform.isAndroid ? 'ADMOB_REWARDED_ID' : 'ADMOB_REWARDED_IOS_ID',
       fallback: Platform.isAndroid
           ? 'ca-app-pub-3940256099942544/1033173712'
           : 'ca-app-pub-3940256099942544/4411468910',

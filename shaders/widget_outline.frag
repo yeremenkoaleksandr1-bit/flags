@@ -21,9 +21,10 @@ void main() {
     vec2 logicalSize = max(uSize, vec2(1.0));
     vec2 pixelSize = max(logicalSize * max(uPixelRatio, 1.0), vec2(1.0));
     vec2 texel = 1.0 / pixelSize;
-    vec2 uv = FlutterFragCoord().xy / logicalSize;
+    vec2 pixelCoord = floor(FlutterFragCoord().xy * max(uPixelRatio, 1.0));
+    vec2 uv = (pixelCoord + 0.5) / pixelSize;
 
-    float baseAlpha = sampleAlpha(uv);
+    float baseAlpha = step(0.01, sampleAlpha(uv));
 
     int radius = int(clamp(round(uStrokeWidth * max(uPixelRatio, 1.0)), 1.0, float(kMaxRadius)));
     float outlineAlpha = 0.0;
@@ -35,10 +36,10 @@ void main() {
             }
 
             vec2 sampleUv = uv + vec2(float(x), float(y)) * texel;
-            outlineAlpha = max(outlineAlpha, sampleAlpha(sampleUv));
+            outlineAlpha = max(outlineAlpha, step(0.01, sampleAlpha(sampleUv)));
         }
     }
 
-    float strokeAlpha = clamp(outlineAlpha - baseAlpha, 0.0, 1.0) * uColor.a;
+    float strokeAlpha = max(0.0, outlineAlpha - baseAlpha) * uColor.a;
     fragColor = vec4(uColor.rgb * strokeAlpha, strokeAlpha);
 }

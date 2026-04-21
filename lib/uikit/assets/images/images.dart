@@ -15,8 +15,8 @@ class AssetsImage {
     required this.sliderEnd,
     required this.tickWhite,
     required this.cross,
+    required this.removeAds,
   });
-
 
   final UIImageAsset cash;
   final UIImageAsset heart;
@@ -34,6 +34,7 @@ class AssetsImage {
   final UIImageAsset sliderEnd;
   final UIImageAsset tickWhite;
   final UIImageAsset cross;
+  final UIImageAsset removeAds;
 
   static Future<AssetsImage> initialize() async {
     return AssetsImage._(
@@ -50,6 +51,7 @@ class AssetsImage {
       sliderEnd: await UIImageAsset.load("ui/sliderEnd.png"),
       tickWhite: await UIImageAsset.load("ui/tickWhite.png"),
       cross: await UIImageAsset.load("ui/crossWhite.png"),
+      removeAds: await UIImageAsset.load("ui/remove_ads.png"),
     );
   }
 }

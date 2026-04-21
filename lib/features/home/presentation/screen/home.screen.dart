@@ -9,6 +9,7 @@ import 'package:flags/navigator/router.gr.dart';
 import 'package:flags/services/onboarding/onbloarding.controller.dart';
 import 'package:flags/ui/game_scaffold.dart';
 import 'package:flags/uikit/assets/assets.dart';
+import 'package:flags/uikit/components/banners/remove_ads_banner.dart';
 import 'package:flags/uikit/components/buttons/actions/sound_mute.button.dart';
 import 'package:flags/uikit/components/buttons/actions/vibration_mute.button.dart';
 import 'package:flags/uikit/components/buttons/buttons.dart';
@@ -96,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       FShowcase(
                         showcaseKey: oPlayButton,
                         tooltip: (bounds) => Positioned(
-                          bottom: bounds.top,
+                          bottom: bounds.bottom + 2.h,
                           left: 0,
                           right: 0,
                           child: Center(
@@ -143,13 +144,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                       Gap.v24,
+                      const RemoveAdsBanner(),
+                      Gap.v24,
                     ],
                   ),
-                ),
-                const Positioned(
-                  top: 12,
-                  right: 12,
-                  child: GameServicesAccountButton(),
                 ),
               ],
             ),

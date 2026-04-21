@@ -20,7 +20,7 @@ analyzer:
     - lib/generated_plugin_registrant.dart
 
 formatter:
-  trailing_commas: true
+  trailing_commas: preserve
 
 
 linter:

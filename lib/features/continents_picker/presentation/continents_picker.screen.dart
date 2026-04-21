@@ -2,13 +2,13 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bloc_utils/bloc_utils.dart';
 import 'package:flags/app/app_scope.dart';
-import 'package:flags/domain/enums/continent_type.dart';
-import 'package:flags/domain/enums/game_difficult.dart';
-import 'package:flags/domain/enums/game_style_type.dart';
+import 'package:flags/domain/domain.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
 import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
+import 'package:flags/features/app/features/shop/presentation/bloc/shop_cubit.dart';
+import 'package:flags/features/continents_picker/presentation/components/completed_levels_count_stream_view.dart';
 import 'package:flags/features/continents_picker/presentation/views/continent_view.dart';
-import 'package:flags/features/continents_picker/presentation/views/fast_mode_timer.view.dart';
+import 'package:flags/features/continents_picker/presentation/views/strick_view.dart';
 import 'package:flags/features/games/presentation/games_factory.page.dart';
 import 'package:flags/navigator/router.gr.dart';
 import 'package:flags/prefabs/levels/levels.dart';
@@ -17,20 +17,22 @@ import 'package:flags/presentation/presenters/continents_picker/state/continents
 import 'package:flags/services/layers/money_layer/money_layer.dart';
 import 'package:flags/services/onboarding/onbloarding.controller.dart';
 import 'package:flags/ui/game_scaffold.dart';
+import 'package:flags/uikit/assets/assets.dart';
 import 'package:flags/uikit/components/buttons/buttons.dart';
+import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
 import 'package:flags/uikit/components/safe_area/safe_area.dart';
 import 'package:flags/uikit/layout_components/showcase/showcase.dart';
 import 'package:flags/uikit/layout_components/showcase/showcase_item.dart';
+import 'package:flags/uikit/layout_components/sprite_widget.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:showcaseview/showcaseview.dart';
 
 @RoutePage()
 class ContinentsPickerScreen extends StatefulWidget {
-  const ContinentsPickerScreen({super.key}) : super();
+  const ContinentsPickerScreen({super.key});
 
   @override
   State<ContinentsPickerScreen> createState() => _ContinentsPickerScreenState();
@@ -39,25 +41,26 @@ class ContinentsPickerScreen extends StatefulWidget {
 class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
   IAudioCubit get audioCubit => context.read<IAudioCubit>();
 
+  IShopCubit get shopCubit => context.read<IShopCubit>();
+
   final GlobalKey oContinentButton = GlobalKey();
-
   final GlobalKey oFastModeButton = GlobalKey();
-
   final GlobalKey showCaseWidgetKey = GlobalKey();
 
   late final OnboardingController _onboardingController;
+  ContinentType? _selectedContinent;
 
   @override
   void initState() {
     super.initState();
     _onboardingController = OnboardingController(
-      tag: "continents_picker4",
+      tag: 'continents_picker4',
       showcaseKey: showCaseWidgetKey,
       widgetsKeys: [oContinentButton, oFastModeButton],
       service: AppScope.readBootstrapOf(context).onboardingService,
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       final context = showCaseWidgetKey.currentContext;
       if (context == null) {
         return;
@@ -83,7 +86,6 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
 
     void onPlayFastMode() {
       final continent = [...ContinentType.values].random();
-
       final levels = FactoryGameContinent().create(continent);
 
       context.navigateTo(
@@ -119,7 +121,7 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
       showcaseKey: showCaseWidgetKey,
       enableShowcase: _onboardingController.canShow,
       onFinish: _onboardingController.complete,
-      builder: (BuildContext context) {
+      builder: (context) {
         return GameSafeArea(
           child: GamePageBuilder(
             onPageFocussed: onPageFocussed,
@@ -128,81 +130,118 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
             endSlideDirection: GamePageSlideDirection.middle,
             child: BlocDynamicStateBuilder(
               bloc: cubit,
-              builder: (BuildContext context, ContinentsPickerState state) {
+              builder: (context, ContinentsPickerState state) {
+                final continents = state.continents;
+                if (continents.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+
+                final selectedContinent =
+                    continents.contains(_selectedContinent)
+                    ? _selectedContinent!
+                    : continents.first;
+
+                if (_selectedContinent != selectedContinent) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (!mounted) {
+                      return;
+                    }
+                    setState(() {
+                      _selectedContinent = selectedContinent;
+                    });
+                  });
+                }
+
+                final selectedIndex = continents.indexOf(selectedContinent);
+                final selectedTag = 'continent_$selectedIndex';
+                final isBought =
+                    shopCubit.isBought(selectedTag) ||
+                    shopCubit.getPrice(selectedTag) == -1;
+                final levelsCount = FactoryGameContinent
+                    .continents[selectedContinent]!
+                    .levels
+                    .length;
+
                 return SafeArea(
                   child: Stack(
                     children: [
-                      // Row(
-                      //   children: [
-                      //     FGreenButton(
-                      //       onPressed: () {
-                      //         context.read<GamePreferencesCubit>().addMoney(1);
-                      //       },
-                      //       child: FText("add money"),
-                      //     ),
-                      //     FGreenButton(
-                      //       onPressed: () {
-                      //         context.read<GamePreferencesCubit>().removeMoney(1);
-                      //       },
-                      //       child: FText("remove money"),
-                      //     ),
-                      //   ],
-                      // ),
-                      // FGreenButton(
-                      //   onPressed: () {
-                      //     showDialog(
-                      //       context: context,
-                      //       builder: (BuildContext context) {
-                      //         final flag = HongKongFlag();
-                      //         return FittedBox(
-                      //           fit: BoxFit.fitWidth,
-                      //           child: FlagView(flag: flag),
-                      //         );
-                      //       },
-                      //     );
-                      //   },
-                      //   child: FText("open"),
-                      // ),
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 250.h,
-                        child: Center(
-                          child: FShowcase(
-                            showcaseKey: oContinentButton,
-                            targetPadding: Pad(all: -12.r),
-                            tooltipPosition: TooltipPosition.bottom,
-                            targetShapeBorder: const CircleBorder(),
-                            tooltip: (bounds) => Positioned(
-                              top: bounds.top - 12.h,
-                              left: 0,
-                              right: 0,
-                              child: Center(
-                                child: FText(
-                                  'Complete flags\nand earn money',
-                                  textAlign: TextAlign.center,
-                                  textStyle: const TextStyle(height: 1),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 22.h),
+                        child: Column(
+                          children: [
+                            SizedBox(height: 12.h),
+                            const _SwipeHint(),
+                            SizedBox(height: 12.h),
+                            Expanded(
+                              child: FShowcase(
+                                showcaseKey: oContinentButton,
+                                targetPadding: Pad(all: -12.r),
+                                targetShapeBorder: const CircleBorder(),
+                                tooltip: (bounds) => Positioned(
+                                  top: bounds.top - 14.h,
+                                  left: 0,
+                                  right: 0,
+                                  child: Center(
+                                    child: FText(
+                                      'Swipe or tap a continent\nto unlock and play',
+                                      textAlign: TextAlign.center,
+                                      textStyle: const TextStyle(height: 1),
+                                    ),
+                                  ),
+                                ),
+                                child: ContinentsSlider(
+                                  continents: continents,
+                                  gameProcessType: cubit.params.gameProcessType,
+                                  onPressed: onContinentPicked,
+                                  onChanged: (continent) {
+                                    if (_selectedContinent == continent) {
+                                      return;
+                                    }
+                                    setState(() {
+                                      _selectedContinent = continent;
+                                    });
+                                  },
                                 ),
                               ),
                             ),
-                            child: ContinentsSlider(
-                              continents: state.continents,
-                              onPressed: onContinentPicked,
-                              gameProcessType: cubit.params.gameProcessType,
+                            SizedBox(height: 12.h),
+                            _ProgressCard(
+                              continent: selectedContinent,
+                              gameMode: cubit.params.gameProcessType,
+                              levelsCount: levelsCount,
                             ),
-                          ),
-                        ),
-                      ),
-                      FastModePlayTimerView(
-                        onTapPlayFastMode: onPlayFastMode,
-                        showcaseKey: oFastModeButton,
-                      ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Padding(
-                          padding: Pad(bottom: ThemeIndents.s12),
-                          child: FBackButton(),
+                            SizedBox(height: 12.h),
+                            _PlayButton(
+                              continent: selectedContinent,
+                              isBought: isBought,
+                              onPressed: isBought
+                                  ? () => onContinentPicked(selectedContinent)
+                                  : null,
+                            ),
+                            SizedBox(height: 24.h),
+                            FShowcase(
+                              showcaseKey: oFastModeButton,
+                              targetPadding: Pad(
+                                horizontal: -8.w,
+                                vertical: -6.h,
+                              ),
+                              tooltip: (bounds) => Positioned(
+                                top: bounds.top  - 128.h ,
+                                left: 0,
+                                right: 0,
+                                child: Center(
+                                  child: FText(
+                                    'Fast mode picks a random continent\nfor a harder run',
+                                    textAlign: TextAlign.center,
+                                    textStyle: const TextStyle(height: 1),
+                                  ),
+                                ),
+                              ),
+                              child: _FastModeCard(onPressed: onPlayFastMode),
+                            ),
+                            SizedBox(height: 14.h),
+                            const FBackButton(),
+                          ],
                         ),
                       ),
                     ],
@@ -216,3 +255,304 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
     );
   }
 }
+
+class _SwipeHint extends StatelessWidget {
+  const _SwipeHint();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.chevron_left_rounded,
+          color: ThemePalette.white,
+          size: 34.sp,
+        ),
+        SizedBox(width: 4.w),
+        FText(
+          'SWIPE TO CHANGE CONTINENT',
+          strokeWidth: 4,
+          textStyle: TextStyle(
+            fontSize: 17.sp,
+            height: 1,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        SizedBox(width: 4.w),
+        Icon(
+          Icons.chevron_right_rounded,
+          color: ThemePalette.white,
+          size: 34.sp,
+        ),
+      ],
+    );
+  }
+}
+
+class _ProgressCard extends StatelessWidget {
+  const _ProgressCard({
+    required this.continent,
+    required this.gameMode,
+    required this.levelsCount,
+  });
+
+  final ContinentType continent;
+  final GameProcessType gameMode;
+  final int levelsCount;
+
+  @override
+  Widget build(BuildContext context) {
+    return _WhitePanel(
+      child: Row(
+        children: [
+          SizedBox.square(
+            dimension: 42.r,
+            child: SpriteUIWidget(
+              image: Assets.images.winnerCup.image,
+            ),
+          ),
+          SizedBox(width: 10.w),
+          Expanded(
+            child: CompletedLevelsCountStreamBuilder(
+              continent: continent,
+              gameMode: gameMode,
+              builder: (completed) {
+                final progress = levelsCount == 0
+                    ? 0.0
+                    : completed / levelsCount;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FText(
+                      'LEVELS COMPLETED',
+                      textColor: const Color(0xFF2A68AE),
+                      strokeColor: ThemePalette.white,
+                      strokeWidth: 2,
+                      textStyle: TextStyle(
+                        fontSize: 15.sp,
+                        height: 1,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(999.r),
+                            child: Container(
+                              height: 16.h,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF274D7D),
+                                borderRadius: BorderRadius.circular(999.r),
+                              ),
+                              child: FractionallySizedBox(
+                                alignment: Alignment.centerLeft,
+                                widthFactor: progress.clamp(0.0, 1.0),
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF6FD421),
+                                    borderRadius: BorderRadius.circular(999.r),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10.w),
+                        FText(
+                          '$completed / $levelsCount',
+                          textColor: const Color(0xFF1A2330),
+                          strokeColor: ThemePalette.white,
+                          strokeWidth: 2,
+                          textStyle: TextStyle(
+                            fontSize: 18.sp,
+                            height: 1,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PlayButton extends StatelessWidget {
+  const _PlayButton({
+    required this.continent,
+    required this.isBought,
+    required this.onPressed,
+  });
+
+  final ContinentType continent;
+  final bool isBought;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return FButton(
+      color: isBought ? ThemePalette.greenButton : ThemePalette.gray,
+      onPressed: onPressed ?? () {},
+      child: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                isBought ? Icons.play_arrow_rounded : Icons.lock_rounded,
+                size: 42.sp,
+                color: ThemePalette.white,
+              ),
+              SizedBox(width: 8.w),
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: FText(
+                    isBought
+                        ? 'PLAY ${createContinentTitle(continent).toUpperCase()}'
+                        : 'UNLOCK ${createContinentTitle(continent).toUpperCase()}',
+                    textStyle: TextStyle(
+                      fontSize: 28.sp,
+                      height: 1,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FastModeCard extends StatelessWidget {
+  const _FastModeCard({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaledGestureDetector(
+      onTap: onPressed,
+      child: _WhitePanel(
+        backgroundColor: const Color(0xFFDCEEFF),
+        borderColor: const Color(0xFF8CB8E5),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 56.w,
+              height: 56.h,
+              child: SpriteUIWidget(
+                image: Assets.images.timer.image,
+              ),
+            ),
+            SizedBox(width: 10.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FText(
+                    'FAST MODE',
+                    textColor: const Color(0xFF154A8D),
+                    strokeColor: ThemePalette.white,
+                    strokeWidth: 2,
+                    textStyle: TextStyle(
+                      fontSize: 24.sp,
+                      height: 1,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Row(
+                    children: [
+                      FText(
+                        'BEST:',
+                        textColor: const Color(0xFF154A8D),
+                        strokeColor: ThemePalette.white,
+                        strokeWidth: 2,
+                        textStyle: TextStyle(
+                          fontSize: 16.sp,
+                          height: 1,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      SizedBox(width: 12.w),
+                      SizedBox.square(
+                        dimension: 24.r,
+                        child: SpriteUIWidget(
+                          image: Assets.images.winnerCup.image,
+                        ),
+                      ),
+                      SizedBox(width: 6.w),
+                      const WinnerStreakView(),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 40.sp,
+              color: const Color(0xFF1F5FAF),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _WhitePanel extends StatelessWidget {
+  const _WhitePanel({
+    required this.child,
+    this.backgroundColor = ThemePalette.white,
+    this.borderColor = const Color(0xFFC3DAF7),
+  });
+
+  final Widget child;
+  final Color backgroundColor;
+  final Color borderColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(
+          color: borderColor,
+          width: 3.r,
+          strokeAlign: -0.98,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF1F6EC5).withValues(alpha: 0.18),
+            offset: Offset(0, 5.h),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+        child: child,
+      ),
+    );
+  }
+}
+
+
+
+
