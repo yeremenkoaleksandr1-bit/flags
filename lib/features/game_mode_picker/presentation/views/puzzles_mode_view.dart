@@ -132,7 +132,6 @@ class _PuzzleModeViewState extends State<PuzzleModeView> {
                             child: FText(
                               "Puzzles",
                               strokeWidth: 18.r,
-                              strokeColor: ThemePalette.gentleYellow,
                               textStyle: TextStyle(
                                 color: ThemePalette.gentleYellow.darken(0.25),
                                 fontSize: 64.sp,

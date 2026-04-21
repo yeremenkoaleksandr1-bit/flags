@@ -64,7 +64,7 @@ class LevelsPickerScreenView extends StatelessWidget {
                 onSelected: onLevelPicked,
                 continent: cubit.continentType,
               ),
-            ),
+            )
           ],
         );
       },

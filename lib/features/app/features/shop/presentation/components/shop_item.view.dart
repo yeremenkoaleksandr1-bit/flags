@@ -8,11 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ShopItemView extends StatefulWidget {
-  const ShopItemView({
-    super.key,
-    required this.tag,
-    required this.builder,
-  });
+  const ShopItemView({super.key, required this.tag, required this.builder});
 
   final Widget Function(BuildContext context, bool isBouth) builder;
 
@@ -34,9 +30,7 @@ class _ShopItemViewState extends State<ShopItemView>
   void initState() {
     animationController = AnimationController(
       vsync: this,
-      duration: const Duration(
-        milliseconds: 250,
-      ),
+      duration: const Duration(milliseconds: 250),
     );
 
     super.initState();
@@ -67,21 +61,21 @@ class _ShopItemViewState extends State<ShopItemView>
           onTap: onBuy,
           child: ShakeWidget(
             controller: animationController,
-            child: IntrinsicHeight(
-              child: Stack(
-                clipBehavior: Clip.none,
-                fit: StackFit.passthrough,
-                children: [
-                  IgnorePointer(
+            child: Stack(
+              clipBehavior: Clip.none,
+              fit: StackFit.passthrough,
+              children: [
+                IgnorePointer(
+                  child: ImageFiltered(
+                    imageFilter: ColorFilters.topHighlight,
                     child: Opacity(
-                      opacity: 0.25,
-                      child: ImageFiltered(
-                        imageFilter: ColorFilters.topHighlight,
-                        child: widget.builder(context, false),
-                      ),
+                      opacity: 0.5,
+                      child: widget.builder(context, false),
                     ),
                   ),
-                  Material(
+                ),
+                Positioned.fill(
+                  child: Material(
                     color: Colors.transparent,
                     child: Center(
                       child: FittedBox(
@@ -92,15 +86,11 @@ class _ShopItemViewState extends State<ShopItemView>
                             mainAxisAlignment: MainAxisAlignment.center,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              OutlineShader(
-                                child: UIMoney(),
-                              ),
+                              OutlineShader(child: UIMoney()),
                               Gap.h12,
                               FText(
                                 "$price",
-                                textStyle: const TextStyle(
-                                  fontSize: 38,
-                                ),
+                                textStyle: const TextStyle(fontSize: 38),
                               ),
                             ],
                           ),
@@ -108,8 +98,8 @@ class _ShopItemViewState extends State<ShopItemView>
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );

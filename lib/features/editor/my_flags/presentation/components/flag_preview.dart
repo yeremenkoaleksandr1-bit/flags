@@ -44,7 +44,7 @@ class _EditorFlagPreviewState extends State<EditorFlagPreview> {
               ),
             ),
           ),
-          Text(widget.flag.name),
+          Text(widget.flag.name, maxLines: 2),
         ],
       ),
     );

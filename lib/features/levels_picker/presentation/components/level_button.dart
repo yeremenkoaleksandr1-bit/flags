@@ -36,9 +36,7 @@ class LevelButton extends StatefulWidget {
 class _LevelButtonState extends State<LevelButton> {
   void shoeFlagDialog() {
     if (!widget.level.completed) return;
-    FlagViewDialog(
-      flag: widget.level.flag,
-    ).showModal(context);
+    FlagViewDialog(flag: widget.level.flag).showModal(context);
   }
 
   @override
@@ -52,18 +50,14 @@ class _LevelButtonState extends State<LevelButton> {
 
         var color = fColor;
         if (!widget.level.completed && widget.level.opened) {
-          color = fColor.withValues(
-            red: 100,
-            green: 100,
-            blue: 100,
-          );
+          color = fColor.withValues(red: 100, green: 100, blue: 100);
         }
         Widget child;
 
         if (widget.isOpened) {
           child = FText(
             widget.level.flag.name,
-            strokeWidth: 5,
+            strokeWidth: 3,
             strokeColor: color.darken(0.7),
             textAlign: TextAlign.center,
           );
@@ -71,9 +65,7 @@ class _LevelButtonState extends State<LevelButton> {
           child = SizedBox.square(
             dimension: 64,
             child: Center(
-              child: SpriteUIWidget(
-                image: Assets.images.lock.image,
-              ),
+              child: SpriteUIWidget(image: Assets.images.lock.image),
             ),
           );
         }
@@ -87,9 +79,7 @@ class _LevelButtonState extends State<LevelButton> {
             children: [
               ConstrainedBox(
                 constraints: const BoxConstraints(minHeight: 64, minWidth: 64),
-                child: Center(
-                  child: child,
-                ),
+                child: Center(child: child),
               ),
               Positioned(
                 top: -8,
@@ -98,9 +88,7 @@ class _LevelButtonState extends State<LevelButton> {
                   "${widget.level.id + 1}",
                   strokeWidth: 2,
                   strokeColor: color.darken(0.2),
-                  textStyle: const TextStyle(
-                    fontSize: 24,
-                  ),
+                  textStyle: const TextStyle(fontSize: 24),
                 ),
               ),
             ],

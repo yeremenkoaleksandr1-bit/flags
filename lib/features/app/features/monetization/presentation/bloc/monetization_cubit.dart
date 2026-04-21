@@ -113,7 +113,7 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
     final completedLevels = (_prefs.getInt(_completedLevelsPrefsKey) ?? 0) + 1;
     _prefs.setInt(_completedLevelsPrefsKey, completedLevels);
 
-    if (completedLevels < 5) {
+    if (completedLevels < 3) {
       return;
     }
 
@@ -136,7 +136,7 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
     }
 
     final completedRounds = (_prefs.getInt(_fastModeRoundsPrefsKey) ?? 0) + 1;
-    if (completedRounds < 5) {
+    if (completedRounds < 3) {
       _prefs.setInt(_fastModeRoundsPrefsKey, completedRounds);
       return;
     }

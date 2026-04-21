@@ -7,8 +7,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'completed_levels_count_stream_view.dart';
 
 class ContinentComponent extends StatefulWidget {
-  ContinentComponent._({
+  const ContinentComponent._({
     super.key,
+    required this.type,
     required this.imagePath,
     required this.name,
     required this.isBought,
@@ -17,7 +18,7 @@ class ContinentComponent extends StatefulWidget {
 
   final bool isBought;
 
-  late ContinentType type;
+  final ContinentType type;
 
   final String name;
 
@@ -30,44 +31,50 @@ class ContinentComponent extends StatefulWidget {
     GameProcessType gameProcessType,
     bool isBought,
   ) {
-    return (switch (type) {
+    return switch (type) {
       ContinentType.europe => ContinentComponent._(
+        type: type,
         name: "Europe",
         imagePath: 'assets/images/continents/europe.png',
         gameProcessType: gameProcessType,
         isBought: isBought,
       ),
       ContinentType.asia => ContinentComponent._(
+        type: type,
         name: "Asia",
         imagePath: 'assets/images/continents/asia.png',
         gameProcessType: gameProcessType,
         isBought: isBought,
       ),
       ContinentType.africa => ContinentComponent._(
+        type: type,
         name: "Africa",
         imagePath: 'assets/images/continents/africa.png',
         gameProcessType: gameProcessType,
         isBought: isBought,
       ),
       ContinentType.oceania => ContinentComponent._(
+        type: type,
         name: "Oceania",
         imagePath: 'assets/images/continents/oceania.png',
         gameProcessType: gameProcessType,
         isBought: isBought,
       ),
       ContinentType.northAmerica => ContinentComponent._(
+        type: type,
         name: "North America",
         imagePath: 'assets/images/continents/north_america.png',
         gameProcessType: gameProcessType,
         isBought: isBought,
       ),
       ContinentType.southAmerica => ContinentComponent._(
+        type: type,
         name: "South America",
         imagePath: 'assets/images/continents/south_america.png',
         gameProcessType: gameProcessType,
         isBought: isBought,
       ),
-    })..type = type;
+    };
   }
 
   @override
@@ -117,7 +124,6 @@ class _ContinentComponentState extends State<ContinentComponent> {
                       );
                     },
                   ),
-                if (!widget.isBought) const Spacer(),
               ],
             ),
           ),

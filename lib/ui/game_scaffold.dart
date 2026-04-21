@@ -42,7 +42,6 @@ class _GamePageBuilderState extends State<GamePageBuilder>
   late final AnimationController _controller;
   GameAutoRouteObserver? _observer;
   ModalRoute<dynamic>? _route;
-  bool _isHandlingPop = false;
 
   @override
   late final ValueNotifier<bool> canPopNotifier = ValueNotifier<bool>(false);
@@ -92,7 +91,6 @@ class _GamePageBuilderState extends State<GamePageBuilder>
   @override
   Future<void> onPopInvokedWithResult(bool didPop, Object? result) async {
     if (!didPop) {
-      _isHandlingPop = true;
       await onPageUnfocused();
       if (mounted) {
         canPopNotifier.value = true;
@@ -103,8 +101,10 @@ class _GamePageBuilderState extends State<GamePageBuilder>
   }
 
   Future<void> onPageFocussed() async {
-    await _controller.reverse(from: 1).whenComplete(() {
-      widget.onPageFocussed?.call();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controller.reverse(from: 1).whenComplete(() {
+        widget.onPageFocussed?.call();
+      });
     });
   }
 
@@ -116,8 +116,7 @@ class _GamePageBuilderState extends State<GamePageBuilder>
 
   @override
   void didPopNext() {
-    _controller.value = 0;
-    widget.onPageFocussed?.call();
+    onPageFocussed();
   }
 
   @override
@@ -132,10 +131,6 @@ class _GamePageBuilderState extends State<GamePageBuilder>
 
   @override
   void didPop() {
-    if (_isHandlingPop) {
-      _isHandlingPop = false;
-      return;
-    }
     onPageUnfocused();
   }
 

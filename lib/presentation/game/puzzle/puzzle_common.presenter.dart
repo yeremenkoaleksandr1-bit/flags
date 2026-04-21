@@ -616,8 +616,8 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
   }
 
   void onGameExit(BuildContext context) async {
-    await context.maybePop();
-    await this.context.maybePop();
+     Navigator.of(context).pop();
+     Navigator.of(context).pop();
   }
 
   Future<void> onMenuOpened() async {}

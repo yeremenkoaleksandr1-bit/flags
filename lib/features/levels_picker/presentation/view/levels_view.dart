@@ -27,8 +27,9 @@ class ContinentLevelsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return FCard(
       child: SingleChildScrollView(
-        child: ColumnSuper(
-          innerDistance: 24,
+        child: Column(
+          spacing: 24,
+          crossAxisAlignment: .stretch,
           children: [
             ...sections.map(
               (e) => ContinentLevelsSection(

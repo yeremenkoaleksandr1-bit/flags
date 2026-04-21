@@ -106,6 +106,8 @@ class EmblemsBoard extends EditorBaseBoard {
     return FCard(
       child: BlocBuilder<EmblemsBoardCubit, EmblemsBoardState>(
         builder: (context, state) {
+
+
           return SafeArea(
             bottom: true,
             child: Column(

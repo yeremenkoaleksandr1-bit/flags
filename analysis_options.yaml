@@ -19,6 +19,10 @@ analyzer:
   exclude:
     - lib/generated_plugin_registrant.dart
 
+formatter:
+  trailing_commas: true
+
+
 linter:
   rules:
     - use_key_in_widget_constructors
