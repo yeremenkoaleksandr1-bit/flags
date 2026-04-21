@@ -198,10 +198,6 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   }
 
   Future<bool> claimDoubleReward() async {
-    if (state.isPremium) {
-      return true;
-    }
-
     return _showRewardedAd();
   }
 
