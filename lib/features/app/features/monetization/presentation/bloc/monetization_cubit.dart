@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/features/app/features/monetization/presentation/bloc/monetization_state.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -39,7 +37,6 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
 
   final SharedPreferences _prefs;
   final InAppPurchase _inAppPurchase = InAppPurchase.instance;
-  final Random _random = Random();
 
   late final StreamSubscription<List<PurchaseDetails>> _purchaseSubscription;
 
@@ -48,20 +45,23 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   RewardedAd? _rewardedAd;
   Completer<void>? _interstitialLoadCompleter;
   Completer<void>? _rewardedLoadCompleter;
+  Completer<List<PurchaseDetails>>? _restorePurchasesCompleter;
   bool _pendingPostLevelInterstitial = false;
 
   Future<void> _initialize() async {
-    await InAppPurchase.instance.restorePurchases();
-
-    _loadInterstitialAd();
-    _loadRewardedAd();
-
     final storeAvailable = await _inAppPurchase.isAvailable();
     if (!storeAvailable) {
       emit(
         state.copyWith(statusMessage: 'Store is unavailable on this device'),
       );
       return;
+    }
+
+    await _syncPremiumWithStoreAccount();
+
+    if (!state.isPremium) {
+      _loadInterstitialAd();
+      _loadRewardedAd();
     }
 
     final productResponse = await _inAppPurchase.queryProductDetails({
@@ -121,7 +121,30 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
     emit(state.copyWith(isPurchasePending: true, clearStatusMessage: true));
 
     final purchaseParam = PurchaseParam(productDetails: _noAdsProduct!);
-    await _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
+
+    try {
+      final launched = await _inAppPurchase.buyNonConsumable(
+        purchaseParam: purchaseParam,
+      );
+
+      if (!launched) {
+        emit(
+          state.copyWith(
+            isPurchasePending: false,
+            statusMessage: 'Purchase flow was not started',
+          ),
+        );
+        return;
+      }
+    } catch (error) {
+      emit(
+        state.copyWith(
+          isPurchasePending: false,
+          statusMessage: error.toString(),
+        ),
+      );
+      return;
+    }
 
     if (Platform.isIOS) {
       final transactions = await _inAppPurchase.restorePurchases();
@@ -135,7 +158,20 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
 
   Future<void> restorePurchases() async {
     emit(state.copyWith(isPurchasePending: true, clearStatusMessage: true));
-    await _inAppPurchase.restorePurchases();
+    await _syncPremiumWithStoreAccount(
+      restoredMessage: 'No Ads restored for this store account',
+      missingMessage:
+          'No previous No Ads purchase found for this store account',
+    );
+  }
+
+  void resetPurchaseDialogState() {
+    emit(
+      state.copyWith(
+        isPurchasePending: false,
+        clearStatusMessage: true,
+      ),
+    );
   }
 
   Future<void> _activatePremiumLocally({required String statusMessage}) async {
@@ -147,6 +183,59 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
         statusMessage: statusMessage,
       ),
     );
+  }
+
+  Future<void> _deactivatePremiumLocally({String? statusMessage}) async {
+    await _prefs.setBool(_premiumPrefsKey, false);
+    emit(
+      state.copyWith(
+        isPremium: false,
+        isPurchasePending: false,
+        statusMessage: statusMessage,
+      ),
+    );
+  }
+
+  Future<void> _syncPremiumWithStoreAccount({
+    String? restoredMessage,
+    String? missingMessage,
+  }) async {
+    _restorePurchasesCompleter ??= Completer<List<PurchaseDetails>>();
+
+    try {
+      await _inAppPurchase.restorePurchases();
+
+      final purchases = await _restorePurchasesCompleter!.future.timeout(
+        const Duration(seconds: 10),
+        onTimeout: () => const <PurchaseDetails>[],
+      );
+
+      final ownsNoAds = purchases.any(
+        (purchase) =>
+            purchase.productID == _noAdsProductId &&
+            (purchase.status == PurchaseStatus.purchased ||
+                purchase.status == PurchaseStatus.restored),
+      );
+
+      if (ownsNoAds) {
+        await _activatePremiumLocally(
+          statusMessage:
+              restoredMessage ?? state.statusMessage ?? 'No Ads active',
+        );
+        return;
+      }
+
+      await _deactivatePremiumLocally(statusMessage: missingMessage);
+    } catch (error) {
+      emit(
+        state.copyWith(
+          isPurchasePending: false,
+          statusMessage: 'Failed to restore purchases: $error',
+        ),
+      );
+    } finally {
+      _restorePurchasesCompleter = null;
+    }
   }
 
   Future<void> onGameOverAdOpportunity() async {
@@ -170,7 +259,7 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
     }
 
     _prefs.setInt(_completedLevelsPrefsKey, 0);
-    _pendingPostLevelInterstitial = _random.nextBool();
+    _pendingPostLevelInterstitial = true;
   }
 
   Future<void> consumePostLevelAdOpportunity() async {
@@ -202,6 +291,13 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   }
 
   void _handlePurchaseUpdates(List<PurchaseDetails> purchases) {
+    if (_restorePurchasesCompleter != null &&
+        !_restorePurchasesCompleter!.isCompleted) {
+      _restorePurchasesCompleter!.complete(
+        List<PurchaseDetails>.unmodifiable(purchases),
+      );
+    }
+
     for (final purchase in purchases) {
       if (purchase.productID != _noAdsProductId) {
         continue;
@@ -223,6 +319,15 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
           state.copyWith(
             isPurchasePending: false,
             statusMessage: purchase.error?.message ?? 'Purchase failed',
+          ),
+        );
+      }
+
+      if (purchase.status == PurchaseStatus.canceled) {
+        emit(
+          state.copyWith(
+            isPurchasePending: false,
+            statusMessage: 'Purchase canceled',
           ),
         );
       }

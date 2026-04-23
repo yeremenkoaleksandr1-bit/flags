@@ -28,9 +28,12 @@ class RemoveAdsBanner extends StatelessWidget {
 
     Future<void> showPurchaseDialog() async {
       final cubit = context.read<MonetizationCubit>();
+      cubit.resetPurchaseDialogState();
       final state = cubit.state;
 
-      if (state.isPremium) return;
+      if (state.isPremium) {
+        return;
+      }
 
       await showDialog(
         context: context,

@@ -35,9 +35,10 @@ class TotalMoneysView extends StatelessWidget {
               top: -8.h,
               left: -8.w,
               height: 50.h,
-              child: OutlineShader(
-                child: UIMoney(
-                  key: widgetKey,
+              child: KeyedSubtree(
+                key: widgetKey,
+                child: OutlineShader(
+                  child: UIMoney(),
                 ),
               ),
             ),

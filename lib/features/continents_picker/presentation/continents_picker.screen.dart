@@ -6,7 +6,6 @@ import 'package:flags/domain/domain.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
 import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
 import 'package:flags/features/app/features/shop/presentation/bloc/shop_cubit.dart';
-import 'package:flags/features/continents_picker/presentation/components/progress_card.dart';
 import 'package:flags/features/continents_picker/presentation/components/white_panel.dart';
 import 'package:flags/features/continents_picker/presentation/views/continent_view.dart';
 import 'package:flags/features/continents_picker/presentation/views/strick_view.dart';
@@ -153,16 +152,6 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
                   });
                 }
 
-                final selectedIndex = continents.indexOf(selectedContinent);
-                final selectedTag = 'continent_$selectedIndex';
-                final isBought =
-                    shopCubit.isBought(selectedTag) ||
-                    shopCubit.getPrice(selectedTag) == -1;
-                final levelsCount = FactoryGameContinent
-                    .continents[selectedContinent]!
-                    .levels
-                    .length;
-
                 return SafeArea(
                   child: Stack(
                     children: [
@@ -206,19 +195,14 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
                                       },
                                     ),
                                   ),
-                                  _PlayButton(
-                                    continent: selectedContinent,
-                                    isBought: isBought,
-                                    onPressed: isBought
-                                        ? () => onContinentPicked(
-                                            selectedContinent,
-                                          )
-                                        : null,
-                                  ),
                                 ],
                               ),
                             ),
-
+                            buildPlayButton(
+                              continents,
+                              selectedContinent,
+                              onContinentPicked,
+                            ),
                             SizedBox(height: 24.h),
                             FShowcase(
                               showcaseKey: oFastModeButton,
@@ -255,38 +239,32 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
       },
     );
   }
-}
 
-class _SwipeHint extends StatelessWidget {
-  const _SwipeHint();
+  BlocBuilder<IShopCubit, ShopState> buildPlayButton(
+    List<ContinentType> continents,
+    ContinentType selectedContinent,
+    void Function(ContinentType type) onContinentPicked,
+  ) {
+    return BlocBuilder<IShopCubit, ShopState>(
+      builder: (context, _) {
+        final selectedIndex = continents.indexOf(
+          selectedContinent,
+        );
+        final selectedTag = 'continent_$selectedIndex';
+        final isBought =
+            shopCubit.isBought(selectedTag) ||
+            shopCubit.getPrice(selectedTag) == -1;
 
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          Icons.chevron_left_rounded,
-          color: ThemePalette.white,
-          size: 34.sp,
-        ),
-        SizedBox(width: 4.w),
-        FText(
-          'SWIPE TO CHANGE CONTINENT',
-          strokeWidth: 4,
-          textStyle: TextStyle(
-            fontSize: 17.sp,
-            height: 1,
-            fontWeight: FontWeight.w900,
-          ),
-        ),
-        SizedBox(width: 4.w),
-        Icon(
-          Icons.chevron_right_rounded,
-          color: ThemePalette.white,
-          size: 34.sp,
-        ),
-      ],
+        return _PlayButton(
+          continent: selectedContinent,
+          isBought: isBought,
+          onPressed: isBought
+              ? () => onContinentPicked(
+                  selectedContinent,
+                )
+              : null,
+        );
+      },
     );
   }
 }
@@ -350,11 +328,11 @@ class _FastModeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScaledGestureDetector(
-      onTap: onPressed,
-      child: WhitePanel(
-        backgroundColor: const Color(0xFFDCEEFF),
-        borderColor: const Color(0xFF8CB8E5),
+    return FButton(
+      color: const Color(0xFFDCEEFF),
+      onPressed: onPressed,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 4.h),
         child: Row(
           children: [
             SizedBox(

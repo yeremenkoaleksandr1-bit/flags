@@ -35,6 +35,7 @@ class ShopCubit extends Cubit<ShopState> implements IShopCubit {
     if (!service.isBought(tag) && canBuy(tag)) {
       gamePreferences.removeMoney(getPrice(tag));
       service.saveItem(tag);
+      emit(ShopUpdated(tag));
     }
   }
 
