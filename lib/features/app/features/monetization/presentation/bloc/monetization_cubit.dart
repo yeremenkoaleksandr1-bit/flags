@@ -146,11 +146,6 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
       return;
     }
 
-    if (Platform.isIOS) {
-      final transactions = await _inAppPurchase.restorePurchases();
-      return transactions;
-    }
-
     FlutterEngine.widgetPostFrameCallback((_) {
       Navigator.of(context).pop();
     });
@@ -513,18 +508,12 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
       Platform.isAndroid
           ? 'ADMOB_INTERSTITIAL_ID'
           : 'ADMOB_INTERSTITIAL_IOS_ID',
-      fallback: Platform.isAndroid
-          ? 'ca-app-pub-3940256099942544/1033173712'
-          : 'ca-app-pub-3940256099942544/4411468910',
     );
   }
 
   String get _rewardedUnitId {
     return dotenv.get(
       Platform.isAndroid ? 'ADMOB_REWARDED_ID' : 'ADMOB_REWARDED_IOS_ID',
-      fallback: Platform.isAndroid
-          ? 'ca-app-pub-3940256099942544/1033173712'
-          : 'ca-app-pub-3940256099942544/4411468910',
     );
   }
 

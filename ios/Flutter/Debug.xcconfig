@@ -1,4 +1,3 @@
-#if __has_include("AdMob.xcconfig")
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
 #include "AdMob.xcconfig"
-#endif
 #include "Generated.xcconfig"

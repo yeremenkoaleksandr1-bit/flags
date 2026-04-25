@@ -6,7 +6,6 @@ import 'package:flags/domain/domain.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
 import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
 import 'package:flags/features/app/features/shop/presentation/bloc/shop_cubit.dart';
-import 'package:flags/features/continents_picker/presentation/components/white_panel.dart';
 import 'package:flags/features/continents_picker/presentation/views/continent_view.dart';
 import 'package:flags/features/continents_picker/presentation/views/strick_view.dart';
 import 'package:flags/features/games/presentation/games_factory.page.dart';
@@ -19,7 +18,6 @@ import 'package:flags/services/onboarding/onbloarding.controller.dart';
 import 'package:flags/ui/game_scaffold.dart';
 import 'package:flags/uikit/assets/assets.dart';
 import 'package:flags/uikit/components/buttons/buttons.dart';
-import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
 import 'package:flags/uikit/components/safe_area/safe_area.dart';
 import 'package:flags/uikit/layout_components/showcase/showcase.dart';
 import 'package:flags/uikit/layout_components/showcase/showcase_item.dart';
@@ -164,35 +162,39 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
                               child: Column(
                                 crossAxisAlignment: .stretch,
                                 children: [
-                                  FShowcase(
-                                    showcaseKey: oContinentButton,
-                                    targetPadding: Pad(all: -12.r),
-                                    targetShapeBorder: const CircleBorder(),
-                                    tooltip: (bounds) => Positioned(
-                                      top: bounds.top - 14.h,
-                                      left: 0,
-                                      right: 0,
-                                      child: Center(
-                                        child: FText(
-                                          'Swipe or tap a continent\nto unlock and play',
-                                          textAlign: TextAlign.center,
-                                          textStyle: const TextStyle(height: 1),
+                                  Expanded(
+                                    child: FShowcase(
+                                      showcaseKey: oContinentButton,
+                                      targetPadding: Pad(all: -12.r),
+                                      targetShapeBorder: const CircleBorder(),
+                                      tooltip: (bounds) => Positioned(
+                                        top: bounds.top - 14.h,
+                                        left: 0,
+                                        right: 0,
+                                        child: Center(
+                                          child: FText(
+                                            'Swipe or tap a continent\nto unlock and play',
+                                            textAlign: TextAlign.center,
+                                            textStyle: const TextStyle(
+                                              height: 1,
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    child: ContinentsSlider(
-                                      continents: continents,
-                                      gameProcessType:
-                                          cubit.params.gameProcessType,
-                                      onPressed: onContinentPicked,
-                                      onChanged: (continent) {
-                                        if (_selectedContinent == continent) {
-                                          return;
-                                        }
-                                        setState(() {
-                                          _selectedContinent = continent;
-                                        });
-                                      },
+                                      child: ContinentsSlider(
+                                        continents: continents,
+                                        gameProcessType:
+                                            cubit.params.gameProcessType,
+                                        onPressed: onContinentPicked,
+                                        onChanged: (continent) {
+                                          if (_selectedContinent == continent) {
+                                            return;
+                                          }
+                                          setState(() {
+                                            _selectedContinent = continent;
+                                          });
+                                        },
+                                      ),
                                     ),
                                   ),
                                 ],
