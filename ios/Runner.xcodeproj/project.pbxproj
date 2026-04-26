@@ -16,6 +16,7 @@
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		AC09798B87B0C48171A5C647 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14156CA87F6CDDDE6536D65B /* Pods_RunnerTests.framework */; };
 		C230815450C1355DAB599244 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3459D1D8FDF697F70EBC781F /* Pods_Runner.framework */; };
+		D98542942F9E09C900E68B79 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D98542932F9E09C900E68B79 /* StoreKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +65,7 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C26F856F717BD1C48FE7E3DA /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		D5EDF1191557447E641E8557 /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
+		D98542932F9E09C900E68B79 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		FA4B14ED600BA587B142DEED /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -81,6 +83,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C230815450C1355DAB599244 /* Pods_Runner.framework in Frameworks */,
+				D98542942F9E09C900E68B79 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -111,6 +114,7 @@
 		73D629980DBBF13E28F7C2A9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D98542932F9E09C900E68B79 /* StoreKit.framework */,
 				3459D1D8FDF697F70EBC781F /* Pods_Runner.framework */,
 				14156CA87F6CDDDE6536D65B /* Pods_RunnerTests.framework */,
 			);
@@ -511,6 +515,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = TB8AX5H594;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -695,6 +700,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = TB8AX5H594;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -723,6 +729,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = TB8AX5H594;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

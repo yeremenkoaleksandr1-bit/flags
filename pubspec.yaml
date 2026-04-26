@@ -3,7 +3,7 @@ description: "A new Flutter project."
 
 publish_to: 'none'
 
-version: 1.0.2+6
+version: 1.0.2+7
 
 environment:
   sdk: ^3.10.4
@@ -74,6 +74,7 @@ dependencies:
   games_services: ^5.0.0
 
 dependency_overrides:
+  path_provider_foundation: 2.5.1
   image_gallery_saver:
     path: packages/third_party/image_gallery_saver
 
