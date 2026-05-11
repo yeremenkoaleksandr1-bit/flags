@@ -1,6 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flags/app/app_scope.dart';
-import 'package:flags/features/app/features/auth/presentation/widgets/game_services_account_button.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
 import 'package:flags/features/app/features/audio/presentation/bloc/audio_cubit.dart';
 import 'package:flags/features/app/presentation/bloc/app_cubit.dart';
@@ -88,66 +87,79 @@ class _HomeScreenState extends State<HomeScreen> {
             onPageFocussed: onPageFocussed,
             child: Stack(
               children: [
-                Padding(
-                  padding: ThemePaddings.screen,
-                  child: Column(
-                    children: [
-                      SpriteUIWidget(image: Assets.images.logo.image),
-                      const Spacer(),
-                      FShowcase(
-                        showcaseKey: oPlayButton,
-                        tooltip: (bounds) => Positioned(
-                          bottom: bounds.bottom + 2.h,
-                          left: 0,
-                          right: 0,
-                          child: Center(
-                            child: FText(
-                              "Let's start assembling \nthese frags",
-                              textAlign: TextAlign.center,
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
+                        ),
+                        child: IntrinsicHeight(
+                          child: Padding(
+                            padding: ThemePaddings.screen,
+                            child: Column(
+                              children: [
+                                SpriteUIWidget(image: Assets.images.logo.image),
+                                const Spacer(),
+                                FShowcase(
+                                  showcaseKey: oPlayButton,
+                                  tooltip: (bounds) => Positioned(
+                                    bottom: bounds.bottom + 2.h,
+                                    left: 0,
+                                    right: 0,
+                                    child: Center(
+                                      child: FText(
+                                        "Let's start assembling \nthese frags",
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                                  child: FYellowButton(
+                                    onPressed: openGamePickerPage,
+                                    child: Center(child: FText("PLAY")),
+                                  ),
+                                ),
+                                Gap.v12,
+                                FShowcase(
+                                  showcaseKey: oMyFlagsButton,
+                                  tooltip: (bounds) => Positioned(
+                                    top: bounds.top - 112.h,
+                                    left: 0,
+                                    right: 0,
+                                    child: Center(
+                                      child: FText(
+                                        "You can also create \nyour own unique flags.",
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                                  child: FYellowButton(
+                                    onPressed: openMyFlagsPage,
+                                    child: Center(child: FText("MY FLAGS")),
+                                  ),
+                                ),
+                                const Spacer(flex: 4),
+                                if (appCubit.preferences.isDebugMode) ...[
+                                  const DebugButton(),
+                                ],
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const FVibrationMuteButton(),
+                                    Gap.h12,
+                                    const FSoundMuteButton(),
+                                  ],
+                                ),
+                                Gap.v24,
+                                const RemoveAdsBanner(),
+                                Gap.v24,
+                              ],
                             ),
                           ),
                         ),
-                        child: FYellowButton(
-                          onPressed: openGamePickerPage,
-                          child: Center(child: FText("PLAY")),
-                        ),
                       ),
-                      Gap.v12,
-                      FShowcase(
-                        showcaseKey: oMyFlagsButton,
-                        tooltip: (bounds) => Positioned(
-                          top: bounds.top - 112.h,
-                          left: 0,
-                          right: 0,
-                          child: Center(
-                            child: FText(
-                              "You can also create \nyour own unique flags.",
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                        child: FYellowButton(
-                          onPressed: openMyFlagsPage,
-                          child: Center(child: FText("MY FLAGS")),
-                        ),
-                      ),
-                      const Spacer(flex: 4),
-                      if (appCubit.preferences.isDebugMode) ...[
-                        const DebugButton(),
-                      ],
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const FVibrationMuteButton(),
-                          Gap.h12,
-                          const FSoundMuteButton(),
-                        ],
-                      ),
-                      Gap.v24,
-                      const RemoveAdsBanner(),
-                      Gap.v24,
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ],
             ),

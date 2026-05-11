@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flags/app/app_bootstrap.dart';
 import 'package:flags/features/app/presentation/application.dart';
 import 'package:flags/uikit/components/progress_indicator/linear_progress_indicator.dart';
@@ -9,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +24,7 @@ void main() async {
   await Flame.device.setPortraitUpOnly();
   await dotenv.load(fileName: '.env');
   await GameShaders.init();
+
 
   await MobileAds.instance.initialize();
 

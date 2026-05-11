@@ -79,8 +79,18 @@ class RemoveAdsBanner extends StatelessWidget {
               ),
               actionsAlignment: MainAxisAlignment.center,
               actions: [
-                if (state.isPurchasePending)
+                if (state.isPurchasePending || state.isProductLoading)
                   const FLinearProgressIndicator()
+                else if (!state.isProductAvailable)
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12.w),
+                    child: FText(
+                      "No Ads is currently unavailable",
+                      textAlign: TextAlign.center,
+                      textColor: subtitleColor,
+                      textStyle: TextStyle(fontSize: 14.sp),
+                    ),
+                  )
                 else
                   Column(
                     children: [

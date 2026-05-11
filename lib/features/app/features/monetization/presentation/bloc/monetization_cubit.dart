@@ -9,6 +9,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+import 'package:in_app_purchase_storekit/store_kit_2_wrappers.dart';
+import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final class MonetizationCubit extends Cubit<MonetizationState> {
@@ -47,53 +50,182 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   Completer<void>? _rewardedLoadCompleter;
   Completer<List<PurchaseDetails>>? _restorePurchasesCompleter;
   bool _pendingPostLevelInterstitial = false;
+  String? _storeKitFallbackError;
 
   Future<void> _initialize() async {
+    _logStoreKit('Initializing. productId=$_noAdsProductId');
     final storeAvailable = await _inAppPurchase.isAvailable();
+    _logStoreKit('Store available=$storeAvailable');
     if (!storeAvailable) {
       emit(
-        state.copyWith(statusMessage: 'Store is unavailable on this device'),
+        state.copyWith(
+          isProductLoading: false,
+          isProductAvailable: false,
+          statusMessage: 'Store is unavailable on this device',
+        ),
       );
       return;
     }
-
-    await _syncPremiumWithStoreAccount();
 
     if (!state.isPremium) {
       _loadInterstitialAd();
       _loadRewardedAd();
     }
 
-    final productResponse = await _inAppPurchase.queryProductDetails({
-      _noAdsProductId,
-    });
+    await _loadNoAdsProduct();
+  }
+
+  Future<void> _loadNoAdsProduct() async {
+    ProductDetailsResponse? productResponse;
+
+    for (var attempt = 0; attempt < 3; attempt++) {
+      _logStoreKit('Query product attempt=${attempt + 1}');
+      productResponse = await _queryNoAdsProductDetails();
+      _logProductResponse(productResponse);
+
+      if (productResponse.error == null ||
+          !productResponse.error!.message.toLowerCase().contains(
+            'failed to get response from platform',
+          )) {
+        break;
+      }
+
+      if (attempt < 2) {
+        await Future<void>.delayed(Duration(seconds: attempt + 1));
+      }
+    }
+
+    productResponse ??= await _queryNoAdsProductDetails();
 
     if (productResponse.error != null) {
+      _logStoreKit('Trying StoreKit wrapper fallback');
+      final fallbackProduct = await _loadNoAdsProductFromStoreKitWrapper();
+      if (fallbackProduct != null) {
+        _logStoreKit('Fallback found product=${fallbackProduct.id}');
+        _setNoAdsProductAvailable(fallbackProduct);
+        return;
+      }
+
       emit(
         state.copyWith(
-          statusMessage: productResponse.error!.message,
+          isProductLoading: false,
+          isProductAvailable: false,
+          statusMessage:
+              '${productResponse.error!.message}. Product: $_noAdsProductId${_storeKitFallbackError == null ? '' : '. Fallback: $_storeKitFallbackError'}',
         ),
       );
       return;
     }
 
     if (productResponse.productDetails.isNotEmpty) {
-      _noAdsProduct = productResponse.productDetails.first;
-      emit(
-        state.copyWith(
-          productPriceLabel: _noAdsProduct!.price,
-          clearStatusMessage: true,
-        ),
+      _logStoreKit(
+        'Product found=${productResponse.productDetails.first.id} '
+        'price=${productResponse.productDetails.first.price}',
       );
+      _setNoAdsProductAvailable(productResponse.productDetails.first);
       return;
     }
 
-    final notFoundId = productResponse.notFoundIDs.isNotEmpty
-        ? productResponse.notFoundIDs.first
-        : _noAdsProductId;
     emit(
       state.copyWith(
-        statusMessage: 'Product not found in store: $notFoundId',
+        isProductLoading: false,
+        isProductAvailable: false,
+        statusMessage: productResponse.notFoundIDs.isEmpty
+            ? 'No Ads is currently unavailable. Please try again later.'
+            : 'No Ads product was not found: ${productResponse.notFoundIDs.join(', ')}',
+      ),
+    );
+  }
+
+  Future<ProductDetailsResponse> _queryNoAdsProductDetails() async {
+    return _inAppPurchase
+        .queryProductDetails({_noAdsProductId})
+        .timeout(
+          const Duration(seconds: 8),
+          onTimeout: () => ProductDetailsResponse(
+            productDetails: const [],
+            notFoundIDs: const [],
+            error: IAPError(
+              source: 'app_store',
+              code: 'storekit_timeout',
+              message: 'StoreKit product request timed out',
+            ),
+          ),
+        );
+  }
+
+  Future<ProductDetails?> _loadNoAdsProductFromStoreKitWrapper() async {
+    if (!Platform.isIOS) {
+      return null;
+    }
+
+    _storeKitFallbackError = null;
+
+    try {
+      final supportsStoreKit2 = await SKRequestMaker.supportsStoreKit2()
+          .timeout(const Duration(seconds: 3), onTimeout: () => false);
+      if (supportsStoreKit2) {
+        final products = await SK2Product.products([
+          _noAdsProductId,
+        ]).timeout(const Duration(seconds: 8), onTimeout: () => const []);
+        _logStoreKit(
+          'StoreKit2 products=${products.map((e) => e.id).toList()}',
+        );
+        if (products.isNotEmpty) {
+          return AppStoreProduct2Details.fromSK2Product(products.first);
+        }
+      }
+    } catch (error) {
+      _storeKitFallbackError = 'StoreKit2 $error';
+    }
+
+    try {
+      final response = await SKRequestMaker()
+          .startProductRequest([
+            _noAdsProductId,
+          ])
+          .timeout(const Duration(seconds: 8));
+      _logStoreKit(
+        'StoreKit1 products=${response.products.map((e) => e.productIdentifier).toList()} '
+        'invalid=${response.invalidProductIdentifiers}',
+      );
+      if (response.products.isNotEmpty) {
+        return AppStoreProductDetails.fromSKProduct(response.products.first);
+      }
+    } catch (error) {
+      _storeKitFallbackError = [
+        if (_storeKitFallbackError != null) _storeKitFallbackError,
+        'StoreKit1 $error',
+      ].join('; ');
+    }
+
+    return null;
+  }
+
+  void _logProductResponse(ProductDetailsResponse response) {
+    _logStoreKit(
+      'queryProductDetails products=${response.productDetails.map((e) => e.id).toList()} '
+      'notFound=${response.notFoundIDs} '
+      'error=${response.error == null ? null : '${response.error!.code}: ${response.error!.message}'}',
+    );
+  }
+
+  void _logStoreKit(String message) {
+    if (!Platform.isIOS) {
+      return;
+    }
+
+    debugPrint('[StoreKit] $message');
+  }
+
+  void _setNoAdsProductAvailable(ProductDetails product) {
+    _noAdsProduct = product;
+    emit(
+      state.copyWith(
+        isProductLoading: false,
+        isProductAvailable: true,
+        productPriceLabel: _noAdsProduct!.price,
+        clearStatusMessage: true,
       ),
     );
   }
@@ -112,7 +244,10 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
     if (_noAdsProduct == null) {
       emit(
         state.copyWith(
-          statusMessage: 'No Ads product is unavailable: $_noAdsProductId',
+          isProductLoading: false,
+          isProductAvailable: false,
+          statusMessage:
+              'No Ads is currently unavailable. Please try again later.',
         ),
       );
       return;
