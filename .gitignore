@@ -12,7 +12,7 @@
 .swiftpm/
 migrate_working_dir/
 
-# *.env
+.env
 *.gr.dart
 *.g.dart
 *.freezed.dart
@@ -55,3 +55,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Secrets
+android/app/key.properties
+android/keys/
+.keys/
