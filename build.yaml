@@ -1,0 +1,10 @@
+# Only auto_route codegen is used in this project (router.gr.dart).
+# freezed / json_serializable have no `part` files here and their analyzer
+# fails on Dart dot-shorthand syntax, so they are disabled.
+targets:
+  $default:
+    builders:
+      freezed:
+        enabled: false
+      json_serializable:
+        enabled: false
