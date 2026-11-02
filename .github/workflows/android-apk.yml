@@ -36,6 +36,10 @@ jobs:
       - run: flutter --version
       - run: flutter pub get
 
+      # *.gr.dart / *.g.dart / *.freezed.dart are gitignored and must be generated.
+      - name: Generate code (auto_route, freezed, json_serializable)
+        run: dart run build_runner build --delete-conflicting-outputs
+
       # Without android/app/key.properties the build is signed with the debug key.
       - name: Build release APKs (split per ABI)
         run: flutter build apk --release --split-per-abi
