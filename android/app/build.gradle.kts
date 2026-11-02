@@ -70,6 +70,15 @@ android {
         }
     }
 
+    // Store native libs (libflutter.so, libapp.so) compressed inside the APK.
+    // AGP stores them uncompressed by default, which makes the APK ~10 MB bigger;
+    // Android extracts them on install instead.
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
     buildTypes {
         val appSigning =
             if (hasReleaseKey) {
