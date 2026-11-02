@@ -1,0 +1,53 @@
+name: Android test APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [optimization]
+
+concurrency:
+  group: android-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      # .env is not committed; the example file holds Google's test AdMob ids.
+      - name: Create .env from example
+        run: cp .env.example .env
+
+      - run: flutter --version
+      - run: flutter pub get
+
+      # Without android/app/key.properties the build is signed with the debug key.
+      - name: Build release APKs (split per ABI)
+        run: flutter build apk --release --split-per-abi
+
+      - name: APK sizes
+        run: ls -lh build/app/outputs/flutter-apk/*.apk
+
+      - name: Upload x86_64 APK (emulator)
+        uses: actions/upload-artifact@v4
+        with:
+          name: flags-x86_64-emulator
+          path: build/app/outputs/flutter-apk/app-x86_64-release.apk
+
+      - name: Upload arm64 APK (real devices)
+        uses: actions/upload-artifact@v4
+        with:
+          name: flags-arm64-v8a
+          path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk

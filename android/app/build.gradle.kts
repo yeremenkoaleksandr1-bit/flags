@@ -8,9 +8,15 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// key.properties is not committed (see .gitignore). When it is missing
+// (e.g. on CI or a fresh clone) builds fall back to the default debug key.
+val keyPropertiesFile = file("key.properties")
 val keyProperties = Properties().apply {
-    load(FileInputStream(file("key.properties")))
+    if (keyPropertiesFile.exists()) {
+        keyPropertiesFile.inputStream().use(::load)
+    }
 }
+val hasReleaseKey = keyPropertiesFile.exists()
 
 val envProperties = Properties().apply {
     val envFile = rootProject.file("../.env")
@@ -18,15 +24,6 @@ val envProperties = Properties().apply {
         envFile.inputStream().use(::load)
     }
 }
-
-val configuredStoreFile = file(keyProperties["storeFile"] as String)
-val fallbackStoreFile = rootProject.file("keys/app")
-val signingStoreFile =
-    when {
-        configuredStoreFile.exists() -> configuredStoreFile
-        fallbackStoreFile.exists() -> fallbackStoreFile
-        else -> configuredStoreFile
-    }
 
 android {
     namespace = "com.forceman.flagsup"
@@ -56,23 +53,39 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            storeFile = signingStoreFile
-            storePassword = keyProperties["storePassword"] as String
-            keyAlias = keyProperties["keyAlias"] as String
-            keyPassword = keyProperties["keyPassword"] as String
+        if (hasReleaseKey) {
+            create("release") {
+                val configuredStoreFile = file(keyProperties["storeFile"] as String)
+                val fallbackStoreFile = rootProject.file("keys/app")
+                storeFile =
+                    if (configuredStoreFile.exists() || !fallbackStoreFile.exists()) {
+                        configuredStoreFile
+                    } else {
+                        fallbackStoreFile
+                    }
+                storePassword = keyProperties["storePassword"] as String
+                keyAlias = keyProperties["keyAlias"] as String
+                keyPassword = keyProperties["keyPassword"] as String
+            }
         }
     }
 
     buildTypes {
+        val appSigning =
+            if (hasReleaseKey) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
+
         getByName("release") {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = appSigning
             isMinifyEnabled = false
             isShrinkResources = false
         }
 
         getByName("debug") {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = appSigning
         }
     }
 }
