@@ -47,6 +47,23 @@ jobs:
       - name: APK sizes
         run: ls -lh build/app/outputs/flutter-apk/*.apk
 
+      - name: APK contents (x86_64, biggest entries)
+        run: |
+          python3 - <<'PY'
+          import zipfile, collections
+          z = zipfile.ZipFile('build/app/outputs/flutter-apk/app-x86_64-release.apk')
+          grp = collections.Counter()
+          for i in z.infolist():
+              parts = i.filename.split('/')
+              grp['/'.join(parts[:4] if parts[0] == 'assets' else parts[:2])] += i.compress_size
+          print('TOTAL %.2f MB' % (sum(grp.values()) / 1e6))
+          for k, v in grp.most_common(20):
+              print('%7.2f MB  %s' % (v / 1e6, k))
+          print('--- biggest files (stored MB / raw MB)')
+          for i in sorted(z.infolist(), key=lambda i: -i.compress_size)[:25]:
+              print('%6.2f %6.2f  %s' % (i.compress_size / 1e6, i.file_size / 1e6, i.filename))
+          PY
+
       - name: Upload x86_64 APK (emulator)
         uses: actions/upload-artifact@v4
         with:
