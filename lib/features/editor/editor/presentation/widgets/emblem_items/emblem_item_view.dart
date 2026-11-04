@@ -26,7 +26,7 @@ class EmblemItemView extends StatelessWidget {
                 fit: BoxFit.fitWidth,
                 child: DrawablePaint(
                   drawable: item.emblem,
-                  size: item.emblem.image.size.toSize(),
+                  size: item.emblem.size.toSize(),
                 ),
               ),
             ),

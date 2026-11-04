@@ -28,14 +28,14 @@ class OpenedEmblemItemView extends StatelessWidget {
     final sceneObjectsBloc = context.read<EditorSceneObjectsCubit>();
 
     Future<void> onSelect(Emblem value) async {
-      final size = value.image.size / 12;
+      final size = value.size / 12;
 
-      final effectiveSize = value.image.size / max(size.x, size.y);
+      final effectiveSize = value.size / max(size.x, size.y);
 
       final part = EmblemPart(
         name: UniqueKey().toString(),
         emblem: value,
-        initialEmblemSize: value.image.size,
+        initialEmblemSize: value.size,
         size: effectiveSize,
       );
 
@@ -58,7 +58,7 @@ class OpenedEmblemItemView extends StatelessWidget {
                   fit: BoxFit.fitWidth,
                   child: DrawablePaint(
                     drawable: item.emblem,
-                    size: item.emblem.image.size.toSize(),
+                    size: item.emblem.size.toSize(),
                   ),
                 ),
               ),

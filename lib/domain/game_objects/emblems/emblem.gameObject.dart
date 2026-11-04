@@ -30,11 +30,11 @@ class EmblemPart extends FlippableGameObject {
 
   @override
   Future<EmblemPart> init() async {
-    initialEmblemSize = emblem.image.size;
+    initialEmblemSize = emblem.size;
 
     return copyWith(
       emblem: emblem,
-      size: emblem.image.size,
+      size: emblem.size,
     );
   }
 
@@ -67,7 +67,7 @@ class EmblemPart extends FlippableGameObject {
     );
   }
 
-  late final _scaledSize = emblem.image.size;
+  late final _scaledSize = emblem.size;
 
   @override
   void draw(ui.Canvas canvas, ui.Size size) {
