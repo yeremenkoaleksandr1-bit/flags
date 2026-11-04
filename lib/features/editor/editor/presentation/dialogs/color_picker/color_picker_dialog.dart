@@ -16,7 +16,7 @@ Future<Color?> showColorPickerDialog(
 );
 
 class _ColorPickerDialog extends StatefulWidget {
-  const _ColorPickerDialog({super.key, required this.initialColor});
+  const _ColorPickerDialog({required this.initialColor});
 
   final Color initialColor;
 

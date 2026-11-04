@@ -1,4 +1,7 @@
+
 import 'dart:ui';
+
+import 'package:flutter/foundation.dart';
 
 abstract class RectX {
   static Rect fromSize(Size size) {
@@ -30,7 +33,7 @@ extension RectListX on List<Rect> {
       maxY = rect.bottom > maxY ? rect.bottom : maxY;
     }
 
-    print(Rect.fromLTRB(minX, minY, maxX, maxY));
+    debugPrint(Rect.fromLTRB(minX, minY, maxX, maxY).toString());
 
 
     return Rect.fromLTRB(minX, minY, maxX, maxY);

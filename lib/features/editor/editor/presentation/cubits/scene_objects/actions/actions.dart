@@ -6,6 +6,7 @@ import 'package:flags/domain/game_objects/game_objects.dart';
 import 'package:flags/features/editor/editor/presentation/cubits/scene_objects/scene_objects_cubit.dart';
 import 'package:flags/features/editor/editor/presentation/object_handles/editor_draggable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 mixin SceneObjectsActionsMixin on Cubit<EditorSceneObjectsState> {
@@ -110,9 +111,11 @@ mixin SceneObjectsActionsMixin on Cubit<EditorSceneObjectsState> {
 
   void removeObject(GameObject object) {
     if (object is ImageGameObject) {
-      try {
-        File(object.imagePath).deleteSync();
-      } catch (e) {}
+      if (!kIsWeb) {
+        try {
+          File(object.imagePath).deleteSync();
+        } catch (e) { /* ignore: empty_catches */ }
+      }
     }
 
     _updateState(

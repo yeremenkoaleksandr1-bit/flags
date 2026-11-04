@@ -1,6 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flags/shared/services/disposable.dart';
-import 'package:flutter/cupertino.dart';
 
 class WinStreak extends Equatable {
   const WinStreak({

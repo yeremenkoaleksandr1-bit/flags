@@ -6,15 +6,49 @@ import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+// где начинается белая плашка — доля ширины иконки денег (118x137 px)
+const double _kPillStartUnderIcon = 0.5;
+
 class TotalMoneysView extends StatelessWidget {
-  const TotalMoneysView({super.key, required this.widgetKey});
+  const TotalMoneysView({
+    super.key,
+    required this.widgetKey,
+    this.paddingRight,
+    this.pillHeight,
+    this.pillTop,
+    this.iconHeight,
+    this.iconOffsetTop,
+    this.iconOffsetLeft,
+    this.fontSize,
+    this.strokeWidth,
+    this.paddingLeft,
+    this.paddingRight2,
+    this.paddingTop,
+  });
 
   final Key widgetKey;
+
+  // Внешний отступ справа
+  final double? paddingRight;
+  // Белая таблетка
+  final double? pillHeight;
+  final double? pillTop;
+  // Иконка монеты
+  final double? iconHeight;
+  final double? iconOffsetTop;
+  final double? iconOffsetLeft;
+  // Цифра
+  final double? fontSize;
+  final double? strokeWidth;
+  // Внутренние отступы таблетки
+  final double? paddingLeft;
+  final double? paddingRight2;
+  final double? paddingTop;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(right: 12.w),
+      padding: EdgeInsets.only(right: paddingRight ?? 12.w),
       child: Align(
         alignment: Alignment.topRight,
         child: Stack(
@@ -22,19 +56,22 @@ class TotalMoneysView extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             Positioned(
-              top: 4.h,
-              left: 0,
+              top: pillTop ?? 4.h,
+              // плашка начинается под серединой иконки: левый верх иконки
+              // прозрачный, и сквозь него был виден край плашки (лишняя линия)
+              left: (iconOffsetLeft ?? -8.w) +
+                  (iconHeight ?? 50.h) * 118 / 137 * _kPillStartUnderIcon,
               right: 0,
-              height: 36.h,
+              height: pillHeight ?? 36.h,
               child: const Material(
                 color: ThemePalette.white,
                 shape: StadiumBorder(),
               ),
             ),
             Positioned(
-              top: -8.h,
-              left: -8.w,
-              height: 50.h,
+              top: iconOffsetTop ?? -8.h,
+              left: iconOffsetLeft ?? -8.w,
+              height: iconHeight ?? 50.h,
               child: KeyedSubtree(
                 key: widgetKey,
                 child: OutlineShader(
@@ -43,13 +80,17 @@ class TotalMoneysView extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(left: 42.w, right: 14.w, top: 3.h),
+              padding: EdgeInsets.only(
+                left:   paddingLeft  ?? 42.w,
+                right:  paddingRight2 ?? 14.w,
+                top:    paddingTop   ?? 3.h,
+              ),
               child: BuildGamePreferences(
                 builder: (BuildContext context, GamePreferencesState state) {
                   return FText(
                     "${state.moneys}",
-                    strokeWidth: 4.r,
-                    textStyle: TextStyle(fontSize: 28.sp),
+                    strokeWidth: strokeWidth ?? 4.r,
+                    textStyle: TextStyle(fontSize: fontSize ?? 28.sp),
                   );
                 },
               ),

@@ -14,12 +14,9 @@ import 'package:flags/uikit/components/buttons/actions/vibration_mute.button.dar
 import 'package:flags/uikit/components/buttons/buttons.dart';
 import 'package:flags/uikit/components/safe_area/safe_area.dart';
 import 'package:flags/uikit/layout_components/showcase/showcase.dart';
-import 'package:flags/uikit/layout_components/showcase/showcase_item.dart';
-import 'package:flags/uikit/layout_components/sprite_widget.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 @RoutePage()
 class HomeScreen extends StatefulWidget {
@@ -87,79 +84,63 @@ class _HomeScreenState extends State<HomeScreen> {
             onPageFocussed: onPageFocussed,
             child: Stack(
               children: [
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    return SingleChildScrollView(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minHeight: constraints.maxHeight,
-                        ),
-                        child: IntrinsicHeight(
-                          child: Padding(
-                            padding: ThemePaddings.screen,
-                            child: Column(
-                              children: [
-                                SpriteUIWidget(image: Assets.images.logo.image),
-                                const Spacer(),
-                                FShowcase(
-                                  showcaseKey: oPlayButton,
-                                  tooltip: (bounds) => Positioned(
-                                    bottom: bounds.bottom + 2.h,
-                                    left: 0,
-                                    right: 0,
-                                    child: Center(
-                                      child: FText(
-                                        "Let's start assembling \nthese frags",
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                  child: FYellowButton(
-                                    onPressed: openGamePickerPage,
-                                    child: Center(child: FText("PLAY")),
-                                  ),
-                                ),
-                                Gap.v12,
-                                FShowcase(
-                                  showcaseKey: oMyFlagsButton,
-                                  tooltip: (bounds) => Positioned(
-                                    top: bounds.top - 112.h,
-                                    left: 0,
-                                    right: 0,
-                                    child: Center(
-                                      child: FText(
-                                        "You can also create \nyour own unique flags.",
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                  child: FYellowButton(
-                                    onPressed: openMyFlagsPage,
-                                    child: Center(child: FText("MY FLAGS")),
-                                  ),
-                                ),
-                                const Spacer(flex: 4),
-                                if (appCubit.preferences.isDebugMode) ...[
-                                  const DebugButton(),
-                                ],
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const FVibrationMuteButton(),
-                                    Gap.h12,
-                                    const FSoundMuteButton(),
-                                  ],
-                                ),
-                                Gap.v24,
-                                const RemoveAdsBanner(),
-                                Gap.v24,
-                              ],
+                Positioned.fill(
+                  child: CustomScrollView(
+                    // без пружины: если меню помещается на экран, оно не
+                    // двигается; прокрутка — только если кнопки не влезли
+                    physics: const ClampingScrollPhysics(),
+                    slivers: [
+                      SliverPadding(
+                        padding: ThemePaddings.screen,
+                        sliver: SliverList.list(
+                          children: [
+                            // обычная картинка вместо SpriteUIWidget: тот на
+                            // телефонах (Impeller) рисовал тонкую линию под логотипом
+                            Image.asset(
+                              Assets.images.logo.path,
+                              fit: BoxFit.fitWidth,
+                              filterQuality: FilterQuality.medium,
                             ),
+                            Gap.v32,
+                            FYellowButton(
+                              onPressed: openGamePickerPage,
+                              child: Center(child: FText("PLAY")),
+                            ),
+                            Gap.v12,
+                            FYellowButton(
+                              onPressed: openMyFlagsPage,
+                              child: Center(child: FText("MY FLAGS")),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Padding(
+                          padding: ThemePaddings.screen,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              if (appCubit.preferences.isDebugMode) ...[
+                                const DebugButton(),
+                              ],
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const FVibrationMuteButton(),
+                                  Gap.h12,
+                                  const FSoundMuteButton(),
+                                ],
+                              ),
+                              Gap.v24,
+                              const RemoveAdsBanner(),
+                              Gap.v24,
+                            ],
                           ),
                         ),
                       ),
-                    );
-                  },
+                    ],
+                  ),
                 ),
               ],
             ),

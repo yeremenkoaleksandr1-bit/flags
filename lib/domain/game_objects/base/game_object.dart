@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+// ignore_for_file: must_be_immutable
 // ignore_for_file: unnecessary_getters_setters
 
 import 'package:equatable/equatable.dart';

@@ -1,3 +1,4 @@
+// ignore_for_file: must_be_immutable
 import 'package:flame/extensions.dart';
 import 'package:flutter/rendering.dart';
 
@@ -61,7 +62,16 @@ abstract class FlippableGameObject extends ProcessGameObject {
     );
 
     canvas.rotate(rotation);
-    canvas.scale(scale);
+
+    if (_flippedHorizontal && _flippedVertical) {
+      canvas.scale(-scale, -scale);
+    } else if (_flippedHorizontal) {
+      canvas.scale(-scale, scale);
+    } else if (_flippedVertical) {
+      canvas.scale(scale, -scale);
+    } else {
+      canvas.scale(scale);
+    }
 
     canvas.translate(-this.size.x / 2, -this.size.y / 2);
   }

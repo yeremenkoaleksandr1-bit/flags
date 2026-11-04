@@ -17,9 +17,12 @@ class GameAutoRouteObserver extends AutoRouterObserver {
   }
 
   void unsubscribe(AutoRouteAware routeAware) {
-    for (final route in _listeners.keys) {
+    for (final route in _listeners.keys.toList()) {
       final Set<AutoRouteAware>? subscribers = _listeners[route];
       subscribers?.remove(routeAware);
+      if (subscribers != null && subscribers.isEmpty) {
+        _listeners.remove(route);
+      }
     }
   }
 
@@ -70,7 +73,7 @@ class GameAutoRouteObserver extends AutoRouterObserver {
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
     if (route.settings is AutoRoutePage && previousRoute?.settings is AutoRoutePage) {
       final previousKey = (previousRoute!.settings as AutoRoutePage).routeKey;
-      final Set<AutoRouteAware>? previousSubscribers = _listeners[previousKey];
+      final List<AutoRouteAware>? previousSubscribers = _listeners[previousKey]?.toList();
 
       if (previousSubscribers != null) {
         for (final AutoRouteAware routeAware in previousSubscribers) {
@@ -80,3 +83,4 @@ class GameAutoRouteObserver extends AutoRouterObserver {
     }
   }
 }
+

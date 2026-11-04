@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use
 import 'dart:math' as math;
 import 'dart:ui';
 
@@ -189,7 +190,7 @@ class BoardCommonItemWidgetState<T extends BoardCommonItemWidget>
                 } else if (!showcase.isCompleted("puzzle_emblem_object")) {
                   showcase.showcaseState.next();
                 }
-              } catch (e) {}
+              } catch (e) { /* ignore: empty_catches */ }
 
               _feedbackPosition.value = dragStartPoint;
               _controller.forward(from: 0);

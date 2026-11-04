@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flags/domain/editor/styles/style.dart';
-import 'package:flags/logger.dart';
 
 part 'flag_background_style_state.dart';
 

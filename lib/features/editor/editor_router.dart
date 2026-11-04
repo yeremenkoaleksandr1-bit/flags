@@ -1,5 +1,5 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:flags/navigator/game_navigation_observer.dart';
 import 'package:flags/app/app_scope.dart';
 import 'package:flags/features/editor/my_flags/presentation/bloc/my_flags_cubit.dart';
 import 'package:flutter/cupertino.dart';
@@ -23,6 +23,8 @@ class EditorRouter extends StatelessWidget implements AutoRouteWrapper {
 
   @override
   Widget build(BuildContext context) {
-    return const AutoRouter();
+    return AutoRouter(
+      navigatorObservers: () => [GameAutoRouteObserver()],
+    );
   }
 }

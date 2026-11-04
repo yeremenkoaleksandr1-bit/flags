@@ -1,3 +1,4 @@
+// ignore_for_file: library_private_types_in_public_api
 import 'dart:async';
 
 import 'package:drag_and_drop/components/drag_target_area.dart';

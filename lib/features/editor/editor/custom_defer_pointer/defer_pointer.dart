@@ -1,6 +1,5 @@
-library expanded_hit_test;
+library;
 
-import 'dart:async';
 import 'dart:collection';
 
 import 'package:equatable/equatable.dart';
@@ -44,7 +43,6 @@ class _DeferPointerRenderObjectWidget extends SingleChildRenderObjectWidget {
   const _DeferPointerRenderObjectWidget({
     required this.link,
     required Widget super.child,
-    super.key,
     required this.deferPaint,
   });
 

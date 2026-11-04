@@ -1,3 +1,4 @@
+// ignore_for_file: unused_element
 /*
  * Copyright (c) 2021 Simform Solutions
  *
@@ -574,7 +575,7 @@ class ShowcaseState<T extends Showcase> extends State<T> {
                       height: mediaQuerySize.height,
                       decoration: BoxDecoration(
                         color: widget.overlayColor
-                            .withOpacity(widget.overlayOpacity),
+                            .withValues(alpha: widget.overlayOpacity),
                       ),
                     ),
                   )
@@ -583,7 +584,7 @@ class ShowcaseState<T extends Showcase> extends State<T> {
                     height: mediaQuerySize.height,
                     decoration: BoxDecoration(
                       color: widget.overlayColor
-                          .withOpacity(widget.overlayOpacity),
+                          .withValues(alpha: widget.overlayOpacity),
                     ),
                   ),
           ),

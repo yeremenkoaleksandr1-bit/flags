@@ -12,7 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+import 'package:flutter/foundation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,13 +40,15 @@ void main() async {
   await _guard('shaders', GameShaders.init);
 
   // Ads must never block startup: initialize in the background.
-  unawaited(
-    _guard(
-      'ads',
-      () => MobileAds.instance.initialize(),
-      timeout: const Duration(seconds: 30),
-    ),
-  );
+  if (!kIsWeb) {
+    unawaited(
+      _guard(
+        'ads',
+        () => MobileAds.instance.initialize(),
+        timeout: const Duration(seconds: 30),
+      ),
+    );
+  }
 
   EasyLoading.instance
     ..maskType = EasyLoadingMaskType.custom

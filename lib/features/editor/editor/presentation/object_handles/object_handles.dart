@@ -1,6 +1,8 @@
+// ignore_for_file: deprecated_member_use
+// ignore_for_file: must_be_immutable
 import 'package:flags/domain/game_objects/game_objects.dart';
 import 'package:flags/features/editor/editor/presentation/bloc/flag_editor_cubit.dart';
-import 'package:flags/features/editor/editor/presentation/object_handles/editor_draggable.dart';
+
 import 'package:flags/uikit/game_widgets/objects/draggable_object.dart';
 import 'package:flame/extensions.dart' hide Matrix4;
 import 'package:flutter/material.dart';
@@ -92,7 +94,7 @@ class EditorObjectHandleGameObjectState<T extends EditorObjectHandlerWidget>
     return Matrix4.identity();
   }
 
-  EditorDraggableWidget? _lastSelected;
+
 
   void _listenGameObjectSelection() {
     setState(() {});

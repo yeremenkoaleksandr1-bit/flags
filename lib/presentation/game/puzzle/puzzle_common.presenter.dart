@@ -25,6 +25,8 @@ import 'package:flags/features/games/presentation/games_factory.page.dart';
 import 'package:flags/features/games/presentation/puzzle/components/emblemb_contirmation_overlay_entry.dart';
 import 'package:flags/features/games/presentation/puzzle/dialogs/complete_continent.dialog.dart';
 import 'package:flags/features/games/presentation/puzzle/dialogs/lose.dialog.dart';
+import 'package:flags/features/games/presentation/puzzle/dialogs/flag_game_unlocked.dialog.dart';
+import 'package:flags/features/flag_games/flag_game_unlocks.dart';
 import 'package:flags/features/games/presentation/puzzle/dialogs/menu.dialog.dart';
 import 'package:flags/features/games/presentation/puzzle/dialogs/winner.dialog.dart';
 import 'package:flags/features/games/presentation/puzzle/scene_components/emblem.dart';
@@ -59,6 +61,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+
+
+/// Разлёт деталей при проигрыше (false — выключить).
+const bool kPuzzleScatterEnabled = true;
 
 class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
     with ProcessedObjectFocusHandler {
@@ -119,6 +125,12 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
     duration: const Duration(milliseconds: 100),
   );
 
+  /// Проигрыш: поставленные на флаг детали разлетаются и падают (0 → 1).
+  late final AnimationController scatterAnimation = AnimationController(
+    vsync: vsync,
+    duration: const Duration(milliseconds: 1400),
+  );
+
   HeartTriesState heartTriesState;
 
   final IEmblemConfirmationController emblemConfirmationView;
@@ -129,7 +141,6 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
 
   bool _isGameOverShown = false;
 
-  @override
   GameLevel get level => params.level;
 
   @override
@@ -169,6 +180,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
     _isGameOverShown = false;
     showcase.dismiss();
     shakeAnimation.dispose();
+    scatterAnimation.dispose();
 
     flagExposer.renderBox.removeListener(onFlagBuilt);
 
@@ -277,6 +289,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
         onExitPressed: (context) async {
           Navigator.of(context).pop();
           await monetizationCubit.consumePostLevelAdOpportunity();
+          if (!this.context.mounted) return;
           await this.context.maybePop();
         },
         onNextLevelPressed: (context) async {
@@ -302,6 +315,11 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
     }
 
     state.level.completeLevel();
+
+    // первая сборка флага, у которого есть своя игра, — открываем её
+    if (!level.completed) {
+      unawaited(_unlockFlagGame(level.flag.name));
+    }
 
     if (!level.completed) {
       if (isLastLevelInSection) {
@@ -333,6 +351,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
         onExit: (context) async {
           Navigator.of(context).pop();
           await monetizationCubit.consumePostLevelAdOpportunity();
+          if (!this.context.mounted) return;
           await this.context.maybePop();
         },
       ).showModal(context, barrierDismissible: false);
@@ -409,6 +428,14 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
     );
   }
 
+  Future<void> _unlockFlagGame(String flagName) async {
+    if (!await FlagGameUnlocks.onPuzzleCompleted(flagName)) return;
+    // поверх окна победы, когда оно уже появилось
+    await Future<void>.delayed(const Duration(milliseconds: 700));
+    if (isClosed || !context.mounted) return;
+    await showFlagGameUnlockedDialog(context, flagName);
+  }
+
   Future<void> onIncorrectPlacing() async {
     if (_isGameOverShown || isClosed) {
       return;
@@ -442,12 +469,23 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
       await audioCubit.pauseBgm();
     }());
 
+    // детали разлетаются с флага, и только потом реклама/окно проигрыша
+    if (kPuzzleScatterEnabled) {
+      boardController.toggleDraggingStatus(false);
+      await scatterAnimation.forward(from: 0);
+      if (isClosed || !context.mounted) return;
+    }
+
     await monetizationCubit.onGameOverAdOpportunity();
+
+    if (!context.mounted) return;
 
     await PuzzleLoseDialog(
       onRestart: onRestart,
       onExit: onGameExit,
     ).showModal(context, barrierDismissible: false);
+    // окно закрыто — новые детали рисуются как обычно
+    if (!isClosed) scatterAnimation.reset();
   }
 
   void resetLevelState() {
@@ -462,6 +500,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
         emblemConfirmationView.hide();
         focusedObject.value = null;
         heartTriesState.refresh();
+        scatterAnimation.reset();
 
         boardController.toggleDraggingStatus(true);
 
@@ -473,6 +512,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
   Future<void> onRestart(BuildContext context) async {
     _isGameOverShown = false;
     await restartLevel();
+    if (!context.mounted) return;
     Navigator.of(context).pop();
   }
 
@@ -606,6 +646,8 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
     showcase.dismiss();
     await onMenuOpened();
 
+    if (!context.mounted) return;
+
     await PuzzleMenuDialog(
       onRestart: onRestart,
       onExit: onGameExit,
@@ -617,7 +659,7 @@ class PuzzleCommonModeCubit extends StatedCubit<PuzzleGameState>
 
   void onGameExit(BuildContext context) async {
      Navigator.of(context).pop();
-     Navigator.of(context).pop();
+     await this.context.maybePop();
   }
 
   Future<void> onMenuOpened() async {}

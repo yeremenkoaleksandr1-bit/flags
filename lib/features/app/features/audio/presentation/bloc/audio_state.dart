@@ -4,15 +4,9 @@ final class AudioState extends Equatable {
   final bool muted;
   final bool paused;
 
-  const AudioState({
-    required this.muted,
-    required this.paused,
-  });
+  const AudioState({required this.muted, required this.paused});
 
-  AudioState copyWith({
-    bool? muted,
-    bool? paused,
-  }) {
+  AudioState copyWith({bool? muted, bool? paused}) {
     return AudioState(
       muted: muted ?? this.muted,
       paused: paused ?? this.paused,
@@ -21,5 +15,4 @@ final class AudioState extends Equatable {
 
   @override
   List<Object?> get props => [muted, paused];
-
 }

@@ -78,7 +78,7 @@ final class PuzzleObjectPlacementService {
     required double fitValue,
   }) {
     final isCorrectDistance =
-        target.position.distanceTo(candidate.position) < (15 / fitValue);
+        target.position.distanceTo(candidate.position) < (25 / fitValue);
 
     var isCorrectRotation = candidate.rotation == target.rotation;
 

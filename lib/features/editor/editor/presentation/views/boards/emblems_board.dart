@@ -1,11 +1,9 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flags/core/extensions/extensions.dart';
 import 'package:flags/core/utils/calculator.dart';
-import 'package:flags/domain/game_objects/emblems/emblems.dart';
 import 'package:flags/domain/game_objects/game_objects.dart';
 import 'package:flags/features/app/features/shop/presentation/components/shop_item.view.dart';
 import 'package:flags/features/editor/editor/presentation/bloc/flag_editor_cubit.dart';
@@ -14,9 +12,7 @@ import 'package:flags/features/editor/editor/presentation/cubits/scene_objects/s
 import 'package:flags/features/editor/editor/presentation/views/boards/base_board.dart';
 import 'package:flags/features/editor/editor/presentation/widgets/factories/emblem_item_factory.dart';
 import 'package:flags/uikit/components/buttons/buttons.dart';
-import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
 import 'package:flags/uikit/layout_components/containers/card.dart';
-import 'package:flags/uikit/painters/drawable_painter.dart';
 import 'package:flags/uikit/text/text.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/foundation.dart';
@@ -60,8 +56,12 @@ class EmblemsBoard extends EditorBaseBoard {
     final sceneObjectsBloc = context.read<EditorSceneObjectsCubit>();
 
     Future<void> uploadImageToBoard() async {
+      if (kIsWeb) {
+        EasyLoading.showError("Not supported on Web");
+        return;
+      }
       final FilePickerResult? result =
-          await FilePicker.platform.pickFiles(type: FileType.image);
+          await FilePicker.pickFiles(type: FileType.image);
 
       if (result != null) {
         EasyLoading.show();

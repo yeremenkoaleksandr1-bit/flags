@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flags/core/elements/paint.dart';
-import 'package:flags/core/utils/size_x.dart';
 import 'package:flags/domain/entities/path/path.dart';
 import 'package:flags/uikit/theme/palette.dart';
 import 'package:flame/components.dart';

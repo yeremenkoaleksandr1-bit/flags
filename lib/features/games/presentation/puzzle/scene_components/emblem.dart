@@ -3,7 +3,6 @@ import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/presentation/game/puzzle/entities/draggable_emblem_part.game_object.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
-import 'package:flags/presentation/game/puzzle/puzzle_fast.presenter.dart';
 import 'package:flags/uikit/game_widgets/objects/draggable_object.dart';
 import 'package:flutter/widgets.dart';
 
@@ -82,7 +81,7 @@ class EmblemSceneObjectState extends DraggableGameObjectWidgetState<
         presenter.emblemConfirmationView.setWidth(
           rect.width,
         );
-      } catch (e) {}
+      } catch (e) { /* ignore: empty_catches */ }
     });
   }
 

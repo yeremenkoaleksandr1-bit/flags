@@ -36,7 +36,7 @@ abstract class GameObjectConverter<T extends GameObject>
   @override
   T fromJson(Map<String, dynamic> json);
 
-  static IJsonConverter<dynamic, dynamic> Function()? _parseConverter(o) =>
+  static IJsonConverter<dynamic, dynamic> Function()? _parseConverter(dynamic o) =>
       switch (o) {
         (EmblemPart _) => EmblemConverter.new,
         (SPath _) => SPathSerializer.new,
@@ -46,7 +46,7 @@ abstract class GameObjectConverter<T extends GameObject>
         _ => null,
       };
 
-  static IJsonConverter<dynamic, dynamic> Function()? _parseDeserealizer(o) =>
+  static IJsonConverter<dynamic, dynamic> Function()? _parseDeserealizer(String o) =>
       switch (o) {
         "EmblemPart" => EmblemConverter.new,
         "SPath" => SPathSerializer.new,

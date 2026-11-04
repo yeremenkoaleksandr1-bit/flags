@@ -1,3 +1,4 @@
+// ignore_for_file: must_be_immutable
 import 'package:flags/core/utils/utils.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
 import 'package:flags/domain/game_objects/game_objects.dart';

@@ -79,9 +79,9 @@ class PuzzleFastModeViewState
                 Positioned.fill(
                   child: PuzzleFastModeStep2Showcase(
                     showcaseKey: cubit.showcaseFm.step2,
-                    onTap: () {
-                      cubit.showcaseFm.next();
-                    },
+                    // цель шага — весь экран, поэтому любой тап попадает сюда;
+                    // пустой обработчик глотал тап, и обучение не завершалось
+                    onTap: cubit.showcaseFm.next,
                     child: const SizedBox.shrink(),
                   ),
                 ),

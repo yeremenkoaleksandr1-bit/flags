@@ -8,15 +8,12 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// key.properties is not committed (see .gitignore). When it is missing
-// (e.g. on CI or a fresh clone) builds fall back to the default debug key.
-val keyPropertiesFile = file("key.properties")
 val keyProperties = Properties().apply {
-    if (keyPropertiesFile.exists()) {
-        keyPropertiesFile.inputStream().use(::load)
+    val keyFile = file("key.properties")
+    if (keyFile.exists()) {
+        load(FileInputStream(keyFile))
     }
 }
-val hasReleaseKey = keyPropertiesFile.exists()
 
 val envProperties = Properties().apply {
     val envFile = rootProject.file("../.env")
@@ -25,9 +22,19 @@ val envProperties = Properties().apply {
     }
 }
 
+val storeFileStr = keyProperties["storeFile"] as String?
+val configuredStoreFile = if (storeFileStr != null) file(storeFileStr) else null
+val fallbackStoreFile = rootProject.file("keys/app")
+val signingStoreFile =
+    when {
+        configuredStoreFile != null && configuredStoreFile.exists() -> configuredStoreFile
+        fallbackStoreFile.exists() -> fallbackStoreFile
+        else -> fallbackStoreFile
+    }
+
 android {
     namespace = "com.forceman.flagsup"
-    compileSdk = 36
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -53,39 +60,31 @@ android {
     }
 
     signingConfigs {
-        if (hasReleaseKey) {
-            create("release") {
-                val configuredStoreFile = file(keyProperties["storeFile"] as String)
-                val fallbackStoreFile = rootProject.file("keys/app")
-                storeFile =
-                    if (configuredStoreFile.exists() || !fallbackStoreFile.exists()) {
-                        configuredStoreFile
-                    } else {
-                        fallbackStoreFile
-                    }
-                storePassword = keyProperties["storePassword"] as String
-                keyAlias = keyProperties["keyAlias"] as String
-                keyPassword = keyProperties["keyPassword"] as String
-            }
+        create("release") {
+            storeFile = signingStoreFile
+            storePassword = keyProperties["storePassword"] as String? ?: ""
+            keyAlias = keyProperties["keyAlias"] as String? ?: ""
+            keyPassword = keyProperties["keyPassword"] as String? ?: ""
         }
     }
 
     buildTypes {
-        val appSigning =
-            if (hasReleaseKey) {
-                signingConfigs.getByName("release")
-            } else {
-                signingConfigs.getByName("debug")
-            }
-
         getByName("release") {
-            signingConfig = appSigning
+            // нет настоящего ключа (android/keys/app) — тестовый APK
+            // подписывается отладочным ключом; для Google Play нужен настоящий
+            signingConfig =
+                if (signingStoreFile.exists()) {
+                    signingConfigs.getByName("release")
+                } else {
+                    logger.warn("Release keystore not found: signing with DEBUG key (test build only)")
+                    signingConfigs.getByName("debug")
+                }
             isMinifyEnabled = false
             isShrinkResources = false
         }
 
         getByName("debug") {
-            signingConfig = appSigning
+            // using default debug signing
         }
     }
 }

@@ -1,7 +1,9 @@
+// ignore_for_file: must_be_immutable
 import 'dart:io';
 
 import 'package:flags/core/extensions/image.dart';
 import 'package:flame/extensions.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../base/flippable.dart';
@@ -10,7 +12,7 @@ class ImageGameObject extends FlippableGameObject {
   final String imagePath;
 
   late Image _imageFile;
-  late UIImage? _image = null;
+  UIImage? _image;
 
   ImageGameObject({
     super.key,
@@ -24,13 +26,15 @@ class ImageGameObject extends FlippableGameObject {
     super.flippedHorizontal,
     super.flippedVertical,
   }) {
-    print(imagePath);
+    debugPrint(imagePath);
   }
 
   @override
   Future<ImageGameObject> init() async {
-    _imageFile = Image.file(File(imagePath));
-    _image = await _imageFile.image.image;
+    if (!kIsWeb) {
+      _imageFile = Image.file(File(imagePath));
+      _image = await _imageFile.image.image;
+    }
     return this;
   }
 

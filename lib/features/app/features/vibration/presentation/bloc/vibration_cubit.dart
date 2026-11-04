@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flags/logger.dart';
 import 'package:rx_shared_preferences/rx_shared_preferences.dart';
 import 'package:vibration/vibration.dart';
 
@@ -42,6 +41,6 @@ class VibrationCubit extends Cubit<VibrationState> implements IVibrationCubit {
     }
     try {
       await Vibration.vibrate(duration: milliseconds);
-    } catch (e) {}
+    } catch (e) { /* ignore: empty_catches */ }
   }
 }

@@ -8,7 +8,6 @@ import 'completed_levels_count_stream_view.dart';
 
 class ContinentComponent extends StatefulWidget {
   const ContinentComponent._({
-    super.key,
     required this.type,
     required this.imagePath,
     required this.name,

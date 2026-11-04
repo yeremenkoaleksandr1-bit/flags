@@ -26,7 +26,6 @@ class PuzzleNewEmblemView extends StatelessWidget {
       children: [
         ...emblems.map(
           (e) => CupertinoButton(
-            minSize: 0,
             padding: EdgeInsets.zero,
             alignment: Alignment.topLeft,
             onPressed: () async {
@@ -56,7 +55,7 @@ class PuzzleNewEmblemView extends StatelessWidget {
                   );
                 },
               );
-            },
+            }, minimumSize: Size(0, 0),
             child: ClipRRect(
               child: Banner(
                 color: ThemePalette.blue,

@@ -1,4 +1,4 @@
-import 'package:flags/domain/interfaces/drawable/i_drawable.dart';
+// ignore_for_file: must_be_immutable
 import 'package:flame/components.dart';
 import 'package:flutter/cupertino.dart';
 

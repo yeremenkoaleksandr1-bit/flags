@@ -1,0 +1,35 @@
+workflows:
+  ios-simulator:
+    name: iOS Simulator Build (for App Preview)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Create .env with test variables
+        script: |
+          echo "ADMOB_IOS_APP_ID=ca-app-pub-3940256099942544~1458002511" >> .env
+          echo "ADMOB_ANDROID_APP_ID=ca-app-pub-3940256099942544~3347511713" >> .env
+          echo "NO_ADS_PRODUCT_ID=remove-ads" >> .env
+      - name: Generate AdMob.xcconfig
+        script: |
+          mkdir -p ios/Flutter
+          echo "ADMOB_IOS_APP_ID=ca-app-pub-3940256099942544~1458002511" > ios/Flutter/AdMob.xcconfig
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Run code generation (build_runner)
+        script: |
+          dart run build_runner build --delete-conflicting-outputs
+      - name: Flutter build ios simulator
+        script: |
+          flutter build ios --simulator --debug
+      - name: Package for App Preview
+        script: |
+          cd build/ios/iphonesimulator
+          zip -r Runner.zip Runner.app
+    artifacts:
+      - build/ios/iphonesimulator/Runner.zip
+      - /tmp/xcodebuild_logs/*.log

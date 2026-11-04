@@ -28,7 +28,7 @@ class DeferPointer extends StatelessWidget {
   Widget build(BuildContext context) {
     final link = this.link ?? DeferredPointerHandler.of(context).link;
     return _DeferPointerRenderObjectWidget(
-        link: link, child: child, deferPaint: paintOnTop);
+        link: link, deferPaint: paintOnTop, child: child);
   }
 }
 
@@ -111,8 +111,9 @@ class _DeferPointerRenderObject extends RenderProxyBox {
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    if (deferPaint)
+    if (deferPaint) {
       return; // skip the draw if an ancestor is supposed to handle it
+    }
     context.paintChild(child!, offset);
   }
 

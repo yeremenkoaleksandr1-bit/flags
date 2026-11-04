@@ -1,4 +1,4 @@
-import 'dart:ui' show Offset, Paint, Path, Rect, Size;
+import 'dart:ui' show Path, Rect, Size;
 
 import 'package:path_parsing/path_parsing.dart';
 

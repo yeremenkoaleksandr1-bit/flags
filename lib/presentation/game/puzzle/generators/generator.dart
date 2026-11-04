@@ -75,15 +75,15 @@ class PuzzlePartsGenerator {
               (e) =>
                   e.path.isSimilarByPoints(part.path) &&
                   validateColor(
-                    e.path.color.value,
-                    part.path.color.value,
+                    e.path.color.toARGB32(),
+                    part.path.color.toARGB32(),
                   ),
             );
 
         final validColors = [
           ...allFlagColors.where(
             (e) => parts.whereType<PathGameObject>().any(
-                  (p) => validateColor(p.path.color.value, e),
+                  (p) => validateColor(p.path.color.toARGB32(), e),
                 ),
           ),
         ];
@@ -302,8 +302,6 @@ bool areColorsSimilar(
   final List<double> hsl2 = rgbToHsl(r2, g2, b2);
 
   final double distance = hslDistance(hsl1, hsl2);
-
-  final double brightnessDifference = (hsl1[2] - hsl2[2]).abs();
 
   return distance < threshold;
 }

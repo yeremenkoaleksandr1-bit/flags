@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flags/domain/converters/editor_flag_converter.dart';
 import 'package:flags/domain/editor/editor_flag.dart';
-import 'package:flags/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract interface class IEditorGalleryService {

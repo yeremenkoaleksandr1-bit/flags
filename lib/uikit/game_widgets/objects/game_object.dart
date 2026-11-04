@@ -1,9 +1,9 @@
-import 'package:flags/domain/game_objects/base/flippable.dart';
 import 'package:flags/domain/game_objects/base/game_object.dart';
 import 'package:flags/features/editor/editor/presentation/cubits/area/area_cubit.dart';
 import 'package:flags/uikit/components/listenable_builder/listenable_builder.dart';
 import 'package:flags/uikit/game_widgets/game_widgets.dart';
-import 'package:flame/extensions.dart' hide Matrix4;
+import 'package:flame/extensions.dart' hide Matrix4, Vector3;
+import 'package:vector_math/vector_math_64.dart' as v64;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -67,7 +67,7 @@ class GameObjectWidgetState<G extends GameObject, T extends GameObjectWidget<G>>
     required double rotation,
     required double scale,
   }) =>
-      Matrix4.identity()..scale(scale);
+      Matrix4.identity()..scaleByVector3(v64.Vector3(scale, scale, 1.0));
 
   Alignment get rotateAlignment => Alignment.center;
 

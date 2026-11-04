@@ -8,7 +8,6 @@ import 'package:flags/core/utils/utils.dart';
 import 'package:flags/domain/entities/points/points.dart';
 import 'package:flags/domain/interfaces/interfaces.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:memoize/memoize.dart';
 
 // ignore: must_be_immutable
 class SPath implements IDrawable {

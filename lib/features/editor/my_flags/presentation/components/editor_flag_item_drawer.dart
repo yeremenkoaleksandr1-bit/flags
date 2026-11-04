@@ -44,7 +44,6 @@ class _Painter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     flag.backgroundStyle.draw(canvas, size);
 
-    final t = fs.height / originalSize.height;
     for (final object in flag.objects) {
       canvas.saveLayer(Offset.zero & size, Paint());
       canvas.translate(

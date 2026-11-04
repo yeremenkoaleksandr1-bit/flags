@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use
 import 'dart:math';
 
 import 'package:drag_and_drop/extensions/render_box.dart';
@@ -25,6 +26,8 @@ class EditorDraggableWidget extends DraggableGameObjectWidget<GameObject> {
 class EditorDraggableWidgetState
     extends DraggableGameObjectWidgetState<GameObject, EditorDraggableWidget> {
   late final MagnetAreaCubit magnetCubit = context.read<MagnetAreaCubit>();
+  // ignore: overridden_fields
+  @override
   late final EditorAreaCubit areaCubit = context.read<EditorAreaCubit>();
 
   final GlobalKey paintedObjectKey = GlobalKey();
@@ -80,7 +83,7 @@ class EditorDraggableWidgetState
     initialSize = gameObject.size;
   }
 
-  void onUpdateTopLeft(event) {
+  void onUpdateTopLeft(DragUpdateDetails event) {
     final delta = (event.localPosition - startOffset).toVector2();
 
     gameObject.size = initialSize - delta;

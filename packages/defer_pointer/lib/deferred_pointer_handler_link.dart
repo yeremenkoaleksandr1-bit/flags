@@ -1,3 +1,4 @@
+// ignore_for_file: must_be_immutable, deprecated_member_use, library_private_types_in_public_api
 part of 'defer_pointer.dart';
 
 /// Holds a list of [_DeferPointerRenderObject]s which the [DeferredPointerHandler] widget uses to perform hit tests.
@@ -16,9 +17,6 @@ class DeferredPointerHandlerLink extends ChangeNotifier with EquatableMixin {
   /// Add a render object to the link.
   /// Does nothing if the item is already in the list.
   void add(_DeferPointerRenderObject value) {
-    if (value == null) {
-      throw ArgumentError('Cannot add null to DeferredPointerHandlerLink.');
-    }
     if (!_painters.contains(value)) {
       _painters.add(value);
       notifyListeners();
@@ -28,9 +26,6 @@ class DeferredPointerHandlerLink extends ChangeNotifier with EquatableMixin {
   /// Remove a render object from the link.
   /// Does nothing if the item is not in the list.
   void remove(_DeferPointerRenderObject value) {
-    if (value == null) {
-      throw ArgumentError('Cannot remove null from DeferredPointerHandlerLink.');
-    }
     if (_painters.contains(value)) {
       _painters.remove(value);
       notifyListeners();

@@ -2,8 +2,8 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flags/domain/enums/continent_type.dart';
 import 'package:flags/domain/enums/game_mode_type.dart';
 import 'package:flags/features/app/features/levels/presentation/bloc/levels_cubit.dart';
-import 'package:flags/features/app/presentation/bloc/app_cubit.dart';
 import 'package:flags/features/levels_picker/presentation/bloc/levels_picker_cubit.dart';
+import 'package:flags/navigator/game_navigation_observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -32,6 +32,8 @@ class LevelsPickerRouter extends StatelessWidget implements AutoRouteWrapper {
 
   @override
   Widget build(BuildContext context) {
-    return const AutoRouter();
+    return AutoRouter(
+      navigatorObservers: () => [GameAutoRouteObserver()],
+    );
   }
 }

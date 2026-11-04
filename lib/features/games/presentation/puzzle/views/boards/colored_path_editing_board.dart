@@ -1,4 +1,3 @@
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:bloc_utils/bloc_utils.dart';
 import 'package:flags/domain/game_objects/game_objects.dart';
 import 'package:flags/features/games/presentation/puzzle/components/board_items/common_item.dart';
@@ -10,7 +9,6 @@ import 'package:flags/uikit/components/buttons/actions/close_button.dart';
 import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
-import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -152,7 +150,6 @@ class ColoredPathEditingBoardState
 
 class _ColorButton extends StatelessWidget {
   const _ColorButton({
-    super.key,
     required this.color,
     required this.onSelected,
   });

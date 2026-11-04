@@ -24,6 +24,7 @@ final class ChangeColorAction extends EditorActionButton {
         await showColorPickerDialog(context, gameObject.path.color);
 
     if (newColor != null) {
+      if (!context.mounted) return;
       final selectObjectBloc = context.read<EditorSelectedObjectCubit>();
 
       final newObject = bloc.updateGameObject(

@@ -60,3 +60,6 @@ app.*.map.json
 android/app/key.properties
 android/keys/
 .keys/
+
+# Local AI tool settings
+.claude/
