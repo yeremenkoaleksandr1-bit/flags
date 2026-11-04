@@ -76,6 +76,26 @@ jobs:
           name: flags-arm64-v8a
           path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
 
+      # Debug build of the game: IS_DEBUG=true enables the in-game debug
+      # button, level skip, free "No Ads" and debug overlays. Flag mini-games
+      # are unlocked by FlagGameUnlocks.unlockAllForTesting.
+      - name: Build debug-mode APKs (IS_DEBUG=true)
+        run: |
+          echo "IS_DEBUG=true" >> .env
+          flutter build apk --release --split-per-abi --target-platform android-x64,android-arm64
+
+      - name: Upload debug-mode x86_64 APK (emulator)
+        uses: actions/upload-artifact@v4
+        with:
+          name: flags-DEBUG-x86_64-emulator
+          path: build/app/outputs/flutter-apk/app-x86_64-release.apk
+
+      - name: Upload debug-mode arm64 APK (real devices)
+        uses: actions/upload-artifact@v4
+        with:
+          name: flags-DEBUG-arm64-v8a
+          path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+
   # Launch the APK on old and new Android emulators and make sure it gets past
   # the native launch splash (BlueStacks runs Android 9).
   smoke-test:
