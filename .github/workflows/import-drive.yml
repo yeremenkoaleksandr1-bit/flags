@@ -1,0 +1,68 @@
+name: Import project from Google Drive
+
+on:
+  push:
+    branches: [drive-import]
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      FILE_ID: 1PU30J3Wnoo8nwD1ppLKw2xP695wDWbkD
+      TARGET_BRANCH: actual
+    steps:
+      - name: Download from Google Drive
+        run: |
+          pip install --quiet gdown
+          mkdir -p dl && cd dl
+          gdown --fuzzy "https://drive.google.com/file/d/${FILE_ID}/view" -O archive
+          ls -la
+          file archive
+
+      - name: Extract
+        run: |
+          mkdir -p extracted
+          7z x -y -oextracted dl/archive > /dev/null
+          # Nested archive (e.g. .tar inside .tar.gz)
+          inner=$(find extracted -maxdepth 1 -type f \( -name '*.tar' -o -name '*.zip' \) | head -1)
+          if [ -n "$inner" ]; then 7z x -y -oextracted "$inner" > /dev/null && rm -f "$inner"; fi
+          root=$(dirname "$(find extracted -name pubspec.yaml -not -path '*/packages/*' -not -path '*/.pub-cache/*' -printf '%d %p\n' | sort -n | head -1 | cut -d' ' -f2)")
+          echo "Project root: $root"
+          echo "ROOT=$root" >> "$GITHUB_ENV"
+          head -3 "$root/pubspec.yaml"
+
+      - name: Remove secrets, build outputs and large files
+        run: |
+          cd "$ROOT"
+          echo "== Removing (names only) =="
+          find . \( -name key.properties -o -name '*.jks' -o -name '*.keystore' -o -name '*.p12' \
+                 -o -name '*.pem' -o -name '*.p8' -o -name '*.mobileprovision' -o -name '*.cer' \
+                 -o -name '.env' -o -name 'google-services.json' -o -name 'GoogleService-Info.plist' \
+                 -o -name 'local.properties' -o -name '*.apk' -o -name '*.aab' -o -name '*.ipa' \) \
+                 -not -path './.git/*' -print -exec rm -f {} +
+          for d in android/keys .keys build .dart_tool .idea .gradle android/.gradle android/app/build \
+                   ios/Pods ios/.symlinks macos/Pods .git; do
+            [ -e "$d" ] && echo "dir: $d" && rm -rf "$d"
+          done
+          find . -name '.DS_Store' -delete
+          echo "== Files over 50 MB (removed) =="
+          find . -type f -size +50M -print -delete
+          echo "== Top level =="
+          ls -la
+
+      - name: Commit to branch
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir work && cd work
+          git init -q -b "$TARGET_BRANCH"
+          cp -a "$GITHUB_WORKSPACE/$ROOT/." .
+          git add -A
+          echo "Files: $(git ls-files | wc -l)"
+          git commit -q -m "Import actual game version from Google Drive (secrets removed)"
+          git remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          git push -f origin "$TARGET_BRANCH"
