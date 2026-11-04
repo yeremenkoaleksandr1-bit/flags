@@ -1,0 +1,136 @@
+name: flags
+description: "A new Flutter project."
+
+publish_to: 'none'
+
+version: 1.0.4+10
+
+environment:
+  sdk: ^3.10.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  drag_and_drop:
+    path: packages/drag_and_drop
+
+  bloc_utils:
+    git:
+      url: https://github.com/dipflix/bloc_utils.git
+
+  cupertino_icons: ^1.0.2
+  shared_preferences: ^2.2.2
+  flame_audio: ^2.11.3
+  add_to_cart_animation: ^2.0.3
+  defer_pointer:
+    path: packages/defer_pointer
+  gesture_x_detector: ^1.1.1
+  flame: ^1.18.0
+  forge2d: ^0.14.0
+  flutter_svg: ^2.0.9
+  touchable: ^1.0.2
+  particle_field: ^1.0.0
+  flutter_animate: ^4.4.0
+  widgets_to_image: ^2.0.1
+  assorted_layout_widgets: ^12.12.1
+  rx_shared_preferences: ^4.0.0
+  flutter_animator: ^3.2.2
+  animate_do: ^5.1.0
+  path_provider: ^2.1.2
+  dart_numerics: ^0.0.6
+  dough: ^2.0.0
+  statsfl: ^2.3.0
+  matrix4_transform: ^4.0.1
+  rxdart: ^0.28.0
+  color: ^3.0.0
+  simple_shadow: ^0.3.1
+  flutter_shaders: ^0.1.2
+  color_filter_extension: ^1.0.1
+  image: ^4.1.7
+  vibration: ^3.1.8
+  community_material_icon: ^5.9.55
+  showcaseview:
+    path: packages/showcaseview
+  flutter_easyloading: ^4.0.2
+  flutter_screenutil: ^5.9.3
+  reactive_forms: ^18.2.2
+  multi_value_listenable_builder: ^0.0.2
+  memoize: ^3.0.0
+  logger: ^2.3.0
+  searchable_listview: ^2.14.0
+  flutter_bloc: ^9.0.0
+  equatable: ^2.0.5
+  flutter_colorpicker: ^1.1.0
+  flutter_dotenv: ^6.0.1
+  image_gallery_saver: 2.0.3
+  file_picker: ^12.0.0-beta.7
+  pointer_interceptor: ^0.10.1+2
+  get_it: ^9.2.1
+  flutter_secure_storage: ^11.0.0
+  auto_route: ^11.1.0
+  freezed_annotation: ^3.1.0
+  google_mobile_ads: ^9.0.0
+  in_app_purchase: ^3.2.3
+  in_app_purchase_storekit: ^0.4.8+1
+  games_services: ^5.0.0
+  collection: ^1.19.1
+  bloc: ^9.2.1
+  meta: ^1.18.0
+  vector_math: ^2.2.0
+  path_parsing: ^1.1.0
+  flutter_localizations:
+    sdk: flutter
+
+dependency_overrides:
+  path_provider_foundation: 2.5.1
+  image_gallery_saver:
+    path: packages/third_party/image_gallery_saver
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  build_runner: ^2.4.13
+  freezed: ^4.0.0-dev.3
+  json_serializable: ^6.8.0
+  auto_route_generator: ^10.6.0
+
+  lint: ^2.3.0
+  flutter_lints: ^6.0.0
+
+
+flutter:
+  uses-material-design: true
+  shaders:
+    - shaders/antialias.frag
+    - shaders/sprite.frag
+    - shaders/pixel_fade.frag
+    - shaders/outline.frag
+    - shaders/stroke_text.frag
+    - shaders/widget_outline.frag
+
+  assets:
+    - .env
+    - assets/
+    - assets/fonts/
+    - assets/images/
+    - assets/images/continents/
+    - assets/images/emblems/
+    - assets/images/ui/
+    - assets/images/flag_games/zambia/
+    - assets/images/flag_games/tanzania/
+    - assets/images/flag_games/angola/
+    - assets/images/flag_games/kosovo/
+    - assets/images/flag_games/kosovo/smoke/
+    - assets/images/flag_games/japan/
+    - assets/images/flag_games/cambodia/
+    - assets/images/flag_games/israel/
+    - assets/images/flag_games/kiribati/
+    - assets/images/flag_games/kiribati/peace_bird/
+    - assets/audio/music/
+    - assets/audio/sfx/
+
+  fonts:
+    - family: Troika
+      fonts:
+        - asset: assets/fonts/Troika.otf

@@ -1,0 +1,4 @@
+enum GameStyleType {
+  common,
+  fast,
+}

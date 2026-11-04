@@ -1,0 +1,45 @@
+// ignore_for_file: must_be_immutable, deprecated_member_use, library_private_types_in_public_api
+part of 'defer_pointer.dart';
+
+/// Holds a list of [_DeferPointerRenderObject]s which the [EDeferredPointerHandler] widget uses to perform hit tests.
+class EDeferredPointerHandlerLink extends ChangeNotifier with EquatableMixin {
+  EDeferredPointerHandlerLink();
+
+  /// Internal list of registered painters
+  final List<_DeferPointerRenderObject> _painters = [];
+
+  /// Notify listeners when any descendant requires painting.
+  void descendantNeedsPaint() => notifyListeners();
+
+  /// List of all painters currently attached to this link.
+  List<_DeferPointerRenderObject> get painters => UnmodifiableListView(_painters);
+
+  /// Add a render object to the link.
+  /// Does nothing if the item is already in the list.
+  void add(_DeferPointerRenderObject value) {
+    if (!_painters.contains(value)) {
+      _painters.add(value);
+      notifyListeners();
+    }
+  }
+
+  /// Remove a render object from the link.
+  /// Does nothing if the item is not in the list.
+  void remove(_DeferPointerRenderObject value) {
+    if (_painters.contains(value)) {
+      _painters.remove(value);
+      notifyListeners();
+    }
+  }
+
+  /// Clears all painters currently attached to this link.
+  void removeAll() {
+    if (_painters.isNotEmpty) {
+      _painters.clear();
+      notifyListeners();
+    }
+  }
+
+  @override
+  List<Object?> get props => _painters;
+}

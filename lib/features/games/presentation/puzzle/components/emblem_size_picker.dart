@@ -1,0 +1,75 @@
+import 'package:collection/collection.dart';
+import 'package:flags/uikit/components/buttons/button.dart';
+import 'package:flags/uikit/theme/palette.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+class EmblemSizePicker extends StatefulWidget {
+  const EmblemSizePicker({
+    required this.initialValue,
+    required this.scales,
+    required this.onChanged,
+    super.key,
+  });
+
+  final double initialValue;
+  final List<double> scales;
+
+  final void Function(double value) onChanged;
+
+  @override
+  State<EmblemSizePicker> createState() => _EmblemSizePickerState();
+}
+
+class _EmblemSizePickerState extends State<EmblemSizePicker> {
+  late int currentActive = widget.scales.indexOf(widget.initialValue);
+
+  void onSelected(int index) {
+    setState(() {
+      currentActive = index;
+      widget.onChanged(widget.scales[index]);
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        return ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: constraints.maxWidth),
+          child: GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 4,
+            crossAxisSpacing: 12.w,
+            mainAxisSpacing: 12.h,
+            children: [
+              ...widget.scales.mapIndexed((i, e) {
+                final color = currentActive == i
+                    ? ThemePalette.green
+                    : ThemePalette.gray;
+
+                return AspectRatio(
+                  aspectRatio: 1,
+                  child: FButton(
+                    color: color,
+                    onPressed: () => onSelected(i),
+                    child: FittedBox(
+                      fit: BoxFit.fitHeight,
+                      child: Text("${i + 1}"),
+                    ),
+                  ),
+                );
+              }),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}

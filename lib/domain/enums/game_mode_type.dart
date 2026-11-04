@@ -1,0 +1,4 @@
+enum GameProcessType {
+  puzzle,
+  flappy,
+}
