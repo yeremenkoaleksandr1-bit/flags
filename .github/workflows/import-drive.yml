@@ -19,7 +19,7 @@ jobs:
         run: |
           pip install --quiet gdown
           mkdir -p dl && cd dl
-          gdown --fuzzy "https://drive.google.com/file/d/${FILE_ID}/view" -O archive
+          gdown "${FILE_ID}" -O archive
           ls -la
           file archive
 
