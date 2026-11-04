@@ -92,10 +92,15 @@ class _StrokeTextPainter extends CustomPainter {
     if (strokeShader case final shader?) {
       strokePaint.shader = shader(shaderBounds);
     } else {
-      strokePaint.shader = StrokeTextShader.create(
+      final shader = StrokeTextShader.create(
         bounds: shaderBounds,
         color: strokeColor,
       );
+      if (shader != null) {
+        strokePaint.shader = shader;
+      } else {
+        strokePaint.color = strokeColor;
+      }
     }
 
     final fillPaint = Paint();

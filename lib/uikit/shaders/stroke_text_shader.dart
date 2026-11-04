@@ -6,11 +6,16 @@ import 'package:flutter/material.dart';
 final class StrokeTextShader {
   StrokeTextShader._();
 
-  static Shader create({
+  /// Returns `null` when the shader is unavailable on this device;
+  /// callers should then paint with a plain color.
+  static Shader? create({
     required Rect bounds,
     required Color color,
   }) {
-    final shader = GameShaders.strokeText.fragmentShader();
+    final shader = GameShaders.strokeText?.fragmentShader();
+    if (shader == null) {
+      return null;
+    }
     final width = bounds.width <= 0 ? 1.0 : bounds.width;
     final height = bounds.height <= 0 ? 1.0 : bounds.height;
 

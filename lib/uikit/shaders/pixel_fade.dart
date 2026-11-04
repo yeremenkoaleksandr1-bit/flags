@@ -21,7 +21,7 @@ class PixelFade extends StatefulWidget {
 class _PixelFadeState extends State<PixelFade> with TickerProviderStateMixin {
   AnimationController get controller => widget.controller;
   late final Animation<double> animation;
-  late FragmentShader shader = GameShaders.pixelFade.fragmentShader();
+  late final FragmentShader? shader = GameShaders.pixelFade?.fragmentShader();
 
   @override
   void initState() {
@@ -41,6 +41,15 @@ class _PixelFadeState extends State<PixelFade> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final shader = this.shader;
+    if (shader == null) {
+      // Shader unavailable (e.g. Skia on Android < 10): plain fade instead.
+      return FadeTransition(
+        opacity: animation.drive(Tween<double>(begin: 0, end: 0.5)),
+        child: widget.child,
+      );
+    }
+
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return AnimatedBuilder(
@@ -48,7 +57,6 @@ class _PixelFadeState extends State<PixelFade> with TickerProviderStateMixin {
           builder: (context, child) {
             return ShaderMask(
               shaderCallback: (bounds) {
-                final shader = this.shader;
                 shader.setFloat(0, animation.value);
                 shader.setFloat(1, bounds.width);
                 shader.setFloat(2, bounds.height);

@@ -16,7 +16,8 @@ void main() {
     vec2 texel = 1.0 / pixelSize;
     vec2 pixelCoord = floor(FlutterFragCoord().xy * max(uPixelRatio, 1.0));
     vec2 uv = (pixelCoord + 0.5) / pixelSize;
-    int strokePixels = int(clamp(round(uStrokeWidth * max(uPixelRatio, 1.0)), 1.0, float(kMaxRadius)));
+    // GLSL ES 2.0 compatible (Skia on Android < 10): no round(), no abs(int).
+    float strokePixels = clamp(floor(uStrokeWidth * max(uPixelRatio, 1.0) + 0.5), 1.0, float(kMaxRadius));
 
     vec4 texColor = texture(uTexture, uv);
     float centerAlpha = step(0.5, texColor.a);
@@ -24,7 +25,7 @@ void main() {
 
     for (int y = -kMaxRadius; y <= kMaxRadius; y++) {
         for (int x = -kMaxRadius; x <= kMaxRadius; x++) {
-            if (abs(x) > strokePixels || abs(y) > strokePixels) {
+            if (abs(float(x)) > strokePixels || abs(float(y)) > strokePixels) {
                 continue;
             }
 

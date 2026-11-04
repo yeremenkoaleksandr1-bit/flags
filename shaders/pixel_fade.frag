@@ -1,4 +1,4 @@
-#version 460 core
+#include <flutter/runtime_effect.glsl>
 
 uniform float u_time;
 uniform vec2 u_resolution;
@@ -17,7 +17,7 @@ float manhattan(vec2 pos){
 
 void main(){
     // Calculate manhatten distance
-    float distance=manhattan(gl_FragCoord.xy);
+    float distance=manhattan(FlutterFragCoord().xy);
     // Calculate the normalized distance
     float ud=distance/(u_size.x+u_size.y);
 

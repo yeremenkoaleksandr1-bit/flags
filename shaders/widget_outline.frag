@@ -26,7 +26,8 @@ void main() {
 
     float baseAlpha = step(0.01, sampleAlpha(uv));
 
-    int radius = int(clamp(round(uStrokeWidth * max(uPixelRatio, 1.0)), 1.0, float(kMaxRadius)));
+    // GLSL ES 2.0 compatible (Skia on Android < 10): no round().
+    int radius = int(clamp(floor(uStrokeWidth * max(uPixelRatio, 1.0) + 0.5), 1.0, float(kMaxRadius)));
     float outlineAlpha = 0.0;
 
     for (int y = -kMaxRadius; y <= kMaxRadius; y++) {

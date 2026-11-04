@@ -1,4 +1,5 @@
-import 'dart:io';
+import 'dart:async';
+import 'dart:ui';
 
 import 'package:flags/app/app_bootstrap.dart';
 import 'package:flags/features/app/presentation/application.dart';
@@ -15,18 +16,37 @@ import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+    debugPrint('FlutterError: ${details.exceptionAsString()}');
+  };
+  PlatformDispatcher.instance.onError = (error, stackTrace) {
+    debugPrint('Uncaught error: $error\n$stackTrace');
+    return true;
+  };
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
   );
 
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
 
-  await Flame.device.setPortraitUpOnly();
-  await dotenv.load(fileName: '.env');
-  await GameShaders.init();
+  // Any step failing here used to abort main() before runApp(), leaving the
+  // native splash on screen forever (seen on Android 8/9 and BlueStacks).
+  // Each step is now isolated so the app always reaches runApp().
+  await _guard('orientation', Flame.device.setPortraitUpOnly);
+  await _guard('dotenv', () => dotenv.load());
+  await _guard('shaders', GameShaders.init);
 
-
-  await MobileAds.instance.initialize();
+  // Ads must never block startup: initialize in the background.
+  unawaited(
+    _guard(
+      'ads',
+      () => MobileAds.instance.initialize(),
+      timeout: const Duration(seconds: 30),
+    ),
+  );
 
   EasyLoading.instance
     ..maskType = EasyLoadingMaskType.custom
@@ -49,6 +69,18 @@ void main() async {
   final bootstrap = await AppBootstrap.initialize();
 
   runApp(Application(bootstrap: bootstrap));
+}
+
+Future<void> _guard(
+  String name,
+  Future<Object?> Function() action, {
+  Duration timeout = const Duration(seconds: 10),
+}) async {
+  try {
+    await action().timeout(timeout);
+  } catch (error, stackTrace) {
+    debugPrint('Startup step "$name" failed: $error\n$stackTrace');
+  }
 }
 
 class _LoadingLabel extends StatelessWidget {
