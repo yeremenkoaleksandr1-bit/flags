@@ -178,9 +178,10 @@ class _PuzzleWinnerDialogContentState
       }
 
       final uiMoneyLayer = UiMoneyLayer.find();
+      uiMoneyLayer.setDisplayConfig(null);
 
       await uiMoneyLayer.show();
-      await uiMoneyLayer.addMoneys(renderObject.rect.center, coinsCount);
+      await uiMoneyLayer.addMoneys(() => renderObject.rect.center, coinsCount);
       await Future.delayed(const Duration(milliseconds: 1250));
       await uiMoneyLayer.hide();
 

@@ -62,6 +62,7 @@ final class MyFlagsCubit extends StatedCubit<List<EditorFlagData>> {
         SuccessState(editorGalleryService.flags),
       );
 
+      if (!context.mounted) return;
       await openFlagInEditor(context, flag);
     }
   }

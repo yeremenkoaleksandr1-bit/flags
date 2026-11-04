@@ -25,7 +25,7 @@ class MoneyAnimatedItemController extends State<MoneyAnimatedView>
   void initState() {
     controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 500),
     );
 
     animation = Tween<double>(
@@ -42,7 +42,7 @@ class MoneyAnimatedItemController extends State<MoneyAnimatedView>
     super.dispose();
   }
 
-  late BezierCurve? _curve = null;
+  BezierCurve? _curve;
 
   late Offset currentPosition = const Offset(-999, -999);
 
@@ -86,12 +86,13 @@ class MoneyAnimatedItemController extends State<MoneyAnimatedView>
         }
 
         return Transform.translate(
-          offset: currentPosition.translate(-32, -52),
+          offset: currentPosition.translate(-14, -14),
           child: child,
         );
       },
       child: SizedBox(
-        height: 52,
+        height: 28,
+        width: 28,
         child: UIMoney(),
       ),
     );

@@ -2,7 +2,6 @@ import 'package:flags/ui/dialogs/dialogs.dart';
 import 'package:flags/uikit/components/buttons/buttons.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 
 class PuzzleMenuDialog extends DialogWidget {
   const PuzzleMenuDialog({

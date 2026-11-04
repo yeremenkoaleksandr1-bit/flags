@@ -1,6 +1,5 @@
 import 'package:flags/features/editor/editor/presentation/cubits/boards/emblems/emblem_item.dart';
 import 'package:flags/features/editor/editor/presentation/cubits/boards/emblems/emblems_board_cubit.dart';
-import 'package:flags/features/editor/editor/presentation/cubits/scene_objects/scene_objects_cubit.dart';
 import 'package:flags/features/editor/editor/presentation/widgets/emblem_items/emblem_item_view.dart';
 import 'package:flags/uikit/assets/components/money.dart';
 import 'package:flags/uikit/components/gestures/scaled_gesture.dart';
@@ -9,7 +8,6 @@ import 'package:flags/uikit/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'closed_emblem_view.dart';
 
 class BuyableEmblemItemView extends EmblemItemView {
   const BuyableEmblemItemView(super.item, {super.key});

@@ -1,11 +1,8 @@
-import 'package:flags/domain/converters/game_objects/drawn_object_converter.dart';
-import 'package:flags/domain/entities/game/game_levels/game_level.dart';
 import 'package:flags/domain/game_objects/base/game_object.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
-import '../../painters/drawable_painter.dart';
 
 class FlagView extends StatelessWidget {
   const FlagView({super.key, required this.flag});

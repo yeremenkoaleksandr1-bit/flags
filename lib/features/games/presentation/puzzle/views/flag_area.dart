@@ -10,9 +10,14 @@ import 'package:flags/uikit/game_widgets/game_widgets.dart';
 import 'package:flags/uikit/game_widgets/objects/game_objects_rendering.dart';
 import 'package:flags/uikit/theme/palette.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
-import 'package:flame/extensions.dart';
+import 'package:flame/extensions.dart' hide Matrix4;
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+// разлёт деталей при проигрыше
+const double _kScatterSeconds = 1.4; // «физическое» время анимации
+const double _kScatterGravity = 4.5; // гравитация, высот флага / с²
 
 class GameFlagArea extends StatelessWidget {
   const GameFlagArea({
@@ -92,10 +97,29 @@ class GameFlagArea extends StatelessWidget {
                     RenderBoxExposed(
                       exposer: exposer,
                       child: RepaintBoundary(
-                        child: _buildFlagLayer(
-                          flagSize: flagSize,
-                          objects: placedObjects,
-                        ),
+                        // при проигрыше детали разлетаются (см. scatterAnimation)
+                        child: !kPuzzleScatterEnabled
+                            ? _buildFlagLayer(
+                                flagSize: flagSize,
+                                objects: placedObjects,
+                              )
+                            : AnimatedBuilder(
+                                animation: cubit.scatterAnimation,
+                                builder: (context, _) {
+                                  final t = cubit.scatterAnimation.value;
+                                  return t == 0
+                                      ? _buildFlagLayer(
+                                          flagSize: flagSize,
+                                          objects: placedObjects,
+                                        )
+                                      : _buildScatterLayer(
+                                          flagSize: flagSize,
+                                          sources: objects,
+                                          widgets: placedObjects,
+                                          t: t,
+                                        );
+                                },
+                              ),
                       ),
                     ),
                     if (debugObjects != null)
@@ -142,6 +166,63 @@ class GameFlagArea extends StatelessWidget {
           child: SizedBox.fromSize(
             size: flagSize,
             child: GameObjectsRendering(objects),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Каждая деталь — отдельным слоем со своим движением: отлёт от центра флага,
+  /// подброс, вращение, падение с гравитацией и затухание в конце.
+  /// Без обрезки по флагу — детали вылетают за его края.
+  Widget _buildScatterLayer({
+    required Size flagSize,
+    required List<ProcessGameObject> sources,
+    required List<GameObjectWidget> widgets,
+    required double t,
+  }) {
+    final w = flagSize.width, h = flagSize.height;
+    final seconds = t * _kScatterSeconds;
+    final fade = t < 0.7 ? 1.0 : (1 - (t - 0.7) / 0.3).clamp(0.0, 1.0);
+    return SizedBox.expand(
+      child: FittedBox(
+        fit: BoxFit.fill,
+        child: SizedBox.fromSize(
+          size: flagSize,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              for (var i = 0; i < widgets.length; i++)
+                () {
+                  final o = sources[i];
+                  final rnd = math.Random(i * 7919 + 17);
+                  final cx = (o.position.x + o.size.x / 2).clamp(0.0, w);
+                  final cy = (o.position.y + o.size.y / 2).clamp(0.0, h);
+                  // от центра флага наружу + случайность
+                  var dirX = (cx - w / 2) / (w / 2);
+                  if (dirX.abs() < 0.15) dirX = rnd.nextBool() ? 0.4 : -0.4;
+                  final vx = (dirX * 0.6 + (rnd.nextDouble() - 0.5) * 0.5) * w;
+                  final vy = -(0.5 + rnd.nextDouble() * 0.7) * h;
+                  final spin = (rnd.nextDouble() - 0.5) * 2 * math.pi * 1.5;
+                  final dx = vx * seconds;
+                  final dy =
+                      vy * seconds +
+                      0.5 * _kScatterGravity * h * seconds * seconds;
+                  final m = Matrix4.identity()
+                    ..translate(cx + dx, cy + dy)
+                    ..rotateZ(spin * seconds)
+                    ..translate(-cx, -cy);
+                  return Positioned.fill(
+                    child: Opacity(
+                      opacity: fade,
+                      child: Transform(
+                        transform: m,
+                        child: GameObjectsRendering([widgets[i]]),
+                      ),
+                    ),
+                  );
+                }(),
+            ],
           ),
         ),
       ),

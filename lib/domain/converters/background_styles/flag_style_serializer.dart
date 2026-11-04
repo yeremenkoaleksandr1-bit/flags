@@ -51,7 +51,7 @@ abstract class FlagStyleSerializer<T extends FlagStyle>
         'r': const RectSerializer().toJson(m.rect),
         'c': jsonEncode(
           [
-            ...m.colors.map((e) => e.value),
+            ...m.colors.map((e) => e.toARGB32()),
           ],
         ),
       },

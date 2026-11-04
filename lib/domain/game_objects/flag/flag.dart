@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import '../../interfaces/drawable/i_drawable.dart';
 import '../base/game_object.dart';
 import '../base/process.game_object.dart';
-import '../emblems/emblems.dart';
 
 class GameFlag implements IDrawable {
   static Vector2 defaultSize = Vector2.all(64);
@@ -34,7 +33,8 @@ class GameFlag implements IDrawable {
   }
 
   @override
-  bool operator ==(dynamic other) => name == other.name;
+  bool operator ==(Object other) =>
+      identical(this, other) || other is GameFlag && name == other.name;
 
   @override
   int get hashCode =>

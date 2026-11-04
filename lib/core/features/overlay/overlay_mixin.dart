@@ -1,5 +1,4 @@
 
-import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flutter/cupertino.dart';
 
 mixin OverlayStateMixin<T extends StatefulWidget> on State<T> {
@@ -27,7 +26,6 @@ mixin OverlayStateMixin<T extends StatefulWidget> on State<T> {
     _entry = OverlayEntry(
       maintainState: true,
       builder: (context) => Positioned(
-        key: UniqueKey(),
         top: rect.top,
         left: rect.left,
         width: rect.width,

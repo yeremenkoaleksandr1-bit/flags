@@ -29,7 +29,10 @@ class FlagsWidgetsApp extends WidgetsApp {
       return Theme(
         data: theme,
         child: ScaffoldMessenger(
-          child: builder(context, child),
+          child: DefaultTextStyle(
+            style: theme.textTheme.bodyMedium ?? const TextStyle(),
+            child: builder(context, child),
+          ),
         ),
       );
     },

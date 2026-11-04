@@ -1,5 +1,4 @@
 import 'package:flags/features/editor/editor/presentation/cubits/boards/emblems/emblem_item.dart';
-import 'package:flags/features/editor/editor/presentation/widgets/emblem_items/emblem_item_view.dart';
 import 'package:flags/features/editor/editor/presentation/widgets/emblem_items/opened_emblem_view.dart';
 import 'package:flutter/material.dart';
 

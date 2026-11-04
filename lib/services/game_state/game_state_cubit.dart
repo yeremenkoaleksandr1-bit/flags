@@ -10,5 +10,5 @@ class GameStateCubit extends Cubit<GameStateState> {
           const GameStateState(
             openedEmblems: [],
           ),
-        ) {}
+        );
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'dart:io';
+import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/features/app/features/monetization/presentation/bloc/monetization_state.dart';
@@ -14,17 +15,21 @@ import 'package:in_app_purchase_storekit/store_kit_2_wrappers.dart';
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-final class MonetizationCubit extends Cubit<MonetizationState> {
+final class MonetizationCubit extends Cubit<MonetizationState>
+    with WidgetsBindingObserver {
   MonetizationCubit(this._prefs)
     : super(
         MonetizationState.initial(
           isPremium: _prefs.getBool(_premiumPrefsKey) ?? false,
         ),
       ) {
-    _purchaseSubscription = _inAppPurchase.purchaseStream.listen(
-      _handlePurchaseUpdates,
-      onError: _handlePurchaseStreamError,
-    );
+    if (!kIsWeb) {
+      _purchaseSubscription = _inAppPurchase.purchaseStream.listen(
+        _handlePurchaseUpdates,
+        onError: _handlePurchaseStreamError,
+      );
+    }
+    WidgetsBinding.instance.addObserver(this);
     unawaited(_initialize());
   }
 
@@ -33,18 +38,27 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
       'monetization.completedLevelsSinceInterstitial';
   static const String _fastModeRoundsPrefsKey =
       'monetization.fastModeRoundsSinceInterstitial';
+  static const String _flagGameLossesPrefsKey =
+      'monetization.flagGameLossesSinceInterstitial';
+
+  /// Реклама в играх на флагах — на каждый N-й проигрыш (1 — после каждого).
+  static const int flagGameLossesPerAd = 3;
   static final String _noAdsProductId = dotenv.get(
-    Platform.isAndroid ? "NO_ADS_PRODUCT_ID" : "NO_ADS_PRODUCT_IOS_ID",
+    defaultTargetPlatform == TargetPlatform.android
+        ? "NO_ADS_PRODUCT_ID"
+        : "NO_ADS_PRODUCT_IOS_ID",
     fallback: 'remove-ads',
   );
 
   final SharedPreferences _prefs;
-  final InAppPurchase _inAppPurchase = InAppPurchase.instance;
+  InAppPurchase get _inAppPurchase => InAppPurchase.instance;
 
-  late final StreamSubscription<List<PurchaseDetails>> _purchaseSubscription;
+  StreamSubscription<List<PurchaseDetails>>? _purchaseSubscription;
 
   ProductDetails? _noAdsProduct;
   InterstitialAd? _interstitialAd;
+  // iOS: объявление ждёт загрузки до возврата в вертикальный режим
+  bool _pendingPortraitLoad = false;
   RewardedAd? _rewardedAd;
   Completer<void>? _interstitialLoadCompleter;
   Completer<void>? _rewardedLoadCompleter;
@@ -53,6 +67,22 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   String? _storeKitFallbackError;
 
   Future<void> _initialize() async {
+    debugPrint(
+      useTestAds
+          ? '[Ads] TEST ads mode (Google test ad units)'
+          : '[Ads] LIVE ads mode (real ad units from .env)',
+    );
+    if (kIsWeb) {
+      emit(
+        state.copyWith(
+          isProductLoading: false,
+          isProductAvailable: false,
+          statusMessage: 'Store is unavailable on this device',
+        ),
+      );
+      return;
+    }
+
     _logStoreKit('Initializing. productId=$_noAdsProductId');
     final storeAvailable = await _inAppPurchase.isAvailable();
     _logStoreKit('Store available=$storeAvailable');
@@ -68,8 +98,10 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
     }
 
     if (!state.isPremium) {
-      _loadInterstitialAd();
-      _loadRewardedAd();
+      if (!kIsWeb) {
+        _loadInterstitialAd();
+        _loadRewardedAd();
+      }
     }
 
     await _loadNoAdsProduct();
@@ -155,7 +187,7 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   }
 
   Future<ProductDetails?> _loadNoAdsProductFromStoreKitWrapper() async {
-    if (!Platform.isIOS) {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) {
       return null;
     }
 
@@ -181,9 +213,7 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
 
     try {
       final response = await SKRequestMaker()
-          .startProductRequest([
-            _noAdsProductId,
-          ])
+          .startProductRequest([_noAdsProductId])
           .timeout(const Duration(seconds: 8));
       _logStoreKit(
         'StoreKit1 products=${response.products.map((e) => e.productIdentifier).toList()} '
@@ -211,7 +241,7 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   }
 
   void _logStoreKit(String message) {
-    if (!Platform.isIOS) {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) {
       return;
     }
 
@@ -296,12 +326,7 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   }
 
   void resetPurchaseDialogState() {
-    emit(
-      state.copyWith(
-        isPurchasePending: false,
-        clearStatusMessage: true,
-      ),
-    );
+    emit(state.copyWith(isPurchasePending: false, clearStatusMessage: true));
   }
 
   Future<void> _activatePremiumLocally({required String statusMessage}) async {
@@ -416,6 +441,32 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
     await _showInterstitialAd();
   }
 
+  /// Проигрыш в игре на флаге. Счётчик общий для всех игр и хранится в
+  /// сохранении; на каждый [flagGameLossesPerAd]-й — полноэкранная реклама.
+  /// Возвращает true, если реклама была показана.
+  Future<bool> onFlagGameLost() async {
+    if (state.isPremium) {
+      debugPrint('[Ads] flag game loss: premium, no ads');
+      return false;
+    }
+
+    final losses = (_prefs.getInt(_flagGameLossesPrefsKey) ?? 0) + 1;
+    if (losses < flagGameLossesPerAd) {
+      _prefs.setInt(_flagGameLossesPrefsKey, losses);
+      debugPrint(
+        '[Ads] flag game loss $losses/$flagGameLossesPerAd: no ad yet',
+      );
+      return false;
+    }
+
+    _prefs.setInt(_flagGameLossesPrefsKey, 0);
+    debugPrint(
+      '[Ads] flag game loss $losses/$flagGameLossesPerAd: showing interstitial',
+    );
+    await _showInterstitialAd();
+    return true;
+  }
+
   Future<bool> claimDoubleReward() async {
     return _showRewardedAd();
   }
@@ -439,9 +490,7 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
 
       if (purchase.status == PurchaseStatus.purchased ||
           purchase.status == PurchaseStatus.restored) {
-        unawaited(
-          _activatePremiumLocally(statusMessage: 'No Ads activated'),
-        );
+        unawaited(_activatePremiumLocally(statusMessage: 'No Ads activated'));
       }
 
       if (purchase.status == PurchaseStatus.error) {
@@ -474,7 +523,36 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
     );
   }
 
+  bool get _isLandscapeNow {
+    final view = WidgetsBinding.instance.platformDispatcher.views.first;
+    return view.physicalSize.width > view.physicalSize.height;
+  }
+
+  /// iOS 27 + SDK Google 13.11: объявление, загруженное в горизонтальном
+  /// режиме, показывается чёрным (SDK определяет ориентацию через
+  /// statusBarOrientation, который в iOS 27 больше не работает). Загруженное
+  /// в вертикальном — показывается нормально (вертикально). Поэтому на iOS
+  /// загружаем только в вертикальном режиме.
+  bool get _iosLandscape =>
+      defaultTargetPlatform == TargetPlatform.iOS && _isLandscapeNow;
+
+  @override
+  void didChangeMetrics() {
+    // вернулись в вертикальный режим — загружаем отложенное объявление
+    if (_pendingPortraitLoad && !_iosLandscape) {
+      _pendingPortraitLoad = false;
+      debugPrint('[Ads] back to portrait, loading deferred interstitial');
+      _loadInterstitialAd();
+    }
+  }
+
   void _loadInterstitialAd() {
+    if (kIsWeb) return;
+    if (_iosLandscape) {
+      _pendingPortraitLoad = true;
+      debugPrint('[Ads] iOS landscape: interstitial load deferred to portrait');
+      return;
+    }
     _interstitialLoadCompleter ??= Completer<void>();
 
     InterstitialAd.load(
@@ -503,6 +581,7 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   }
 
   void _loadRewardedAd() {
+    if (kIsWeb) return;
     _rewardedLoadCompleter ??= Completer<void>();
 
     RewardedAd.load(
@@ -531,6 +610,7 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   }
 
   Future<void> _showInterstitialAd() async {
+    if (kIsWeb) return;
     final ad = await _prepareInterstitialAd();
     if (ad == null) {
       return;
@@ -556,11 +636,29 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
       },
     );
 
+    // iOS: окно объявления может поддерживать только портрет (так у тестовых
+    // объявлений Google), а игра на флаге держит альбом — iOS не может их
+    // согласовать, и реклама остаётся чёрной. На время показа разрешаем все
+    // ориентации, после закрытия возвращаем альбом игры.
+    final restoreLandscape =
+        defaultTargetPlatform == TargetPlatform.iOS && _isLandscapeNow;
+    if (restoreLandscape) {
+      await SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+    }
+
     ad.show();
     await completer.future;
+
+    if (restoreLandscape) {
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+    }
   }
 
   Future<bool> _showRewardedAd() async {
+    if (kIsWeb) return false;
     final ad = await _prepareRewardedAd();
     if (ad == null) {
       return false;
@@ -589,7 +687,7 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
 
     ad.setImmersiveMode(true);
     ad.show(
-      onUserEarnedReward: (_, __) {
+      onUserEarnedReward: (_, _) {
         rewardEarned = true;
       },
     );
@@ -600,6 +698,13 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
   Future<InterstitialAd?> _prepareInterstitialAd() async {
     if (_interstitialAd != null) {
       return _interstitialAd;
+    }
+    // iOS в горизонтальном режиме: загружать сейчас нельзя (будет чёрным) —
+    // пропускаем показ, объявление загрузится в вертикальном режиме
+    if (_iosLandscape) {
+      debugPrint('[Ads] iOS landscape: no ready interstitial, skipped');
+      _pendingPortraitLoad = true;
+      return null;
     }
 
     await _showAdPlaceholderWhile(() async {
@@ -638,23 +743,45 @@ final class MonetizationCubit extends Cubit<MonetizationState> {
     }
   }
 
+  /// Тестовая реклама: официальные тестовые блоки Google — показываются
+  /// всегда, по ним можно нажимать, аккаунту AdMob это не вредит.
+  /// Включена в debug и в любой сборке с `--dart-define=ADS_TEST=true`;
+  /// обычная release-сборка (для магазина) использует настоящие блоки из .env.
+  static const bool useTestAds = kDebugMode || bool.fromEnvironment('ADS_TEST');
+
+  // https://developers.google.com/admob/flutter/test-ads
+  static const _testInterstitialAndroid =
+      'ca-app-pub-3940256099942544/1033173712';
+  static const _testInterstitialIos = 'ca-app-pub-3940256099942544/4411468910';
+  static const _testRewardedAndroid = 'ca-app-pub-3940256099942544/5224354917';
+  static const _testRewardedIos = 'ca-app-pub-3940256099942544/1712485313';
+
+  bool get _isAndroid => defaultTargetPlatform == TargetPlatform.android;
+
   String get _interstitialUnitId {
+    if (useTestAds) {
+      return _isAndroid ? _testInterstitialAndroid : _testInterstitialIos;
+    }
     return dotenv.get(
-      Platform.isAndroid
-          ? 'ADMOB_INTERSTITIAL_ID'
-          : 'ADMOB_INTERSTITIAL_IOS_ID',
+      _isAndroid ? 'ADMOB_INTERSTITIAL_ID' : 'ADMOB_INTERSTITIAL_IOS_ID',
+      fallback: '',
     );
   }
 
   String get _rewardedUnitId {
+    if (useTestAds) {
+      return _isAndroid ? _testRewardedAndroid : _testRewardedIos;
+    }
     return dotenv.get(
-      Platform.isAndroid ? 'ADMOB_REWARDED_ID' : 'ADMOB_REWARDED_IOS_ID',
+      _isAndroid ? 'ADMOB_REWARDED_ID' : 'ADMOB_REWARDED_IOS_ID',
+      fallback: '',
     );
   }
 
   @override
   Future<void> close() async {
-    await _purchaseSubscription.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    await _purchaseSubscription?.cancel();
     _interstitialAd?.dispose();
     _rewardedAd?.dispose();
     await super.close();

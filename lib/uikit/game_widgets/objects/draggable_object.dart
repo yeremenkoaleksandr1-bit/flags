@@ -1,14 +1,10 @@
-import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/domain/game_objects/game_objects.dart';
 import 'package:flags/uikit/game_widgets/game_widgets.dart';
-import 'package:flags/uikit/outlide_listener/outside_gesture_behavior.dart';
-import 'package:flags/uikit/outlide_listener/outside_listener.dart';
 import 'package:flags/uikit/utils/render_box_exposed.dart';
-import 'package:flame/extensions.dart' hide Matrix4;
+import 'package:flame/extensions.dart' hide Matrix4, Vector3;
+import 'package:vector_math/vector_math_64.dart' as v64;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 typedef DraggableMovableDataCallback = void Function(
   DraggableGameObjectWidgetState state,
@@ -53,10 +49,10 @@ class DraggableGameObjectWidgetState<G extends GameObject,
   }) {
     return MatrixUtils.transformRect(
       Matrix4.identity()
-        ..translate(position.x, position.y)
-        ..translate(size.x / 2, size.y / 2)
-        ..scale(scale)
-        ..translate(-size.x / 2, -size.y / 2),
+        ..translateByVector3(v64.Vector3(position.x, position.y, 0.0))
+        ..translateByVector3(v64.Vector3(size.x / 2, size.y / 2, 0.0))
+        ..scaleByVector3(v64.Vector3(scale, scale, 1.0))
+        ..translateByVector3(v64.Vector3(-size.x / 2, -size.y / 2, 0.0)),
       Vector2.zero() & size,
     );
   }

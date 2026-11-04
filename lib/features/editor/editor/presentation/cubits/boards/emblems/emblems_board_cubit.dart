@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
-import 'package:flags/domain/services/game/emblems.service.dart';
 import 'package:flags/features/app/features/shop/presentation/bloc/shop_cubit.dart';
 import 'package:flags/features/editor/editor/presentation/controllers/factories/boards/emblems_factory.dart';
 import 'package:flags/features/editor/editor/presentation/cubits/boards/emblems/emblem_item.dart';
@@ -9,6 +8,10 @@ import 'package:flags/prefabs/levels/levels.dart';
 import 'package:flags/features/app/presentation/bloc/app_cubit.dart';
 
 part 'emblems_board_state.dart';
+
+/// ВРЕМЕННО для тестов: все эмблемы открыты. Покупки и открытия
+/// не трогаются — false вернёт всё как было.
+const bool kUnlockAllEmblemsForTesting = true;
 
 class EmblemsBoardCubit extends Cubit<EmblemsBoardState> {
   final IAppCubit appCubit;
@@ -28,15 +31,20 @@ class EmblemsBoardCubit extends Cubit<EmblemsBoardState> {
   void _prepare() {
     final emblems = EmblemsFactory.create().toList();
 
+    // закрытые: не открыты сборкой флага и не куплены ранее
     final closedEmblemsItems = emblems
         .where(
-          (e) => !appCubit.emblemsService.isOpened(e.name),
+          (e) =>
+              !kUnlockAllEmblemsForTesting &&
+              !appCubit.emblemsService.isOpened(e.name) &&
+              !shopCubit.isBought("emblem_${e.name}"),
         )
         .toList();
 
     final openedEmblems = emblems
         .where(
           (e) =>
+              kUnlockAllEmblemsForTesting ||
               appCubit.emblemsService.isOpened(e.name) ||
               shopCubit.isBought("emblem_${e.name}"),
         )
@@ -47,10 +55,12 @@ class EmblemsBoardCubit extends Cubit<EmblemsBoardState> {
         )
         .toList();
 
+    // эмблемы, которые выдаются за сборку флагов в пазлах
     final gameEmblemItems = FactoryGameContinent.continents.values
         .expand((e) => e.levels.map((e) => e.flag))
         .expand((e) => e.objects.whereType<EmblemPart>())
-        .map((e) => e.name.toLowerCase());
+        .map((e) => e.name.toLowerCase())
+        .toSet();
 
     final gameEmblems = closedEmblemsItems
         .where(
@@ -67,7 +77,10 @@ class EmblemsBoardCubit extends Cubit<EmblemsBoardState> {
         )
         .toList();
 
+    // платные — только эмблемы, которых нет ни на одном флаге; остальные
+    // открываются исключительно сборкой своего флага
     final closedEmblems = closedEmblemsItems
+        .where((e) => !gameEmblemItems.contains(e.name.toLowerCase()))
         .map(
           (e) => BuyableEmblemItem(
             price: shopCubit.getPrice("emblem_${e.name}"),

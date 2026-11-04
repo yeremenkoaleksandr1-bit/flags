@@ -1,6 +1,5 @@
 import 'package:flags/domain/domain.dart';
 import 'package:flags/features/continents_picker/presentation/components/completed_levels_count_stream_view.dart';
-import 'package:flags/features/continents_picker/presentation/components/white_panel.dart';
 import 'package:flags/uikit/text/text.dart';
 import 'package:flags/uikit/theme/theme.dart';
 import 'package:flutter/material.dart';

@@ -63,7 +63,6 @@ class _DeferredHitTargetRenderObjectWidget
   const _DeferredHitTargetRenderObjectWidget({
     required this.link,
     super.child,
-    super.key,
   });
 
   final EDeferredPointerHandlerLink link;
@@ -142,7 +141,6 @@ class _DeferredHitTargetRenderObject extends RenderProxyBox {
 
 class _InheritedDeferredPaintSurface extends InheritedWidget {
   const _InheritedDeferredPaintSurface({
-    super.key,
     required super.child,
     required this.state,
   });

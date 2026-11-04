@@ -13,7 +13,7 @@ class NineSliceWidget extends SingleChildRenderObjectWidget {
   final FilterQuality filterQuality;
 
   const NineSliceWidget({
-    Key? key,
+    super.key,
     required this.image,
     this.left = 10,
     this.right = 10,
@@ -23,9 +23,7 @@ class NineSliceWidget extends SingleChildRenderObjectWidget {
     this.blendMode = BlendMode.modulate,
     this.filterQuality = FilterQuality.high,
     super.child,
-  }) : super(
-          key: key,
-        );
+  });
 
   @override
   RenderObject createRenderObject(BuildContext context) {

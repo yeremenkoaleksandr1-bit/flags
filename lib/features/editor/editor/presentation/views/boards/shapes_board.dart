@@ -1,4 +1,4 @@
-import 'dart:math';
+
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/domain/editor/shapes/shape.dart';
@@ -48,12 +48,7 @@ class ShapesBoard extends EditorBaseBoard {
   Widget build(BuildContext context) {
     final editorBloc = context.read<IFlagEditorCubit>();
     final sceneObjectsBloc = context.read<EditorSceneObjectsCubit>();
-    final cubit = context.read<ShapesBoardCubit>();
-
     void onSelected(SShape value) {
-      final size = value.rect.size / 12;
-
-      final effectiveSize = value.rect.size / max(size.width, size.height);
 
       editorBloc.toggleShapesBoardOpen(false);
       sceneObjectsBloc.addGameObject(

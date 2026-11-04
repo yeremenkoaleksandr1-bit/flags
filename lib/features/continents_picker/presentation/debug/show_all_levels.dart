@@ -37,7 +37,6 @@ class _ShowAllLevelsDebugState extends State<ShowAllLevelsDebug> {
 
 class _Dialog extends StatelessWidget {
   const _Dialog({
-    super.key,
     required this.levels,
   });
 

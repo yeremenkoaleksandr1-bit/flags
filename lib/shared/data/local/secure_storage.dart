@@ -1,4 +1,4 @@
-import 'package:flags/getIt.dart';
+import 'package:flags/get_it.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 

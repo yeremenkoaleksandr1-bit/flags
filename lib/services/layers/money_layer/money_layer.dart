@@ -24,8 +24,37 @@ class UiMoneyLayer extends UiLayer {
   static IUiMoneyLayer find() => IUiLayer.find("money_layer") as IUiMoneyLayer;
 }
 
+class MoneyDisplayConfig {
+  const MoneyDisplayConfig({
+    this.paddingRight,
+    this.pillHeight,
+    this.pillTop,
+    this.iconHeight,
+    this.iconOffsetTop,
+    this.iconOffsetLeft,
+    this.fontSize,
+    this.strokeWidth,
+    this.paddingLeft,
+    this.paddingRight2,
+    this.paddingTop,
+  });
+
+  final double? paddingRight;
+  final double? pillHeight;
+  final double? pillTop;
+  final double? iconHeight;
+  final double? iconOffsetTop;
+  final double? iconOffsetLeft;
+  final double? fontSize;
+  final double? strokeWidth;
+  final double? paddingLeft;
+  final double? paddingRight2;
+  final double? paddingTop;
+}
+
 abstract interface class IUiMoneyLayer implements IUiLayer {
-  Future<void> addMoneys(Offset fromPosition, int count);
+  Future<void> addMoneys(Offset Function() fromPosition, int count);
+  void setDisplayConfig(MoneyDisplayConfig? config);
 }
 
 class UiMoneyLayerState extends UiLayerState<UiMoneyLayer, IUiMoneyLayer>
@@ -37,13 +66,32 @@ class UiMoneyLayerState extends UiLayerState<UiMoneyLayer, IUiMoneyLayer>
   final WidgetsPool<MoneyAnimatedItemController> widgetsPool =
       WidgetsPool(initialSize: 20);
 
+  MoneyDisplayConfig? _displayConfig;
+
+  @override
+  void setDisplayConfig(MoneyDisplayConfig? config) {
+    setState(() => _displayConfig = config);
+  }
+
   @override
   Widget buildChild(BuildContext context) {
+    final cfg = _displayConfig;
     return GameSafeArea(
       child: Stack(
         children: [
           TotalMoneysView(
             widgetKey: widgetKey,
+            paddingRight:  cfg?.paddingRight,
+            pillHeight:    cfg?.pillHeight,
+            pillTop:       cfg?.pillTop,
+            iconHeight:    cfg?.iconHeight,
+            iconOffsetTop: cfg?.iconOffsetTop,
+            iconOffsetLeft:cfg?.iconOffsetLeft,
+            fontSize:      cfg?.fontSize,
+            strokeWidth:   cfg?.strokeWidth,
+            paddingLeft:   cfg?.paddingLeft,
+            paddingRight2: cfg?.paddingRight2,
+            paddingTop:    cfg?.paddingTop,
           ),
           Stack(
             children: [
@@ -65,7 +113,7 @@ class UiMoneyLayerState extends UiLayerState<UiMoneyLayer, IUiMoneyLayer>
   Completer<dynamic>? _completer;
 
   @override
-  Future<void> addMoneys(Offset fromPosition, int count) async {
+  Future<void> addMoneys(Offset Function() fromPosition, int count) async {
     _subscription?.cancel();
     _subscription = null;
 
@@ -111,7 +159,7 @@ class UiMoneyLayerState extends UiLayerState<UiMoneyLayer, IUiMoneyLayer>
             );
 
             state.playAnimation(
-              OVector(fromPosition, rect.center),
+              OVector(fromPosition(), rect.center),
               onCompleted: (key) {
                 availableItem++;
 

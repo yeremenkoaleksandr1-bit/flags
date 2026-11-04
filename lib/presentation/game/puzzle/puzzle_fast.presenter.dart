@@ -10,12 +10,9 @@ import 'package:flags/core/extensions/num.dart';
 import 'package:flags/core/features/features.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/domain/domain.dart';
-import 'package:flags/domain/models/game/scores/win_streak.dart';
-import 'package:flags/domain/preferences/game_preferences.dart';
 import 'package:flags/features/app/features/audio/domain/sound_data.dart';
 import 'package:flags/features/games/presentation/puzzle/dialogs/lose.dialog.dart';
 import 'package:flags/features/games/presentation/puzzle/overlays/start_game.dart';
-import 'package:flags/navigator/router.gr.dart';
 import 'package:flags/prefabs/levels/levels.dart';
 import 'package:flags/presentation/game/puzzle/onboarding/showcase_fastmode.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
@@ -25,7 +22,6 @@ import 'package:flags/uikit/assets/components/money.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
   PuzzleFastModeCubit(
@@ -41,7 +37,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
     service: onboardingService,
   );
 
-  late ContinentType _randomContinent = params.continentType;
+
 
   late final PeriodicTimer periodicTimer = PeriodicTimer();
 
@@ -88,6 +84,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
       if (!showcaseFm.isCompleted("fast_mode")) {
         showcaseFm.show([showcaseFm.step1, showcaseFm.step2], "fast_mode");
 
+        // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
         timerRx.notifyListeners();
       } else {
         await startPreparationCountdown();
@@ -104,6 +101,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
     await PreparingFastModeInitializationGame(
       preparingTimer: preparingTimer,
       onReady: (context) async {
+        // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
         timerRx.notifyListeners();
         preparingTimer.value = 3;
         await Future.delayed(const Duration(milliseconds: 250), () {
@@ -139,7 +137,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
         unawaited(audioCubit.playSfx(GameSfx.timerEnd));
         await onGameOver();
       } else if (event <= 3) {
-        if (event % 1 == 1) {
+        if (event % 2 == 1) {
           unawaited(audioCubit.playSfx(GameSfx.timerTick1));
         } else {
           unawaited(audioCubit.playSfx(GameSfx.timerTick2));
@@ -169,7 +167,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
         _fastModeGenerationCompleter = Completer();
 
         FlutterEngine.schedulePostFrameCallback((timeStamp) async {
-          _randomContinent = [...ContinentType.values].random();
+
 
           final randomLevel = FactoryGameContinent.allLevels.random();
 
@@ -238,6 +236,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
 
               if (!isRestart) {
                 final uiMoneyLayer = UiMoneyLayer.find();
+                uiMoneyLayer.setDisplayConfig(null);
                 bool isCloseMoney = false;
                 preparingTimer.value = -1;
                 await uiMoneyLayer.show();
@@ -289,7 +288,7 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
                     final rect = context.renderBox!.rect;
 
                     uiMoneyLayer
-                        .addMoneys(rect.center, moneys.clamp(1, 25))
+                        .addMoneys(() => rect.center, moneys.clamp(1, 25))
                         .then((value) async {
                           await uiMoneyLayer.hide();
                           entry.remove();
@@ -358,6 +357,14 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
       await audioCubit.pauseBgm();
     }());
 
+    // детали разлетаются с флага, затем реклама/окно проигрыша
+    if (kPuzzleScatterEnabled) {
+      await scatterAnimation.forward(from: 0);
+      if (isClosed || !context.mounted) {
+        return;
+      }
+    }
+
     await monetizationCubit.onFastModeRoundCompleted();
 
     if (isClosed || !context.mounted) {
@@ -365,6 +372,8 @@ class PuzzleFastModeCubit extends PuzzleCommonModeCubit {
     }
 
     await _showFastModeLoseDialog();
+    // окно закрыто — новые детали на следующем флаге рисуются как обычно
+    if (!isClosed) scatterAnimation.reset();
   }
 
   Future<void> _showFastModeLoseDialog() async {

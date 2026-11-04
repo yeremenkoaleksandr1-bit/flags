@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flags/app/app_bootstrap.dart';
 import 'package:flags/features/app/presentation/application.dart';
@@ -11,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+import 'package:flutter/foundation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +25,9 @@ void main() async {
   await GameShaders.init();
 
 
-  await MobileAds.instance.initialize();
+  if (!kIsWeb) {
+    await MobileAds.instance.initialize();
+  }
 
   EasyLoading.instance
     ..maskType = EasyLoadingMaskType.custom

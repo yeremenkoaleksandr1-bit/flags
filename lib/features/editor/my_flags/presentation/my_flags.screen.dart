@@ -1,8 +1,7 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:auto_route/annotations.dart';
-import 'package:flags/logger.dart';
 import 'package:flags/features/editor/my_flags/presentation/views/flags_list.view.dart';
-import 'package:flags/ui/game_scaffold.dart';
+
 import 'package:flags/uikit/components/buttons/actions/actions.dart';
 import 'package:flags/uikit/components/safe_area/safe_area.dart';
 import 'package:flags/uikit/uikit.dart';
@@ -15,11 +14,8 @@ class MyFlagsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GameSafeArea(
-      child: GamePageBuilder(
-        startSlideDirection: GamePageSlideDirection.bottom,
-        endSlideDirection: GamePageSlideDirection.bottom,
-        child: Column(
-          children: [
+      child: Column(
+        children: [
             Padding(
               padding: const Pad(horizontal: 8),
               child: Row(
@@ -34,8 +30,7 @@ class MyFlagsScreen extends StatelessWidget {
             const Expanded(
               child: FlagsListView(),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }

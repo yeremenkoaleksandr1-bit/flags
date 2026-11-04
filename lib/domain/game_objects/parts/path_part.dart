@@ -1,6 +1,6 @@
+// ignore_for_file: must_be_immutable
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:memoize/memoize.dart';
 
 import '../../../core/elements/paint.dart';
 import '../../../core/path_drawing/path_drawing.dart';
@@ -99,13 +99,6 @@ class PathGameObject extends ProcessGameObject {
 
     return object;
   }
-
-  late final _fraction = memo1(
-    (Size size) => Calculator.fraction(
-      size,
-      path.bounds.size,
-    ),
-  );
 
   @override
   void draw(Canvas canvas, Size size, [double fraction = 1]) {

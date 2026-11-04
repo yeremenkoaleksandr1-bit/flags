@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +28,6 @@ class _MagnetAreaPainter extends CustomPainter with EquatableMixin {
   final bool activeVerticalPosition;
 
   _MagnetAreaPainter({
-    super.repaint,
     required this.activeHorizontalPosition,
     required this.activeVerticalPosition,
   });

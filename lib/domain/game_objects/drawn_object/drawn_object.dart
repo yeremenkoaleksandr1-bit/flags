@@ -1,3 +1,4 @@
+// ignore_for_file: must_be_immutable
 import 'package:flags/core/utils/utils.dart';
 import 'package:flags/domain/game_objects/base/flippable.dart';
 import 'package:flags/features/editor/editor/presentation/cubits/boards/custom_paint/custom_paint_cubit.dart';

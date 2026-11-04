@@ -37,13 +37,11 @@ class GamePageBuilder extends StatefulWidget {
 }
 
 class _GamePageBuilderState extends State<GamePageBuilder>
-    with AutoRouteAware, RouteAware, SingleTickerProviderStateMixin
-    implements PopEntry<GamePageBuilder> {
+    with AutoRouteAware, RouteAware, SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   GameAutoRouteObserver? _observer;
   ModalRoute<dynamic>? _route;
 
-  @override
   late final ValueNotifier<bool> canPopNotifier = ValueNotifier<bool>(false);
 
   @override
@@ -63,9 +61,7 @@ class _GamePageBuilderState extends State<GamePageBuilder>
     final ModalRoute<dynamic>? nextRoute = ModalRoute.of(context);
 
     if (nextRoute != _route) {
-      _route?.unregisterPopEntry(this);
       _route = nextRoute;
-      _route?.registerPopEntry(this);
     }
 
     final routeDataScope = context
@@ -85,17 +81,28 @@ class _GamePageBuilderState extends State<GamePageBuilder>
     }
   }
 
-  @override
-  void onPopInvoked(bool didPop) {}
-
-  @override
   Future<void> onPopInvokedWithResult(bool didPop, Object? result) async {
     if (!didPop) {
       await onPageUnfocused();
       if (mounted) {
         canPopNotifier.value = true;
-        await context.maybePop(result);
-        canPopNotifier.value = false;
+        // Wait for the UI to rebuild PopScope with canPop: true
+        await Future.delayed(const Duration(milliseconds: 50));
+        
+        if (!mounted) return;
+        final router = context.router;
+        final didPopSuccessfully = await context.maybePop(result);
+        
+        if (!didPopSuccessfully) {
+          final parent = router.parent<StackRouter>();
+          if (parent != null) {
+            parent.pop(result);
+          }
+        }
+
+        if (mounted) {
+          canPopNotifier.value = false;
+        }
       }
     }
   }
@@ -104,14 +111,19 @@ class _GamePageBuilderState extends State<GamePageBuilder>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _controller.reverse(from: 1).whenComplete(() {
         widget.onPageFocussed?.call();
-      });
+      }).catchError((_) {});
     });
   }
 
   Future<void> onPageUnfocused() async {
-    await _controller.forward(from: 0).whenComplete(() {
-      widget.onPageUnfocused?.call();
-    });
+    // уход уже доигран (перехват pop в onPopInvokedWithResult проигрывает его
+    // сам, а потом didPop вызывает этот метод ещё раз) — не повторяем анимацию
+    if (_controller.value >= 1 && !_controller.isAnimating) return;
+    try {
+      await _controller.forward(from: 0).whenComplete(() {
+        widget.onPageUnfocused?.call();
+      });
+    } catch (_) {}
   }
 
   @override
@@ -141,45 +153,62 @@ class _GamePageBuilderState extends State<GamePageBuilder>
 
   @override
   void dispose() {
-    super.dispose();
     canPopNotifier.dispose();
     _controller.dispose();
     _observer?.unsubscribe(this);
     GamePageBuilder.routeObserver.unsubscribe(this);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final isCurrent = ModalRoute.of(context)?.isCurrent ?? false;
+    if (isCurrent && _controller.value == 1 && !_controller.isAnimating) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) onPageFocussed();
+      });
+    }
+
     final startSlideDirection = widget.startSlideDirection;
     final endSlideDirection = widget.endSlideDirection;
     final mediaQuery = MediaQuery.of(context);
     final screenWidth = mediaQuery.size.width;
     final screenHeight = mediaQuery.size.height;
 
-    return Material(
-      color: Colors.transparent,
-      child: AnimatedBuilder(
-        animation: _controller,
-        child: widget.child,
-        builder: (BuildContext context, Widget? child) {
-          final value = CurvedAnimation(
-            parent: _controller,
-            curve: widget.curve,
-          ).value;
+    return ValueListenableBuilder<bool>(
+      valueListenable: canPopNotifier,
+      builder: (context, canPop, child) {
+        return PopScope(
+          canPop: canPop,
+          onPopInvokedWithResult: onPopInvokedWithResult,
+          child: child!,
+        );
+      },
+      child: Material(
+        color: Colors.transparent,
+        child: AnimatedBuilder(
+          animation: _controller,
+          child: widget.child,
+          builder: (BuildContext context, Widget? child) {
+            final value = CurvedAnimation(
+              parent: _controller,
+              curve: widget.curve,
+            ).value;
 
-          final offset = _resolveOffset(
-            value: value,
-            screenWidth: screenWidth,
-            screenHeight: screenHeight,
-            startSlideDirection: startSlideDirection,
-            endSlideDirection: endSlideDirection,
-          );
+            final offset = _resolveOffset(
+              value: value,
+              screenWidth: screenWidth,
+              screenHeight: screenHeight,
+              startSlideDirection: startSlideDirection,
+              endSlideDirection: endSlideDirection,
+            );
 
-          return Opacity(
-            opacity: 1 - value,
-            child: Transform.translate(offset: offset, child: child),
-          );
-        },
+            return Opacity(
+              opacity: 1 - value,
+              child: Transform.translate(offset: offset, child: child),
+            );
+          },
+        ),
       ),
     );
   }

@@ -1,5 +1,4 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
-import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flags/features/editor/editor/custom_defer_pointer/defer_pointer.dart';
 import 'package:flags/features/editor/editor/presentation/bloc/flag_editor_cubit.dart';
 import 'package:flags/features/editor/editor/presentation/cubits/selected_object/selected_object_cubit.dart';
@@ -74,9 +73,12 @@ final class EditorScreenView extends StatelessWidget {
                                   await EasyLoading.show();
                                   try {
                                     await cubit.exportImage();
+                                    if (!context.mounted) return;
                                     const SuccessfullImageSavedDialog()
                                         .showModal(context);
-                                  } catch (e) {}
+                                  } catch (e) {
+                                    // ignore: empty_catches
+                                  }
 
                                   await EasyLoading.dismiss();
                                 },
@@ -109,7 +111,7 @@ final class EditorScreenView extends StatelessWidget {
 }
 
 final class _Content extends StatelessWidget {
-  const _Content({super.key});
+  const _Content();
 
   @override
   Widget build(BuildContext context) {

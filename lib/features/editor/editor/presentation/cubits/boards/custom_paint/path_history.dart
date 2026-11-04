@@ -1,3 +1,4 @@
+// ignore_for_file: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
 import 'package:flags/core/elements/paint.dart';
 import 'package:flags/domain/entities/path/path.dart';
 import 'package:flags/domain/entities/points/base/point_entity.dart';
@@ -125,7 +126,7 @@ class PathHistory {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is PathHistory &&

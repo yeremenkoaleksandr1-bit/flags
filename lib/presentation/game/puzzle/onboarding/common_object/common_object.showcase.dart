@@ -35,7 +35,7 @@ class _PuzzleCommonObjectShowcaseState extends State<PuzzleCommonObjectShowcase>
   late final AnimationController controller;
 
   bool onReady = false;
-  BezierCurve? lineCurve = null;
+  BezierCurve? lineCurve;
 
   @override
   void initState() {

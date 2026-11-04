@@ -1,4 +1,4 @@
-library drag_and_drop;
+library;
 
 export 'components/components.dart';
 export 'entities/entities.dart';

@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 
 import 'package:flags/features/app/features/monetization/presentation/bloc/monetization_cubit.dart';
 import 'package:flags/features/app/features/monetization/presentation/bloc/monetization_state.dart';
@@ -98,7 +98,7 @@ class RemoveAdsBanner extends StatelessWidget {
                         onPressed: () => cubit.buyNoAdsSubscription(context),
                         child: FText("BUY ${state.productPriceLabel}"),
                       ),
-                      if (Platform.isIOS) ...[
+                      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) ...[
                         Gap.v8,
                         TextButton(
                           onPressed: cubit.restorePurchases,

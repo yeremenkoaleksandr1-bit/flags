@@ -1,5 +1,4 @@
 import 'package:flags/domain/game_objects/flag/flag.dart';
-import 'package:flags/domain/game_objects/flag/flag_extensions.dart';
 import 'package:flutter/cupertino.dart';
 
 class GameLevel extends ChangeNotifier {

@@ -1,4 +1,3 @@
-import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/entities/game/game.dart';
 
 import 'game_level.dart';

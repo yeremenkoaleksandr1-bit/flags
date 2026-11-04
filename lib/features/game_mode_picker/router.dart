@@ -1,13 +1,12 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flags/navigator/game_navigation_observer.dart';
 import 'package:flags/presentation/presenters/game_mode_picker/game_mode_picker.presenter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 @RoutePage()
 class GameModePickerRouter extends StatelessWidget implements AutoRouteWrapper {
-  const GameModePickerRouter({
-    super.key,
-  });
+  const GameModePickerRouter({super.key});
 
   @override
   Widget wrappedRoute(BuildContext context) {
@@ -19,6 +18,6 @@ class GameModePickerRouter extends StatelessWidget implements AutoRouteWrapper {
 
   @override
   Widget build(BuildContext context) {
-    return const AutoRouter();
+    return AutoRouter(navigatorObservers: () => [GameAutoRouteObserver()]);
   }
 }

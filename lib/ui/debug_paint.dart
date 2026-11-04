@@ -126,7 +126,6 @@ class _Painter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _Painter oldDelegate) {
-    return true;
     return oldDelegate.queue != queue && queue.isNotEmpty;
   }
 }

@@ -27,7 +27,7 @@ class DeferredPointerHandler extends StatefulWidget {
 class DeferredPointerHandlerState extends State<DeferredPointerHandler> {
   final DeferredPointerHandlerLink _link = DeferredPointerHandlerLink();
 
-  get link => _link;
+  DeferredPointerHandlerLink get link => _link;
 
   @override
   void didUpdateWidget(covariant DeferredPointerHandler oldWidget) {

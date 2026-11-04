@@ -34,7 +34,7 @@ class _PreparingFastModeTimerState extends State<PreparingFastModeTimer> {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
               child: ColoredBox(
-                color: ThemePalette.black.withOpacity(0.9),
+                color: ThemePalette.black.withValues(alpha: 0.9),
               ),
             ),
           ),

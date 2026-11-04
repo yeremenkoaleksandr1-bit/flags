@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-library showcaseview;
+library;
 
 export 'src/enum.dart';
 export 'src/showcase.dart';

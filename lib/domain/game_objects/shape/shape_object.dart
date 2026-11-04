@@ -1,6 +1,7 @@
+// ignore_for_file: must_be_immutable
 import 'package:flags/domain/game_objects/base/game_object.dart';
 import 'package:flame/image_composition.dart';
-import 'package:flutter/src/foundation/key.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../entities/path/path.dart';
 

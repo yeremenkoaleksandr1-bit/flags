@@ -6,15 +6,12 @@ import 'package:drag_and_drop/drag_and_drop.dart';
 import 'package:drag_and_drop/extensions/render_box.dart';
 import 'package:flags/core/flutter_engine.dart';
 import 'package:flags/domain/game_objects/base/process.game_object.dart';
-import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
 import 'package:flags/domain/game_objects/flag/flag.dart';
 import 'package:flags/features/games/presentation/puzzle/components/board_items/colored_item.dart';
 import 'package:flags/features/games/presentation/puzzle/components/board_items/common_item.dart';
-import 'package:flags/logger.dart';
 import 'package:flags/presentation/game/puzzle/entities/board_item.dart';
 import 'package:flags/presentation/game/puzzle/entities/colored_part.game_object.dart';
 import 'package:flags/presentation/game/puzzle/puzzle_common.presenter.dart';
-import 'package:flags/presentation/game/puzzle/state/puzzle_game.state.dart';
 import 'package:flags/uikit/uikit.dart';
 import 'package:flutter/material.dart';
 
@@ -84,7 +81,7 @@ class PartsBoardState extends State<PartsBoard> {
         isFullScreen.value = false;
         _positionRx.value = value.rect.bottom;
         _boardActualPosition = _positionRx.value;
-      } catch (e) {}
+      } catch (e) { /* ignore: empty_catches */ }
     }
   }
 
@@ -107,12 +104,11 @@ class PartsBoardState extends State<PartsBoard> {
     });
   }
 
-  bool _isResizableDragStart = false;
 
   late double _initialPosition = _positionRx.value;
 
   void _onPointerStart(PointerDownEvent e) {
-    _isResizableDragStart = true;
+
   }
 
   void _onPointerMode(PointerMoveEvent e) {
@@ -142,7 +138,7 @@ class PartsBoardState extends State<PartsBoard> {
       _positionRx.value = _initialPosition;
     }
 
-    _isResizableDragStart = false;
+
   }
 
   @override

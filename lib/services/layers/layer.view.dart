@@ -1,4 +1,4 @@
-import 'package:flags/getIt.dart';
+import 'package:flags/get_it.dart';
 import 'package:flutter/widgets.dart';
 
 abstract class UiLayer extends StatefulWidget {

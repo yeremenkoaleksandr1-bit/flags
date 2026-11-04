@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:flags/domain/editor/styles/quarterly_stylre.dart';
 import 'package:flags/domain/editor/styles/saltire_style.dart';
 
 import 'flag_style_serializer.dart';

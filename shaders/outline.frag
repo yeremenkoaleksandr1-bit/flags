@@ -24,7 +24,7 @@ void main() {
 
     for (int y = -kMaxRadius; y <= kMaxRadius; y++) {
         for (int x = -kMaxRadius; x <= kMaxRadius; x++) {
-            if (abs(x) > strokePixels || abs(y) > strokePixels) {
+            if (abs(float(x)) > float(strokePixels) || abs(float(y)) > float(strokePixels)) {
                 continue;
             }
 

@@ -9,15 +9,9 @@ class BuildAudioPreferences extends StatelessWidget {
     this.buildWhen,
   });
 
-  final Widget Function(
-    BuildContext context,
-    AudioState state,
-  ) builder;
+  final Widget Function(BuildContext context, AudioState state) builder;
 
-  final bool Function(
-    AudioState previous,
-    AudioState current,
-  )? buildWhen;
+  final bool Function(AudioState previous, AudioState current)? buildWhen;
 
   @override
   Widget build(BuildContext context) {

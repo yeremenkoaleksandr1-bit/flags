@@ -1,7 +1,5 @@
 import 'package:flags/domain/converters/game_objects/flippable_object_converter.dart';
-import 'package:flags/domain/game_objects/emblems/emblem.gameObject.dart';
 import 'package:flags/domain/game_objects/game_objects.dart';
-import 'package:flags/resources/resources.dart';
 import 'package:flame/components.dart';
 
 class ImageGameObjectConverter

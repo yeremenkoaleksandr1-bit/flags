@@ -1,11 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flags/core/flutter_engine.dart';
-import 'package:flags/logger.dart';
 import 'package:flags/navigator/game_navigation_observer.dart';
 import 'package:flags/navigator/router.dart';
 import 'package:flags/navigator/router.gr.dart';
-import 'package:flags/ui/game_scaffold.dart';
-import 'package:flags/uikit/text/f_text.dart';
+
 import 'package:flutter/material.dart';
 
 class AppRouterBuilder extends StatefulWidget {

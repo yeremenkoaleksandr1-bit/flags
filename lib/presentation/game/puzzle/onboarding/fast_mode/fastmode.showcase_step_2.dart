@@ -31,12 +31,11 @@ class _PuzzleFastModeStep2ShowcaseState
     extends State<PuzzleFastModeStep2Showcase> {
   @override
   Widget build(BuildContext context) {
-      final mqs = MediaQuery.of(context).size;
-
     return FShowcase(
       showcaseKey: widget.showcaseKey,
       onTargetClick: widget.onTap,
-      onBarrierClick: widget.onTap,
+      // тап по фону библиотека сама переводит на следующий шаг;
+      // второй вызов onTap здесь пропускал бы шаг
       tooltip: (bounds) {
         return Positioned(
           top: 0,

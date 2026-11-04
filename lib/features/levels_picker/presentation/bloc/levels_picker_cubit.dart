@@ -2,9 +2,7 @@ import 'package:bloc_utils/bloc_utils.dart';
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/entities/game/game.dart';
 import 'package:flags/domain/entities/game/game_levels/game_level.dart';
-import 'package:flags/domain/services/levels/levels.service.dart';
 import 'package:flags/features/app/features/levels/presentation/bloc/levels_cubit.dart';
-import 'package:flags/getIt.dart';
 import 'package:flags/prefabs/levels/levels.dart';
 
 class NextLevelData {

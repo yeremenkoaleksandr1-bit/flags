@@ -98,7 +98,6 @@ class _BuildIcon extends StatelessWidget {
   final String svg;
 
   const _BuildIcon({
-    super.key,
     required this.title,
     required this.svg,
   });

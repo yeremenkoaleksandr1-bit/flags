@@ -9,7 +9,10 @@ plugins {
 }
 
 val keyProperties = Properties().apply {
-    load(FileInputStream(file("key.properties")))
+    val keyFile = file("key.properties")
+    if (keyFile.exists()) {
+        load(FileInputStream(keyFile))
+    }
 }
 
 val envProperties = Properties().apply {
@@ -19,18 +22,19 @@ val envProperties = Properties().apply {
     }
 }
 
-val configuredStoreFile = file(keyProperties["storeFile"] as String)
+val storeFileStr = keyProperties["storeFile"] as String?
+val configuredStoreFile = if (storeFileStr != null) file(storeFileStr) else null
 val fallbackStoreFile = rootProject.file("keys/app")
 val signingStoreFile =
     when {
-        configuredStoreFile.exists() -> configuredStoreFile
+        configuredStoreFile != null && configuredStoreFile.exists() -> configuredStoreFile
         fallbackStoreFile.exists() -> fallbackStoreFile
-        else -> configuredStoreFile
+        else -> fallbackStoreFile
     }
 
 android {
     namespace = "com.forceman.flagsup"
-    compileSdk = 36
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -58,21 +62,29 @@ android {
     signingConfigs {
         create("release") {
             storeFile = signingStoreFile
-            storePassword = keyProperties["storePassword"] as String
-            keyAlias = keyProperties["keyAlias"] as String
-            keyPassword = keyProperties["keyPassword"] as String
+            storePassword = keyProperties["storePassword"] as String? ?: ""
+            keyAlias = keyProperties["keyAlias"] as String? ?: ""
+            keyPassword = keyProperties["keyPassword"] as String? ?: ""
         }
     }
 
     buildTypes {
         getByName("release") {
-            signingConfig = signingConfigs.getByName("release")
+            // нет настоящего ключа (android/keys/app) — тестовый APK
+            // подписывается отладочным ключом; для Google Play нужен настоящий
+            signingConfig =
+                if (signingStoreFile.exists()) {
+                    signingConfigs.getByName("release")
+                } else {
+                    logger.warn("Release keystore not found: signing with DEBUG key (test build only)")
+                    signingConfigs.getByName("debug")
+                }
             isMinifyEnabled = false
             isShrinkResources = false
         }
 
         getByName("debug") {
-            signingConfig = signingConfigs.getByName("release")
+            // using default debug signing
         }
     }
 }

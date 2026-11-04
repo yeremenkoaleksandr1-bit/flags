@@ -128,9 +128,10 @@ class _PuzzleModeViewState extends State<PuzzleModeView> {
                           left: 0,
                           right: 48.w,
                           child: Align(
-                            alignment: Alignment.topCenter,
+                            alignment: Alignment.topLeft,
                             child: FText(
                               "Puzzles",
+                              textAlign: TextAlign.left,
                               strokeWidth: 18.r,
                               textStyle: TextStyle(
                                 color: ThemePalette.gentleYellow.darken(0.25),

@@ -8,7 +8,6 @@ import 'package:flags/uikit/components/buttons/buttons.dart';
 import 'package:flags/uikit/layout_components/containers/card.dart';
 import 'package:flags/uikit/layout_components/gap/gap.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ActionsFlagDialog extends DialogWidget {
   const ActionsFlagDialog({

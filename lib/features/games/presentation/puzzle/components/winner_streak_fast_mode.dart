@@ -1,7 +1,6 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flags/domain/domain.dart';
 import 'package:flags/domain/preferences/builders/build_game_preferences.dart';
-import 'package:flags/features/app/presentation/bloc/app_cubit.dart';
 import 'package:flags/uikit/assets/assets.dart';
 import 'package:flags/uikit/layout_components/sprite_widget.dart';
 import 'package:flags/uikit/shaders/outline_shader.dart';
@@ -9,7 +8,6 @@ import 'package:flags/uikit/uikit.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WinnerStreakFastModeView extends StatelessWidget {
   const WinnerStreakFastModeView({super.key});

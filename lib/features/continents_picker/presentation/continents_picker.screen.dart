@@ -111,7 +111,8 @@ class _ContinentsPickerScreenState extends State<ContinentsPickerScreen> {
     }
 
     void onPageUnfocused() {
-      audioCubit.playBgm(GameMusics.main);
+      // главную музыку включает само главное меню при возврате; здесь она
+      // перебивала бы музыку континента при переходе к уровням
       moneyLayer.hide();
     }
 

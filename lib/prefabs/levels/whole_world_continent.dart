@@ -1,4 +1,3 @@
-import '../../domain/domain.dart';
 import '../../domain/entities/game/game.dart';
 
 class WholeWorldContinent extends GameContinentData {

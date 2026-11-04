@@ -1,3 +1,4 @@
+// ignore_for_file: must_be_immutable
 import 'package:flags/domain/game_objects/game_objects.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/cupertino.dart';

@@ -3,10 +3,8 @@ import 'dart:ui';
 import 'package:flags/core/elements/paint.dart';
 import 'package:flags/domain/converters/json_converter.dart';
 import 'package:flags/domain/converters/objects/native_structs_converter.dart';
-import 'package:flags/domain/editor/styles/style.dart';
 import 'package:flags/domain/entities/path/path.dart';
 import 'package:flags/domain/entities/points/points.dart';
-import 'package:flags/domain/game_objects/shape/shape_object.dart';
 
 class SPointSerializer implements IJsonConverter<SPoint, List<dynamic>> {
   const SPointSerializer();
@@ -58,7 +56,7 @@ class SPaintSerializer implements IJsonConverter<SPaint, Map<String, dynamic>> {
   @override
   Map<String, dynamic> toJson(SPaint m) => {
         "blendMode": m.blendMode.index,
-        "color": m.color.value,
+        "color": m.color.toARGB32(),
         "invertColors": m.invertColors,
         "isAntiAlias": m.isAntiAlias,
         "strokeCap": m.strokeCap.index,
